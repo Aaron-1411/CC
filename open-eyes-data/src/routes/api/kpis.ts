@@ -1,44 +1,114 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
-import { callLovableAI } from "@/lib/ai-gateway";
 
-type Kpi = { label: string; value: string; period: string; source: string; trend?: "up" | "down" | "flat" };
+type Kpi = {
+  label: string;
+  value: string;
+  period: string;
+  source: string;
+  trend?: "up" | "down" | "flat";
+  live?: boolean;
+};
 
-const SYSTEM = `You are a UK public-data analyst. Return ONLY valid JSON matching:
-{ "kpis": [{ "label": string, "value": string, "period": string, "source": string, "trend": "up"|"down"|"flat" }, ...] }
-Provide the latest known figures for the requested UK indicators. Include units (£, %, ms). If a figure is uncertain say "approx" in value. Period e.g. "Sep 2025". Source = official body name (NHS England, ONS, OBR, etc).`;
+type OnsDataPoint = { date: string; value: string; label?: string };
+type OnsResponse = {
+  months?: OnsDataPoint[];
+  quarters?: OnsDataPoint[];
+  years?: OnsDataPoint[];
+};
+
+async function fetchOnsSeries(dataset: string, series: string): Promise<OnsDataPoint> {
+  const url = `https://api.ons.gov.uk/v1/datasets/${dataset}/timeseries/${series}/data`;
+  const r = await fetch(url, { headers: { accept: "application/json" } });
+  if (!r.ok) throw new Error(`ONS ${dataset}/${series} returned ${r.status}`);
+  const j = (await r.json()) as OnsResponse;
+  const point = j.months?.at(-1) ?? j.quarters?.at(-1) ?? j.years?.at(-1);
+  if (!point) throw new Error(`ONS ${dataset}/${series}: no data points returned`);
+  return point;
+}
+
+const STATIC_KPIS: Kpi[] = [
+  {
+    label: "NHS Elective Waiting List",
+    value: "7.58m",
+    period: "Sep 2024",
+    source: "NHS England · RTT Statistics",
+    live: false,
+  },
+  {
+    label: "Asylum Case Backlog",
+    value: "113,000",
+    period: "Q1 2025",
+    source: "Home Office · Asylum Statistics",
+    live: false,
+  },
+];
 
 export const Route = createFileRoute("/api/kpis")({
   server: {
     handlers: {
       GET: async () => {
         try {
-          const data = await cached("kpis:headline", 30 * 60_000, async () => {
-            const { content } = await callLovableAI({
-              json: true,
-              temperature: 0.1,
-              messages: [
-                { role: "system", content: SYSTEM },
-                {
-                  role: "user",
-                  content:
-                    "Return latest UK headline KPIs: NHS England elective waiting list size, public sector net debt as % of GDP, CPI inflation rate, annual housing completions, asylum applications backlog, and government contracts awarded this month (approx).",
-                },
-              ],
-            });
-            try {
-              return JSON.parse(content) as { kpis: Kpi[] };
-            } catch {
-              return { kpis: [] as Kpi[] };
+          const data = await cached("kpis:ons:v1", 30 * 60_000, async () => {
+            const [cpiResult, debtResult, unemployResult, gdpResult] =
+              await Promise.allSettled([
+                fetchOnsSeries("mm23", "d7g7"),
+                fetchOnsSeries("pusf", "hf6x"),
+                fetchOnsSeries("lms", "mgsx"),
+                fetchOnsSeries("pn2", "ihyq"),
+              ]);
+
+            const liveKpis: Kpi[] = [];
+
+            if (cpiResult.status === "fulfilled") {
+              liveKpis.push({
+                label: "CPI Inflation",
+                value: `${cpiResult.value.value}%`,
+                period: cpiResult.value.date,
+                source: "ONS · mm23/d7g7",
+                live: true,
+              });
             }
+
+            if (debtResult.status === "fulfilled") {
+              liveKpis.push({
+                label: "Public Sector Net Debt (% GDP)",
+                value: `${debtResult.value.value}%`,
+                period: debtResult.value.date,
+                source: "ONS · pusf/hf6x",
+                live: true,
+              });
+            }
+
+            if (unemployResult.status === "fulfilled") {
+              liveKpis.push({
+                label: "Unemployment Rate",
+                value: `${unemployResult.value.value}%`,
+                period: unemployResult.value.date,
+                source: "ONS · lms/mgsx",
+                live: true,
+              });
+            }
+
+            if (gdpResult.status === "fulfilled") {
+              liveKpis.push({
+                label: "GDP Growth Rate (quarterly)",
+                value: `${gdpResult.value.value}%`,
+                period: gdpResult.value.date,
+                source: "ONS · pn2/ihyq",
+                live: true,
+              });
+            }
+
+            return { kpis: [...liveKpis, ...STATIC_KPIS] };
           });
+
           return jsonResponse(
             envelope(
               data,
-              "Lovable AI · synthesised from public sources",
-              "https://ai.gateway.lovable.dev",
-              "AI-synthesised; verify against ONS / NHS England / OBR",
+              "ONS API · NHS England · Home Office",
+              "https://api.ons.gov.uk",
             ),
           );
         } catch (e) {

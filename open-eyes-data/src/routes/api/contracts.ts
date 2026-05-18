@@ -79,12 +79,19 @@ export const Route = createFileRoute("/api/contracts")({
           const body = (await request.json().catch(() => ({}))) as {
             keyword?: string;
           };
-          const keyword = (body.keyword ?? "").trim().toLowerCase();
-          const upstream =
-            "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?limit=100";
+          const keyword = (body.keyword ?? "").trim();
+
+          const CF_BASE =
+            "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search";
+
+          const upstream = keyword
+            ? `${CF_BASE}?keyword=${encodeURIComponent(keyword)}&limit=100`
+            : `${CF_BASE}?limit=100`;
+
+          const cacheKey = `cf:search:${keyword || "latest"}`;
 
           const releases = await cached(
-            "cf:ocds:latest",
+            cacheKey,
             60_000,
             async () => {
               const r = await fetch(upstream, {
@@ -102,13 +109,6 @@ export const Route = createFileRoute("/api/contracts")({
           );
 
           let results = releases.map(normalise);
-          if (keyword) {
-            results = results.filter((n) =>
-              [n.title, n.organisationName, n.description, n.awardedSupplier]
-                .filter(Boolean)
-                .some((v) => v!.toLowerCase().includes(keyword)),
-            );
-          }
           results = results.slice(0, 50);
 
           return jsonResponse(

@@ -9,19 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VotesRouteImport } from './routes/votes'
 import { Route as PetitionsRouteImport } from './routes/petitions'
 import { Route as ParliamentRouteImport } from './routes/parliament'
+import { Route as LobbyingRouteImport } from './routes/lobbying'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as BriefingRouteImport } from './routes/briefing'
+import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiVotesRouteImport } from './routes/api/votes'
 import { Route as ApiPetitionsRouteImport } from './routes/api/petitions'
+import { Route as ApiLobbyingRouteImport } from './routes/api/lobbying'
 import { Route as ApiKpisRouteImport } from './routes/api/kpis'
 import { Route as ApiExpensesRouteImport } from './routes/api/expenses'
 import { Route as ApiContractsRouteImport } from './routes/api/contracts'
 import { Route as ApiBriefingRouteImport } from './routes/api/briefing'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
+import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
 
+const VotesRoute = VotesRouteImport.update({
+  id: '/votes',
+  path: '/votes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PetitionsRoute = PetitionsRouteImport.update({
   id: '/petitions',
   path: '/petitions',
@@ -30,6 +41,11 @@ const PetitionsRoute = PetitionsRouteImport.update({
 const ParliamentRoute = ParliamentRouteImport.update({
   id: '/parliament',
   path: '/parliament',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LobbyingRoute = LobbyingRouteImport.update({
+  id: '/lobbying',
+  path: '/lobbying',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpensesRoute = ExpensesRouteImport.update({
@@ -47,14 +63,29 @@ const BriefingRoute = BriefingRouteImport.update({
   path: '/briefing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcobaRoute = AcobaRouteImport.update({
+  id: '/acoba',
+  path: '/acoba',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVotesRoute = ApiVotesRouteImport.update({
+  id: '/api/votes',
+  path: '/api/votes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPetitionsRoute = ApiPetitionsRouteImport.update({
   id: '/api/petitions',
   path: '/api/petitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLobbyingRoute = ApiLobbyingRouteImport.update({
+  id: '/api/lobbying',
+  path: '/api/lobbying',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiKpisRoute = ApiKpisRouteImport.update({
@@ -82,112 +113,166 @@ const ApiBillsRoute = ApiBillsRouteImport.update({
   path: '/api/bills',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAcobaRoute = ApiAcobaRouteImport.update({
+  id: '/api/acoba',
+  path: '/api/acoba',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/contracts': typeof ContractsRoute
   '/expenses': typeof ExpensesRoute
+  '/lobbying': typeof LobbyingRoute
   '/parliament': typeof ParliamentRoute
   '/petitions': typeof PetitionsRoute
+  '/votes': typeof VotesRoute
+  '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/contracts': typeof ApiContractsRoute
   '/api/expenses': typeof ApiExpensesRoute
   '/api/kpis': typeof ApiKpisRoute
+  '/api/lobbying': typeof ApiLobbyingRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/votes': typeof ApiVotesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/contracts': typeof ContractsRoute
   '/expenses': typeof ExpensesRoute
+  '/lobbying': typeof LobbyingRoute
   '/parliament': typeof ParliamentRoute
   '/petitions': typeof PetitionsRoute
+  '/votes': typeof VotesRoute
+  '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/contracts': typeof ApiContractsRoute
   '/api/expenses': typeof ApiExpensesRoute
   '/api/kpis': typeof ApiKpisRoute
+  '/api/lobbying': typeof ApiLobbyingRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/votes': typeof ApiVotesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/contracts': typeof ContractsRoute
   '/expenses': typeof ExpensesRoute
+  '/lobbying': typeof LobbyingRoute
   '/parliament': typeof ParliamentRoute
   '/petitions': typeof PetitionsRoute
+  '/votes': typeof VotesRoute
+  '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/contracts': typeof ApiContractsRoute
   '/api/expenses': typeof ApiExpensesRoute
   '/api/kpis': typeof ApiKpisRoute
+  '/api/lobbying': typeof ApiLobbyingRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/votes': typeof ApiVotesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acoba'
     | '/briefing'
     | '/contracts'
     | '/expenses'
+    | '/lobbying'
     | '/parliament'
     | '/petitions'
+    | '/votes'
+    | '/api/acoba'
     | '/api/bills'
     | '/api/briefing'
     | '/api/contracts'
     | '/api/expenses'
     | '/api/kpis'
+    | '/api/lobbying'
     | '/api/petitions'
+    | '/api/votes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/acoba'
     | '/briefing'
     | '/contracts'
     | '/expenses'
+    | '/lobbying'
     | '/parliament'
     | '/petitions'
+    | '/votes'
+    | '/api/acoba'
     | '/api/bills'
     | '/api/briefing'
     | '/api/contracts'
     | '/api/expenses'
     | '/api/kpis'
+    | '/api/lobbying'
     | '/api/petitions'
+    | '/api/votes'
   id:
     | '__root__'
     | '/'
+    | '/acoba'
     | '/briefing'
     | '/contracts'
     | '/expenses'
+    | '/lobbying'
     | '/parliament'
     | '/petitions'
+    | '/votes'
+    | '/api/acoba'
     | '/api/bills'
     | '/api/briefing'
     | '/api/contracts'
     | '/api/expenses'
     | '/api/kpis'
+    | '/api/lobbying'
     | '/api/petitions'
+    | '/api/votes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcobaRoute: typeof AcobaRoute
   BriefingRoute: typeof BriefingRoute
   ContractsRoute: typeof ContractsRoute
   ExpensesRoute: typeof ExpensesRoute
+  LobbyingRoute: typeof LobbyingRoute
   ParliamentRoute: typeof ParliamentRoute
   PetitionsRoute: typeof PetitionsRoute
+  VotesRoute: typeof VotesRoute
+  ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBillsRoute: typeof ApiBillsRoute
   ApiBriefingRoute: typeof ApiBriefingRoute
   ApiContractsRoute: typeof ApiContractsRoute
   ApiExpensesRoute: typeof ApiExpensesRoute
   ApiKpisRoute: typeof ApiKpisRoute
+  ApiLobbyingRoute: typeof ApiLobbyingRoute
   ApiPetitionsRoute: typeof ApiPetitionsRoute
+  ApiVotesRoute: typeof ApiVotesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/votes': {
+      id: '/votes'
+      path: '/votes'
+      fullPath: '/votes'
+      preLoaderRoute: typeof VotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/petitions': {
       id: '/petitions'
       path: '/petitions'
@@ -200,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/parliament'
       fullPath: '/parliament'
       preLoaderRoute: typeof ParliamentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lobbying': {
+      id: '/lobbying'
+      path: '/lobbying'
+      fullPath: '/lobbying'
+      preLoaderRoute: typeof LobbyingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expenses': {
@@ -223,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BriefingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/acoba': {
+      id: '/acoba'
+      path: '/acoba'
+      fullPath: '/acoba'
+      preLoaderRoute: typeof AcobaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -230,11 +329,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/votes': {
+      id: '/api/votes'
+      path: '/api/votes'
+      fullPath: '/api/votes'
+      preLoaderRoute: typeof ApiVotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/petitions': {
       id: '/api/petitions'
       path: '/api/petitions'
       fullPath: '/api/petitions'
       preLoaderRoute: typeof ApiPetitionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/lobbying': {
+      id: '/api/lobbying'
+      path: '/api/lobbying'
+      fullPath: '/api/lobbying'
+      preLoaderRoute: typeof ApiLobbyingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/kpis': {
@@ -272,22 +385,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiBillsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/acoba': {
+      id: '/api/acoba'
+      path: '/api/acoba'
+      fullPath: '/api/acoba'
+      preLoaderRoute: typeof ApiAcobaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcobaRoute: AcobaRoute,
   BriefingRoute: BriefingRoute,
   ContractsRoute: ContractsRoute,
   ExpensesRoute: ExpensesRoute,
+  LobbyingRoute: LobbyingRoute,
   ParliamentRoute: ParliamentRoute,
   PetitionsRoute: PetitionsRoute,
+  VotesRoute: VotesRoute,
+  ApiAcobaRoute: ApiAcobaRoute,
   ApiBillsRoute: ApiBillsRoute,
   ApiBriefingRoute: ApiBriefingRoute,
   ApiContractsRoute: ApiContractsRoute,
   ApiExpensesRoute: ApiExpensesRoute,
   ApiKpisRoute: ApiKpisRoute,
+  ApiLobbyingRoute: ApiLobbyingRoute,
   ApiPetitionsRoute: ApiPetitionsRoute,
+  ApiVotesRoute: ApiVotesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

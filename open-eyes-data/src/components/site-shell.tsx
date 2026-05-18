@@ -8,6 +8,9 @@ const NAV = [
   { to: "/parliament", label: "Parliament" },
   { to: "/expenses", label: "Expenses" },
   { to: "/briefing", label: "Briefing" },
+  { to: "/votes", label: "Votes" },
+  { to: "/lobbying", label: "Lobbying" },
+  { to: "/acoba", label: "Revolving Door" },
 ] as const;
 
 export function SiteShell() {
