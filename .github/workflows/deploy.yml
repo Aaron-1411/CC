@@ -1,0 +1,63 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy dashboard
+        run: npx netlify-cli deploy --dir=dashboard --site=${{ secrets.NETLIFY_SITE_HUB }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+
+  deploy-get-settld:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install & build
+        run: cd get-settld && bun install && bun run build
+      - name: Deploy
+        run: npx netlify-cli deploy --dir=get-settld/dist --site=${{ secrets.NETLIFY_SITE_GET_SETTLD }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+
+  deploy-ez-tuition:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install & build
+        run: cd ez-tuition && bun install && bun run build
+      - name: Deploy
+        run: npx netlify-cli deploy --dir=ez-tuition/dist --site=${{ secrets.NETLIFY_SITE_EZ_TUITION }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+
+  deploy-wealth-companion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install & build
+        run: cd wealth-companion && bun install && bun run build
+      - name: Deploy
+        run: npx netlify-cli deploy --dir=wealth-companion/dist/client --site=${{ secrets.NETLIFY_SITE_WEALTH_COMPANION }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+
+  deploy-lease-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install & build
+        run: cd lease-guard && bun install && bun run build
+      - name: Deploy
+        run: npx netlify-cli deploy --dir=lease-guard/dist/client --site=${{ secrets.NETLIFY_SITE_LEASE_GUARD }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+
+  deploy-open-eyes-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install & build
+        run: cd open-eyes-data && bun install && bun run build
+      - name: Deploy
+        run: npx netlify-cli deploy --dir=open-eyes-data/dist/client --site=${{ secrets.NETLIFY_SITE_OPEN_EYES_DATA }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
