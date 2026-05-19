@@ -63,7 +63,7 @@ function CrossRefPage() {
 
       fetch("/api/acoba").then((r) => r.json() as Promise<ProxyEnvelope<AcobaResp>>),
       fetch("/api/lobbying").then((r) => r.json() as Promise<ProxyEnvelope<LobbyingResp>>),
-      fetch(`/api/donations?q=${encodeURIComponent(q.trim())}`).then((r) => r.json() as Promise<ProxyEnvelope<DonationsResp>>),
+      fetch(`/api/donations?party=${encodeURIComponent(q.trim())}`).then((r) => r.json() as Promise<ProxyEnvelope<DonationsResp>>),
     ]);
 
     let contracts: ContractResult[] = [];

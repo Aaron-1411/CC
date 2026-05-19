@@ -69,7 +69,7 @@ function getLastSixMonths(): Array<{ value: string; label: string }> {
 
 function defaultDate(): string {
   const d = new Date();
-  d.setMonth(d.getMonth() - 3);
+  d.setMonth(d.getMonth() - 4);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 

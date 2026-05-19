@@ -11,7 +11,7 @@ import {
   Skeleton,
   Stat,
 } from "@/components/primitives";
-import { fmtNumber, getJSON, relTime } from "@/lib/api";
+import { fmtNumber, getJSON } from "@/lib/api";
 
 export const Route = createFileRoute("/sewage")({
   head: () => ({
@@ -185,13 +185,14 @@ function SpillRow({ s }: { s: SpillRecord }) {
     <Card>
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <FlagPill variant="direct">{s.company}</FlagPill>
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <FlagPill variant="direct">Sewage overflow</FlagPill>
           </div>
           <h3 className="font-display text-base font-semibold leading-snug">{s.site}</h3>
           <div className="text-xs text-muted-foreground mt-1 label-mono">
-            Receiving water:{" "}
-            <span className="text-foreground">{s.receivingWater}</span>
+            <span className="text-foreground">{s.company}</span>
+            {" · "}
+            {s.receivingWater}
           </div>
         </div>
         <div className="text-right shrink-0 space-y-1">

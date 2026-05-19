@@ -32,60 +32,51 @@ type WDTKRequest = {
   public_body_url_name: string;
 };
 
+function normaliseWDTK(req: WDTKRequest): RefusalRecord {
+  return {
+    id: req.id,
+    title: req.title,
+    bodyName: req.public_body_name ?? "Unknown body",
+    state: req.described_state,
+    date: req.created_at,
+    url: req.url?.startsWith("http") ? req.url : `https://www.whatdotheyknow.com${req.url}`,
+  };
+}
+
+async function fetchState(state: string): Promise<WDTKRequest[]> {
+  const results: WDTKRequest[] = [];
+  for (let page = 1; page <= 3; page++) {
+    const r = await fetch(
+      `https://www.whatdotheyknow.com/api/v3/info_request.json?described_state=${state}&per_page=100&page=${page}`,
+      { headers: { accept: "application/json" }, signal: AbortSignal.timeout(15_000) },
+    );
+    if (!r.ok) break;
+    const data = (await r.json()) as { info_requests?: WDTKRequest[] };
+    const batch = data.info_requests ?? [];
+    results.push(...batch);
+    if (batch.length < 100) break;
+  }
+  return results;
+}
+
 async function fetchFOIRefusals(): Promise<FOIData> {
   const allRecords: RefusalRecord[] = [];
 
-  // Fetch not_held requests
-  try {
-    const r1 = await fetch(
-      "https://www.whatdotheyknow.com/api/v3/info_request.json?described_state=not_held&per_page=20&page=1",
-      { headers: { accept: "application/json" }, signal: AbortSignal.timeout(12_000) },
-    );
-    if (r1.ok) {
-      const data = (await r1.json()) as { info_requests?: WDTKRequest[] };
-      for (const req of data.info_requests ?? []) {
-        allRecords.push({
-          id: req.id,
-          title: req.title,
-          bodyName: req.public_body_name ?? "Unknown body",
-          state: req.described_state,
-          date: req.created_at,
-          url: req.url?.startsWith("http")
-            ? req.url
-            : `https://www.whatdotheyknow.com${req.url}`,
-        });
-      }
-    }
-  } catch {
-    // fallthrough
-  }
+  const [notHeld, refused] = await Promise.allSettled([
+    fetchState("not_held"),
+    fetchState("refused"),
+  ]);
 
-  // Fetch refused requests
-  try {
-    const r2 = await fetch(
-      "https://www.whatdotheyknow.com/api/v3/info_request.json?described_state=refused&per_page=20&page=1",
-      { headers: { accept: "application/json" }, signal: AbortSignal.timeout(12_000) },
-    );
-    if (r2.ok) {
-      const data = (await r2.json()) as { info_requests?: WDTKRequest[] };
-      for (const req of data.info_requests ?? []) {
-        // avoid duplicates by id
-        if (!allRecords.some((r) => r.id === req.id)) {
-          allRecords.push({
-            id: req.id,
-            title: req.title,
-            bodyName: req.public_body_name ?? "Unknown body",
-            state: req.described_state,
-            date: req.created_at,
-            url: req.url?.startsWith("http")
-              ? req.url
-              : `https://www.whatdotheyknow.com${req.url}`,
-          });
+  const seen = new Set<number>();
+  for (const result of [notHeld, refused]) {
+    if (result.status === "fulfilled") {
+      for (const req of result.value) {
+        if (!seen.has(req.id)) {
+          seen.add(req.id);
+          allRecords.push(normaliseWDTK(req));
         }
       }
     }
-  } catch {
-    // ignore
   }
 
   // Group by public body to create league table

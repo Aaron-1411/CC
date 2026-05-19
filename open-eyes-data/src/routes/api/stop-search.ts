@@ -20,9 +20,9 @@ export type StopRecord = {
 type ForceEntry = { id: string; name: string };
 
 function defaultDate(): string {
-  // Try 3 months ago as the most recent available
+  // data.police.uk typically lags 2-3 months; use 4 months back for reliability
   const d = new Date();
-  d.setMonth(d.getMonth() - 3);
+  d.setMonth(d.getMonth() - 4);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/api/stop-search")({
           return jsonResponse(
             envelope(
               {
-                stops,
+                stops: stops.slice(0, 100),
                 summary: {
                   total: stops.length,
                   byEthnicity,

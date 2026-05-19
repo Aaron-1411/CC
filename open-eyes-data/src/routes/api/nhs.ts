@@ -24,19 +24,19 @@ type NHSData = {
 const CONTEXT_STATS: ContextStat[] = [
   {
     label: "4-hour A&E target performance",
-    value: "76%",
+    value: "~76%",
     target: "95%",
-    context: "As of early 2025 — NHS has missed 95% target consistently since 2015",
+    context: "Approx. Feb 2025 published figure — NHS has missed the 95% target every month since 2015. See latest publications below.",
   },
   {
-    label: "Average A&E wait time",
-    value: "2h 30m",
-    context: "Approximate average wait across all type 1 emergency departments",
+    label: "Average A&E wait",
+    value: "~2h 30m",
+    context: "Approximate average wait in type 1 emergency departments as of early 2025 publications",
   },
   {
     label: "Monthly A&E attendances",
-    value: "~2.4 million",
-    context: "Approximate monthly attendances across all A&E departments in England",
+    value: "~2.4m",
+    context: "Approximate monthly attendances across all A&E types in England — see NHS England stats below for latest",
   },
 ];
 

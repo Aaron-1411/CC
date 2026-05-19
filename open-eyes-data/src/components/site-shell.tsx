@@ -26,8 +26,8 @@ export function SiteShell() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-surface/60 backdrop-blur sticky top-0 z-40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center justify-between gap-6">
-          <Link to="/" className="flex items-baseline gap-2">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-3 flex items-center gap-4">
+          <Link to="/" className="flex items-baseline gap-2 shrink-0">
             <span className="font-display text-2xl font-black tracking-tight">
               transparen<span className="text-amber">C</span>
             </span>
@@ -35,7 +35,9 @@ export function SiteShell() {
               UK gov accountability
             </span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1">
+        </div>
+        <div className="border-t border-border overflow-x-auto scrollbar-none">
+          <nav className="flex gap-0.5 px-4 sm:px-6 py-1.5 min-w-max mx-auto max-w-7xl">
             {NAV.map((n) => {
               const active =
                 n.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(n.to);
@@ -44,7 +46,7 @@ export function SiteShell() {
                   key={n.to}
                   to={n.to}
                   className={cn(
-                    "px-3 py-1.5 text-sm rounded-md label-mono uppercase tracking-wider transition-colors",
+                    "px-2.5 py-1 text-[11px] rounded label-mono uppercase tracking-wider transition-colors whitespace-nowrap",
                     active
                       ? "bg-amber/10 text-amber"
                       : "text-muted-foreground hover:text-foreground hover:bg-surface-2",
@@ -55,26 +57,6 @@ export function SiteShell() {
               );
             })}
           </nav>
-        </div>
-        <div className="md:hidden border-t border-border overflow-x-auto">
-          <div className="flex gap-1 px-4 py-2 min-w-max">
-            {NAV.map((n) => {
-              const active =
-                n.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(n.to);
-              return (
-                <Link
-                  key={n.to}
-                  to={n.to}
-                  className={cn(
-                    "px-3 py-1 text-xs rounded label-mono uppercase tracking-wider",
-                    active ? "bg-amber/10 text-amber" : "text-muted-foreground",
-                  )}
-                >
-                  {n.label}
-                </Link>
-              );
-            })}
-          </div>
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
