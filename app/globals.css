@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base:    #080c14;
+  --bg-surface: #0d1420;
+  --bg-raised:  #141c2e;
+  --bg-overlay: #1a2438;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-normal: rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.18);
+  --text-primary:   #e8edf5;
+  --text-secondary: #8896b0;
+  --text-tertiary:  #4f607a;
+  --positive:     #23d18b;
+  --positive-bg:  rgba(35,209,139,0.08);
+  --negative:     #f05252;
+  --negative-bg:  rgba(240,82,82,0.08);
+  --neutral:      #f5a623;
+  --neutral-bg:   rgba(245,166,35,0.08);
+  --accent:       #3d7eff;
+  --accent-soft:  rgba(61,126,255,0.12);
+  --c1: #3d7eff; --c2: #23d18b; --c3: #7b61ff; --c4: #f5a623; --c5: #f05252;
+  --c6: #38bdf8; --c7: #a78bfa; --c8: #fbbf24; --c9: #34d399; --c10:#fb923c; --c11:#e879f9;
+}
+
+@theme inline {
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-ibm-plex-sans);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ibm-plex-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-mono,
+.tabular-nums {
+  font-family: var(--font-ibm-plex-mono), 'IBM Plex Mono', 'Fira Code', monospace;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Card utility */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
+.card-raised {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-normal);
+  border-radius: 12px;
+}
+
+/* Positive/Negative color helpers */
+.text-positive { color: var(--positive); }
+.text-negative { color: var(--negative); }
+.text-neutral-val { color: var(--neutral); }
+.bg-positive { background: var(--positive-bg); }
+.bg-negative { background: var(--negative-bg); }
+.bg-neutral-val { background: var(--neutral-bg); }
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes flash-positive {
+  0% { background-color: transparent; }
+  25% { background-color: var(--positive-bg); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-negative {
+  0% { background-color: transparent; }
+  25% { background-color: var(--negative-bg); }
+  100% { background-color: transparent; }
+}
+
+.animate-flash-positive {
+  animation: flash-positive 0.8s ease-out;
+}
+
+.animate-flash-negative {
+  animation: flash-negative 0.8s ease-out;
+}
+
+/* Gradient overlays */
+.gradient-fade-bottom {
+  background: linear-gradient(to bottom, transparent, var(--bg-base));
+}
