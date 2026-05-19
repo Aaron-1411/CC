@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { fmtGBP, getJSON, relTime } from "@/lib/api";
 
@@ -8,138 +8,196 @@ export const Route = createFileRoute("/contracts")({
   head: () => ({
     meta: [
       { title: "Government Contracts — transparenC" },
-      { name: "description", content: "Search UK government contracts. Direct awards and no-tender deals flagged." },
-      { property: "og:title", content: "UK Government Contracts — transparenC" },
+      { name: "description", content: "All UK government contracts over £1m awarded in the last 10 months." },
+      { property: "og:title", content: "UK Major Government Contracts — transparenC" },
     ],
   }),
   component: ContractsPage,
 });
 
-const PRESETS = ["direct award", "NHS", "defence", "consultancy", "IT", "Capita", "Serco", "Palantir"];
-
 type Notice = {
-  id?: string;
-  noticeId?: string;
-  title?: string;
-  organisationName?: string;
+  id: string;
+  title: string;
+  organisationName: string;
   description?: string;
-  valueLow?: number;
-  valueHigh?: number;
-  awardedValue?: number;
-  awardedSupplier?: string;
+  awardedValue: number;
+  awardedSupplier: string;
   awardedDate?: string;
   publishedDate?: string;
   procedureType?: string;
   noticeType?: string;
-  status?: string;
   link?: string;
 };
 
-type SearchResp = { results?: Notice[]; noticesData?: Notice[]; totalResults?: number };
+type ContractsResp = { results: Notice[]; totalResults: number; totalValue: number };
+
+type SortKey = "value" | "date" | "department" | "supplier";
+
+function flagFor(proc?: string): { variant: "direct" | "no-tender" | "restricted" | "open" | "neutral"; label: string } {
+  const p = (proc ?? "").toLowerCase();
+  if (p.includes("direct")) return { variant: "direct", label: "Direct award" };
+  if (p.includes("negotiated") || p.includes("no competition")) return { variant: "no-tender", label: "No tender" };
+  if (p.includes("restricted")) return { variant: "restricted", label: "Restricted" };
+  if (p.includes("open")) return { variant: "open", label: "Open tender" };
+  return { variant: "neutral", label: proc ?? "—" };
+}
 
 function ContractsPage() {
-  const [keyword, setKeyword] = useState("");
-  const m = useMutation({
-    mutationFn: (kw: string) =>
-      getJSON<SearchResp>("/api/contracts", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ keyword: kw, size: 25, page: 1 }),
-      }),
+  const [filter, setFilter] = useState("");
+  const [sort, setSort] = useState<SortKey>("value");
+  const [showDirect, setShowDirect] = useState(false);
+
+  const q = useQuery({
+    queryKey: ["contracts-major"],
+    queryFn: () => getJSON<ContractsResp>("/api/contracts"),
+    staleTime: 60 * 60_000,
   });
 
-  useEffect(() => {
-    m.mutate("");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const all = q.data?.data.results ?? [];
 
-  const results = m.data?.data.results ?? m.data?.data.noticesData ?? [];
+  const displayed = useMemo(() => {
+    let list = all;
+    if (filter) {
+      const f = filter.toLowerCase();
+      list = list.filter((n) =>
+        [n.title, n.organisationName, n.awardedSupplier, n.description]
+          .filter(Boolean)
+          .some((v) => v!.toLowerCase().includes(f)),
+      );
+    }
+    if (showDirect) {
+      list = list.filter((n) => {
+        const p = (n.procedureType ?? "").toLowerCase();
+        return p.includes("direct") || p.includes("negotiated") || p.includes("no competition");
+      });
+    }
+    return [...list].sort((a, b) => {
+      if (sort === "value") return b.awardedValue - a.awardedValue;
+      if (sort === "date") {
+        return new Date(b.awardedDate ?? b.publishedDate ?? 0).getTime() -
+               new Date(a.awardedDate ?? a.publishedDate ?? 0).getTime();
+      }
+      if (sort === "department") return a.organisationName.localeCompare(b.organisationName);
+      if (sort === "supplier") return a.awardedSupplier.localeCompare(b.awardedSupplier);
+      return 0;
+    });
+  }, [all, filter, sort, showDirect]);
+
+  const totalValue = displayed.reduce((s, n) => s + n.awardedValue, 0);
+  const directCount = displayed.filter((n) => {
+    const p = (n.procedureType ?? "").toLowerCase();
+    return p.includes("direct") || p.includes("negotiated");
+  }).length;
 
   return (
     <div className="space-y-6">
       <div>
         <SectionHeader
           eyebrow="Contracts Database"
-          title="Where the money goes"
-          right={<LiveBadge timestamp={m.data?.meta.fetchedAt} />}
+          title="Major contracts awarded — last 10 months"
+          right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          Live search of UK government contracts via Contracts Finder. Direct awards and
-          restricted procedures are flagged — they are legal but skip the open-tender process.
+          Every government contract award over <span className="text-amber font-mono">£1,000,000</span> from
+          the last 10 months via Contracts Finder. Direct awards and restricted procedures flagged in red —
+          they are legal but bypass open competition.
         </p>
       </div>
 
+      {/* Summary stats */}
+      {q.data && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-surface border border-border rounded-lg p-4">
+            <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Contracts found</div>
+            <div className="font-display text-3xl font-bold text-amber mt-1">{displayed.length.toLocaleString()}</div>
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-4">
+            <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Total value</div>
+            <div className="font-display text-3xl font-bold text-amber mt-1">{fmtGBP(totalValue)}</div>
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-4">
+            <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Direct awards</div>
+            <div className="font-display text-3xl font-bold text-flag mt-1">{directCount.toLocaleString()}</div>
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-4">
+            <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Scanned records</div>
+            <div className="font-display text-3xl font-bold mt-1">{(q.data.data.results.length > 0 ? "2,000+" : "—")}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Filters */}
       <Card>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            m.mutate(keyword);
-          }}
-          className="flex flex-wrap gap-2"
-        >
+        <div className="flex flex-wrap gap-3 items-center">
           <input
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Search contract titles, suppliers, departments…"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="Filter by department, supplier, or title…"
             className="flex-1 min-w-[240px] bg-background border border-border rounded px-3 py-2 text-sm focus:border-amber outline-none"
           />
+          <div className="flex gap-1 label-mono text-xs">
+            {(["value", "date", "department", "supplier"] as SortKey[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSort(s)}
+                className={`px-3 py-2 rounded uppercase tracking-wider ${sort === s ? "bg-amber text-amber-foreground" : "bg-surface-2 text-muted-foreground hover:text-foreground"}`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
           <button
-            type="submit"
-            className="px-4 py-2 bg-amber text-amber-foreground rounded label-mono text-xs uppercase tracking-wider hover:opacity-90"
+            onClick={() => setShowDirect((d) => !d)}
+            className={`px-3 py-2 rounded label-mono text-xs uppercase tracking-wider border ${showDirect ? "bg-flag/15 text-flag border-flag/30" : "bg-surface-2 border-border text-muted-foreground hover:text-foreground"}`}
           >
-            Search
+            Direct awards only
           </button>
-        </form>
-        <div className="flex flex-wrap gap-2 mt-3">
-          {PRESETS.map((p) => (
-            <button
-              key={p}
-              onClick={() => {
-                setKeyword(p);
-                m.mutate(p);
-              }}
-              className="px-2.5 py-1 text-xs label-mono uppercase tracking-wider bg-surface-2 hover:bg-amber/10 hover:text-amber rounded border border-border"
-            >
-              {p}
-            </button>
-          ))}
         </div>
+        {filter && (
+          <div className="mt-2 label-mono text-xs text-muted-foreground">
+            Showing {displayed.length} of {all.length} contracts · {fmtGBP(totalValue)} total
+          </div>
+        )}
       </Card>
 
-      {m.error && <ErrorNote>{(m.error as Error).message}</ErrorNote>}
+      {q.error && <ErrorNote>{(q.error as Error).message}</ErrorNote>}
+
+      {q.isLoading && (
+        <div className="space-y-2">
+          <div className="label-mono text-xs text-muted-foreground text-center py-4">
+            Scanning 2,000 contract records from Contracts Finder — this takes a few seconds…
+          </div>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Card key={i}>
+              <Skeleton className="h-5 w-2/3 mb-2" />
+              <Skeleton className="h-3 w-full mb-1" />
+              <Skeleton className="h-3 w-1/2" />
+            </Card>
+          ))}
+        </div>
+      )}
 
       <div className="grid gap-3">
-        {m.isPending
-          ? Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i}><Skeleton className="h-5 w-2/3 mb-2" /><Skeleton className="h-3 w-full" /></Card>
-            ))
-          : results.map((n, i) => <NoticeRow key={n.id ?? n.noticeId ?? i} n={n} />)}
-        {!m.isPending && results.length === 0 && !m.error && (
-          <div className="text-muted-foreground text-sm py-12 text-center">No contracts found.</div>
+        {!q.isLoading && displayed.map((n) => <NoticeRow key={n.id} n={n} />)}
+        {!q.isLoading && displayed.length === 0 && !q.error && (
+          <div className="text-muted-foreground text-sm py-12 text-center">
+            {filter ? "No contracts match that filter." : "No major contracts found in this period."}
+          </div>
         )}
       </div>
 
       <DataProvenance
-        source="Contracts Finder — Cabinet Office"
+        source="Contracts Finder — Cabinet Office (OCDS API)"
         url="https://www.contractsfinder.service.gov.uk"
-        fetchedAt={m.data?.meta.fetchedAt}
+        licence="Open Government Licence v3.0"
+        fetchedAt={q.data?.meta.fetchedAt}
       />
     </div>
   );
 }
 
-function flagFor(proc?: string): { variant: "direct" | "no-tender" | "restricted" | "open" | "neutral"; label: string } {
-  const p = (proc ?? "").toLowerCase();
-  if (p.includes("direct")) return { variant: "direct", label: "Direct award" };
-  if (p.includes("no")) return { variant: "no-tender", label: "No tender" };
-  if (p.includes("restricted")) return { variant: "restricted", label: "Restricted" };
-  if (p.includes("open")) return { variant: "open", label: "Open tender" };
-  return { variant: "neutral", label: proc ?? "—" };
-}
-
 function NoticeRow({ n }: { n: Notice }) {
   const f = flagFor(n.procedureType);
-  const value = n.awardedValue ?? n.valueHigh ?? n.valueLow;
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">
@@ -147,20 +205,27 @@ function NoticeRow({ n }: { n: Notice }) {
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <FlagPill variant={f.variant}>{f.label}</FlagPill>
             {n.noticeType && <FlagPill variant="neutral">{n.noticeType}</FlagPill>}
-            {n.status && <FlagPill variant="neutral">{n.status}</FlagPill>}
           </div>
-          <h3 className="font-display text-lg font-semibold leading-snug">{n.title ?? "Untitled notice"}</h3>
+          <h3 className="font-display text-lg font-semibold leading-snug">
+            {n.link ? (
+              <a href={n.link} target="_blank" rel="noreferrer" className="hover:text-amber">
+                {n.title}
+              </a>
+            ) : n.title}
+          </h3>
           <div className="text-xs text-muted-foreground mt-1 label-mono">
-            <span className="text-foreground">{n.organisationName ?? "—"}</span>
-            {n.awardedSupplier && <> → <span className="text-amber">{n.awardedSupplier}</span></>}
+            <span className="text-foreground">{n.organisationName}</span>
+            {n.awardedSupplier && n.awardedSupplier !== "—" && (
+              <> → <span className="text-amber">{n.awardedSupplier}</span></>
+            )}
           </div>
           {n.description && (
             <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{n.description}</p>
           )}
         </div>
         <div className="text-right shrink-0">
-          <div className="font-display text-2xl font-bold text-amber">{fmtGBP(value)}</div>
-          <div className="label-mono text-[10px] uppercase text-muted-foreground">
+          <div className="font-display text-2xl font-bold text-amber">{fmtGBP(n.awardedValue)}</div>
+          <div className="label-mono text-[10px] uppercase text-muted-foreground mt-1">
             {n.awardedDate ? `awarded ${relTime(n.awardedDate)}` : n.publishedDate ? `published ${relTime(n.publishedDate)}` : ""}
           </div>
         </div>
