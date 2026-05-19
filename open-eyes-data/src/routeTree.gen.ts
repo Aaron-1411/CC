@@ -10,19 +10,34 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VotesRouteImport } from './routes/votes'
+import { Route as StopSearchRouteImport } from './routes/stop-search'
+import { Route as SewageRouteImport } from './routes/sewage'
+import { Route as SanctionsRouteImport } from './routes/sanctions'
 import { Route as PetitionsRouteImport } from './routes/petitions'
 import { Route as ParliamentRouteImport } from './routes/parliament'
+import { Route as NhsRouteImport } from './routes/nhs'
+import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as LobbyingRouteImport } from './routes/lobbying'
+import { Route as FoiRouteImport } from './routes/foi'
 import { Route as ExpensesRouteImport } from './routes/expenses'
+import { Route as DonationsRouteImport } from './routes/donations'
+import { Route as CrossrefRouteImport } from './routes/crossref'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiVotesRouteImport } from './routes/api/votes'
+import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
+import { Route as ApiSewageRouteImport } from './routes/api/sewage'
+import { Route as ApiSanctionsRouteImport } from './routes/api/sanctions'
 import { Route as ApiPetitionsRouteImport } from './routes/api/petitions'
+import { Route as ApiNhsRouteImport } from './routes/api/nhs'
+import { Route as ApiMeetingsRouteImport } from './routes/api/meetings'
 import { Route as ApiLobbyingRouteImport } from './routes/api/lobbying'
 import { Route as ApiKpisRouteImport } from './routes/api/kpis'
+import { Route as ApiFoiRouteImport } from './routes/api/foi'
 import { Route as ApiExpensesRouteImport } from './routes/api/expenses'
+import { Route as ApiDonationsRouteImport } from './routes/api/donations'
 import { Route as ApiContractsRouteImport } from './routes/api/contracts'
 import { Route as ApiBriefingRouteImport } from './routes/api/briefing'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
@@ -31,6 +46,21 @@ import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
 const VotesRoute = VotesRouteImport.update({
   id: '/votes',
   path: '/votes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StopSearchRoute = StopSearchRouteImport.update({
+  id: '/stop-search',
+  path: '/stop-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SewageRoute = SewageRouteImport.update({
+  id: '/sewage',
+  path: '/sewage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SanctionsRoute = SanctionsRouteImport.update({
+  id: '/sanctions',
+  path: '/sanctions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PetitionsRoute = PetitionsRouteImport.update({
@@ -43,14 +73,39 @@ const ParliamentRoute = ParliamentRouteImport.update({
   path: '/parliament',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NhsRoute = NhsRouteImport.update({
+  id: '/nhs',
+  path: '/nhs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeetingsRoute = MeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LobbyingRoute = LobbyingRouteImport.update({
   id: '/lobbying',
   path: '/lobbying',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FoiRoute = FoiRouteImport.update({
+  id: '/foi',
+  path: '/foi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExpensesRoute = ExpensesRouteImport.update({
   id: '/expenses',
   path: '/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonationsRoute = DonationsRouteImport.update({
+  id: '/donations',
+  path: '/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrossrefRoute = CrossrefRouteImport.update({
+  id: '/crossref',
+  path: '/crossref',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractsRoute = ContractsRouteImport.update({
@@ -78,9 +133,34 @@ const ApiVotesRoute = ApiVotesRouteImport.update({
   path: '/api/votes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStopSearchRoute = ApiStopSearchRouteImport.update({
+  id: '/api/stop-search',
+  path: '/api/stop-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSewageRoute = ApiSewageRouteImport.update({
+  id: '/api/sewage',
+  path: '/api/sewage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSanctionsRoute = ApiSanctionsRouteImport.update({
+  id: '/api/sanctions',
+  path: '/api/sanctions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPetitionsRoute = ApiPetitionsRouteImport.update({
   id: '/api/petitions',
   path: '/api/petitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNhsRoute = ApiNhsRouteImport.update({
+  id: '/api/nhs',
+  path: '/api/nhs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMeetingsRoute = ApiMeetingsRouteImport.update({
+  id: '/api/meetings',
+  path: '/api/meetings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiLobbyingRoute = ApiLobbyingRouteImport.update({
@@ -93,9 +173,19 @@ const ApiKpisRoute = ApiKpisRouteImport.update({
   path: '/api/kpis',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFoiRoute = ApiFoiRouteImport.update({
+  id: '/api/foi',
+  path: '/api/foi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiExpensesRoute = ApiExpensesRouteImport.update({
   id: '/api/expenses',
   path: '/api/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDonationsRoute = ApiDonationsRouteImport.update({
+  id: '/api/donations',
+  path: '/api/donations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiContractsRoute = ApiContractsRouteImport.update({
@@ -124,19 +214,34 @@ export interface FileRoutesByFullPath {
   '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/contracts': typeof ContractsRoute
+  '/crossref': typeof CrossrefRoute
+  '/donations': typeof DonationsRoute
   '/expenses': typeof ExpensesRoute
+  '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
+  '/meetings': typeof MeetingsRoute
+  '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
   '/petitions': typeof PetitionsRoute
+  '/sanctions': typeof SanctionsRoute
+  '/sewage': typeof SewageRoute
+  '/stop-search': typeof StopSearchRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/contracts': typeof ApiContractsRoute
+  '/api/donations': typeof ApiDonationsRoute
   '/api/expenses': typeof ApiExpensesRoute
+  '/api/foi': typeof ApiFoiRoute
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
+  '/api/meetings': typeof ApiMeetingsRoute
+  '/api/nhs': typeof ApiNhsRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/sanctions': typeof ApiSanctionsRoute
+  '/api/sewage': typeof ApiSewageRoute
+  '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
 }
 export interface FileRoutesByTo {
@@ -144,19 +249,34 @@ export interface FileRoutesByTo {
   '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/contracts': typeof ContractsRoute
+  '/crossref': typeof CrossrefRoute
+  '/donations': typeof DonationsRoute
   '/expenses': typeof ExpensesRoute
+  '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
+  '/meetings': typeof MeetingsRoute
+  '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
   '/petitions': typeof PetitionsRoute
+  '/sanctions': typeof SanctionsRoute
+  '/sewage': typeof SewageRoute
+  '/stop-search': typeof StopSearchRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/contracts': typeof ApiContractsRoute
+  '/api/donations': typeof ApiDonationsRoute
   '/api/expenses': typeof ApiExpensesRoute
+  '/api/foi': typeof ApiFoiRoute
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
+  '/api/meetings': typeof ApiMeetingsRoute
+  '/api/nhs': typeof ApiNhsRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/sanctions': typeof ApiSanctionsRoute
+  '/api/sewage': typeof ApiSewageRoute
+  '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
 }
 export interface FileRoutesById {
@@ -165,19 +285,34 @@ export interface FileRoutesById {
   '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/contracts': typeof ContractsRoute
+  '/crossref': typeof CrossrefRoute
+  '/donations': typeof DonationsRoute
   '/expenses': typeof ExpensesRoute
+  '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
+  '/meetings': typeof MeetingsRoute
+  '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
   '/petitions': typeof PetitionsRoute
+  '/sanctions': typeof SanctionsRoute
+  '/sewage': typeof SewageRoute
+  '/stop-search': typeof StopSearchRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/contracts': typeof ApiContractsRoute
+  '/api/donations': typeof ApiDonationsRoute
   '/api/expenses': typeof ApiExpensesRoute
+  '/api/foi': typeof ApiFoiRoute
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
+  '/api/meetings': typeof ApiMeetingsRoute
+  '/api/nhs': typeof ApiNhsRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/sanctions': typeof ApiSanctionsRoute
+  '/api/sewage': typeof ApiSewageRoute
+  '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
 }
 export interface FileRouteTypes {
@@ -187,19 +322,34 @@ export interface FileRouteTypes {
     | '/acoba'
     | '/briefing'
     | '/contracts'
+    | '/crossref'
+    | '/donations'
     | '/expenses'
+    | '/foi'
     | '/lobbying'
+    | '/meetings'
+    | '/nhs'
     | '/parliament'
     | '/petitions'
+    | '/sanctions'
+    | '/sewage'
+    | '/stop-search'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
     | '/api/briefing'
     | '/api/contracts'
+    | '/api/donations'
     | '/api/expenses'
+    | '/api/foi'
     | '/api/kpis'
     | '/api/lobbying'
+    | '/api/meetings'
+    | '/api/nhs'
     | '/api/petitions'
+    | '/api/sanctions'
+    | '/api/sewage'
+    | '/api/stop-search'
     | '/api/votes'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -207,19 +357,34 @@ export interface FileRouteTypes {
     | '/acoba'
     | '/briefing'
     | '/contracts'
+    | '/crossref'
+    | '/donations'
     | '/expenses'
+    | '/foi'
     | '/lobbying'
+    | '/meetings'
+    | '/nhs'
     | '/parliament'
     | '/petitions'
+    | '/sanctions'
+    | '/sewage'
+    | '/stop-search'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
     | '/api/briefing'
     | '/api/contracts'
+    | '/api/donations'
     | '/api/expenses'
+    | '/api/foi'
     | '/api/kpis'
     | '/api/lobbying'
+    | '/api/meetings'
+    | '/api/nhs'
     | '/api/petitions'
+    | '/api/sanctions'
+    | '/api/sewage'
+    | '/api/stop-search'
     | '/api/votes'
   id:
     | '__root__'
@@ -227,19 +392,34 @@ export interface FileRouteTypes {
     | '/acoba'
     | '/briefing'
     | '/contracts'
+    | '/crossref'
+    | '/donations'
     | '/expenses'
+    | '/foi'
     | '/lobbying'
+    | '/meetings'
+    | '/nhs'
     | '/parliament'
     | '/petitions'
+    | '/sanctions'
+    | '/sewage'
+    | '/stop-search'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
     | '/api/briefing'
     | '/api/contracts'
+    | '/api/donations'
     | '/api/expenses'
+    | '/api/foi'
     | '/api/kpis'
     | '/api/lobbying'
+    | '/api/meetings'
+    | '/api/nhs'
     | '/api/petitions'
+    | '/api/sanctions'
+    | '/api/sewage'
+    | '/api/stop-search'
     | '/api/votes'
   fileRoutesById: FileRoutesById
 }
@@ -248,19 +428,34 @@ export interface RootRouteChildren {
   AcobaRoute: typeof AcobaRoute
   BriefingRoute: typeof BriefingRoute
   ContractsRoute: typeof ContractsRoute
+  CrossrefRoute: typeof CrossrefRoute
+  DonationsRoute: typeof DonationsRoute
   ExpensesRoute: typeof ExpensesRoute
+  FoiRoute: typeof FoiRoute
   LobbyingRoute: typeof LobbyingRoute
+  MeetingsRoute: typeof MeetingsRoute
+  NhsRoute: typeof NhsRoute
   ParliamentRoute: typeof ParliamentRoute
   PetitionsRoute: typeof PetitionsRoute
+  SanctionsRoute: typeof SanctionsRoute
+  SewageRoute: typeof SewageRoute
+  StopSearchRoute: typeof StopSearchRoute
   VotesRoute: typeof VotesRoute
   ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBillsRoute: typeof ApiBillsRoute
   ApiBriefingRoute: typeof ApiBriefingRoute
   ApiContractsRoute: typeof ApiContractsRoute
+  ApiDonationsRoute: typeof ApiDonationsRoute
   ApiExpensesRoute: typeof ApiExpensesRoute
+  ApiFoiRoute: typeof ApiFoiRoute
   ApiKpisRoute: typeof ApiKpisRoute
   ApiLobbyingRoute: typeof ApiLobbyingRoute
+  ApiMeetingsRoute: typeof ApiMeetingsRoute
+  ApiNhsRoute: typeof ApiNhsRoute
   ApiPetitionsRoute: typeof ApiPetitionsRoute
+  ApiSanctionsRoute: typeof ApiSanctionsRoute
+  ApiSewageRoute: typeof ApiSewageRoute
+  ApiStopSearchRoute: typeof ApiStopSearchRoute
   ApiVotesRoute: typeof ApiVotesRoute
 }
 
@@ -271,6 +466,27 @@ declare module '@tanstack/react-router' {
       path: '/votes'
       fullPath: '/votes'
       preLoaderRoute: typeof VotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stop-search': {
+      id: '/stop-search'
+      path: '/stop-search'
+      fullPath: '/stop-search'
+      preLoaderRoute: typeof StopSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sewage': {
+      id: '/sewage'
+      path: '/sewage'
+      fullPath: '/sewage'
+      preLoaderRoute: typeof SewageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sanctions': {
+      id: '/sanctions'
+      path: '/sanctions'
+      fullPath: '/sanctions'
+      preLoaderRoute: typeof SanctionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/petitions': {
@@ -287,6 +503,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParliamentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nhs': {
+      id: '/nhs'
+      path: '/nhs'
+      fullPath: '/nhs'
+      preLoaderRoute: typeof NhsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meetings': {
+      id: '/meetings'
+      path: '/meetings'
+      fullPath: '/meetings'
+      preLoaderRoute: typeof MeetingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lobbying': {
       id: '/lobbying'
       path: '/lobbying'
@@ -294,11 +524,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LobbyingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/foi': {
+      id: '/foi'
+      path: '/foi'
+      fullPath: '/foi'
+      preLoaderRoute: typeof FoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/expenses': {
       id: '/expenses'
       path: '/expenses'
       fullPath: '/expenses'
       preLoaderRoute: typeof ExpensesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donations': {
+      id: '/donations'
+      path: '/donations'
+      fullPath: '/donations'
+      preLoaderRoute: typeof DonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crossref': {
+      id: '/crossref'
+      path: '/crossref'
+      fullPath: '/crossref'
+      preLoaderRoute: typeof CrossrefRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contracts': {
@@ -336,11 +587,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVotesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stop-search': {
+      id: '/api/stop-search'
+      path: '/api/stop-search'
+      fullPath: '/api/stop-search'
+      preLoaderRoute: typeof ApiStopSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sewage': {
+      id: '/api/sewage'
+      path: '/api/sewage'
+      fullPath: '/api/sewage'
+      preLoaderRoute: typeof ApiSewageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sanctions': {
+      id: '/api/sanctions'
+      path: '/api/sanctions'
+      fullPath: '/api/sanctions'
+      preLoaderRoute: typeof ApiSanctionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/petitions': {
       id: '/api/petitions'
       path: '/api/petitions'
       fullPath: '/api/petitions'
       preLoaderRoute: typeof ApiPetitionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/nhs': {
+      id: '/api/nhs'
+      path: '/api/nhs'
+      fullPath: '/api/nhs'
+      preLoaderRoute: typeof ApiNhsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/meetings': {
+      id: '/api/meetings'
+      path: '/api/meetings'
+      fullPath: '/api/meetings'
+      preLoaderRoute: typeof ApiMeetingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/lobbying': {
@@ -357,11 +643,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiKpisRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/foi': {
+      id: '/api/foi'
+      path: '/api/foi'
+      fullPath: '/api/foi'
+      preLoaderRoute: typeof ApiFoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/expenses': {
       id: '/api/expenses'
       path: '/api/expenses'
       fullPath: '/api/expenses'
       preLoaderRoute: typeof ApiExpensesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/donations': {
+      id: '/api/donations'
+      path: '/api/donations'
+      fullPath: '/api/donations'
+      preLoaderRoute: typeof ApiDonationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/contracts': {
@@ -400,19 +700,34 @@ const rootRouteChildren: RootRouteChildren = {
   AcobaRoute: AcobaRoute,
   BriefingRoute: BriefingRoute,
   ContractsRoute: ContractsRoute,
+  CrossrefRoute: CrossrefRoute,
+  DonationsRoute: DonationsRoute,
   ExpensesRoute: ExpensesRoute,
+  FoiRoute: FoiRoute,
   LobbyingRoute: LobbyingRoute,
+  MeetingsRoute: MeetingsRoute,
+  NhsRoute: NhsRoute,
   ParliamentRoute: ParliamentRoute,
   PetitionsRoute: PetitionsRoute,
+  SanctionsRoute: SanctionsRoute,
+  SewageRoute: SewageRoute,
+  StopSearchRoute: StopSearchRoute,
   VotesRoute: VotesRoute,
   ApiAcobaRoute: ApiAcobaRoute,
   ApiBillsRoute: ApiBillsRoute,
   ApiBriefingRoute: ApiBriefingRoute,
   ApiContractsRoute: ApiContractsRoute,
+  ApiDonationsRoute: ApiDonationsRoute,
   ApiExpensesRoute: ApiExpensesRoute,
+  ApiFoiRoute: ApiFoiRoute,
   ApiKpisRoute: ApiKpisRoute,
   ApiLobbyingRoute: ApiLobbyingRoute,
+  ApiMeetingsRoute: ApiMeetingsRoute,
+  ApiNhsRoute: ApiNhsRoute,
   ApiPetitionsRoute: ApiPetitionsRoute,
+  ApiSanctionsRoute: ApiSanctionsRoute,
+  ApiSewageRoute: ApiSewageRoute,
+  ApiStopSearchRoute: ApiStopSearchRoute,
   ApiVotesRoute: ApiVotesRoute,
 }
 export const routeTree = rootRouteImport

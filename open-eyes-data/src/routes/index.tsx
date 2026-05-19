@@ -111,13 +111,21 @@ function HomePage() {
         <SectionHeader eyebrow="Investigate" title="Pick a thread to pull" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <NavCard to="/petitions" eyebrow="Petitions" title="What the public is demanding" copy="Open petitions sorted by signatures, with progress to the 10k response and 100k debate thresholds." />
-          <NavCard to="/contracts" eyebrow="Contracts" title="Where the money goes" copy="Search government contracts. Direct awards and no-tender deals flagged in red." />
+          <NavCard to="/contracts" eyebrow="Contracts" title="Where the money goes" copy="Every government contract over £1m in the last 10 months. Direct awards and no-tender deals flagged in red." />
+          <NavCard to="/donations" eyebrow="Donations" title="Political party funding" copy="The Electoral Commission register of donations to UK political parties. See who is bankrolling whom." />
           <NavCard to="/parliament" eyebrow="Parliament" title="Bills in motion" copy="Active legislation, current stage, last updated — straight from the Bills API." />
-          <NavCard to="/expenses" eyebrow="Expenses" title="What MPs are claiming" copy="IPSA expense data, searchable by MP, constituency and category." />
-          <NavCard to="/briefing" eyebrow="AI Briefing" title="Ask the dashboard" copy="Generate a non-partisan briefing on any UK accountability topic." />
           <NavCard to="/votes" eyebrow="Votes" title="How MPs actually vote" copy="Every House of Commons division live from Parliament. See the ayes, noes, and which way it went." />
+          <NavCard to="/expenses" eyebrow="Expenses" title="What MPs are claiming" copy="IPSA expense data, searchable by MP, constituency and category." />
+          <NavCard to="/meetings" eyebrow="Ministers" title="Who ministers are meeting" copy="Quarterly transparency returns showing which companies and lobbyists are getting access to government ministers." />
           <NavCard to="/lobbying" eyebrow="Lobbying" title="Who is paid to influence ministers" copy="The statutory register of consultant lobbyists — organisations legally required to disclose paid lobbying activity." />
           <NavCard to="/acoba" eyebrow="Revolving Door" title="Ministers into private sector" copy="ACOBA publishes every case of a minister or senior official taking a private sector role linked to their government work." />
+          <NavCard to="/stop-search" eyebrow="Stop & Search" title="Racial disparity in policing" copy="Every stop and search logged in England and Wales, broken down by ethnicity, outcome and force. The data reveals stark racial disparities." />
+          <NavCard to="/nhs" eyebrow="NHS" title="Waiting times & performance" copy="A&E four-hour target performance, waiting lists, and latest published NHS England statistics." />
+          <NavCard to="/sewage" eyebrow="Sewage" title="Water companies dumping sewage" copy="Environment Agency data on storm overflow events — how many hours each water company spilled raw sewage into rivers and seas." />
+          <NavCard to="/sanctions" eyebrow="Sanctions" title="Benefits cuts & conditionality" copy="DWP benefit sanctions applied to Universal Credit claimants. Critics argue the system disproportionately harms the most vulnerable." />
+          <NavCard to="/foi" eyebrow="FOI" title="Freedom of Information refusals" copy="Which public bodies refuse the most information requests? The WhatDoTheyKnow refusal league table." />
+          <NavCard to="/crossref" eyebrow="Xref" title="Follow the money — cross-reference" copy="Search a company or person across contracts, donations, the lobbying register and the revolving door simultaneously." />
+          <NavCard to="/briefing" eyebrow="AI Briefing" title="Ask the dashboard" copy="Generate a non-partisan briefing on any UK accountability topic." />
         </div>
       </section>
     </div>

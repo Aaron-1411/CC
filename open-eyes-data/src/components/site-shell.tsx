@@ -5,12 +5,20 @@ const NAV = [
   { to: "/", label: "Dashboard" },
   { to: "/petitions", label: "Petitions" },
   { to: "/contracts", label: "Contracts" },
+  { to: "/donations", label: "Donations" },
   { to: "/parliament", label: "Parliament" },
-  { to: "/expenses", label: "Expenses" },
-  { to: "/briefing", label: "Briefing" },
   { to: "/votes", label: "Votes" },
+  { to: "/expenses", label: "Expenses" },
+  { to: "/meetings", label: "Ministers" },
   { to: "/lobbying", label: "Lobbying" },
   { to: "/acoba", label: "Revolving Door" },
+  { to: "/stop-search", label: "Stop & Search" },
+  { to: "/nhs", label: "NHS" },
+  { to: "/sewage", label: "Sewage" },
+  { to: "/sanctions", label: "Sanctions" },
+  { to: "/foi", label: "FOI" },
+  { to: "/crossref", label: "Xref" },
+  { to: "/briefing", label: "Briefing" },
 ] as const;
 
 export function SiteShell() {
@@ -79,7 +87,9 @@ export function SiteShell() {
           </p>
           <p>
             Data sources: UK Parliament Petitions API, Parliament Bills API,
-            Contracts Finder, IPSA. Most content licensed under the{" "}
+            Contracts Finder, Electoral Commission, IPSA, data.police.uk,
+            Environment Agency, NHS England, DWP, WhatDoTheyKnow, GOV.UK.
+            Most content licensed under the{" "}
             <a
               href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
               className="underline hover:text-amber"
