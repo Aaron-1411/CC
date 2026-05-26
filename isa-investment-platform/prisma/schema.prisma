@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Holding {
+  id           Int      @id @default(autoincrement())
+  ticker       String   @unique
+  yfSymbol     String
+  name         String
+  type         String
+  nativeCcy    String
+  isin         String?
+  ter          Float?
+  exchange     String?
+  units        Float?
+  avgCostGBP   Float?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  trades       Trade[]
+  snapshots    PositionSnapshot[]
+  alerts       Alert[]
+  journalNotes JournalNote[]
+}
+
+model Trade {
+  id           Int      @id @default(autoincrement())
+  holdingId    Int
+  type         String
+  date         DateTime
+  units        Float
+  priceGBP     Float
+  totalGBP     Float
+  fees         Float    @default(0)
+  notes        String?
+  holding      Holding  @relation(fields:[holdingId], references:[id])
+  createdAt    DateTime @default(now())
+}
+
+model DailySnapshot {
+  id            Int                @id @default(autoincrement())
+  date          DateTime           @unique
+  totalValueGBP Float
+  gbpUsd        Float
+  positions     PositionSnapshot[]
+  createdAt     DateTime           @default(now())
+}
+
+model PositionSnapshot {
+  id             Int           @id @default(autoincrement())
+  snapshotId     Int
+  holdingId      Int
+  valueGBP       Float
+  units          Float?
+  priceGBP       Float
+  dailyReturnPct Float
+  weight         Float
+  snapshot       DailySnapshot @relation(fields:[snapshotId], references:[id])
+  holding        Holding       @relation(fields:[holdingId], references:[id])
+}
+
+model PerformanceMetrics {
+  id                   Int      @id @default(autoincrement())
+  date                 DateTime @unique
+  twrDay               Float
+  twr5d                Float?
+  twrMtd               Float?
+  twrQtd               Float?
+  twrYtd               Float?
+  twr1y                Float?
+  twrItd               Float?
+  mwr                  Float?
+  volatility30d        Float?
+  sharpe30d            Float?
+  sortino30d           Float?
+  maxDrawdown          Float?
+  currentDrawdown      Float?
+  var95_1d             Float?
+  var99_1d             Float?
+  cvar95_1d            Float?
+  beta_sp500           Float?
+  beta_ftse_aw         Float?
+  alpha_sp500          Float?
+  infoRatio_sp500      Float?
+  correlationVsSP500   Float?
+  correlationVsFTSEAW  Float?
+  createdAt            DateTime @default(now())
+}
+
+model Alert {
+  id          Int      @id @default(autoincrement())
+  holdingId   Int
+  type        String
+  threshold   Float
+  active      Boolean  @default(true)
+  triggeredAt DateTime?
+  holding     Holding  @relation(fields:[holdingId], references:[id])
+  createdAt   DateTime @default(now())
+}
+
+model JournalNote {
+  id        Int      @id @default(autoincrement())
+  holdingId Int?
+  content   String
+  date      DateTime @default(now())
+  holding   Holding? @relation(fields:[holdingId], references:[id])
+}
+
+model IsaAllowance {
+  id            Int            @id @default(autoincrement())
+  taxYear       String
+  allowanceGBP  Float
+  usedGBP       Float
+  contributions Contribution[]
+}
+
+model Contribution {
+  id          Int          @id @default(autoincrement())
+  allowanceId Int
+  amountGBP   Float
+  date        DateTime
+  notes       String?
+  allowance   IsaAllowance @relation(fields:[allowanceId], references:[id])
+}
+
+// Persisted fundamentals snapshot — survives process restarts, 7-day TTL enforced in app
+model FundamentalSnapshot {
+  ticker    String   @id
+  data      String   // JSON blob (quoteSummary or v7quote shape)
+  fetchedAt DateTime @default(now())
+
+  @@index([fetchedAt])
+}
+
+// Adjusted-close OHLCV bars from Yahoo v8. Bootstrap once (10y), then incremental
+// daily refresh (~11 tiny requests/day). All analytics computed from here — no
+// repeat Yahoo calls needed for seasonality, technicals, VaR, or correlation.
+model PriceHistory {
+  id       Int    @id @default(autoincrement())
+  ticker   String
+  date     String // ISO "YYYY-MM-DD"
+  adjClose Float
+  close    Float
+  open     Float  @default(0)
+  high     Float  @default(0)
+  low      Float  @default(0)
+  volume   Float  @default(0)
+
+  @@unique([ticker, date])
+  @@index([ticker])
+}

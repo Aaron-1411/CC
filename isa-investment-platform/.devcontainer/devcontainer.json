@@ -1,0 +1,13 @@
+{
+  "name": "ISA Investment Platform",
+  "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js Dev Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "npm install && npx prisma db push && npx tsx prisma/seed.ts",
+  "postStartCommand": "nohup npm run dev > /tmp/next.log 2>&1 &"
+}

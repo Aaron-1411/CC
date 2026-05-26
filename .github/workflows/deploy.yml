@@ -66,3 +66,37 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           workingDirectory: open-eyes-data/dist/server
           command: deploy
+
+  deploy-gymseek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy gymseek --project-name=gymseek-app --branch=main
+
+  deploy-tastybot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: cd tastybot && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy tastybot/dist --project-name=tastybot-app --branch=main
+
+  deploy-isa-platform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: cd isa-investment-platform && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy isa-investment-platform/out --project-name=isa-investment-platform-app --branch=main

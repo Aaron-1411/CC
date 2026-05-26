@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GymSeek — Best UK Gym Deals</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2309090b'/%3E%3Ctext x='50%25' y='54%25' font-size='20' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%8F%8B%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090b;--s1:#111116;--border:#222228;--border2:#2e2e38;
+  --text:#f4f4f5;--sub:#a1a1aa;--dim:#52525b;--dimmer:#3f3f46;
+  --green:#4ade80;--green-bg:rgba(74,222,128,0.09);--green-b:rgba(74,222,128,0.22);
+  --red:#f87171;--red-bg:rgba(248,113,113,0.07);--amber:#fbbf24;--blue:#60a5fa;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+input,textarea,button{font-family:inherit}
+::placeholder{color:var(--dimmer)}
+input:focus,textarea:focus{outline:none}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideNext{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideBack{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:translateX(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes tickIn{from{transform:scale(0)}to{transform:scale(1)}}
+.fade-up{animation:fadeUp 0.3s ease both}
+.fade-in{animation:fadeIn 0.25s ease both}
+.slide-next{animation:slideNext 0.26s ease both}
+.slide-back{animation:slideBack 0.26s ease both}
+
+.topbar{position:sticky;top:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:rgba(9,9,11,0.92);border-bottom:1px solid var(--border);backdrop-filter:blur(14px)}
+.logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:0.92rem;letter-spacing:-0.02em;cursor:pointer;user-select:none}
+.ghostbtn{background:transparent;border:1px solid var(--border);color:var(--sub);font-size:0.73rem;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s}
+.ghostbtn:hover{border-color:var(--border2);color:var(--text)}
+
+/* map */
+.map-wrap{width:100%;height:calc(100vh - 56px);position:relative}
+.leaflet-container{background:#0a0a10}
+.rmark-icon{background:none!important;border:none!important}
+.rmark{background:rgba(9,9,11,0.9);border:1px solid rgba(74,222,128,0.38);border-radius:8px;padding:6px 11px;cursor:pointer;transition:all .18s;white-space:nowrap;backdrop-filter:blur(10px);transform:translate(-50%,-50%)}
+.rmark:hover{background:rgba(74,222,128,0.12);border-color:rgba(74,222,128,0.65);transform:translate(-50%,-50%) scale(1.06)}
+.rmark-name{font-size:0.77rem;font-weight:700;color:#f4f4f5;letter-spacing:-0.01em}
+.rmark-from{font-size:0.62rem;color:var(--green);margin-top:1px}
+.map-intro{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:800;background:rgba(9,9,11,0.88);border:1px solid var(--border);border-radius:10px;padding:10px 18px;text-align:center;white-space:nowrap;backdrop-filter:blur(12px)}
+.map-intro-title{font-size:0.85rem;font-weight:700;margin-bottom:2px}
+.map-intro-sub{font-size:0.72rem;color:var(--sub)}
+
+/* region page */
+.region-page{max-width:720px;margin:0 auto;padding:24px 20px 80px}
+.region-title{font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px}
+.region-sub{font-size:0.85rem;color:var(--sub);line-height:1.6;margin-bottom:16px}
+.live-cta{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:12px;background:var(--green-bg);border:1px solid var(--green-b);margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.live-cta-text{font-size:0.87rem;font-weight:600;color:#bbf7d0;line-height:1.45}
+.live-cta-sub{font-size:0.76rem;color:rgba(187,247,208,0.7);margin-top:2px}
+.live-cta-btn{flex-shrink:0;padding:10px 20px;border-radius:8px;background:var(--green);color:#000;font-size:0.85rem;font-weight:700;border:none;cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:-0.01em}
+.live-cta-btn:hover{background:#22c55e;transform:translateY(-1px)}
+.chains-section-lbl{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dimmer);margin-bottom:10px}
+.chains-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:16px}
+@media(min-width:540px){.chains-grid{grid-template-columns:1fr 1fr}}
+.chain-card{border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .18s;display:flex;flex-direction:column;gap:7px}
+.chain-card:hover{border-color:var(--border2)}
+.chain-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.chain-name{font-size:0.92rem;font-weight:700}
+.chain-tier{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:1px}
+.tier-budget{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+.tier-mid{background:rgba(251,191,36,0.1);color:var(--amber);border:1px solid rgba(251,191,36,0.2)}
+.tier-premium{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+.tier-council{background:rgba(96,165,250,0.1);color:var(--blue);border:1px solid rgba(96,165,250,0.2)}
+.chain-price{font-size:0.82rem;color:var(--sub)}
+.chain-price strong{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--text);font-weight:500}
+.chain-fac{font-size:0.9rem;letter-spacing:3px}
+.chain-note{font-size:0.74rem;color:var(--sub);line-height:1.5}
+.chain-go{align-self:flex-start;font-size:0.74rem;padding:5px 11px;border-radius:6px;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;text-decoration:none;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.chain-go:hover{border-color:var(--border2);color:var(--text)}
+.council-box{padding:13px 16px;border:1px solid rgba(96,165,250,0.22);border-radius:10px;background:rgba(96,165,250,0.04);font-size:0.79rem;color:#93c5fd;line-height:1.6;margin-bottom:16px}
+.council-lbl{font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:5px}
+
+/* wizard */
+.wizard{max-width:600px;margin:0 auto;padding:32px 20px 80px}
+.steps{display:flex;align-items:center;margin-bottom:36px}
+.step-item{display:flex;align-items:center;flex:1}
+.step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;flex-shrink:0;margin-right:7px;transition:all .25s}
+.step-num.done{background:var(--green);color:#000}
+.step-num.active{background:var(--text);color:var(--bg)}
+.step-num.upcoming{background:var(--border);color:var(--dim)}
+.step-lbl{font-size:0.72rem;font-weight:600;transition:color .25s}
+.step-lbl.done{color:var(--green)}.step-lbl.active{color:var(--text)}.step-lbl.upcoming{color:var(--dimmer)}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 10px;transition:background .35s}
+.step-line.done{background:var(--green)}
+.step-q{font-size:1.7rem;font-weight:800;letter-spacing:-0.03em;line-height:1.15;margin-bottom:8px}
+.step-hint{font-size:0.85rem;color:var(--sub);line-height:1.6;margin-bottom:28px}
+.field{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px 16px;font-size:1rem;transition:border-color .15s}
+.field:focus{border-color:var(--border2)}
+.field.err{border-color:rgba(248,113,113,0.5)!important}
+.field-wrap{position:relative}
+.fpfx{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sub);pointer-events:none}
+.fpfx+.field{padding-left:28px}
+textarea.field{resize:none;line-height:1.6;font-size:0.9rem;padding:12px 14px}
+.err-txt{font-size:0.75rem;color:var(--red);margin-top:6px}
+.flabel{display:block;font-size:0.75rem;font-weight:600;color:var(--sub);margin-bottom:7px}
+.freq-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.freq-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:14px 8px;border-radius:10px;cursor:pointer;border:1px solid var(--border);background:transparent;transition:all .16s;color:var(--sub)}
+.freq-btn:hover{border-color:var(--border2);color:var(--text)}
+.freq-btn.on{border-color:var(--border2);background:var(--s1);color:var(--text)}
+.freq-btn .fi{font-size:1.4rem}.freq-btn .fl{font-size:0.78rem;font-weight:600}.freq-btn .fs{font-size:0.68rem;color:var(--dim)}
+.freq-btn.on .fs{color:var(--sub)}
+.fac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:500px){.fac-grid{grid-template-columns:repeat(4,1fr)}}
+.fac-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px 14px;border-radius:10px;cursor:pointer;border:1px solid var(--border);background:transparent;transition:all .16s;position:relative;color:var(--sub)}
+.fac-tile:hover{border-color:var(--border2);color:var(--text)}
+.fac-tile.on{border-color:var(--green-b);background:var(--green-bg);color:var(--text)}
+.fac-tile .tico{font-size:1.5rem;line-height:1}.fac-tile .tlbl{font-size:0.72rem;font-weight:600;text-align:center;line-height:1.3}
+.tcheck{position:absolute;top:6px;right:6px;width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#000;font-weight:800;animation:tickIn .15s ease}
+.eli-group-lbl{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dimmer);margin:14px 0 6px}
+.eli-grid-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.eli-tile{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:9px;cursor:pointer;border:1px solid var(--border);background:transparent;transition:all .16s;text-align:left}
+.eli-tile:hover{border-color:var(--border2)}
+.eli-tile.on{border-color:var(--border2);background:rgba(244,244,245,0.05)}
+.eicon{font-size:1.1rem;flex-shrink:0}
+.etitle{font-size:0.82rem;font-weight:600;color:var(--sub);transition:color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eli-tile.on .etitle{color:var(--text)}
+.esub{font-size:0.69rem;color:var(--dimmer);margin-top:1px}
+.eli-check{width:16px;height:16px;border-radius:50%;background:var(--green);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:#000;font-weight:800;animation:tickIn .15s ease;margin-left:auto}
+.nav-row{display:flex;gap:10px;margin-top:28px}
+.btn-next{flex:1;padding:15px;border-radius:10px;font-size:0.95rem;font-weight:700;background:var(--text);color:var(--bg);border:none;cursor:pointer;transition:all .15s;letter-spacing:-0.01em}
+.btn-next:hover{background:#d4d4d8;transform:translateY(-1px)}
+.btn-next:active{transform:none}
+.btn-back{padding:15px 20px;border-radius:10px;font-size:0.9rem;font-weight:500;background:transparent;color:var(--sub);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.btn-back:hover{border-color:var(--border2);color:var(--text)}
+.btn-skip{background:none;border:none;color:var(--dimmer);font-size:0.8rem;cursor:pointer;padding:4px 0;text-decoration:underline;transition:color .15s;display:block;text-align:center;margin-top:14px;width:100%}
+.btn-skip:hover{color:var(--sub)}
+
+/* loading */
+.loading-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 56px);padding:40px 20px;gap:28px}
+.lspinner{width:44px;height:44px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .85s linear infinite}
+.ltitle{font-size:1rem;font-weight:700;margin-bottom:4px;text-align:center}
+.lsub{font-size:0.82rem;color:var(--sub);text-align:center}
+
+/* results */
+.results-page{max-width:720px;margin:0 auto;padding:24px 20px 80px}
+.results-title{font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:4px}
+.results-sum{font-size:0.85rem;color:var(--sub);line-height:1.65;margin-bottom:16px}
+.rmeta{display:flex;flex-wrap:wrap;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.rmi{padding:10px 16px;flex:1;min-width:90px;border-right:1px solid var(--border)}
+.rmi:last-child{border-right:none}
+.rmi-l{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dimmer);margin-bottom:3px}
+.rmi-v{font-size:0.85rem;font-weight:600}
+.global-flags{border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;background:rgba(251,191,36,0.03)}
+.gf-row{display:flex;gap:8px;align-items:flex-start;font-size:0.8rem;color:#fde68a;line-height:1.55;margin-bottom:3px}
+.gf-row:last-child{margin-bottom:0}
+.refine-panel{border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.refine-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:transparent;border:none;color:var(--sub);font-size:0.79rem;font-weight:600;cursor:pointer;transition:color .15s;text-align:left}
+.refine-toggle:hover{color:var(--text)}
+.refine-body{padding:14px 16px;border-top:1px solid var(--border);background:var(--s1);display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.refine-body{grid-template-columns:1fr}}
+.refine-eli{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.eli-chip{font-size:0.72rem;padding:4px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--sub);transition:all .15s}
+.eli-chip.on{background:rgba(244,244,245,0.07);border-color:var(--border2);color:var(--text)}
+.refine-go{grid-column:1/-1;padding:11px;border-radius:8px;font-size:0.88rem;font-weight:700;background:var(--text);color:var(--bg);border:none;cursor:pointer;transition:all .15s}
+.refine-go:hover{background:#d4d4d8}
+.view-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.view-toggle{display:flex;gap:5px}
+.vtab{padding:5px 13px;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--sub);transition:all .15s}
+.vtab.on{background:var(--s1);color:var(--text);border-color:var(--border2)}
+.cmp-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:12px}
+.cmp-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.cmp-table th{padding:9px 14px;text-align:left;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dimmer);background:var(--s1);border-bottom:1px solid var(--border);white-space:nowrap}
+.cmp-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr.cmp-best{background:rgba(74,222,128,0.03)}
+.cmp-name{font-weight:700;font-size:0.85rem;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.cmp-chain{font-size:0.71rem;color:var(--dim);margin-top:1px}
+.cmp-price{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:500}
+.cmp-save{font-size:0.7rem;color:var(--green);margin-top:1px}
+.cmp-pips{display:flex;gap:2px}
+.gym-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px;transition:border-color .18s}
+.gym-card:hover{border-color:var(--border2)}
+.gym-card.best{border-color:rgba(74,222,128,0.28)}
+.card-summary{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+.card-left{flex:1;min-width:0}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px}
+.ctag{font-size:0.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:4px}
+.ctag-best{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)}
+.ctag-cheap{background:rgba(96,165,250,0.1);color:var(--blue);border:1px solid rgba(96,165,250,0.22)}
+.ctag-flex{background:rgba(251,191,36,0.1);color:var(--amber);border:1px solid rgba(251,191,36,0.22)}
+.card-name{font-size:0.97rem;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-chain{font-size:0.74rem;color:var(--dim)}
+.why-pick{font-size:0.74rem;color:var(--sub);line-height:1.45;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.score-line{display:flex;align-items:center;gap:8px;margin-top:7px}
+.score-pips{display:flex;gap:2.5px}
+.pip{width:16px;height:3px;border-radius:2px}
+.pip.on{background:var(--green)}.pip.off{background:var(--border2)}
+.score-val{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--green)}
+.card-deal-hint{font-size:0.71rem;color:var(--dimmer);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.card-right{text-align:right;flex-shrink:0}
+.price-row{display:flex;align-items:baseline;justify-content:flex-end;gap:5px}
+.card-price{font-family:'JetBrains Mono',monospace;font-size:1.45rem;font-weight:500;line-height:1}
+.psrc{font-size:0.6rem;padding:1px 5px;border-radius:4px;font-weight:700;align-self:center}
+.psrc-web{background:rgba(74,222,128,0.15);color:var(--green);border:1px solid rgba(74,222,128,0.25)}
+.psrc-est{background:rgba(161,161,170,0.08);color:var(--dimmer);border:1px solid var(--border)}
+.card-price-lbl{font-size:0.68rem;color:var(--dim);margin-top:2px}
+.card-save{font-size:0.7rem;color:var(--green);font-weight:500;margin-top:2px}
+.budget-pill{display:inline-block;font-size:0.62rem;padding:1px 6px;border-radius:4px;background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.18);font-weight:600;margin-top:3px}
+.chevron{color:var(--dimmer);transition:transform .22s ease;font-size:0.75rem;flex-shrink:0;margin-left:4px}
+.chevron.open{transform:rotate(180deg)}
+.card-body{border-top:1px solid var(--border);padding:16px 18px;display:flex;flex-direction:column;gap:11px}
+.deal-box{background:var(--green-bg);border:1px solid var(--green-b);border-radius:8px;padding:11px 13px}
+.deal-lbl{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-bottom:4px}
+.deal-text{font-size:0.85rem;color:#bbf7d0;line-height:1.5}
+.deal-was{font-size:0.72rem;color:rgba(134,239,172,0.7);margin-top:3px}
+.claim-box{border:1px solid var(--border);border-radius:8px;padding:11px 13px}
+.claim-lbl{font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dimmer);margin-bottom:5px}
+.claim-text{font-size:0.83rem;color:var(--sub);line-height:1.6}
+.fac-pills{display:flex;flex-wrap:wrap;gap:5px}
+.fac-pill{font-size:0.72rem;padding:3px 9px;border-radius:5px;font-weight:500;display:inline-flex;align-items:center;gap:3px}
+.fp-yes{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.18);color:#86efac}
+.fp-no{background:var(--red-bg);border:1px solid rgba(248,113,113,0.14);color:#fca5a5}
+.fp-extra{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--dimmer)}
+.flag-item{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:7px;font-size:0.79rem;line-height:1.5}
+.cashback-box{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:7px;font-size:0.79rem;line-height:1.5;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.18);color:#fde68a}
+.card-footer{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-top:4px}
+.go-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 18px;border-radius:8px;background:var(--text);color:var(--bg);font-size:0.83rem;font-weight:700;text-decoration:none;transition:all .15s;white-space:nowrap;letter-spacing:-0.01em;flex-shrink:0}
+.go-btn:hover{background:#d4d4d8;transform:translateY(-1px)}
+.go-btn-sm{padding:6px 12px;font-size:0.75rem}
+.footer-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:0.75rem;color:var(--dim);flex:1}
+.verify-note{font-size:0.72rem;color:var(--dimmer);border-top:1px solid var(--border);padding-top:10px;line-height:1.7}
+.disclaimer{margin-top:14px;font-size:0.72rem;color:var(--dimmer);border:1px solid var(--border);border-radius:8px;padding:10px 14px;line-height:1.7}
+.error-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 56px);padding:40px 20px;gap:18px;text-align:center}
+.error-title{font-size:1rem;font-weight:700;color:var(--red)}
+.error-msg{font-size:0.83rem;color:var(--sub);max-width:380px;line-height:1.65}
+
+@media(max-width:420px){
+  .fac-grid{grid-template-columns:repeat(3,1fr)}
+  .eli-grid-row{grid-template-columns:1fr}
+  .freq-row{grid-template-columns:1fr}
+  .card-price{font-size:1.2rem}
+  .live-cta{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useEffect, useRef} = React;
+
+const FACILITIES = [
+  {id:'gymFloor',  label:'Gym floor',      icon:'🏋️'},
+  {id:'classes',   label:'Classes',        icon:'🧘'},
+  {id:'pool',      label:'Pool',           icon:'🏊'},
+  {id:'sauna',     label:'Sauna/Steam',    icon:'🧖'},
+  {id:'jacuzzi',   label:'Hot tub/Plunge', icon:'🛁'},
+  {id:'tennis',    label:'Tennis/Padel',   icon:'🎾'},
+  {id:'squash',    label:'Squash',         icon:'🏸'},
+  {id:'spa',       label:'Spa/Beauty',     icon:'💆'},
+  {id:'pt',        label:'PT included',    icon:'👤'},
+  {id:'access24',  label:'24/7 access',    icon:'🌙'},
+  {id:'noContract',label:'No contract',    icon:'🔓'},
+];
+
+const ELI_GROUPS = [
+  {label:'Identity & status', items:[
+    {id:'blueLight', icon:'🔵', title:'Blue Light Card',   sub:'NHS, emergency services, armed forces'},
+    {id:'nhs',       icon:'🏥', title:'NHS worker',         sub:'Separate from Blue Light Card'},
+    {id:'student',   icon:'🎓', title:'Student',            sub:'.ac.uk email, NUS or TOTUM card'},
+    {id:'over60',    icon:'🧓', title:'Over 60',            sub:'Senior discounts apply'},
+    {id:'under18',   icon:'👦', title:'Under 18',           sub:'Junior pricing tiers'},
+    {id:'universal', icon:'🏛️', title:'Universal Credit',  sub:'Or other means-tested benefit'},
+  ]},
+  {label:'Work & corporate', items:[
+    {id:'corporate', icon:'🤝', title:'Corporate scheme',   sub:'Gympass, Wellhub, YuLife etc'},
+  ]},
+  {label:'Premium cards & accounts', items:[
+    {id:'amexPlat',    icon:'💳', title:'Amex Platinum',    sub:'Equinox+ / gym perks'},
+    {id:'chase',       icon:'💳', title:'Chase card',       sub:'Cashback / gym perks'},
+    {id:'hsbcPrem',    icon:'💳', title:'HSBC Premier',     sub:'Premier account benefits'},
+    {id:'barclaysPrem',icon:'💳', title:'Barclays Premier', sub:'Avios / cashback perks'},
+  ]},
+  {label:'Other', items:[
+    {id:'newCustomer', icon:'🆕', title:'New customer',     sub:'Never joined this chain before'},
+  ]},
+];
+
+const ELI_QUICK = [
+  {id:'blueLight',  label:'Blue Light'},
+  {id:'nhs',        label:'NHS'},
+  {id:'student',    label:'Student'},
+  {id:'over60',     label:'Over 60'},
+  {id:'corporate',  label:'Corporate'},
+  {id:'newCustomer',label:'New customer'},
+];
+
+const FLAG_STYLE = {
+  BLC:       {bg:'rgba(96,165,250,0.08)',  b:'rgba(96,165,250,0.22)',  c:'#93c5fd', i:'🔵'},
+  STUDENT:   {bg:'rgba(167,139,250,0.08)', b:'rgba(167,139,250,0.22)', c:'#c4b5fd', i:'🎓'},
+  CARD:      {bg:'rgba(251,191,36,0.08)',  b:'rgba(251,191,36,0.2)',   c:'#fde68a', i:'💳'},
+  COUNCIL:   {bg:'rgba(74,222,128,0.07)',  b:'rgba(74,222,128,0.2)',   c:'#86efac', i:'🏛️'},
+  CORPORATE: {bg:'rgba(251,191,36,0.07)',  b:'rgba(251,191,36,0.16)',  c:'#fde68a', i:'🤝'},
+  FREE_TRIAL:{bg:'rgba(74,222,128,0.07)',  b:'rgba(74,222,128,0.2)',   c:'#86efac', i:'🆓'},
+  APP:       {bg:'rgba(96,165,250,0.07)',  b:'rgba(96,165,250,0.18)',  c:'#93c5fd', i:'📱'},
+  WATCHOUT:  {bg:'rgba(248,113,113,0.07)', b:'rgba(248,113,113,0.2)',  c:'#fca5a5', i:'⚠️'},
+};
+
+/* ── CHAIN TEMPLATES ── */
+const CHAINS = {
+  puregym:     {name:'PureGym',         tier:'budget',  from:18, to:30,  fac:'🏋️🌙🔓', url:'https://www.puregym.com/gyms/',              note:"UK's largest chain — 300+ clubs. Join via the app for £2–3/mo cheaper. Blue Light Card discount available."},
+  gymgroup:    {name:'The Gym Group',   tier:'budget',  from:18, to:28,  fac:'🏋️🌙🔓', url:'https://www.thegymgroup.com/find-a-gym/',     note:'Often free joining fee. Rolling monthly contract. Student discount via UNiDAYS.'},
+  jdgyms:      {name:'JD Gyms',         tier:'mid',     from:24, to:40,  fac:'🏋️🧘🔓', url:'https://www.jdgyms.co.uk/find-a-gym/',       note:'Classes included — no extra fee. Good equipment, modern facilities. Growing fast across UK.'},
+  nuffield:    {name:'Nuffield Health',  tier:'mid',     from:35, to:65,  fac:'🏋️🧘🏊🧖',url:'https://www.nuffieldhealth.com/gyms',         note:'Many sites have pool and sauna. NHS and corporate discounts. Annual health assessment included.'},
+  anytime:     {name:'Anytime Fitness', tier:'mid',     from:28, to:45,  fac:'🏋️🌙🔓', url:'https://www.anytimefitness.co.uk/gyms/',      note:'24/7 access via key fob. Franchise model so prices vary — always check your local club.'},
+  bannatyne:   {name:"Bannatyne's",     tier:'mid',     from:28, to:55,  fac:'🏋️🧘🏊🧖',url:'https://www.bannatyne.co.uk/health-clubs/',   note:'Many clubs with pool, sauna and spa. Blue Light Card discount. Strong in North and Midlands.'},
+  village:     {name:'Village Gym',     tier:'premium', from:45, to:80,  fac:'🏋️🧘🏊🧖💆',url:'https://www.villagegym.co.uk/clubs/',        note:'Hotel-style leisure, pool and spa. Great for families. Mainly North and Midlands locations.'},
+  davidlloyd:  {name:'David Lloyd',     tier:'premium', from:65, to:130, fac:'🏋️🧘🏊🧖🎾💆',url:'https://www.davidlloyd.co.uk/find-a-club/', note:'Best premium option for tennis and families. Expensive but truly comprehensive facilities.'},
+  virgin:      {name:'Virgin Active',   tier:'premium', from:65, to:120, fac:'🏋️🧘🏊🧖💆',url:'https://www.virginactive.co.uk/',            note:'Premium clubs with pool, classes and spa. Amex Platinum gym perk applies at some clubs.'},
+  fitnessfirst:{name:'Fitness First',   tier:'mid',     from:35, to:70,  fac:'🏋️🧘🔓', url:'https://www.fitnessfirst.co.uk/clubs/',      note:'Good range of classes. Mainly South England and Midlands. Look for off-peak membership deals.'},
+  everyone:    {name:'Everyone Active', tier:'council', from:20, to:40,  fac:'🏋️🧘🏊', url:'https://www.everyoneactive.com/',             note:'Council-managed across England. Concessionary rates for students, over-60s and benefit recipients.'},
+  better:      {name:'Better (GLL)',    tier:'council', from:18, to:30,  fac:'🏋️🧘🏊', url:'https://www.better.org.uk/',                 note:"UK's largest leisure operator — 250+ centres. Excellent concessionary rates for eligible groups."},
+  places:      {name:'Places Leisure',  tier:'council', from:20, to:38,  fac:'🏋️🧘🏊', url:'https://www.placesleisure.org/',             note:'Council-backed leisure centres across England. Good value, often with pool, courts and classes.'},
+  energie:     {name:'Energie Fitness', tier:'budget',  from:17, to:28,  fac:'🏋️🔓',   url:'https://www.energiefitness.com/find-a-gym/', note:'No-frills budget gym. Monthly rolling contracts. Smaller chain — check if there is one near you.'},
+};
+
+/* ── REGION DATA ── */
+const REGION_DATA = {
+  london: {
+    label:'London', center:[51.505,-0.09], zoom:10, searchDefault:'London',
+    bestBudget:18,
+    council:"Better (GLL) and Everyone Active run 100+ leisure centres across London boroughs — typically £18–28/mo for residents, with concessionary rates significantly lower.",
+    chains:['puregym','gymgroup','jdgyms','nuffield','virgin','davidlloyd','better'],
+  },
+  south_east: {
+    label:'South East', center:[51.25,-0.7], zoom:8, searchDefault:'Brighton',
+    bestBudget:20,
+    council:"Places Leisure and Everyone Active cover much of the South East — £20–35/mo, with concessionary rates for students and over-60s.",
+    chains:['puregym','gymgroup','anytime','nuffield','davidlloyd','fitnessfirst','places'],
+  },
+  south_west: {
+    label:'South West', center:[51.46,-2.6], zoom:8, searchDefault:'Bristol',
+    bestBudget:19,
+    council:"Everyone Active and Places Leisure run centres across the South West — typically £20–35/mo with concessions.",
+    chains:['puregym','gymgroup','anytime','nuffield','bannatyne','everyone','places'],
+  },
+  east: {
+    label:'East of England', center:[52.2,0.3], zoom:8, searchDefault:'Cambridge',
+    bestBudget:19,
+    council:"Everyone Active and Places Leisure cover most of the East — £20–32/mo, often with pool included.",
+    chains:['puregym','gymgroup','anytime','nuffield','everyone','places','energie'],
+  },
+  east_midlands: {
+    label:'East Midlands', center:[52.95,-1.15], zoom:8, searchDefault:'Nottingham',
+    bestBudget:18,
+    council:"Everyone Active and Places Leisure are widespread across the East Midlands — £18–32/mo with concessionary rates.",
+    chains:['puregym','gymgroup','jdgyms','nuffield','bannatyne','everyone','places'],
+  },
+  west_midlands: {
+    label:'West Midlands', center:[52.48,-1.9], zoom:9, searchDefault:'Birmingham',
+    bestBudget:18,
+    council:"Everyone Active and Places Leisure operate many centres across the West Midlands — £18–30/mo with concessions.",
+    chains:['puregym','gymgroup','jdgyms','nuffield','village','bannatyne','everyone'],
+  },
+  yorkshire: {
+    label:'Yorkshire', center:[53.8,-1.55], zoom:8, searchDefault:'Leeds',
+    bestBudget:17,
+    council:"Everyone Active and Places Leisure serve much of Yorkshire — £17–30/mo, with some of the best concessionary rates outside London.",
+    chains:['puregym','gymgroup','jdgyms','bannatyne','village','everyone','energie'],
+  },
+  north_west: {
+    label:'North West', center:[53.48,-2.24], zoom:9, searchDefault:'Manchester',
+    bestBudget:17,
+    council:"Everyone Active and Places Leisure are well-established across the North West — £17–30/mo, good concessionary options.",
+    chains:['puregym','gymgroup','jdgyms','bannatyne','village','davidlloyd','everyone'],
+  },
+  north_east: {
+    label:'North East', center:[54.97,-1.62], zoom:9, searchDefault:'Newcastle',
+    bestBudget:17,
+    council:"Everyone Active and Places Leisure serve most of the North East — among the most affordable council gym rates in England.",
+    chains:['puregym','gymgroup','bannatyne','village','everyone','places','energie'],
+  },
+  scotland: {
+    label:'Scotland', center:[56.5,-4.2], zoom:7, searchDefault:'Glasgow',
+    bestBudget:18,
+    council:"Leisure and Culture Dundee, Glasgow Life, and Edinburgh Leisure run affordable public gyms — typically £18–28/mo with concessions.",
+    chains:['puregym','gymgroup','anytime','nuffield','bannatyne','everyone','energie'],
+  },
+  wales: {
+    label:'Wales', center:[52.1,-3.8], zoom:7, searchDefault:'Cardiff',
+    bestBudget:18,
+    council:"Leisure centres run by local councils (e.g. Sport Wales funded centres) offer £18–30/mo — always check your council's leisure website first.",
+    chains:['puregym','gymgroup','anytime','nuffield','everyone','places','energie'],
+  },
+  ni: {
+    label:'N. Ireland', center:[54.65,-6.7], zoom:8, searchDefault:'Belfast',
+    bestBudget:18,
+    council:"Leisure facilities run by councils (e.g. Belfast City Council GLL partnership) — typically £18–28/mo with generous concessions.",
+    chains:['puregym','gymgroup','anytime','nuffield','energie','everyone'],
+  },
+};
+
+/* ── UTILS ── */
+function parseResult(raw) {
+  const c = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+  try { return JSON.parse(c); } catch {}
+  const m = c.match(/\{[\s\S]*\}/);
+  if (m) return JSON.parse(m[0]);
+  throw new Error('Could not read response — please try again');
+}
+
+async function runSearch(profile) {
+  const res = await fetch('/api/search', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(profile),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || `Server error ${res.status}`);
+  return data.raw;
+}
+
+function gymLink(gym, src = 'card') {
+  if (!gym.verifyUrl) return null;
+  return `/api/go?url=${encodeURIComponent(gym.verifyUrl)}&gym=${encodeURIComponent(gym.name)}&src=${src}`;
+}
+
+const CACHE_TTL = 4 * 60 * 60 * 1000;
+function cacheKey(p) { return `gs_${p.location.toLowerCase().trim()}_${p.budget}_${(p.eligibility||[]).join('-')}`; }
+function readCache(p) {
+  try {
+    const item = localStorage.getItem(cacheKey(p));
+    if (!item) return null;
+    const {data, ts} = JSON.parse(item);
+    if (Date.now() - ts > CACHE_TTL) { localStorage.removeItem(cacheKey(p)); return null; }
+    return {data, ageMin: Math.round((Date.now() - ts) / 60000)};
+  } catch { return null; }
+}
+function writeCache(p, data) {
+  try { localStorage.setItem(cacheKey(p), JSON.stringify({data, ts: Date.now()})); } catch {}
+}
+
+function profileToParams(p) {
+  return new URLSearchParams({
+    loc: p.location, budget: p.budget, freq: p.frequency || 'few',
+    fac: (p.facilities || []).join(','), eli: (p.eligibility || []).join(','),
+  });
+}
+function profileFromParams() {
+  const p = new URLSearchParams(location.search);
+  if (!p.get('loc') || !p.get('budget')) return null;
+  return {
+    location: p.get('loc'), budget: p.get('budget'), frequency: p.get('freq') || 'few',
+    facilities: p.get('fac') ? p.get('fac').split(',').filter(Boolean) : ['gymFloor'],
+    eligibility: p.get('eli') ? p.get('eli').split(',').filter(Boolean) : [],
+    notes: '',
+  };
+}
+
+function shareResults(profile) {
+  const url = `${location.origin}/?${profileToParams(profile)}`;
+  if (navigator.share) {
+    navigator.share({title:`GymSeek — ${profile.location}`, text:`Best gym deals near ${profile.location} on a £${profile.budget}/mo budget`, url}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.querySelector('.share-btn');
+      if (btn) { btn.textContent = '✓ Copied'; setTimeout(()=>{ btn.textContent='↗ Share'; }, 2000); }
+    }).catch(()=>{});
+  }
+}
+
+/* ── MAP PAGE ── */
+function MapPage({onSelectRegion}) {
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (mapRef.current || !containerRef.current) return;
+    const m = L.map(containerRef.current, {
+      center: [54.5, -3.4], zoom: 5,
+      zoomControl: true,
+      attributionControl: true,
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 19,
+    }).addTo(m);
+
+    Object.entries(REGION_DATA).forEach(([id, r]) => {
+      const icon = L.divIcon({
+        className: 'rmark-icon',
+        html: `<div class="rmark"><div class="rmark-name">${r.label}</div><div class="rmark-from">from £${r.bestBudget}/mo</div></div>`,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+      });
+      L.marker(r.center, {icon}).addTo(m).on('click', () => onSelectRegion(id));
+    });
+
+    mapRef.current = m;
+    return () => { m.remove(); mapRef.current = null; };
+  }, []);
+
+  return (
+    <div style={{position:'relative'}}>
+      <div className="map-intro">
+        <div className="map-intro-title">Select a region to browse gym chains</div>
+        <div className="map-intro-sub">Or use the AI search for live prices and deals in your exact area</div>
+      </div>
+      <div ref={containerRef} className="map-wrap"/>
+    </div>
+  );
+}
+
+/* ── REGION PAGE ── */
+function RegionPage({regionId, onSearch}) {
+  const r = REGION_DATA[regionId];
+  if (!r) return null;
+
+  return (
+    <div className="region-page fade-up">
+      <div className="region-title">{r.label}</div>
+      <div className="region-sub">
+        Main gym chains available in this region. Prices shown are typical ranges — use live search for deals specific to your area and budget.
+      </div>
+
+      <div className="live-cta">
+        <div>
+          <div className="live-cta-text">Get live prices + best deals near {r.searchDefault}</div>
+          <div className="live-cta-sub">AI searches the web for current pricing, active discounts, and joining fee offers</div>
+        </div>
+        <button className="live-cta-btn" onClick={() => onSearch(r.searchDefault)}>
+          Find live deals →
+        </button>
+      </div>
+
+      <div className="council-box">
+        <div className="council-lbl">🏛️ Council / leisure centre option</div>
+        {r.council}
+      </div>
+
+      <div className="chains-section-lbl">Gym chains in this region</div>
+      <div className="chains-grid">
+        {r.chains.map(id => {
+          const c = CHAINS[id];
+          if (!c) return null;
+          const tierClass = `tier-${c.tier}`;
+          return (
+            <div key={id} className="chain-card">
+              <div className="chain-header">
+                <div className="chain-name">{c.name}</div>
+                <span className={`chain-tier ${tierClass}`}>{c.tier === 'council' ? 'Council' : c.tier === 'budget' ? 'Budget' : c.tier === 'mid' ? 'Mid-range' : 'Premium'}</span>
+              </div>
+              <div className="chain-price">from <strong>£{c.from}</strong> – £{c.to}/mo</div>
+              <div className="chain-fac">{c.fac}</div>
+              <div className="chain-note">{c.note}</div>
+              <a href={c.url} target="_blank" rel="noopener" className="chain-go">Visit site ↗</a>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ── SHARED COMPONENTS ── */
+function Pips({score}) {
+  const n = Math.floor(score || 0);
+  return (
+    <div className="score-line">
+      <div className="score-pips">{[1,2,3,4,5].map(i=><div key={i} className={`pip ${i<=n?'on':'off'}`}/>)}</div>
+      <span className="score-val">{(score||0).toFixed(1)}</span>
+    </div>
+  );
+}
+
+function Flag({f}) {
+  const s = FLAG_STYLE[f.type] || {bg:'rgba(255,255,255,0.03)',b:'rgba(255,255,255,0.09)',c:'#a1a1aa',i:'ℹ️'};
+  return (
+    <div className="flag-item" style={{background:s.bg,border:`1px solid ${s.b}`}}>
+      <span style={{flexShrink:0}}>{s.i}</span>
+      <span style={{color:s.c}}>{f.text}</span>
+    </div>
+  );
+}
+
+function FacPills({facs, requested}) {
+  const show = FACILITIES.filter(f => requested.includes(f.id) || facs?.[f.id]);
+  if (!show.length) return null;
+  return (
+    <div className="fac-pills">
+      {show.map(f => {
+        const has = facs?.[f.id];
+        const req = requested.includes(f.id);
+        return <span key={f.id} className={`fac-pill ${has?(req?'fp-yes':'fp-extra'):'fp-no'}`}>{has?'✓':'✗'} {f.label}</span>;
+      })}
+    </div>
+  );
+}
+
+/* ── GYM CARD ── */
+function GymCard({gym, requested, idx, defaultOpen, budget}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const saving = (gym.standardPrice && gym.bestPrice && gym.standardPrice > gym.bestPrice)
+    ? (gym.standardPrice - gym.bestPrice) : 0;
+  const annualSave = saving * 12;
+  const underBudget = budget > 0 ? budget - (gym.bestPrice || 0) : 0;
+  const hasTag = t => gym.tags?.includes(t);
+  const isBest = hasTag('bestOverall');
+  const isWeb = gym.priceSource === 'web';
+  const link = gymLink(gym);
+
+  return (
+    <div className={`gym-card fade-up${isBest?' best':''}`} style={{animationDelay:`${idx*0.06}s`}}>
+      <div className="card-summary" onClick={()=>setOpen(o=>!o)}>
+        <div className="card-left">
+          {(isBest||hasTag('cheapest')||hasTag('mostFlexible')) && (
+            <div className="card-tags">
+              {isBest && <span className="ctag ctag-best">Best deal</span>}
+              {hasTag('cheapest') && <span className="ctag ctag-cheap">Cheapest</span>}
+              {hasTag('mostFlexible') && <span className="ctag ctag-flex">Most flexible</span>}
+            </div>
+          )}
+          <div className="card-name">{gym.name}</div>
+          <div className="card-chain">
+            {gym.chain && gym.chain !== gym.name && `${gym.chain} · `}{gym.distance}{gym.contract && ` · ${gym.contract}`}
+          </div>
+          {gym.whyPick && <div className="why-pick">{gym.whyPick}</div>}
+          <Pips score={gym.dealScore}/>
+          {!open && gym.dealType && <div className="card-deal-hint">🏷 {gym.dealType}</div>}
+        </div>
+        <div className="card-right">
+          <div className="price-row">
+            <div className="card-price">£{typeof gym.bestPrice==='number' ? gym.bestPrice.toFixed(2) : '—'}</div>
+            <span className={`psrc ${isWeb?'psrc-web':'psrc-est'}`}>{isWeb?'🌐 Live':'📊 Est.'}</span>
+          </div>
+          <div className="card-price-lbl">per month</div>
+          {saving > 0.49 && (
+            <div className="card-save">
+              Save £{saving.toFixed(2)}/mo
+              {annualSave >= 10 && ` · £${annualSave.toFixed(0)}/yr`}
+            </div>
+          )}
+          {gym.joiningFee === 0 && <div style={{fontSize:'0.67rem',color:'var(--green)',marginTop:2}}>No joining fee</div>}
+          {underBudget >= 4 && <div className="budget-pill">£{underBudget.toFixed(0)} under budget</div>}
+        </div>
+        <span className={`chevron${open?' open':''}`}>▼</span>
+      </div>
+
+      {open && (
+        <div className="card-body">
+          {gym.dealType && (
+            <div className="deal-box">
+              <div className="deal-lbl">Deal applied</div>
+              <div className="deal-text">{gym.dealType}</div>
+              {saving > 0.49 && <div className="deal-was">Standard: £{gym.standardPrice?.toFixed(2)}/mo → with deal: £{gym.bestPrice?.toFixed(2)}/mo{annualSave >= 10 ? ` (£${annualSave.toFixed(0)} saved per year)` : ''}</div>}
+            </div>
+          )}
+          {gym.howToClaim && (
+            <div className="claim-box">
+              <div className="claim-lbl">How to claim</div>
+              <div className="claim-text">{gym.howToClaim}</div>
+            </div>
+          )}
+          <FacPills facs={gym.facilities} requested={requested}/>
+          {gym.smartFlags?.length > 0 && (
+            <div style={{display:'flex',flexDirection:'column',gap:5}}>
+              {gym.smartFlags.map((f,i) => <Flag key={i} f={f}/>)}
+            </div>
+          )}
+          {gym.cashback && (
+            <div className="cashback-box">
+              <span style={{flexShrink:0}}>💰</span>
+              <span>{gym.cashback}</span>
+            </div>
+          )}
+          <div className="card-footer">
+            {link && (
+              <a href={link} target="_blank" rel="noopener" className="go-btn">
+                Go to {gym.chain && gym.chain !== gym.name ? gym.chain : gym.name} →
+              </a>
+            )}
+            <div className="footer-meta">
+              {gym.joiningFee === 0
+                ? <span style={{color:'var(--green)'}}>✓ No joining fee{gym.joiningFeeNote ? ` · ${gym.joiningFeeNote}` : ''}</span>
+                : gym.joiningFee > 0 && <span>Joining fee: £{gym.joiningFee}</span>}
+              {gym.contract && <span>📄 {gym.contract}</span>}
+            </div>
+          </div>
+          {gym.notes && <div className="verify-note">{gym.notes}</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── REFINEMENT PANEL ── */
+function RefinementPanel({profile, onRefine}) {
+  const [open, setOpen] = useState(false);
+  const [loc, setLoc] = useState(profile.location);
+  const [budget, setBudget] = useState(profile.budget);
+  const [eli, setEli] = useState(profile.eligibility || []);
+  const toggleEli = id => setEli(prev => prev.includes(id) ? prev.filter(e=>e!==id) : [...prev, id]);
+  return (
+    <div className="refine-panel">
+      <button className="refine-toggle" onClick={()=>setOpen(o=>!o)}>
+        <span>⚙ Refine search</span>
+        <span style={{color:'var(--dimmer)',fontSize:'0.7rem'}}>{open?'▲':'▼'}</span>
+      </button>
+      {open && (
+        <div className="refine-body">
+          <div>
+            <label className="flabel">Location</label>
+            <input className="field" style={{padding:'10px 14px',fontSize:'0.9rem'}} value={loc} onChange={e=>setLoc(e.target.value)} placeholder="Area or postcode"/>
+          </div>
+          <div>
+            <label className="flabel">Budget (£/mo)</label>
+            <input className="field" type="number" style={{padding:'10px 14px',fontSize:'0.9rem'}} value={budget} onChange={e=>setBudget(e.target.value)} placeholder="40"/>
+          </div>
+          <div className="refine-eli">
+            <div className="flabel" style={{width:'100%',marginBottom:6}}>Discounts</div>
+            {ELI_QUICK.map(e => (
+              <button key={e.id} className={`eli-chip${eli.includes(e.id)?' on':''}`} onClick={()=>toggleEli(e.id)}>
+                {e.label}
+              </button>
+            ))}
+          </div>
+          <button className="refine-go" onClick={()=>{setOpen(false); onRefine({...profile,location:loc,budget,eligibility:eli});}}>
+            Update results →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── COMPARISON TABLE ── */
+function ComparisonTable({gyms, budget}) {
+  return (
+    <div className="cmp-wrap">
+      <table className="cmp-table">
+        <thead>
+          <tr>
+            <th>Gym</th><th>Price/mo</th><th>Save/yr</th><th>vs budget</th><th>Deal</th><th>Score</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {gyms.map((gym, i) => {
+            const saving = gym.standardPrice > gym.bestPrice ? gym.standardPrice - gym.bestPrice : 0;
+            const annualSave = saving * 12;
+            const delta = budget - (gym.bestPrice || 0);
+            const isBest = gym.tags?.includes('bestOverall');
+            const link = gymLink(gym, 'table');
+            return (
+              <tr key={i} className={isBest?'cmp-best':''}>
+                <td style={{minWidth:160}}>
+                  <div className="cmp-name" title={gym.name}>{gym.name}</div>
+                  <div className="cmp-chain">{gym.chain}</div>
+                  {isBest && <span className="ctag ctag-best" style={{marginTop:4,display:'inline-block'}}>Best</span>}
+                </td>
+                <td>
+                  <div className="cmp-price">£{gym.bestPrice?.toFixed(2)||'—'}</div>
+                  {saving > 0.49 && <div className="cmp-save">↓ £{saving.toFixed(2)}/mo off</div>}
+                </td>
+                <td style={{fontWeight:600,color:'var(--green)'}}>
+                  {annualSave >= 1 ? `£${annualSave.toFixed(0)}` : '—'}
+                </td>
+                <td>
+                  {budget > 0
+                    ? delta >= 0
+                      ? <span style={{color:'var(--green)',fontWeight:600}}>£{delta.toFixed(0)} under</span>
+                      : <span style={{color:'var(--red)'}}>£{Math.abs(delta).toFixed(0)} over</span>
+                    : '—'}
+                </td>
+                <td style={{maxWidth:160,whiteSpace:'normal',color:'var(--sub)',fontSize:'0.75rem',lineHeight:1.4}}>{gym.dealType||'—'}</td>
+                <td>
+                  <div className="cmp-pips">{[1,2,3,4,5].map(j=><div key={j} className={`pip ${j<=Math.floor(gym.dealScore||0)?'on':'off'}`}/>)}</div>
+                  <div style={{fontSize:'0.7rem',color:'var(--green)',fontFamily:"'JetBrains Mono',monospace",marginTop:3}}>{(gym.dealScore||0).toFixed(1)}</div>
+                </td>
+                <td>{link && <a href={link} target="_blank" rel="noopener" className="go-btn go-btn-sm">Go →</a>}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ── WIZARD STEPS ── */
+function Step1({profile, setProfile, errors}) {
+  return (
+    <div>
+      <div className="step-q">Where are you, and<br/>what's your budget?</div>
+      <div className="step-hint">We'll search every gym within reach — chains, independents, and council centres.</div>
+      <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        <div>
+          <label className="flabel">Your area or postcode</label>
+          <input className={`field${errors.location?' err':''}`} placeholder="e.g. E1, Manchester, Bristol BS1"
+            value={profile.location} autoFocus onChange={e=>setProfile(p=>({...p,location:e.target.value}))}/>
+          {errors.location && <div className="err-txt">Please enter your area or postcode</div>}
+        </div>
+        <div>
+          <label className="flabel">Monthly budget</label>
+          <div className="field-wrap">
+            <span className="fpfx">£</span>
+            <input className={`field${errors.budget?' err':''}`} type="number" min="0" placeholder="40"
+              value={profile.budget} onChange={e=>setProfile(p=>({...p,budget:e.target.value}))}/>
+          </div>
+          {errors.budget && <div className="err-txt">Please enter a monthly budget</div>}
+        </div>
+        <div>
+          <label className="flabel">How often will you go?</label>
+          <div className="freq-row">
+            {[{id:'daily',i:'🔥',l:'Every day',s:'7 days a week'},{id:'few',i:'⚡',l:'Few times',s:'2–4 days a week'},{id:'occasional',i:'🌤',l:'Occasionally',s:'Few times a month'}].map(f=>(
+              <button key={f.id} className={`freq-btn${profile.frequency===f.id?' on':''}`} onClick={()=>setProfile(p=>({...p,frequency:f.id}))}>
+                <span className="fi">{f.i}</span><span className="fl">{f.l}</span><span className="fs">{f.s}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Step2({profile, setProfile}) {
+  const toggle = id => setProfile(p => ({...p, facilities: p.facilities.includes(id) ? p.facilities.filter(f=>f!==id) : [...p.facilities, id]}));
+  return (
+    <div>
+      <div className="step-q">What do you need<br/>from a gym?</div>
+      <div className="step-hint">Select everything that matters. This filters which gyms match your needs.</div>
+      <div className="fac-grid">
+        {FACILITIES.map(f => {
+          const on = profile.facilities.includes(f.id);
+          return (
+            <button key={f.id} className={`fac-tile${on?' on':''}`} onClick={()=>toggle(f.id)}>
+              {on && <div className="tcheck">✓</div>}
+              <span className="tico">{f.icon}</span>
+              <span className="tlbl">{f.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div style={{fontSize:'0.75rem',color:'var(--dimmer)',marginTop:14,textAlign:'center'}}>
+        {profile.facilities.length === 0 ? 'Nothing selected yet' : `${profile.facilities.length} selected`}
+      </div>
+    </div>
+  );
+}
+
+function Step3({profile, setProfile}) {
+  const toggle = id => setProfile(p => ({...p, eligibility: p.eligibility.includes(id) ? p.eligibility.filter(e=>e!==id) : [...p.eligibility, id]}));
+  return (
+    <div>
+      <div className="step-q">Any discounts<br/>you qualify for?</div>
+      <div className="step-hint">These can save you 15–40%. Tick everything that applies — we'll find the best one.</div>
+      {ELI_GROUPS.map(g => (
+        <div key={g.label}>
+          <div className="eli-group-lbl">{g.label}</div>
+          <div className="eli-grid-row">
+            {g.items.map(e => {
+              const on = profile.eligibility.includes(e.id);
+              return (
+                <button key={e.id} className={`eli-tile${on?' on':''}`} onClick={()=>toggle(e.id)}>
+                  <span className="eicon">{e.icon}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div className="etitle">{e.title}</div>
+                    {e.sub && <div className="esub">{e.sub}</div>}
+                  </div>
+                  {on && <div className="eli-check">✓</div>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <div style={{marginTop:20}}>
+        <label className="flabel">Anything else? <span style={{color:'var(--dimmer)',fontWeight:400}}>(optional)</span></label>
+        <textarea className="field" rows="3" placeholder="e.g. Prefer walking distance, not keen on Bannatyne's…"
+          value={profile.notes||''} onChange={e=>setProfile(p=>({...p,notes:e.target.value}))}/>
+      </div>
+    </div>
+  );
+}
+
+/* ── LOADING ── */
+function LoadingPage({location}) {
+  const [tick, setTick] = useState(0);
+  const msgs = [
+    `Searching for gyms near ${location}…`,
+    'Looking up current prices online…',
+    'Checking council leisure centres…',
+    'Scanning discount schemes and deals…',
+    'Comparing Blue Light Card rates…',
+    'Identifying the best cashback offers…',
+    'Calculating deal scores…',
+  ];
+  useEffect(() => {
+    const t = setInterval(() => setTick(n => n + 1), 2200);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div className="loading-page">
+      <div className="lspinner"/>
+      <div>
+        <div className="ltitle">{msgs[tick % msgs.length]}</div>
+        <div className="lsub">Searching the web for current prices · Usually 15–30 seconds</div>
+      </div>
+    </div>
+  );
+}
+
+/* ── RESULTS ── */
+function ResultsPage({data, profile, onReset, onRefine, onRefresh}) {
+  const [view, setView] = useState('cards');
+  const req = profile.facilities || [];
+  const budget = Number(profile.budget) || 0;
+  const freq = {daily:'Daily',few:'Few times/week',occasional:'Occasional'}[profile.frequency] || profile.frequency;
+  const ageStr = data._cacheAge < 60 ? `${data._cacheAge}m` : `${Math.round(data._cacheAge/60)}h`;
+
+  return (
+    <div className="results-page fade-up">
+      <div style={{marginBottom:6}}>
+        <div className="results-title">{data.gyms?.length||0} deals found near {profile.location}</div>
+        {data._fromCache && (
+          <div style={{fontSize:'0.72rem',color:'var(--dimmer)',marginTop:4}}>
+            ⚡ Cached result · {ageStr} ago ·{' '}
+            <button onClick={onRefresh} style={{background:'none',border:'none',color:'var(--blue)',cursor:'pointer',fontSize:'0.72rem',padding:0,textDecoration:'underline'}}>
+              Refresh
+            </button>
+          </div>
+        )}
+      </div>
+      {data.summary && <div className="results-sum">{data.summary}</div>}
+
+      <div className="rmeta">
+        <div className="rmi"><div className="rmi-l">Location</div><div className="rmi-v">{profile.location}</div></div>
+        <div className="rmi"><div className="rmi-l">Budget</div><div className="rmi-v">£{profile.budget}/mo</div></div>
+        <div className="rmi"><div className="rmi-l">Frequency</div><div className="rmi-v">{freq}</div></div>
+        <div className="rmi" style={{borderRight:'none'}}><div className="rmi-l">Options</div><div className="rmi-v">{data.gyms?.length||0} gyms</div></div>
+      </div>
+
+      {data.globalFlags?.length > 0 && (
+        <div className="global-flags">
+          {data.globalFlags.map((f,i)=><div key={i} className="gf-row"><span>💡</span><span>{f}</span></div>)}
+        </div>
+      )}
+
+      <RefinementPanel profile={profile} onRefine={onRefine}/>
+
+      <div className="view-row">
+        <div className="view-toggle">
+          <button className={`vtab${view==='cards'?' on':''}`} onClick={()=>setView('cards')}>≡ Cards</button>
+          <button className={`vtab${view==='table'?' on':''}`} onClick={()=>setView('table')}>⊞ Compare</button>
+        </div>
+        <div style={{fontSize:'0.72rem',color:'var(--dimmer)'}}>Sorted by deal score</div>
+      </div>
+
+      {view==='table' && <ComparisonTable gyms={data.gyms||[]} budget={budget}/>}
+      {view==='cards' && (data.gyms||[]).map((gym,i) => (
+        <GymCard key={i} gym={gym} requested={req} idx={i} defaultOpen={i===0} budget={budget}/>
+      ))}
+
+      {data.disclaimer && <div className="disclaimer">⚠ {data.disclaimer}</div>}
+    </div>
+  );
+}
+
+/* ── APP ── */
+function App() {
+  const [phase, setPhase] = useState('wizard');
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [step, setStep] = useState(0);
+  const [dir, setDir] = useState('next');
+  const [profile, setProfile] = useState({location:'',budget:'',frequency:'few',facilities:['gymFloor'],eligibility:[],notes:''});
+  const [errors, setErrors] = useState({});
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fromUrl = profileFromParams();
+    if (fromUrl) { setProfile(fromUrl); doSearch(fromUrl); }
+  }, []);
+
+  async function doSearch(p, forceRefresh = false) {
+    history.replaceState({}, '', `/?${profileToParams(p)}`);
+    if (!forceRefresh) {
+      const cached = readCache(p);
+      if (cached) { setResults({...cached.data, _fromCache:true, _cacheAge:cached.ageMin}); setPhase('results'); return; }
+    }
+    setPhase('loading'); setError('');
+    try {
+      const raw = await runSearch(p);
+      const parsed = parseResult(raw);
+      writeCache(p, parsed);
+      setResults(parsed);
+      setPhase('results');
+    } catch(e) {
+      setError(e.message || 'Unknown error');
+      setPhase('error');
+    }
+  }
+
+  function goNext() {
+    if (step === 0) {
+      const e = {};
+      if (!profile.location.trim()) e.location = true;
+      if (!profile.budget) e.budget = true;
+      if (Object.keys(e).length) { setErrors(e); return; }
+      setErrors({});
+    }
+    if (step < 2) { setDir('next'); setStep(s => s+1); }
+    else doSearch(profile);
+  }
+
+  function goBack() {
+    if (step === 0) { setPhase('map'); setSelectedRegion(null); }
+    else { setDir('back'); setStep(s => s-1); }
+  }
+
+  function reset() {
+    history.replaceState({}, '', '/');
+    setPhase('map'); setSelectedRegion(null); setStep(0); setDir('next'); setResults(null); setError('');
+  }
+
+  function selectRegion(id) { setSelectedRegion(id); setPhase('region'); }
+  function goToMap() { setPhase('map'); setSelectedRegion(null); }
+
+  function searchFromRegion(city) {
+    setProfile(p => ({...p, location: city}));
+    setStep(0); setDir('next'); setPhase('wizard');
+  }
+
+  const STEPS = [{label:'Where'},{label:'Facilities'},{label:'Discounts'}];
+  const anim = dir === 'next' ? 'slide-next' : 'slide-back';
+
+  return (
+    <div style={{minHeight:'100vh'}}>
+      <div className="topbar">
+        <div className="logo" onClick={reset}>🏋️ GymSeek</div>
+        <div style={{display:'flex',gap:7}}>
+          {phase === 'region' && (
+            <button className="ghostbtn" onClick={goToMap}>← Map</button>
+          )}
+          {phase === 'results' && (
+            <>
+              <button className="ghostbtn share-btn" onClick={()=>shareResults(profile)}>↗ Share</button>
+              <button className="ghostbtn" onClick={reset}>← New search</button>
+            </>
+          )}
+          {(phase === 'wizard' || phase === 'loading' || phase === 'error') && (
+            <button className="ghostbtn" onClick={()=>setPhase('map')}>🗺 Browse map</button>
+          )}
+          {(phase === 'map' || phase === 'region') && (
+            <button className="ghostbtn" onClick={()=>{setStep(0);setDir('next');setPhase('wizard');}}>
+              AI search →
+            </button>
+          )}
+        </div>
+      </div>
+
+      {phase === 'map' && <MapPage onSelectRegion={selectRegion}/>}
+
+      {phase === 'region' && <RegionPage regionId={selectedRegion} onSearch={searchFromRegion}/>}
+
+      {phase === 'wizard' && (
+        <div className="wizard">
+          <div className="steps">
+            {STEPS.map((s,i) => (
+              <div key={i} className="step-item">
+                <div className={`step-num ${i<step?'done':i===step?'active':'upcoming'}`}>{i<step?'✓':i+1}</div>
+                <span className={`step-lbl ${i<step?'done':i===step?'active':'upcoming'}`}>{s.label}</span>
+                {i < STEPS.length-1 && <div className={`step-line${i<step?' done':''}`}/>}
+              </div>
+            ))}
+          </div>
+
+          <div key={step} className={anim}>
+            {step === 0 && <Step1 profile={profile} setProfile={setProfile} errors={errors}/>}
+            {step === 1 && <Step2 profile={profile} setProfile={setProfile}/>}
+            {step === 2 && <Step3 profile={profile} setProfile={setProfile}/>}
+          </div>
+
+          <div className="nav-row">
+            <button className="btn-back" onClick={goBack}>← Back</button>
+            <button className="btn-next" onClick={goNext}>
+              {step < 2 ? 'Continue →' : 'Find my deals →'}
+            </button>
+          </div>
+          {step === 1 && <button className="btn-skip" onClick={goNext}>Skip — I'll take anything →</button>}
+          {step === 2 && <button className="btn-skip" onClick={()=>doSearch(profile)}>Skip discounts and search →</button>}
+        </div>
+      )}
+
+      {phase === 'loading' && <LoadingPage location={profile.location}/>}
+      {phase === 'results' && results && (
+        <ResultsPage data={results} profile={profile} onReset={reset} onRefine={p=>{setProfile(p);doSearch(p);}} onRefresh={()=>doSearch(profile, true)}/>
+      )}
+      {phase === 'error' && (
+        <div className="error-page">
+          <div style={{fontSize:'2.2rem'}}>⚠️</div>
+          <div className="error-title">Search failed</div>
+          <div className="error-msg">{error}</div>
+          <button className="btn-next" style={{maxWidth:200}} onClick={reset}>Try again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
