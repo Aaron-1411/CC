@@ -62,9 +62,11 @@ async function fetchYahooBars(symbol: string, range = "1y"): Promise<MacroPoint[
   } catch { return []; }
 }
 
-async function fetchYahooLatest(symbol: string): Promise<number | null> {
+async function fetchYahooLatest(symbol: string): Promise<{ value: number; date: string } | null> {
   const bars = await fetchYahooBars(symbol, "5d");
-  return bars.length ? bars[bars.length - 1].value : null;
+  if (!bars.length) return null;
+  const last = bars[bars.length - 1];
+  return { value: last.value, date: last.date };
 }
 
 export async function GET(req: Request) {
@@ -91,9 +93,18 @@ export async function GET(req: Request) {
   const [dbIrx, liveIrx] = await Promise.allSettled([latestFromDb("^IRX"), fetchYahooLatest("^IRX")]);
   const [dbFx,  liveFx]  = await Promise.allSettled([latestFromDb("GBPUSD=X"), fetchYahooLatest("GBPUSD=X")]);
 
-  const tnx  = (liveTnx.status  === "fulfilled" ? liveTnx.value  : null) ?? (dbTnx.status  === "fulfilled" ? dbTnx.value  : null);
-  const irx  = (liveIrx.status  === "fulfilled" ? liveIrx.value  : null) ?? (dbIrx.status  === "fulfilled" ? dbIrx.value  : null);
-  const fx   = (liveFx.status   === "fulfilled" ? liveFx.value   : null) ?? (dbFx.status   === "fulfilled" ? dbFx.value   : null);
+  const tnxResult  = (liveTnx.status  === "fulfilled" ? liveTnx.value  : null);
+  const irxResult  = (liveIrx.status  === "fulfilled" ? liveIrx.value  : null);
+  const fxResult   = (liveFx.status   === "fulfilled" ? liveFx.value   : null);
+
+  const tnx  = tnxResult?.value  ?? (dbTnx.status  === "fulfilled" ? dbTnx.value  : null);
+  const irx  = irxResult?.value  ?? (dbIrx.status  === "fulfilled" ? dbIrx.value  : null);
+  const fx   = fxResult?.value   ?? (dbFx.status   === "fulfilled" ? dbFx.value   : null);
+
+  const tnxDate  = tnxResult?.date  ?? "";
+  const irxDate  = irxResult?.date  ?? "";
+  const fxDate   = fxResult?.date   ?? "";
+
   const latestVix = vix.length ? vix[vix.length - 1].value : null;
 
   // Optional FRED enhancement
@@ -107,10 +118,10 @@ export async function GET(req: Request) {
 
   const yahooMacro = [
     latestVix != null ? { series: "VIX",    name: "CBOE VIX",              value: latestVix, date: vix[vix.length - 1]?.date ?? "", unit: "index", frequency: "daily" } : null,
-    tnx       != null ? { series: "TNX",    name: "US 10Y Treasury Yield",  value: tnx,       date: "",                               unit: "%",    frequency: "daily" } : null,
-    irx       != null ? { series: "IRX",    name: "US 13W T-Bill Yield",    value: irx,       date: "",                               unit: "%",    frequency: "daily" } : null,
-    (tnx != null && irx != null) ? { series: "SPREAD", name: "10Y-3M Spread", value: Math.round((tnx - irx) * 100) / 100, date: "", unit: "%", frequency: "daily" } : null,
-    fx        != null ? { series: "GBPUSD", name: "GBP/USD",                value: fx,        date: "",                               unit: "rate", frequency: "daily" } : null,
+    tnx       != null ? { series: "TNX",    name: "US 10Y Treasury Yield",  value: tnx,       date: tnxDate,                          unit: "%",    frequency: "daily" } : null,
+    irx       != null ? { series: "IRX",    name: "US 13W T-Bill Yield",    value: irx,       date: irxDate,                          unit: "%",    frequency: "daily" } : null,
+    (tnx != null && irx != null) ? { series: "SPREAD", name: "10Y-3M Spread", value: Math.round((tnx - irx) * 100) / 100, date: tnxDate, unit: "%", frequency: "daily" } : null,
+    fx        != null ? { series: "GBPUSD", name: "GBP/USD",                value: fx,        date: fxDate,                           unit: "rate", frequency: "daily" } : null,
   ].filter((m): m is NonNullable<typeof m> => m !== null);
 
   const fredSeriesIds = new Set(fredMacro.map((m) => m.series));

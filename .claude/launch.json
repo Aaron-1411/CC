@@ -5,6 +5,7 @@
       "name": "investment",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/aaronmanu/Downloads/Investment_extracted/claude-code",
       "port": 3000
     }
   ]

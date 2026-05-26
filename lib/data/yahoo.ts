@@ -57,7 +57,11 @@ export const ALL_YF_SYMBOLS = [
 ];
 
 function isGBX(yfSymbol: string, currency: string): boolean {
-  return GBX_SYMBOLS.has(yfSymbol) || currency === "GBp";
+  // Prefer Yahoo's explicit currency field — "GBp" means GBX pence, "GBP" means already in pounds.
+  // GBX_SYMBOLS is only a fallback when Yahoo returns an ambiguous/missing currency.
+  if (currency === "GBp") return true;
+  if (currency === "GBP") return false;
+  return GBX_SYMBOLS.has(yfSymbol);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -154,12 +158,14 @@ async function fetchSingleQuote(
       changeGBP: isGBX(yfSymbol, currency) ? rawChange : isUSD ? rawChange / gbpUsd : rawChange,
       volume: meta.regularMarketVolume ?? 0,
       marketCap: null,
-      dayHigh: (meta.regularMarketDayHigh ?? rawPrice) / divisor,
-      dayLow: (meta.regularMarketDayLow ?? rawPrice) / divisor,
-      fiftyTwoWeekHigh: (meta.fiftyTwoWeekHigh ?? rawPrice) / divisor,
-      fiftyTwoWeekLow: (meta.fiftyTwoWeekLow ?? rawPrice) / divisor,
+      // Use raw meta values for fallbacks — rawPrice/rawPrev are already divided by divisor
+      // so falling back to them and dividing again would give 100× too small for GBX symbols
+      dayHigh: meta.regularMarketDayHigh != null ? meta.regularMarketDayHigh / divisor : rawPrice,
+      dayLow: meta.regularMarketDayLow != null ? meta.regularMarketDayLow / divisor : rawPrice,
+      fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh != null ? meta.fiftyTwoWeekHigh / divisor : rawPrice,
+      fiftyTwoWeekLow: meta.fiftyTwoWeekLow != null ? meta.fiftyTwoWeekLow / divisor : rawPrice,
       previousClose: rawPrev,
-      open: (meta.regularMarketOpen ?? rawPrice) / divisor,
+      open: meta.regularMarketOpen != null ? meta.regularMarketOpen / divisor : rawPrice,
       bid: null,
       ask: null,
       lastUpdated: new Date(((meta.regularMarketTime ?? 0) as number) * 1000).toISOString(),

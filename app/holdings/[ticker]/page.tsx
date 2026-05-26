@@ -24,7 +24,8 @@ export default function InstrumentPage({ params }: Props) {
   const { ticker } = use(params);
   const [tab, setTab] = useState<Tab>('chart');
   useLivePrices();
-  const h = HOLDINGS_DEFINITION.find((x) => x.ticker === decodeURIComponent(ticker));
+  const decoded = decodeURIComponent(ticker);
+  const h = HOLDINGS_DEFINITION.find((x) => x.ticker === decoded || x.yfSymbol === decoded);
 
   if (!h) {
     return (
