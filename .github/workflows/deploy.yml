@@ -1,4 +1,4 @@
-name: Deploy to Netlify
+name: Deploy to Cloudflare
 
 on:
   push:
@@ -9,55 +9,59 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy dashboard
-        run: npx netlify-cli deploy --dir=dashboard --site=${{ secrets.NETLIFY_SITE_HUB }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy dashboard --project-name=aaron-projects-hub --branch=main
 
   deploy-get-settld:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - name: Install & build
-        run: cd get-settld && bun install && bun run build
-      - name: Deploy
-        run: npx netlify-cli deploy --dir=get-settld/dist --site=${{ secrets.NETLIFY_SITE_GET_SETTLD }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
-
-  deploy-ez-tuition:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - name: Install & build
-        run: cd ez-tuition && bun install && bun run build
-      - name: Deploy
-        run: npx netlify-cli deploy --dir=ez-tuition/dist --site=${{ secrets.NETLIFY_SITE_EZ_TUITION }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+      - run: cd get-settld && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy get-settld/dist --project-name=get-settld-app --branch=main
 
   deploy-wealth-companion:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - name: Install & build
-        run: cd wealth-companion && bun install && bun run build
-      - name: Deploy
-        run: npx netlify-cli deploy --dir=wealth-companion/dist/client --site=${{ secrets.NETLIFY_SITE_WEALTH_COMPANION }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+      - run: cd wealth-companion && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: wealth-companion/dist/server
+          command: deploy
 
   deploy-lease-guard:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - name: Install & build
-        run: cd lease-guard && bun install && bun run build
-      - name: Deploy
-        run: npx netlify-cli deploy --dir=lease-guard/dist/client --site=${{ secrets.NETLIFY_SITE_LEASE_GUARD }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+      - run: cd lease-guard && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: lease-guard/dist/server
+          command: deploy
 
   deploy-open-eyes-data:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - name: Install & build
-        run: cd open-eyes-data && bun install && bun run build
-      - name: Deploy
-        run: npx netlify-cli deploy --dir=open-eyes-data/dist/client --site=${{ secrets.NETLIFY_SITE_OPEN_EYES_DATA }} --prod --no-build --auth=${{ secrets.NETLIFY_TOKEN }}
+      - run: cd open-eyes-data && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: open-eyes-data/dist/server
+          command: deploy
