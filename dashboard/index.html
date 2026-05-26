@@ -8,23 +8,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #080810;
-      --surface: #0f0f1a;
-      --surface2: #141425;
-      --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(255,255,255,0.14);
-      --text: #e8e8f0;
-      --muted: #5a5a72;
-      --muted2: #8888aa;
-      --accent: #7c6dfa;
-      --accent2: #b49dff;
-      --green: #23d18b;
-      --blue: #4a9eff;
-      --orange: #ff8c42;
-      --pink: #f06292;
-      --teal: #26c6da;
-      --yellow: #ffd54f;
-      --purple: #ce93d8;
+      --bg:      #07070f;
+      --surface: #0d0d1a;
+      --raised:  #111120;
+      --border:  rgba(255,255,255,0.055);
+      --border-s:rgba(255,255,255,0.032);
+      --border-h:rgba(255,255,255,0.13);
+      --text:    #ededf5;
+      --t2:      #77778f;
+      --t3:      #36364a;
+      --accent:  #7c6dfa;
+      --green:   #22c55e;
+      --lovable: #7c6dfa;
+      --cc:      #3b82f6;
     }
 
     html { scroll-behavior: smooth; }
@@ -41,431 +37,305 @@
 
     /* ── NAV ── */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 48px;
-      height: 56px;
-      background: rgba(8,8,16,0.8);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 52px;
+      background: rgba(7,7,15,0.85);
+      backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid var(--border-s);
     }
 
     .nav-logo {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-      background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-link {
-      font-size: 13px;
-      color: var(--muted2);
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: color 0.15s, background 0.15s;
-    }
-    .nav-link:hover { color: var(--text); background: var(--surface); }
-
-    .nav-gh {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--muted2);
-      padding: 6px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      transition: all 0.15s;
-    }
-    .nav-gh:hover { color: var(--text); border-color: var(--border-hover); }
-
-    /* ── HERO ── */
-    .hero {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 80px 48px 64px;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--accent2);
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    .hero-eyebrow .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .hero h1 {
-      font-size: clamp(36px, 6vw, 56px);
-      font-weight: 700;
-      letter-spacing: -1.5px;
-      line-height: 1.08;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #ffffff 30%, var(--accent2) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-size: 18px;
-      color: var(--muted2);
-      line-height: 1.6;
-      max-width: 580px;
-      margin-bottom: 36px;
-    }
-
-    .hero-stats {
-      display: flex;
-      gap: 32px;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .stat-num {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      font-size: 14px; font-weight: 600; letter-spacing: -0.2px;
       color: var(--text);
     }
 
-    .stat-label {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.3px;
+    .nav-right { display: flex; align-items: center; gap: 2px; }
+
+    .nav-link {
+      font-size: 13px; color: var(--t2);
+      padding: 5px 11px; border-radius: 6px;
+      transition: color 0.13s, background 0.13s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.045); }
+
+    .nav-gh {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--t2);
+      padding: 5px 10px; margin-left: 4px;
+      border: 1px solid var(--border); border-radius: 6px;
+      transition: all 0.13s;
+    }
+    .nav-gh:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 960px; margin: 0 auto;
+      padding: 88px 40px 72px;
     }
 
-    /* ── SECTIONS ── */
-    .sections {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 48px 96px;
-      display: flex;
-      flex-direction: column;
-      gap: 64px;
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.7px;
+      text-transform: uppercase; color: var(--t2);
+      margin-bottom: 32px;
     }
 
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
+    .pill-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+      animation: blink 2.8s ease infinite;
     }
 
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--muted2);
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .hero h1 {
+      font-size: clamp(48px, 7.5vw, 82px);
+      font-weight: 760;
+      letter-spacing: -3px;
+      line-height: 0.95;
+      margin-bottom: 24px;
+      color: var(--text);
     }
 
-    .section-count {
-      font-size: 12px;
-      color: var(--muted);
+    .hero-sub {
+      font-size: 17px; color: var(--t2);
+      line-height: 1.65; max-width: 500px;
+      margin-bottom: 36px;
     }
 
-    /* ── GRID ── */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 14px;
+    .hero-meta {
+      display: flex; align-items: center; gap: 0;
+      font-size: 13px; color: var(--t2);
+      flex-wrap: wrap;
     }
 
-    .grid.featured {
-      grid-template-columns: 1fr 1fr;
+    .hero-meta strong { color: var(--text); font-weight: 600; }
+    .meta-dot { margin: 0 14px; color: var(--t3); }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1160px; margin: 0 auto;
+      padding: 0 40px 100px;
     }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 80px; }
+
+    .sec-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .sec-title {
+      font-size: 10.5px; font-weight: 600; letter-spacing: 1.1px;
+      text-transform: uppercase; color: var(--t3);
+      white-space: nowrap;
+    }
+
+    .sec-line { flex: 1; height: 1px; background: var(--border-s); }
+
+    .sec-count { font-size: 11px; color: var(--t3); white-space: nowrap; }
+
+    /* ── GROUP ── */
+    .group { margin-bottom: 28px; }
+    .group:last-child { margin-bottom: 0; }
+
+    .group-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .group-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+      padding: 3px 8px; border-radius: 5px;
+    }
+
+    .group-pill.lovable {
+      background: rgba(124,109,250,0.1); color: #a99bff;
+      border: 1px solid rgba(124,109,250,0.2);
+    }
+    .group-pill.cc {
+      background: rgba(59,130,246,0.1); color: #7ab2ff;
+      border: 1px solid rgba(59,130,246,0.2);
+    }
+
+    .group-line { flex: 1; height: 1px; background: var(--border-s); }
+
+    /* ── GRIDS ── */
+    .grid-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 10px; }
 
     /* ── CARD ── */
     .card {
       position: relative;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      border-radius: 13px;
+      padding: 20px 22px 18px;
+      display: flex; flex-direction: column;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s;
       overflow: hidden;
-      cursor: pointer;
     }
 
+    /* thin top accent line — category colour, always faintly visible */
     .card::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at top left, var(--card-glow, rgba(124,109,250,0.06)), transparent 70%);
-      pointer-events: none;
+      position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
     }
+    .card.lovable::before { background: linear-gradient(90deg, transparent, var(--lovable) 50%, transparent); opacity: .55; }
+    .card.cc::before      { background: linear-gradient(90deg, transparent, var(--cc) 50%, transparent);      opacity: .55; }
 
     .card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-3px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+      border-color: var(--border-h);
+      box-shadow: 0 6px 28px rgba(0,0,0,.45);
+      transform: translateY(-2px);
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* card head row */
+    .card-head {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 10px;
+      margin-bottom: 9px;
     }
 
-    .card-accent {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--card-color, var(--accent)), transparent);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .card:hover .card-accent { opacity: 1; }
-
-    .card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 20px;
+    .card-name {
+      font-size: 15px; font-weight: 650; letter-spacing: -0.2px;
+      color: var(--text); line-height: 1.2;
     }
 
-    .card-icon {
-      width: 48px; height: 48px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      background: var(--card-bg, rgba(124,109,250,0.12));
-      border: 1px solid var(--card-border, rgba(124,109,250,0.2));
-      flex-shrink: 0;
+    .card-live {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 500; color: var(--green);
+      flex-shrink: 0; margin-top: 2px;
     }
 
-    .card-badges {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .badge-live {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--green);
-      background: rgba(35,209,139,0.1);
-      border: 1px solid rgba(35,209,139,0.2);
-      padding: 3px 8px;
-      border-radius: 999px;
-    }
-
-    .badge-live .live-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
+    .live-dot {
+      width: 5px; height: 5px; border-radius: 50%;
       background: var(--green);
     }
 
-    .badge-local {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--yellow);
-      background: rgba(255,213,79,0.1);
-      border: 1px solid rgba(255,213,79,0.2);
-      padding: 3px 8px;
-      border-radius: 999px;
-    }
-
-    .badge-client {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--muted2);
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      padding: 3px 8px;
-      border-radius: 999px;
-    }
-
-    .card-body {
-      flex: 1;
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 650;
-      letter-spacing: -0.3px;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
     .card-desc {
-      font-size: 13.5px;
-      color: var(--muted2);
-      line-height: 1.6;
+      font-size: 12.5px; color: var(--t2); line-height: 1.62;
+      flex: 1; margin-bottom: 16px;
     }
 
-    .card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
+    .card-foot {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 13px; border-top: 1px solid var(--border-s);
     }
 
-    .stack {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
+    .tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    .tag {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.1px;
+      padding: 2px 6px; border-radius: 4px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--border); color: var(--t2);
     }
 
-    .stack-tag {
-      font-size: 10.5px;
-      font-weight: 500;
-      padding: 3px 7px;
-      border-radius: 5px;
-      letter-spacing: 0.2px;
-      background: rgba(255,255,255,0.04);
-      color: var(--muted2);
+    .card-btns { display: flex; gap: 5px; flex-shrink: 0; }
+
+    .btn-sq {
+      width: 27px; height: 27px; border-radius: 7px;
+      background: var(--raised); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--t2); transition: all 0.13s; flex-shrink: 0;
+    }
+    .btn-sq:hover { color: var(--text); border-color: var(--border-h); }
+
+    .btn-open {
+      display: flex; align-items: center; gap: 5px;
+      height: 27px; padding: 0 10px; border-radius: 7px;
+      background: var(--accent); font-size: 11px; font-weight: 500;
+      color: #fff; transition: filter 0.13s;
+    }
+    .btn-open:hover { filter: brightness(1.13); }
+
+    /* ── CLIENT LIST ── */
+    .client-list {
       border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
     }
 
-    .stack-tag.ts   { background: rgba(74,158,255,0.08);  color: #78b4ff; border-color: rgba(74,158,255,0.15); }
-    .stack-tag.react{ background: rgba(38,198,218,0.08);  color: #4dd8e8; border-color: rgba(38,198,218,0.15); }
-    .stack-tag.next { background: rgba(255,255,255,0.06); color: #c0c0d0; border-color: rgba(255,255,255,0.12); }
-    .stack-tag.py   { background: rgba(255,213,79,0.08);  color: #ffd54f; border-color: rgba(255,213,79,0.15); }
-    .stack-tag.node { background: rgba(35,209,139,0.08);  color: #2ecc88; border-color: rgba(35,209,139,0.15); }
-    .stack-tag.cf   { background: rgba(255,140,66,0.08);  color: #ff9a5c; border-color: rgba(255,140,66,0.15); }
-    .stack-tag.ts.tanstack { background: rgba(255,140,66,0.08); color: #ffaa6e; border-color: rgba(255,140,66,0.15); }
-
-    .card-actions {
-      display: flex;
-      gap: 6px;
-      opacity: 0;
-      transition: opacity 0.2s;
+    .client-row {
+      display: grid;
+      grid-template-columns: 160px 1fr auto;
+      align-items: center; gap: 20px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border-s);
+      transition: background 0.13s;
     }
-    .card:hover .card-actions { opacity: 1; }
+    .client-row:last-child { border-bottom: none; }
+    .client-row:hover { background: rgba(255,255,255,0.018); }
 
-    .action-btn {
-      width: 30px; height: 30px;
-      border-radius: 8px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted2);
-      transition: all 0.15s;
+    .client-name {
+      font-size: 13.5px; font-weight: 550; color: var(--text);
     }
-    .action-btn:hover { color: var(--text); border-color: var(--border-hover); }
-    .action-btn.primary {
-      background: var(--card-color, var(--accent));
-      border-color: transparent;
-      color: #fff;
-    }
-    .action-btn.primary:hover { filter: brightness(1.15); }
 
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      max-width: 1200px;
-      margin: 0 auto 0;
-      padding: 0 48px;
+    .client-desc {
+      font-size: 12.5px; color: var(--t2); line-height: 1.5;
+    }
+
+    .client-action {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11.5px; color: var(--t2);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 5px 10px; white-space: nowrap;
+      transition: all 0.13s;
+    }
+    .client-action:hover { color: var(--text); border-color: var(--border-h); }
+
+    .client-private {
+      font-size: 11px; color: var(--t3);
+      border: 1px solid var(--border-s);
+      border-radius: 6px; padding: 5px 10px; white-space: nowrap;
     }
 
     /* ── FOOTER ── */
     footer {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 32px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--muted);
+      border-top: 1px solid var(--border-s);
+      max-width: 1160px; margin: 0 auto;
+      padding: 24px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--t3);
     }
-
-    /* ── CARD INERT (client cards with no URL) ── */
-    .card-inert { cursor: default; }
-    .card-inert:hover { transform: none; box-shadow: none; border-color: var(--border); }
-
-    /* ── FOOTER LINK ── */
-    .footer-link { color: var(--muted2); transition: color 0.15s; }
-    .footer-link:hover { color: var(--text); }
-    .footer-sep { color: var(--muted); margin: 0 6px; }
+    footer a { color: var(--t2); transition: color 0.13s; }
+    footer a:hover { color: var(--text); }
+    .fsep { margin: 0 8px; }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .grid.featured { grid-template-columns: 1fr; }
+    @media (max-width: 860px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .client-row { grid-template-columns: 1fr auto; }
+      .client-desc { display: none; }
     }
 
-    @media (max-width: 680px) {
-      /* Nav: hide section jumps, keep Setup + GitHub */
+    @media (max-width: 600px) {
       nav { padding: 0 16px; }
       .nav-link[href="#live"],
       .nav-link[href="#client"] { display: none; }
-      .nav-link[href="setup.html"] { display: flex; }
 
-      /* Hero */
-      .hero { padding: 40px 16px 32px; }
-      .hero h1 { letter-spacing: -1px; }
-      .hero-sub { font-size: 16px; margin-bottom: 28px; }
-      .hero-stats { gap: 20px; }
-      .stat-num { font-size: 20px; }
+      .hero { padding: 52px 16px 48px; }
+      .hero h1 { letter-spacing: -2px; }
+      .hero-sub { font-size: 15px; }
+      .hero-meta { gap: 0; }
+      .meta-dot { margin: 0 10px; }
 
-      /* Sections & grid */
-      .sections { padding: 0 16px 56px; gap: 48px; }
-      .grid { grid-template-columns: 1fr; }
+      main { padding: 0 16px 64px; }
+      .grid-auto { grid-template-columns: 1fr; }
 
-      /* Cards */
-      .card { padding: 20px; border-radius: 14px; }
-      .card-icon { width: 42px; height: 42px; font-size: 19px; }
-      .card-title { font-size: 16px; }
-      .card-desc { font-size: 13px; }
-      /* Always show action buttons on touch — no hover on mobile */
-      .card-actions { opacity: 1; }
-      /* Stack card footer vertically if tight */
-      .card-footer { flex-wrap: wrap; gap: 10px; }
+      .client-row { grid-template-columns: 1fr auto; gap: 12px; padding: 12px 14px; }
 
-      /* Footer */
-      footer { padding: 24px 16px; flex-direction: column; gap: 10px; text-align: center; }
-      .footer-sep { display: none; }
+      footer { padding: 20px 16px; flex-direction: column; gap: 8px; text-align: center; }
+      .fsep { display: none; }
     }
 
-    @media (max-width: 400px) {
-      .card { padding: 16px; }
-      .hero-stats { gap: 14px; }
-      .stat-num { font-size: 18px; }
+    @media (max-width: 380px) {
+      .hero h1 { letter-spacing: -1.5px; }
+      .card { padding: 16px 18px 14px; }
     }
   </style>
 </head>
@@ -474,385 +344,275 @@
 <!-- NAV -->
 <nav>
   <span class="nav-logo">Aaron M</span>
-  <div class="nav-links">
+  <div class="nav-right">
     <a class="nav-link" href="#live">Live Apps</a>
     <a class="nav-link" href="#client">Client</a>
     <a class="nav-link" href="setup.html">Setup</a>
     <a class="nav-gh" href="https://github.com/Aaron-1411" target="_blank">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
       GitHub
     </a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow"><span class="dot"></span>Building in public</div>
+<div class="hero">
+  <div class="hero-pill"><span class="pill-dot"></span>Building in public</div>
   <h1>Products built<br>to ship.</h1>
-  <p class="hero-sub">Full-stack SaaS across finance, legal, data, and health — from idea to live product.</p>
-  <div class="hero-stats">
-    <div class="stat"><span class="stat-num">9</span><span class="stat-label">Live on Cloudflare</span></div>
-    <div class="stat"><span class="stat-num">3</span><span class="stat-label">Client projects</span></div>
-    <div class="stat"><span class="stat-num">12</span><span class="stat-label">Total built</span></div>
+  <p class="hero-sub">Full-stack SaaS across finance, legal, data, health, and lifestyle — idea to live in days.</p>
+  <div class="hero-meta">
+    <span><strong>9</strong> live on Cloudflare</span>
+    <span class="meta-dot">·</span>
+    <span><strong>12</strong> total projects</span>
+    <span class="meta-dot">·</span>
+    <span>Lovable + Claude Code</span>
   </div>
-</section>
+</div>
 
-<div class="sections">
+<main>
 
   <!-- LIVE APPS -->
-  <div id="live">
-    <div class="section-header">
-      <span class="section-title">Live Apps</span>
-      <span class="section-count">9 deployed · Cloudflare</span>
+  <div class="section" id="live">
+    <div class="sec-head">
+      <span class="sec-title">Live Apps</span>
+      <span class="sec-line"></span>
+      <span class="sec-count">9 on Cloudflare</span>
     </div>
-    <div class="grid">
 
-      <!-- GET SETTLD -->
-      <a class="card" href="https://get-settld-app.pages.dev" target="_blank"
-         style="--card-color:#7c6dfa; --card-bg:rgba(124,109,250,0.1); --card-border:rgba(124,109,250,0.2); --card-glow:rgba(124,109,250,0.08);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">⚖️</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Get Settld</div>
-          <div class="card-desc">Dispute resolution and settlement platform. Guides users through legal processes with a clean, structured flow.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag react">React</span>
-            <span class="stack-tag ts">TypeScript</span>
-            <span class="stack-tag cf">Cloudflare</span>
-          </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/get-settld" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://get-settld-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+    <!-- Lovable group -->
+    <div class="group">
+      <div class="group-head">
+        <span class="group-pill lovable">Lovable</span>
+        <span class="group-line"></span>
+      </div>
+      <div class="grid-2">
 
-      <!-- WEALTH COMPANION -->
-      <a class="card" href="https://wealth-companion-app.mraaronmanu.workers.dev" target="_blank"
-         style="--card-color:#23d18b; --card-bg:rgba(35,209,139,0.08); --card-border:rgba(35,209,139,0.18); --card-glow:rgba(35,209,139,0.06);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">💰</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
+        <a class="card lovable" href="https://get-settld-app.pages.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">⚖️ Get Settld</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Wealth Companion</div>
-          <div class="card-desc">Personal finance and wealth management app. Track goals, assets, and financial milestones in one place.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag ts tanstack">TanStack</span>
-            <span class="stack-tag ts">TypeScript</span>
-            <span class="stack-tag cf">Workers</span>
+          <p class="card-desc">Dispute resolution and settlement platform. Guides users through legal processes with a clean, structured flow.</p>
+          <div class="card-foot">
+            <div class="tags">
+              <span class="tag">React</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">CF Pages</span>
+            </div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/get-settld" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://get-settld-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/wealth-companion" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://wealth-companion-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- LEASE GUARD -->
-      <a class="card" href="https://lease-guard-app.mraaronmanu.workers.dev" target="_blank"
-         style="--card-color:#ff8c42; --card-bg:rgba(255,140,66,0.08); --card-border:rgba(255,140,66,0.18); --card-glow:rgba(255,140,66,0.06);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">🏠</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
+        <a class="card lovable" href="https://wealth-companion-app.mraaronmanu.workers.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">💰 Wealth Companion</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Lease Guard</div>
-          <div class="card-desc">Lease management and tenant protection platform. Understand your rights, review clauses, and track key dates.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag ts tanstack">TanStack</span>
-            <span class="stack-tag ts">TypeScript</span>
-            <span class="stack-tag cf">Workers</span>
+          <p class="card-desc">Personal finance and wealth management app. Track goals, assets, and financial milestones in one place.</p>
+          <div class="card-foot">
+            <div class="tags">
+              <span class="tag">TanStack</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">CF Workers</span>
+            </div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/wealth-companion" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://wealth-companion-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/lease-guard" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://lease-guard-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- OPEN EYES DATA -->
-      <a class="card" href="https://open-eyes-data-app.mraaronmanu.workers.dev" target="_blank"
-         style="--card-color:#26c6da; --card-bg:rgba(38,198,218,0.08); --card-border:rgba(38,198,218,0.18); --card-glow:rgba(38,198,218,0.06);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">👁️</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
+        <a class="card lovable" href="https://lease-guard-app.mraaronmanu.workers.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">🏠 Lease Guard</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Open Eyes Data</div>
-          <div class="card-desc">Public data transparency dashboard. Surfaces government datasets, contracts, and public records in one searchable interface.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag ts tanstack">TanStack</span>
-            <span class="stack-tag ts">TypeScript</span>
-            <span class="stack-tag cf">Workers</span>
+          <p class="card-desc">Lease management and tenant protection platform. Understand your rights, review clauses, and track key dates.</p>
+          <div class="card-foot">
+            <div class="tags">
+              <span class="tag">TanStack</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">CF Workers</span>
+            </div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/lease-guard" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://lease-guard-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/open-eyes-data" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://open-eyes-data-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- LIFEDASH -->
-      <a class="card" href="https://lifedash-app.pages.dev" target="_blank"
-         style="--card-color:#8b5cf6; --card-bg:rgba(139,92,246,0.08); --card-border:rgba(139,92,246,0.18); --card-glow:rgba(139,92,246,0.06);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">⚡</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
+        <a class="card lovable" href="https://open-eyes-data-app.mraaronmanu.workers.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">👁️ Open Eyes Data</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">LifeDash</div>
-          <div class="card-desc">Gamified personal life dashboard. Tracks Body, Learn, Mind, and Experience — XP, streaks, sleep, mood, habits, and journalling in one single-file app.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag react">React</span>
-            <span class="stack-tag cf">Cloudflare</span>
+          <p class="card-desc">Public data transparency dashboard. Surfaces government datasets, contracts, and public records in one searchable interface.</p>
+          <div class="card-foot">
+            <div class="tags">
+              <span class="tag">TanStack</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">CF Workers</span>
+            </div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/open-eyes-data" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://open-eyes-data-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
-          <div class="card-actions">
-            <a class="action-btn primary" href="https://lifedash-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+        </a>
 
-      <!-- ISA INVESTMENT PLATFORM -->
-      <a class="card" href="https://isa-investment-platform-app.pages.dev" target="_blank"
-         style="--card-color:#b49dff; --card-bg:rgba(180,157,255,0.08); --card-border:rgba(180,157,255,0.18); --card-glow:rgba(180,157,255,0.06);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">📈</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">ISA Investment Platform</div>
-          <div class="card-desc">Investment tracker for UK ISA accounts. Live prices, portfolio analytics, risk metrics, news, and fundamentals — built with Next.js.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag next">Next.js</span>
-            <span class="stack-tag ts">TypeScript</span>
-            <span class="stack-tag cf">Cloudflare</span>
-          </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/isa-investment-platform" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://isa-investment-platform-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+      </div>
+    </div>
 
-      <!-- GYMSEEK -->
-      <a class="card" href="https://gymseek-app.pages.dev" target="_blank"
-         style="--card-color:#23d18b; --card-bg:rgba(35,209,139,0.07); --card-border:rgba(35,209,139,0.16); --card-glow:rgba(35,209,139,0.05);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">🏋️</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">GymSeek</div>
-          <div class="card-desc">Gym finder with AI-powered search. Enter your location, budget, and preferences — get ranked results with pricing and facilities.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag node">Node.js</span>
-            <span class="stack-tag react">Express</span>
-            <span class="stack-tag cf">Cloudflare</span>
-          </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/gymseek" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://gymseek-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+    <!-- Claude Code group -->
+    <div class="group">
+      <div class="group-head">
+        <span class="group-pill cc">Claude Code</span>
+        <span class="group-line"></span>
+      </div>
+      <div class="grid-auto">
 
-      <!-- TASTYBOT -->
-      <a class="card" href="https://tastybot-app.pages.dev" target="_blank"
-         style="--card-color:#ffd54f; --card-bg:rgba(255,213,79,0.07); --card-border:rgba(255,213,79,0.16); --card-glow:rgba(255,213,79,0.05);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">🤖</div>
-          <div class="card-badges">
-            <span class="badge-live"><span class="live-dot"></span>Live</span>
+        <a class="card cc" href="https://lifedash-app.pages.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">⚡ LifeDash</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Tastybot</div>
-          <div class="card-desc">Trading bot dashboard for TastyTrade. Backtests, position management, and strategy execution — Python bot, Vite dashboard.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag py">Python</span>
-            <span class="stack-tag react">Vite</span>
-            <span class="stack-tag cf">Cloudflare</span>
+          <p class="card-desc">Gamified personal life tracker — Body, Learn, Mind, Experience. XP, streaks, sleep, mood, habits, and journalling in one app.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">React</span><span class="tag">CF Pages</span></div>
+            <div class="card-btns">
+              <a class="btn-open" href="https://lifedash-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
           </div>
-          <div class="card-actions">
-            <a class="action-btn" href="https://github.com/Aaron-1411/tastybot" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-              <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="action-btn primary" href="https://tastybot-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Open app">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </a>
+        </a>
 
+        <a class="card cc" href="https://isa-investment-platform-app.pages.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">📈 ISA Platform</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
+          </div>
+          <p class="card-desc">UK ISA investment tracker. Live prices, portfolio analytics, risk metrics, news, and fundamentals.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">Next.js</span><span class="tag">TypeScript</span><span class="tag">CF Pages</span></div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/isa-investment-platform" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://isa-investment-platform-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+        </a>
+
+        <a class="card cc" href="https://gymseek-app.pages.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">🏋️ GymSeek</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
+          </div>
+          <p class="card-desc">AI gym finder. Enter location, budget, and preferences — get ranked results with pricing and facilities.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">CF Pages</span></div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/gymseek" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://gymseek-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+        </a>
+
+        <a class="card cc" href="https://tastybot-app.pages.dev" target="_blank">
+          <div class="card-head">
+            <span class="card-name">🤖 Tastybot</span>
+            <span class="card-live"><span class="live-dot"></span>Live</span>
+          </div>
+          <p class="card-desc">Trading bot dashboard for TastyTrade. Backtests, position management, and strategy execution.</p>
+          <div class="card-foot">
+            <div class="tags"><span class="tag">Python</span><span class="tag">Vite</span><span class="tag">CF Pages</span></div>
+            <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/tastybot" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a class="btn-open" href="https://tastybot-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
+                Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+        </a>
+
+      </div>
     </div>
   </div>
 
   <!-- CLIENT WORK -->
-  <div id="client">
-    <div class="section-header">
-      <span class="section-title">Client Work</span>
-      <span class="section-count">3 projects</span>
+  <div class="section" id="client">
+    <div class="sec-head">
+      <span class="sec-title">Client Work</span>
+      <span class="sec-line"></span>
+      <span class="sec-count">3 projects</span>
     </div>
-    <div class="grid">
+    <div class="client-list">
 
-      <!-- EZ TUITION -->
-      <a class="card" href="https://www.eztuition.co.uk/" target="_blank"
-         style="--card-color:#f06292; --card-bg:rgba(240,98,146,0.07); --card-border:rgba(240,98,146,0.16); --card-glow:rgba(240,98,146,0.05);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">🎓</div>
-          <div class="card-badges">
-            <span class="badge-client">Client</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Ez Tuition</div>
-          <div class="card-desc">Tuition management platform for education providers. Full-featured UI for scheduling, billing, and student management.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag react">React</span>
-            <span class="stack-tag ts">TypeScript</span>
-          </div>
-          <div class="card-actions">
-            <a class="action-btn primary" href="https://www.eztuition.co.uk/" target="_blank" onclick="event.stopPropagation()" title="Open site">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
+      <a class="client-row" href="https://www.eztuition.co.uk/" target="_blank">
+        <span class="client-name">🎓 Ez Tuition</span>
+        <span class="client-desc">Tuition management platform — scheduling, billing, and student management for education providers.</span>
+        <span class="client-action">
+          eztuition.co.uk
+          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </span>
       </a>
 
-      <!-- PLUS 15 -->
-      <a class="card" href="https://plus15.co.uk/" target="_blank"
-         style="--card-color:#ce93d8; --card-bg:rgba(206,147,216,0.07); --card-border:rgba(206,147,216,0.16); --card-glow:rgba(206,147,216,0.05);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">🏢</div>
-          <div class="card-badges">
-            <span class="badge-client">Client</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Plus 15</div>
-          <div class="card-desc">Client platform built and delivered via Lovable. Live site managed and maintained by the client.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag react">React</span>
-            <span class="stack-tag ts">TypeScript</span>
-          </div>
-          <div class="card-actions">
-            <a class="action-btn primary" href="https://plus15.co.uk/" target="_blank" onclick="event.stopPropagation()" title="Open site">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
+      <a class="client-row" href="https://plus15.co.uk/" target="_blank">
+        <span class="client-name">🏢 Plus 15</span>
+        <span class="client-desc">Client platform built and delivered via Lovable. Managed by the client.</span>
+        <span class="client-action">
+          plus15.co.uk
+          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </span>
       </a>
 
-      <!-- PLUS 15 CASE STUDY -->
-      <div class="card card-inert"
-           style="--card-color:#4a9eff; --card-bg:rgba(74,158,255,0.07); --card-border:rgba(74,158,255,0.16); --card-glow:rgba(74,158,255,0.05);">
-        <div class="card-accent"></div>
-        <div class="card-top">
-          <div class="card-icon">📋</div>
-          <div class="card-badges">
-            <span class="badge-client">Client</span>
-            <span class="badge-client">Private</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-title">Plus 15 Case Study</div>
-          <div class="card-desc">Accompanying case study for the Plus 15 project. Private — client access only.</div>
-        </div>
-        <div class="card-footer">
-          <div class="stack">
-            <span class="stack-tag react">React</span>
-            <span class="stack-tag ts">TypeScript</span>
-          </div>
-          <div class="card-actions"></div>
-        </div>
+      <div class="client-row">
+        <span class="client-name">📋 Plus 15 Case Study</span>
+        <span class="client-desc">Accompanying case study for the Plus 15 project.</span>
+        <span class="client-private">Private</span>
       </div>
 
     </div>
   </div>
 
-</div>
+</main>
 
 <footer>
   <span>Aaron M · Builder</span>
   <span>
-    <a class="footer-link" href="setup.html">Infrastructure setup</a>
-    <span class="footer-sep">·</span>
-    Updated on every push
-    <span class="footer-sep">·</span>
-    <a class="footer-link" href="https://github.com/Aaron-1411/CC">Aaron-1411/CC</a>
+    <a href="setup.html">Infrastructure</a>
+    <span class="fsep">·</span>
+    Deployed on every push
+    <span class="fsep">·</span>
+    <a href="https://github.com/Aaron-1411/CC">Aaron-1411/CC</a>
   </span>
 </footer>
 

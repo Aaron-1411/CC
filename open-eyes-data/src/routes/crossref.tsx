@@ -186,6 +186,33 @@ function CrossRefPage() {
             </div>
           )}
 
+          {/* Party connection summary — aggregate donations by party */}
+          {results.donations.length > 0 && (() => {
+            const byParty = new Map<string, number>();
+            for (const d of results.donations) {
+              byParty.set(d.party, (byParty.get(d.party) ?? 0) + d.amount);
+            }
+            const sorted = Array.from(byParty.entries()).sort(([, a], [, b]) => b - a);
+            return (
+              <Card className="border-amber/20 bg-amber/5">
+                <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-3">
+                  Party connections — total donations matched
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  {sorted.map(([party, total]) => (
+                    <div key={party}>
+                      <div className="font-display text-xl font-bold text-amber">{fmtGBP(total)}</div>
+                      <div className="label-mono text-[10px] text-muted-foreground uppercase tracking-wider">{party}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Total from {results.donations.length} donation{results.donations.length !== 1 ? "s" : ""} matching "{submitted}" across all parties in the Electoral Commission register.
+                </p>
+              </Card>
+            );
+          })()}
+
           {/* Contracts */}
           {results.contracts.length > 0 && (
             <section>

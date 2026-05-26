@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
+import { withSnapshot } from "@/lib/snapshot";
 
 type Publication = {
   title: string;
@@ -120,7 +121,9 @@ export const Route = createFileRoute("/api/nhs")({
     handlers: {
       GET: async () => {
         try {
-          const data = await cached("nhs:v1", 60 * 60_000, fetchNHSPublications);
+          const data = await withSnapshot("nhs_publications", () =>
+            cached("nhs:v1", 60 * 60_000, fetchNHSPublications),
+          );
           return jsonResponse(
             envelope(
               data,

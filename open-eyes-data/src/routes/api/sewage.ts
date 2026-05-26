@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
+import { withSnapshot } from "@/lib/snapshot";
 
 // 2024 EDM dataset — org ID Bb8lfThdhugyc4G3 (correct EA ArcGIS org)
 // Previous URL used JJzESW51TqeY9uat which was decommissioned
@@ -83,8 +84,10 @@ export const Route = createFileRoute("/api/sewage")({
     handlers: {
       GET: async () => {
         try {
-          // Annual EDM data — 24h cache to avoid re-fetching multiple ArcGIS pages every 30 min
-          const data = await cached("sewage:edm:2024:v1", 24 * 60 * 60_000, fetchSpills);
+          // Annual EDM data — snapshot preferred (built daily by GitHub Actions), 24h in-memory fallback
+          const data = await withSnapshot("sewage_edm_2024", () =>
+            cached("sewage:edm:2024:v1", 24 * 60 * 60_000, fetchSpills),
+          );
           return jsonResponse(
             envelope(
               data,

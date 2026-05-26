@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
+import { withSnapshot } from "@/lib/snapshot";
 
 // Official Cabinet Office FOI statistics dataset (annual)
 // Updated each year — this is the 2025 (data through 2025) release
@@ -156,8 +157,10 @@ export const Route = createFileRoute("/api/foi")({
     handlers: {
       GET: async () => {
         try {
-          // Annual stats don't change frequently — 6h cache
-          const data = await cached("foi:govuk:2025:v1", 6 * 60 * 60_000, fetchFOIStats);
+          // Annual stats — snapshot preferred, 6h in-memory fallback
+          const data = await withSnapshot("foi_2025", () =>
+            cached("foi:govuk:2025:v1", 6 * 60 * 60_000, fetchFOIStats),
+          );
           return jsonResponse(
             envelope(
               data,

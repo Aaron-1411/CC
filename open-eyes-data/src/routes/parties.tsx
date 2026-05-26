@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   Card,
   DataProvenance,
@@ -10,7 +11,7 @@ import {
   SectionHeader,
   Skeleton,
 } from "@/components/primitives";
-import { getJSON } from "@/lib/api";
+import { fmtNumber, getJSON } from "@/lib/api";
 import type { Issue, Party, PartyPromise, PromiseStatus } from "@/data/parties";
 
 export const Route = createFileRoute("/parties")({
@@ -161,6 +162,85 @@ function CoverageBar({ parties }: { parties: Party[] }) {
   );
 }
 
+// ─── Live data callouts per issue ────────────────────────────────────────────
+
+type NHSStats = { stats: Array<{ label: string; value: string; target?: string; context: string }> };
+type SewageData = { totalHours: number; totalCount: number; year: number };
+type StopSearchData = { totalStops: number; year?: string } | Array<{ month: string; stops?: number }>;
+
+function LiveDataCallout({ issue }: { issue: Issue | "All" }) {
+  const nhsQ = useQuery({
+    queryKey: ["nhs-live"],
+    queryFn: () => getJSON<NHSStats>("/api/nhs"),
+    staleTime: 60 * 60_000,
+    enabled: issue === "NHS" || issue === "All",
+  });
+  const sewageQ = useQuery({
+    queryKey: ["sewage-live-summary"],
+    queryFn: () => getJSON<SewageData>("/api/sewage"),
+    staleTime: 24 * 60 * 60_000,
+    enabled: issue === "Environment" || issue === "All",
+  });
+  const stopQ = useQuery({
+    queryKey: ["stop-search-live"],
+    queryFn: () => getJSON<StopSearchData>("/api/stop-search"),
+    staleTime: 60 * 60_000,
+    enabled: issue === "Crime" || issue === "All",
+  });
+
+  const stats: Array<{ label: string; value: string; sub?: string; to: string }> = [];
+
+  if ((issue === "NHS" || issue === "All") && nhsQ.data) {
+    const ae = nhsQ.data.data.stats?.find((s) => s.label.includes("4-hour"));
+    if (ae) stats.push({ label: "A&E 4h target", value: ae.value, sub: `target ${ae.target ?? "95%"}`, to: "/nhs" });
+  }
+  if ((issue === "Environment" || issue === "All") && sewageQ.data) {
+    const d = sewageQ.data.data;
+    const hrs = typeof d.totalHours === "number" ? d.totalHours : 0;
+    stats.push({
+      label: `Sewage spill hours (${(d as SewageData).year ?? 2024})`,
+      value: fmtNumber(Math.round(hrs)),
+      sub: `${fmtNumber((d as SewageData).totalCount)} events`,
+      to: "/sewage",
+    });
+  }
+  if ((issue === "Crime" || issue === "All") && stopQ.data) {
+    const raw = stopQ.data.data;
+    // raw could be an array of monthly records or a summary object
+    let total = 0;
+    if (Array.isArray(raw)) {
+      total = (raw as Array<{ stops?: number }>).reduce((s, m) => s + (m.stops ?? 0), 0);
+    } else if (typeof (raw as { totalStops?: number }).totalStops === "number") {
+      total = (raw as { totalStops: number }).totalStops;
+    }
+    if (total > 0) stats.push({ label: "Stop & search (latest year)", value: fmtNumber(total), sub: "England & Wales", to: "/stop-search" });
+  }
+
+  if (stats.length === 0) return null;
+
+  return (
+    <Card className="border-amber/20 bg-amber/5">
+      <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-3">
+        Live data · what the numbers actually say
+      </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {stats.map((s) => (
+          <Link key={s.label} to={s.to} className="group">
+            <div className="text-2xl font-display font-bold text-amber group-hover:opacity-80 transition-opacity">
+              {s.value}
+            </div>
+            <div className="text-xs font-medium mt-0.5">{s.label}</div>
+            {s.sub && <div className="label-mono text-[10px] text-muted-foreground">{s.sub}</div>}
+            <div className="label-mono text-[10px] text-amber/70 mt-1 group-hover:text-amber transition-colors">
+              See full data →
+            </div>
+          </Link>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 function PartiesPage() {
   const [activeIssue, setActiveIssue] = useState<Issue | "All">("All");
 
@@ -221,6 +301,9 @@ function PartiesPage() {
           </button>
         ))}
       </div>
+
+      {/* Live data callout */}
+      <LiveDataCallout issue={activeIssue} />
 
       {q.error && <ErrorNote>{(q.error as Error).message}</ErrorNote>}
 

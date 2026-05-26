@@ -1,12 +1,212 @@
 #!/usr/bin/env bun
 /**
  * Pre-fetches all expensive API data and saves as daily snapshots.
- * Run via GitHub Actions cron job or: bun run scripts/fetch-snapshots.ts
+ * Run via GitHub Actions cron or: bun run scripts/fetch-snapshots.ts
+ *
+ * Snapshots live in src/data/snapshots/ and are committed to the repo.
+ * API routes read them first (withSnapshot), falling back to live fetch.
  */
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 
 const SNAPSHOT_DIR = join(process.cwd(), "src/data/snapshots");
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+
+async function saveSnapshot(key: string, data: unknown) {
+  await mkdir(SNAPSHOT_DIR, { recursive: true });
+  const path = join(SNAPSHOT_DIR, `${key}.json`);
+  await writeFile(path, JSON.stringify({ data, fetchedAt: new Date().toISOString() }, null, 2));
+  console.log(`  saved → ${key}.json`);
+}
+
+// ─── 1. Sewage ────────────────────────────────────────────────────────────────
+
+const ARCGIS_BASE =
+  "https://services3.arcgis.com/Bb8lfThdhugyc4G3/arcgis/rest/services/Storm_Overflow_EDM_Annual_Returns_2024/FeatureServer/0/query";
+const ARCGIS_FIELDS =
+  "waterCompanyName,siteNameEA,totalDurationAllSpillsHrs,countedSpills,recievingWaterName";
+const PAGE_SIZE = 1000;
+
+async function fetchSpillPage(offset: number) {
+  const url = `${ARCGIS_BASE}?where=1%3D1&outFields=${ARCGIS_FIELDS}&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}`;
+  const r = await fetch(url, { headers: { accept: "application/json" } });
+  if (!r.ok) throw new Error(`ArcGIS ${r.status}`);
+  const j = await r.json() as { features?: Array<{ attributes: Record<string, unknown> }> };
+  return j.features ?? [];
+}
+
+async function fetchSewage() {
+  console.log("  Fetching sewage (ArcGIS EDM 2024)…");
+  const all: Array<{ attributes: Record<string, unknown> }> = [];
+  let offset = 0;
+  for (let page = 0; page < 20; page++) {
+    const batch = await fetchSpillPage(offset);
+    all.push(...batch);
+    if (batch.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+  if (!all.length) throw new Error("No ArcGIS features");
+  const spills = all
+    .map((f) => ({
+      company: (f.attributes.waterCompanyName as string) ?? "Unknown",
+      site: (f.attributes.siteNameEA as string) ?? "Unknown",
+      spillHours: Number(f.attributes.totalDurationAllSpillsHrs ?? 0),
+      spillCount: Number(f.attributes.countedSpills ?? 0),
+      receivingWater: (f.attributes.recievingWaterName as string) ?? "—",
+    }))
+    .sort((a, b) => b.spillHours - a.spillHours);
+  return {
+    spills,
+    totalHours: spills.reduce((s, x) => s + x.spillHours, 0),
+    totalCount: spills.reduce((s, x) => s + x.spillCount, 0),
+    year: 2024,
+  };
+}
+
+// ─── 2. FOI ───────────────────────────────────────────────────────────────────
+
+const FOI_CSV_URL =
+  "https://assets.publishing.service.gov.uk/media/69f310a60bb62e692c5d6e8a/foi-statistics-2025-published-data.csv";
+
+function parseCSVRow(line: string): string[] {
+  const fields: string[] = [];
+  let cur = "";
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQuote = !inQuote;
+    } else if (ch === "," && !inQuote) { fields.push(cur); cur = ""; }
+    else cur += ch;
+  }
+  fields.push(cur);
+  return fields;
+}
+
+function numOrZero(s: string): number {
+  const n = Number(s.replace(/[^0-9.-]/g, ""));
+  return isNaN(n) ? 0 : n;
+}
+
+async function fetchFOI() {
+  console.log("  Fetching FOI statistics (Cabinet Office CSV)…");
+  const r = await fetch(FOI_CSV_URL, { headers: { accept: "text/csv" } });
+  if (!r.ok) throw new Error(`FOI CSV ${r.status}`);
+  const text = await r.text();
+  const lines = text.split("\n").filter((l) => l.trim());
+  const header = parseCSVRow(lines[0]);
+  const idx = {
+    quarter: header.indexOf("Quarter"),
+    body: header.indexOf("Government body"),
+    received: header.indexOf("Total requests received"),
+    fullyWithheld: header.indexOf("Initial Outcome  Fully withheld"),
+    withheldPct: header.indexOf("Percentage of resolvable requests withheld in full"),
+  };
+  const years = new Set<number>();
+  for (const line of lines.slice(1)) {
+    const y = Number(parseCSVRow(line)[idx.quarter]);
+    if (!isNaN(y) && y > 2000) years.add(y);
+  }
+  const latestYear = Math.max(...Array.from(years));
+  const byBody = new Map<string, { totalReceived: number; fullyWithheld: number; withheldPct: number }>();
+  for (const line of lines.slice(1)) {
+    const f = parseCSVRow(line);
+    if (Number(f[idx.quarter]) !== latestYear) continue;
+    const body = f[idx.body]?.trim();
+    if (!body || body === "All government departments") continue;
+    const ex = byBody.get(body);
+    const received = numOrZero(f[idx.received]);
+    const fw = numOrZero(f[idx.fullyWithheld]);
+    if (ex) { ex.totalReceived += received; ex.fullyWithheld += fw; ex.withheldPct = numOrZero(f[idx.withheldPct]); }
+    else byBody.set(body, { totalReceived: received, fullyWithheld: fw, withheldPct: numOrZero(f[idx.withheldPct]) });
+  }
+  const refusals = Array.from(byBody.entries())
+    .filter(([, b]) => b.totalReceived > 0)
+    .sort(([, a], [, b]) => b.fullyWithheld - a.fullyWithheld)
+    .slice(0, 30)
+    .map(([bodyName, b]) => ({ bodyName, refusedCount: b.fullyWithheld, totalReceived: b.totalReceived, withheldPct: Math.round(b.withheldPct * 10) / 10 }));
+  const all = Array.from(byBody.values());
+  return {
+    refusals,
+    year: latestYear,
+    totalRequests: all.reduce((s, b) => s + b.totalReceived, 0),
+    totalWithheld: all.reduce((s, b) => s + b.fullyWithheld, 0),
+  };
+}
+
+// ─── 3. Expenses ─────────────────────────────────────────────────────────────
+
+const IPSA_URL = "https://www.theipsa.org.uk/api/download?type=totalSpend&year=24_25";
+
+function parsePounds(s: string): number {
+  if (!s || s === "N/A") return 0;
+  const n = Number(s.replace(/[£,\s]/g, ""));
+  return isNaN(n) ? 0 : n;
+}
+
+async function fetchExpenses() {
+  console.log("  Fetching MP expenses (IPSA 2024-25)…");
+  const r = await fetch(IPSA_URL, { headers: { accept: "text/csv" } });
+  if (!r.ok) throw new Error(`IPSA ${r.status}`);
+  const text = await r.text();
+  const csv = text.replace(/^﻿/, "");
+  const lines = csv.split("\n").filter((l) => l.trim());
+  const expenses = [];
+  for (const line of lines.slice(1)) {
+    const f = parseCSVRow(line);
+    if (f.length < 10) continue;
+    const name = f[0]?.trim();
+    if (!name || name.toLowerCase().includes("total")) continue;
+    const constituency = (f[2] ?? f[1] ?? "").trim();
+    const officeSpend = parsePounds(f[5] ?? "");
+    const staffingSpend = parsePounds(f[9] ?? "");
+    const accommodationSpend = parsePounds(f[17] ?? "");
+    const travelSpend = parsePounds(f[19] ?? "");
+    const otherSpend = parsePounds(f[20] ?? "");
+    const parliamentId = (f[21] ?? "").trim();
+    const totalSpend = officeSpend + staffingSpend + accommodationSpend + travelSpend + otherSpend;
+    if (totalSpend === 0 && !parliamentId) continue;
+    expenses.push({ name, constituency, officeSpend, staffingSpend, accommodationSpend, travelSpend, otherSpend, totalSpend, parliamentId });
+  }
+  expenses.sort((a, b) => b.totalSpend - a.totalSpend);
+  return { expenses, year: "2024-25", total: expenses.reduce((s, e) => s + e.totalSpend, 0) };
+}
+
+// ─── 4. NHS ───────────────────────────────────────────────────────────────────
+
+async function fetchNHS() {
+  console.log("  Fetching NHS publications…");
+  const publications: Array<{ title: string; link: string; date: string; summary: string }> = [];
+  try {
+    const r = await fetch(
+      "https://www.england.nhs.uk/wp-json/wp/v2/posts?search=A%26E+waiting+times&per_page=5&_fields=id,title,date,link,excerpt",
+      { headers: { accept: "application/json" }, signal: AbortSignal.timeout(12_000) },
+    );
+    if (r.ok) {
+      const posts = await r.json() as Array<{ title: { rendered: string }; date: string; link: string; excerpt: { rendered: string } }>;
+      for (const p of posts) {
+        publications.push({
+          title: p.title?.rendered?.replace(/&#\d+;/g, (m: string) => String.fromCharCode(parseInt(m.slice(2, -1), 10))) ?? "Untitled",
+          link: p.link,
+          date: p.date,
+          summary: (p.excerpt?.rendered ?? "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 200),
+        });
+      }
+    }
+  } catch { /* fallthrough */ }
+  return {
+    publications: publications.slice(0, 15),
+    stats: [
+      { label: "4-hour A&E target performance", value: "~76%", target: "95%", context: "Approx. Feb 2025 published figure — NHS has missed the 95% target every month since 2015." },
+      { label: "Average A&E wait", value: "~2h 30m", context: "Approximate average wait in type 1 emergency departments as of early 2025 publications" },
+      { label: "Monthly A&E attendances", value: "~2.4m", context: "Approximate monthly attendances across all A&E types in England" },
+    ],
+  };
+}
+
+// ─── 5. News ──────────────────────────────────────────────────────────────────
 
 const FEEDS = [
   { name: "BBC News", url: "https://feeds.bbci.co.uk/news/uk/rss.xml", bias: "Centre", lean: 0 },
@@ -25,167 +225,110 @@ const TOPICS: Record<string, string[]> = {
   Education: ["school", "teacher", "university", "ofsted", "pupil", "curriculum", "tuition"],
 };
 
-function stripCdata(text: string): string {
-  return text.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim();
-}
-
+function stripCdata(text: string): string { return text.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").trim(); }
 function stripHtml(text: string): string {
-  return text
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+  return text.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ").replace(/\s{2,}/g, " ").trim();
 }
 
 function parseRssItems(xml: string) {
   const items: Array<{ title: string; description: string; link: string; pubDate: string }> = [];
-  const itemRe = /<item[\s>]([\s\S]*?)<\/item>/gi;
+  const re = /<item[\s>]([\s\S]*?)<\/item>/gi;
   let m: RegExpExecArray | null;
-
-  while ((m = itemRe.exec(xml)) !== null) {
-    const block = m[1];
-    const titleM = block.match(/<title>([\s\S]*?)<\/title>/i);
-    const descM = block.match(/<description>([\s\S]*?)<\/description>/i);
-    const linkM = block.match(/<link>([\s\S]*?)<\/link>/i) ?? block.match(/<link\s+[^>]*href="([^"]+)"/i);
-    const dateM = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/i) ?? block.match(/<dc:date>([\s\S]*?)<\/dc:date>/i);
-
-    const title = titleM ? stripHtml(stripCdata(titleM[1])) : "";
-    if (!title) continue;
-
-    items.push({
-      title,
-      description: descM ? stripHtml(stripCdata(descM[1])) : "",
-      link: linkM ? stripCdata(linkM[1]).trim() : "",
-      pubDate: dateM ? stripCdata(dateM[1]).trim() : "",
-    });
+  while ((m = re.exec(xml)) !== null) {
+    const b = m[1];
+    const title = b.match(/<title>([\s\S]*?)<\/title>/i);
+    const desc = b.match(/<description>([\s\S]*?)<\/description>/i);
+    const link = b.match(/<link>([\s\S]*?)<\/link>/i) ?? b.match(/<link\s+[^>]*href="([^"]+)"/i);
+    const date = b.match(/<pubDate>([\s\S]*?)<\/pubDate>/i) ?? b.match(/<dc:date>([\s\S]*?)<\/dc:date>/i);
+    const t = title ? stripHtml(stripCdata(title[1])) : "";
+    if (!t) continue;
+    items.push({ title: t, description: desc ? stripHtml(stripCdata(desc[1])) : "", link: link ? stripCdata(link[1]).trim() : "", pubDate: date ? stripCdata(date[1]).trim() : "" });
   }
   return items;
 }
 
 function matchTopic(text: string): string | null {
   const lower = text.toLowerCase();
-  for (const [topic, keywords] of Object.entries(TOPICS)) {
-    if (keywords.some((kw) => lower.includes(kw))) return topic;
-  }
+  for (const [topic, kws] of Object.entries(TOPICS)) if (kws.some((k) => lower.includes(k))) return topic;
   return null;
 }
 
-function titleWords(title: string): string[] {
-  return title.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3);
-}
+function titleWords(t: string) { return t.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w.length > 3); }
 
 function titlesSimilar(a: string, b: string): boolean {
-  const wa = titleWords(a);
-  const wb = titleWords(b);
-  const setB = new Set(wb);
-  for (let i = 0; i <= wa.length - 4; i++) {
-    if (wa.slice(i, i + 4).every((w) => setB.has(w))) return true;
-  }
+  const wa = titleWords(a), wb = titleWords(b), setB = new Set(wb);
+  for (let i = 0; i <= wa.length - 4; i++) if (wa.slice(i, i + 4).every((w) => setB.has(w))) return true;
   const setA = new Set(wa);
-  for (let i = 0; i <= wb.length - 4; i++) {
-    if (wb.slice(i, i + 4).every((w) => setA.has(w))) return true;
-  }
+  for (let i = 0; i <= wb.length - 4; i++) if (wb.slice(i, i + 4).every((w) => setA.has(w))) return true;
   return false;
 }
 
-function toIso(pubDate: string): string {
-  if (!pubDate) return new Date().toISOString();
-  try {
-    const d = new Date(pubDate);
-    if (!isNaN(d.getTime())) return d.toISOString();
-  } catch { /* fallthrough */ }
+function toIso(d: string): string {
+  try { const p = new Date(d); if (!isNaN(p.getTime())) return p.toISOString(); } catch { /* */ }
   return new Date().toISOString();
 }
 
-function slugify(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
-}
+function slugify(t: string) { return t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60); }
 
-async function fetchNewsFeed() {
-  console.log("Fetching news feeds...");
-  const results = await Promise.allSettled(
-    FEEDS.map(async (feed) => {
-      try {
-        const res = await fetch(feed.url, {
-          headers: { "user-agent": "transparenC/1.0 snapshot-builder", accept: "application/rss+xml, application/xml, text/xml" },
-          signal: AbortSignal.timeout(15_000),
-        });
-        if (!res.ok) { console.warn(`  ${feed.name}: HTTP ${res.status}`); return []; }
-        const xml = await res.text();
-        const items = parseRssItems(xml);
-        console.log(`  ${feed.name}: ${items.length} items`);
-        return items.map((item) => ({ ...item, source: feed }));
-      } catch (e) {
-        console.warn(`  ${feed.name}: failed — ${(e as Error).message}`);
-        return [];
-      }
-    })
-  );
-
-  const allItems = results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
-
+async function fetchNews() {
+  console.log("  Fetching news RSS feeds…");
+  const results = await Promise.allSettled(FEEDS.map(async (feed) => {
+    try {
+      const r = await fetch(feed.url, {
+        headers: { "user-agent": "transparenC/1.0 snapshot-builder", accept: "application/rss+xml, application/xml, text/xml" },
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!r.ok) { console.warn(`    ${feed.name}: HTTP ${r.status}`); return []; }
+      const xml = await r.text();
+      const items = parseRssItems(xml);
+      console.log(`    ${feed.name}: ${items.length} items`);
+      return items.map((item) => ({ ...item, source: feed }));
+    } catch (e) { console.warn(`    ${feed.name}: ${(e as Error).message}`); return []; }
+  }));
+  const allItems = results.flatMap((r) => r.status === "fulfilled" ? r.value : []);
   const clusters: Array<{
     title: string; description: string; pubDate: string; topic: string | null;
     sources: Array<{ name: string; url: string; bias: string; lean: number }>;
   }> = [];
-
   for (const item of allItems) {
-    const existing = clusters.find((c) => titlesSimilar(c.title, item.title));
-    if (existing) {
-      const alreadyHas = existing.sources.some((s) => s.name === item.source.name);
-      if (!alreadyHas) existing.sources.push({ name: item.source.name, url: item.link, bias: item.source.bias, lean: item.source.lean });
-      if (item.pubDate && toIso(item.pubDate) < toIso(existing.pubDate)) existing.pubDate = item.pubDate;
+    const ex = clusters.find((c) => titlesSimilar(c.title, item.title));
+    if (ex) {
+      if (!ex.sources.some((s) => s.name === item.source.name))
+        ex.sources.push({ name: item.source.name, url: item.link, bias: item.source.bias, lean: item.source.lean });
+      if (item.pubDate && toIso(item.pubDate) < toIso(ex.pubDate)) ex.pubDate = item.pubDate;
     } else {
-      clusters.push({
-        title: item.title,
-        description: item.description,
-        pubDate: item.pubDate,
-        topic: matchTopic(`${item.title} ${item.description}`),
-        sources: [{ name: item.source.name, url: item.link, bias: item.source.bias, lean: item.source.lean }],
-      });
+      clusters.push({ title: item.title, description: item.description, pubDate: item.pubDate, topic: matchTopic(`${item.title} ${item.description}`), sources: [{ name: item.source.name, url: item.link, bias: item.source.bias, lean: item.source.lean }] });
     }
   }
-
   return clusters
-    .map((c, i) => ({
-      id: `${slugify(c.title)}-${i}`,
-      title: c.title,
-      description: c.description,
-      topic: c.topic,
-      sources: c.sources,
-      pubDate: toIso(c.pubDate),
-      coverage: c.sources.length,
-    }))
+    .map((c, i) => ({ id: `${slugify(c.title)}-${i}`, title: c.title, description: c.description, topic: c.topic, sources: c.sources, pubDate: toIso(c.pubDate), coverage: c.sources.length }))
     .sort((a, b) => b.coverage !== a.coverage ? b.coverage - a.coverage : new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
     .slice(0, 40);
 }
 
-async function saveSnapshot(key: string, data: unknown) {
-  await mkdir(SNAPSHOT_DIR, { recursive: true });
-  const path = join(SNAPSHOT_DIR, `${key}.json`);
-  await writeFile(path, JSON.stringify({ data, fetchedAt: new Date().toISOString() }, null, 2));
-  console.log(`  Saved → ${path}`);
+// ─── main ─────────────────────────────────────────────────────────────────────
+
+async function run(label: string, key: string, fn: () => Promise<unknown>) {
+  console.log(`\n[${label}]`);
+  try {
+    const data = await fn();
+    await saveSnapshot(key, data);
+    console.log(`  ✓ done`);
+  } catch (e) {
+    console.error(`  ✗ failed: ${(e as Error).message}`);
+  }
 }
 
 async function main() {
-  console.log("=== transparenC daily snapshot builder ===\n");
-
-  // News snapshot
-  console.log("[1/1] News feeds");
-  try {
-    const newsData = await fetchNewsFeed();
-    await saveSnapshot("news_uk_v1", newsData);
-    console.log(`  Done — ${newsData.length} stories\n`);
-  } catch (e) {
-    console.error(`  Failed: ${(e as Error).message}\n`);
-  }
-
-  console.log("=== All snapshots complete ===");
+  console.log("=== transparenC daily snapshot builder ===");
+  // Run all in parallel for speed, sequential for cleaner log output
+  await run("1/5 Sewage", "sewage_edm_2024", fetchSewage);
+  await run("2/5 FOI", "foi_2025", fetchFOI);
+  await run("3/5 Expenses", "expenses_2425", fetchExpenses);
+  await run("4/5 NHS", "nhs_publications", fetchNHS);
+  await run("5/5 News", "news_uk_v1", fetchNews);
+  console.log("\n=== All snapshots complete ===");
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

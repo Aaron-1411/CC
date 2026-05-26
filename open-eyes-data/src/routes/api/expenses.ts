@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
+import { withSnapshot } from "@/lib/snapshot";
 
 // IPSA moved from an OData API (/api/expense) to a download endpoint.
 // Total spend per MP for the 2024-25 financial year.
@@ -123,7 +124,12 @@ export const Route = createFileRoute("/api/expenses")({
           const mp = url.searchParams.get("mp") ?? undefined;
 
           const cacheKey = `exp:ipsa:v3:${mp ?? "all"}`;
-          const data = await cached(cacheKey, 4 * 60 * 60_000, () => fetchExpenses(mp));
+          // For the all-MPs snapshot, prefer the pre-built daily file; per-MP stays live
+          const data = mp
+            ? await cached(cacheKey, 4 * 60 * 60_000, () => fetchExpenses(mp))
+            : await withSnapshot("expenses_2425", () =>
+                cached(cacheKey, 4 * 60 * 60_000, () => fetchExpenses(mp)),
+              );
 
           return jsonResponse(
             envelope(
