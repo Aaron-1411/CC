@@ -415,18 +415,58 @@
       color: var(--muted);
     }
 
+    /* ── CARD INERT (client cards with no URL) ── */
+    .card-inert { cursor: default; }
+    .card-inert:hover { transform: none; box-shadow: none; border-color: var(--border); }
+
+    /* ── FOOTER LINK ── */
+    .footer-link { color: var(--muted2); transition: color 0.15s; }
+    .footer-link:hover { color: var(--text); }
+    .footer-sep { color: var(--muted); margin: 0 6px; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .grid.featured { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 680px) {
-      nav { padding: 0 20px; }
-      .hero { padding: 48px 20px 40px; }
-      .sections { padding: 0 20px 64px; }
+      /* Nav: hide section jumps, keep Setup + GitHub */
+      nav { padding: 0 16px; }
+      .nav-link[href="#live"],
+      .nav-link[href="#dev"],
+      .nav-link[href="#client"] { display: none; }
+      .nav-link[href="setup.html"] { display: flex; }
+
+      /* Hero */
+      .hero { padding: 40px 16px 32px; }
+      .hero h1 { letter-spacing: -1px; }
+      .hero-sub { font-size: 16px; margin-bottom: 28px; }
+      .hero-stats { gap: 20px; }
+      .stat-num { font-size: 20px; }
+
+      /* Sections & grid */
+      .sections { padding: 0 16px 56px; gap: 48px; }
       .grid { grid-template-columns: 1fr; }
-      footer { padding: 24px 20px; flex-direction: column; gap: 8px; text-align: center; }
-      .nav-links { display: none; }
+
+      /* Cards */
+      .card { padding: 20px; border-radius: 14px; }
+      .card-icon { width: 42px; height: 42px; font-size: 19px; }
+      .card-title { font-size: 16px; }
+      .card-desc { font-size: 13px; }
+      /* Always show action buttons on touch — no hover on mobile */
+      .card-actions { opacity: 1; }
+      /* Stack card footer vertically if tight */
+      .card-footer { flex-wrap: wrap; gap: 10px; }
+
+      /* Footer */
+      footer { padding: 24px 16px; flex-direction: column; gap: 10px; text-align: center; }
+      .footer-sep { display: none; }
+    }
+
+    @media (max-width: 400px) {
+      .card { padding: 16px; }
+      .hero-stats { gap: 14px; }
+      .stat-num { font-size: 18px; }
     }
   </style>
 </head>
@@ -455,7 +495,7 @@
   <div class="hero-stats">
     <div class="stat"><span class="stat-num">5</span><span class="stat-label">Live on Cloudflare</span></div>
     <div class="stat"><span class="stat-num">3</span><span class="stat-label">In development</span></div>
-    <div class="stat"><span class="stat-num">8</span><span class="stat-label">Total projects</span></div>
+    <div class="stat"><span class="stat-num">10</span><span class="stat-label">Total projects</span></div>
   </div>
 </section>
 
@@ -693,7 +733,7 @@
   <div id="client">
     <div class="section-header">
       <span class="section-title">Client Work</span>
-      <span class="section-count">1 project</span>
+      <span class="section-count">3 projects</span>
     </div>
     <div class="grid">
 
@@ -724,6 +764,52 @@
         </div>
       </a>
 
+      <!-- PLUS 15 -->
+      <div class="card card-inert"
+           style="--card-color:#ce93d8; --card-bg:rgba(206,147,216,0.07); --card-border:rgba(206,147,216,0.16); --card-glow:rgba(206,147,216,0.05);">
+        <div class="card-accent"></div>
+        <div class="card-top">
+          <div class="card-icon">🏢</div>
+          <div class="card-badges">
+            <span class="badge-client">Client</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Plus 15</div>
+          <div class="card-desc">Client platform built and delivered via Lovable. Live site managed and maintained by the client.</div>
+        </div>
+        <div class="card-footer">
+          <div class="stack">
+            <span class="stack-tag react">React</span>
+            <span class="stack-tag ts">TypeScript</span>
+          </div>
+          <div class="card-actions"></div>
+        </div>
+      </div>
+
+      <!-- PLUS 15 CASE STUDY -->
+      <div class="card card-inert"
+           style="--card-color:#4a9eff; --card-bg:rgba(74,158,255,0.07); --card-border:rgba(74,158,255,0.16); --card-glow:rgba(74,158,255,0.05);">
+        <div class="card-accent"></div>
+        <div class="card-top">
+          <div class="card-icon">📋</div>
+          <div class="card-badges">
+            <span class="badge-client">Client</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Plus 15 Case Study</div>
+          <div class="card-desc">Accompanying case study site for the Plus 15 project. Showcases outcomes, process, and results. Client-managed.</div>
+        </div>
+        <div class="card-footer">
+          <div class="stack">
+            <span class="stack-tag react">React</span>
+            <span class="stack-tag ts">TypeScript</span>
+          </div>
+          <div class="card-actions"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -731,7 +817,13 @@
 
 <footer>
   <span>Aaron M · Builder</span>
-  <span>Updated automatically on every push · <a href="https://github.com/Aaron-1411/CC" style="color:var(--muted2)">Aaron-1411/CC</a></span>
+  <span>
+    <a class="footer-link" href="setup.html">Infrastructure setup</a>
+    <span class="footer-sep">·</span>
+    Updated on every push
+    <span class="footer-sep">·</span>
+    <a class="footer-link" href="https://github.com/Aaron-1411/CC">Aaron-1411/CC</a>
+  </span>
 </footer>
 
 </body>
