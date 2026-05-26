@@ -316,12 +316,17 @@ function StopSearchPage() {
       {/* Individual records */}
       {!q.isLoading && stops.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display text-lg font-semibold">
-              Individual Records
-            </h3>
-            <span className="label-mono text-xs text-muted-foreground">
-              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, stops.length)} of {fmtNumber(stops.length)}
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="font-display text-lg font-semibold">Sample Records</h3>
+              {summary && summary.total > stops.length && (
+                <p className="label-mono text-[10px] text-muted-foreground mt-0.5">
+                  100 sample records shown — all breakdowns above cover the full {fmtNumber(summary.total)} stops
+                </p>
+              )}
+            </div>
+            <span className="label-mono text-xs text-muted-foreground shrink-0">
+              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, stops.length)} of {fmtNumber(stops.length)}
             </span>
           </div>
 

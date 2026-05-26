@@ -79,7 +79,8 @@ export const Route = createFileRoute("/api/sewage")({
     handlers: {
       GET: async () => {
         try {
-          const data = await cached("sewage:edm:v1", 30 * 60_000, fetchSpills);
+          // Annual EDM data — 24h cache to avoid re-fetching 20 ArcGIS pages every 30 min
+          const data = await cached("sewage:edm:v1", 24 * 60 * 60_000, fetchSpills);
           return jsonResponse(
             envelope(
               data,
