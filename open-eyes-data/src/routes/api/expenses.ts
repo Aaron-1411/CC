@@ -2,22 +2,116 @@ import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
 
-const IPSA_BASE = "https://www.theipsa.org.uk/api/expense";
+// IPSA moved from an OData API (/api/expense) to a download endpoint.
+// Total spend per MP for the 2024-25 financial year.
+const IPSA_DOWNLOAD_URL =
+  "https://www.theipsa.org.uk/api/download?type=totalSpend&year=24_25";
 
-async function fetchIpsa(upstream: string): Promise<unknown[]> {
-  const r = await fetch(upstream, { headers: { accept: "application/json" } });
-  if (!r.ok) {
-    throw new Error(
-      `IPSA returned ${r.status}. Data is sourced from the IPSA published API (${IPSA_BASE}). ` +
-        `The service may be temporarily unavailable — check ${IPSA_BASE} directly.`,
-    );
+type MPExpense = {
+  name: string;
+  constituency: string;
+  officeSpend: number;
+  staffingSpend: number;
+  accommodationSpend: number;
+  travelSpend: number;
+  otherSpend: number;
+  totalSpend: number;
+  parliamentId: string;
+};
+
+type ExpensesResponse = {
+  expenses: MPExpense[];
+  year: string;
+  total: number;
+};
+
+/** Strip BOM and parse a £-prefixed currency value */
+function parsePounds(s: string): number {
+  if (!s || s === "N/A") return 0;
+  const n = Number(s.replace(/[£,\s]/g, ""));
+  return isNaN(n) ? 0 : n;
+}
+
+/** Minimal CSV row parser that handles quoted fields */
+function parseCSVRow(line: string): string[] {
+  const fields: string[] = [];
+  let cur = "";
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQuote = !inQuote;
+    } else if (ch === "," && !inQuote) {
+      fields.push(cur);
+      cur = "";
+    } else {
+      cur += ch;
+    }
   }
-  const json = await r.json();
-  if (Array.isArray(json)) return json as unknown[];
-  if (json && typeof json === "object" && Array.isArray((json as Record<string, unknown>).value)) {
-    return (json as { value: unknown[] }).value;
+  fields.push(cur);
+  return fields;
+}
+
+async function fetchExpenses(mp?: string): Promise<ExpensesResponse> {
+  const r = await fetch(IPSA_DOWNLOAD_URL, { headers: { accept: "text/csv" } });
+  if (!r.ok) throw new Error(`IPSA returned ${r.status}`);
+  const text = await r.text();
+
+  // Strip BOM
+  const csv = text.replace(/^﻿+/, "");
+  const lines = csv.split("\n").filter((l) => l.trim().length > 0);
+  if (lines.length < 2) throw new Error("IPSA CSV had no data rows");
+
+  // Columns (0-indexed):
+  // 0: MP's name
+  // 1: Previous constituency
+  // 2: Constituency since 5 July 2024
+  // 3: Office budget  4: Reason  5: Office spend  6: Remaining
+  // 7: Staffing budget  8: Reason  9: Staffing spend  10: Remaining
+  // 11: Winding-up budget  12: Reason  13: Winding-up spend  14: Remaining
+  // 15: Accommodation budget  16: Reason  17: Accommodation spend  18: Remaining
+  // 19: Travel and subsistence (uncapped)
+  // 20: Other costs (uncapped)
+  // 21: pID
+
+  const expenses: MPExpense[] = [];
+
+  for (const line of lines.slice(1)) {
+    const f = parseCSVRow(line);
+    if (f.length < 21) continue;
+
+    const name = f[0].trim();
+    if (!name) continue;
+
+    // Filter by MP name if requested
+    if (mp && !name.toLowerCase().includes(mp.toLowerCase())) continue;
+
+    const constituency = f[2].trim() !== "N/A" ? f[2].trim() : f[1].trim();
+    const officeSpend = parsePounds(f[5]);
+    const staffingSpend = parsePounds(f[9]);
+    const accommodationSpend = parsePounds(f[17]);
+    const travelSpend = parsePounds(f[19]);
+    const otherSpend = parsePounds(f[20]);
+    const totalSpend = officeSpend + staffingSpend + accommodationSpend + travelSpend + otherSpend;
+    const parliamentId = f[21]?.trim() ?? "";
+
+    expenses.push({
+      name,
+      constituency,
+      officeSpend,
+      staffingSpend,
+      accommodationSpend,
+      travelSpend,
+      otherSpend,
+      totalSpend,
+      parliamentId,
+    });
   }
-  return [];
+
+  expenses.sort((a, b) => b.totalSpend - a.totalSpend);
+
+  return { expenses, year: "2024-25", total: expenses.length };
 }
 
 export const Route = createFileRoute("/api/expenses")({
@@ -26,49 +120,17 @@ export const Route = createFileRoute("/api/expenses")({
       GET: async ({ request }) => {
         try {
           const url = new URL(request.url);
-          const mp = url.searchParams.get("mp") ?? "";
-          const category = url.searchParams.get("category") ?? "";
-          const year = url.searchParams.get("year") ?? "";
+          const mp = url.searchParams.get("mp") ?? undefined;
 
-          const cacheKey = `exp:${mp}:${category}`;
-
-          let upstream: string;
-
-          if (mp) {
-            // OData filter by MP name
-            const filter = `$filter=contains(tolower(MP_NAME),'${mp.toLowerCase()}')`;
-            const params = new URLSearchParams({ $top: "200" });
-            if (category) params.set("CATEGORY", category);
-            if (year) params.set("YEAR", year);
-            upstream = `${IPSA_BASE}?${params.toString()}&${filter}`;
-          } else {
-            // No mp param — use published summary endpoint, fall back to OData top-200
-            upstream = `${IPSA_BASE}/claims?limit=200`;
-          }
-
-          const data = await cached(cacheKey, 300_000, async () => {
-            try {
-              return await fetchIpsa(upstream);
-            } catch (primaryErr) {
-              if (!mp) {
-                // Try OData fallback
-                const fallback = `${IPSA_BASE}?$top=200&$orderby=AMOUNT_CLAIMED desc`;
-                try {
-                  return await fetchIpsa(fallback);
-                } catch {
-                  // Re-throw the original error
-                  throw primaryErr;
-                }
-              }
-              throw primaryErr;
-            }
-          });
+          const cacheKey = `exp:ipsa:v3:${mp ?? "all"}`;
+          const data = await cached(cacheKey, 4 * 60 * 60_000, () => fetchExpenses(mp));
 
           return jsonResponse(
             envelope(
-              { expenses: data, total: (data as unknown[]).length },
+              data,
               "IPSA — Independent Parliamentary Standards Authority",
-              IPSA_BASE,
+              "https://www.theipsa.org.uk/mp-staffing-business-costs/annual-publications",
+              "Open Government Licence v3.0",
             ),
           );
         } catch (e) {

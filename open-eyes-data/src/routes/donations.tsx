@@ -32,11 +32,11 @@ type Donation = {
   id: string;
   party: string;
   donor: string;
+  donorStatus: string;
   amount: number;
   receivedDate: string;
   type: string;
   nature: string;
-  purpose?: string;
 };
 
 type DonationsResp = {
@@ -47,10 +47,14 @@ type DonationsResp = {
 
 type SortKey = "amount" | "date" | "party" | "donor";
 
-function pillFor(type: string): { variant: "direct" | "neutral"; label: string } {
-  if (type.toLowerCase().includes("impermissible")) return { variant: "direct", label: "Impermissible" };
-  if (type.toLowerCase().includes("company")) return { variant: "neutral", label: "Company" };
-  return { variant: "neutral", label: type || "—" };
+function pillFor(donorStatus: string): { variant: "direct" | "neutral" | "restricted"; label: string } {
+  const s = (donorStatus ?? "").toLowerCase();
+  if (s.includes("impermissible")) return { variant: "direct", label: "Impermissible" };
+  if (s.includes("company")) return { variant: "neutral", label: "Company" };
+  if (s.includes("individual")) return { variant: "neutral", label: "Individual" };
+  if (s.includes("trust")) return { variant: "restricted", label: "Trust" };
+  if (s.includes("unincorporated")) return { variant: "neutral", label: "Association" };
+  return { variant: "neutral", label: donorStatus || "—" };
 }
 
 function DonationsPage() {
@@ -198,7 +202,7 @@ function DonationsPage() {
 }
 
 function DonationRow({ d }: { d: Donation }) {
-  const pill = pillFor(d.type);
+  const pill = pillFor(d.donorStatus);
   return (
     <Card>
       <div className="flex items-start justify-between gap-4">

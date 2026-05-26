@@ -5,18 +5,19 @@ import { cached, envelope, errorResponse, jsonResponse } from "@/lib/proxy";
 const EC_BASE = "https://search.electoralcommission.org.uk/api/search/Donations";
 
 type ECDonation = {
-  Id?: string | number;
+  ReturnItemId?: number;
   RegulatedEntityName?: string;
+  RegulatedEntityType?: string;
   DonorName?: string;
+  DonorStatus?: string;
   Value?: number;
   ReceivedDate?: string;
   DonationType?: string;
-  RegulatedEntityType?: string;
   NatureOfDonation?: string;
   IsBequest?: boolean;
   IsAggregation?: boolean;
-  CampaignId?: string | null;
-  PurposeName?: string | null;
+  PurposeOfVisit?: string | null;
+  ReportingPeriodName?: string | null;
 };
 
 type ECResponse = {
@@ -28,11 +29,11 @@ type Donation = {
   id: string;
   party: string;
   donor: string;
+  donorStatus: string;
   amount: number;
   receivedDate: string;
   type: string;
   nature: string;
-  purpose?: string;
 };
 
 type DonationsResponse = {
@@ -41,22 +42,31 @@ type DonationsResponse = {
   totalValue: number;
 };
 
+/** EC dates arrive as Microsoft-format "/Date(ms)/" — convert to ISO string */
+function parseMsDate(raw?: string | null): string {
+  if (!raw) return "";
+  const match = raw.match(/\/Date\((-?\d+)\)\//);
+  if (match) return new Date(Number(match[1])).toISOString();
+  return raw; // already ISO or empty
+}
+
 function normalise(d: ECDonation): Donation {
   return {
-    id: String(d.Id ?? Math.random()),
+    id: String(d.ReturnItemId ?? Math.random()),
     party: d.RegulatedEntityName ?? "Unknown party",
     donor: d.DonorName ?? "Unknown donor",
+    donorStatus: d.DonorStatus ?? d.RegulatedEntityType ?? "—",
     amount: d.Value ?? 0,
-    receivedDate: d.ReceivedDate ?? "",
+    receivedDate: parseMsDate(d.ReceivedDate),
     type: d.DonationType ?? "—",
     nature: d.NatureOfDonation ?? "—",
-    purpose: d.PurposeName ?? undefined,
   };
 }
 
 async function fetchDonations(take: number, skip: number, party?: string): Promise<DonationsResponse> {
-  let url = `${EC_BASE}?take=${take}&skip=${skip}`;
-  if (party) url += `&party=${encodeURIComponent(party)}`;
+  // sort=Value&order=desc is required — without it the API returns Total:-1, Result:[]
+  let url = `${EC_BASE}?sort=Value&order=desc&take=${take}&skip=${skip}`;
+  if (party) url += `&RegulatedEntityName=${encodeURIComponent(party)}`;
 
   const r = await fetch(url, { headers: { accept: "application/json" } });
   if (!r.ok) throw new Error(`Electoral Commission API returned ${r.status}`);
@@ -82,7 +92,7 @@ export const Route = createFileRoute("/api/donations")({
           const take = Math.min(Number(url.searchParams.get("take") ?? 100), 200);
           const skip = Number(url.searchParams.get("skip") ?? 0);
 
-          const cacheKey = `donations:v1:${party ?? "all"}:${take}:${skip}`;
+          const cacheKey = `donations:v2:${party ?? "all"}:${take}:${skip}`;
           const data = await cached(cacheKey, 30 * 60_000, () => fetchDonations(take, skip, party));
 
           return jsonResponse(
