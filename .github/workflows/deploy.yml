@@ -67,6 +67,16 @@ jobs:
           workingDirectory: open-eyes-data/dist/server
           command: deploy
 
+  deploy-lifedash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy lifedash --project-name=lifedash-app --branch=main
+
   deploy-gymseek:
     runs-on: ubuntu-latest
     steps:
