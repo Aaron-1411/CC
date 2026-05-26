@@ -14,8 +14,10 @@ import { Route as StopSearchRouteImport } from './routes/stop-search'
 import { Route as SewageRouteImport } from './routes/sewage'
 import { Route as SanctionsRouteImport } from './routes/sanctions'
 import { Route as PetitionsRouteImport } from './routes/petitions'
+import { Route as PartiesRouteImport } from './routes/parties'
 import { Route as ParliamentRouteImport } from './routes/parliament'
 import { Route as NhsRouteImport } from './routes/nhs'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as LobbyingRouteImport } from './routes/lobbying'
 import { Route as FoiRouteImport } from './routes/foi'
@@ -31,7 +33,9 @@ import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
 import { Route as ApiSewageRouteImport } from './routes/api/sewage'
 import { Route as ApiSanctionsRouteImport } from './routes/api/sanctions'
 import { Route as ApiPetitionsRouteImport } from './routes/api/petitions'
+import { Route as ApiPartiesRouteImport } from './routes/api/parties'
 import { Route as ApiNhsRouteImport } from './routes/api/nhs'
+import { Route as ApiNewsRouteImport } from './routes/api/news'
 import { Route as ApiMeetingsRouteImport } from './routes/api/meetings'
 import { Route as ApiLobbyingRouteImport } from './routes/api/lobbying'
 import { Route as ApiKpisRouteImport } from './routes/api/kpis'
@@ -68,6 +72,11 @@ const PetitionsRoute = PetitionsRouteImport.update({
   path: '/petitions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartiesRoute = PartiesRouteImport.update({
+  id: '/parties',
+  path: '/parties',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ParliamentRoute = ParliamentRouteImport.update({
   id: '/parliament',
   path: '/parliament',
@@ -76,6 +85,11 @@ const ParliamentRoute = ParliamentRouteImport.update({
 const NhsRoute = NhsRouteImport.update({
   id: '/nhs',
   path: '/nhs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeetingsRoute = MeetingsRouteImport.update({
@@ -153,9 +167,19 @@ const ApiPetitionsRoute = ApiPetitionsRouteImport.update({
   path: '/api/petitions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPartiesRoute = ApiPartiesRouteImport.update({
+  id: '/api/parties',
+  path: '/api/parties',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiNhsRoute = ApiNhsRouteImport.update({
   id: '/api/nhs',
   path: '/api/nhs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNewsRoute = ApiNewsRouteImport.update({
+  id: '/api/news',
+  path: '/api/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMeetingsRoute = ApiMeetingsRouteImport.update({
@@ -220,8 +244,10 @@ export interface FileRoutesByFullPath {
   '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
+  '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
+  '/parties': typeof PartiesRoute
   '/petitions': typeof PetitionsRoute
   '/sanctions': typeof SanctionsRoute
   '/sewage': typeof SewageRoute
@@ -237,7 +263,9 @@ export interface FileRoutesByFullPath {
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
   '/api/meetings': typeof ApiMeetingsRoute
+  '/api/news': typeof ApiNewsRoute
   '/api/nhs': typeof ApiNhsRoute
+  '/api/parties': typeof ApiPartiesRoute
   '/api/petitions': typeof ApiPetitionsRoute
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
@@ -255,8 +283,10 @@ export interface FileRoutesByTo {
   '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
+  '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
+  '/parties': typeof PartiesRoute
   '/petitions': typeof PetitionsRoute
   '/sanctions': typeof SanctionsRoute
   '/sewage': typeof SewageRoute
@@ -272,7 +302,9 @@ export interface FileRoutesByTo {
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
   '/api/meetings': typeof ApiMeetingsRoute
+  '/api/news': typeof ApiNewsRoute
   '/api/nhs': typeof ApiNhsRoute
+  '/api/parties': typeof ApiPartiesRoute
   '/api/petitions': typeof ApiPetitionsRoute
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
@@ -291,8 +323,10 @@ export interface FileRoutesById {
   '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
+  '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
+  '/parties': typeof PartiesRoute
   '/petitions': typeof PetitionsRoute
   '/sanctions': typeof SanctionsRoute
   '/sewage': typeof SewageRoute
@@ -308,7 +342,9 @@ export interface FileRoutesById {
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
   '/api/meetings': typeof ApiMeetingsRoute
+  '/api/news': typeof ApiNewsRoute
   '/api/nhs': typeof ApiNhsRoute
+  '/api/parties': typeof ApiPartiesRoute
   '/api/petitions': typeof ApiPetitionsRoute
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
@@ -328,8 +364,10 @@ export interface FileRouteTypes {
     | '/foi'
     | '/lobbying'
     | '/meetings'
+    | '/news'
     | '/nhs'
     | '/parliament'
+    | '/parties'
     | '/petitions'
     | '/sanctions'
     | '/sewage'
@@ -345,7 +383,9 @@ export interface FileRouteTypes {
     | '/api/kpis'
     | '/api/lobbying'
     | '/api/meetings'
+    | '/api/news'
     | '/api/nhs'
+    | '/api/parties'
     | '/api/petitions'
     | '/api/sanctions'
     | '/api/sewage'
@@ -363,8 +403,10 @@ export interface FileRouteTypes {
     | '/foi'
     | '/lobbying'
     | '/meetings'
+    | '/news'
     | '/nhs'
     | '/parliament'
+    | '/parties'
     | '/petitions'
     | '/sanctions'
     | '/sewage'
@@ -380,7 +422,9 @@ export interface FileRouteTypes {
     | '/api/kpis'
     | '/api/lobbying'
     | '/api/meetings'
+    | '/api/news'
     | '/api/nhs'
+    | '/api/parties'
     | '/api/petitions'
     | '/api/sanctions'
     | '/api/sewage'
@@ -398,8 +442,10 @@ export interface FileRouteTypes {
     | '/foi'
     | '/lobbying'
     | '/meetings'
+    | '/news'
     | '/nhs'
     | '/parliament'
+    | '/parties'
     | '/petitions'
     | '/sanctions'
     | '/sewage'
@@ -415,7 +461,9 @@ export interface FileRouteTypes {
     | '/api/kpis'
     | '/api/lobbying'
     | '/api/meetings'
+    | '/api/news'
     | '/api/nhs'
+    | '/api/parties'
     | '/api/petitions'
     | '/api/sanctions'
     | '/api/sewage'
@@ -434,8 +482,10 @@ export interface RootRouteChildren {
   FoiRoute: typeof FoiRoute
   LobbyingRoute: typeof LobbyingRoute
   MeetingsRoute: typeof MeetingsRoute
+  NewsRoute: typeof NewsRoute
   NhsRoute: typeof NhsRoute
   ParliamentRoute: typeof ParliamentRoute
+  PartiesRoute: typeof PartiesRoute
   PetitionsRoute: typeof PetitionsRoute
   SanctionsRoute: typeof SanctionsRoute
   SewageRoute: typeof SewageRoute
@@ -451,7 +501,9 @@ export interface RootRouteChildren {
   ApiKpisRoute: typeof ApiKpisRoute
   ApiLobbyingRoute: typeof ApiLobbyingRoute
   ApiMeetingsRoute: typeof ApiMeetingsRoute
+  ApiNewsRoute: typeof ApiNewsRoute
   ApiNhsRoute: typeof ApiNhsRoute
+  ApiPartiesRoute: typeof ApiPartiesRoute
   ApiPetitionsRoute: typeof ApiPetitionsRoute
   ApiSanctionsRoute: typeof ApiSanctionsRoute
   ApiSewageRoute: typeof ApiSewageRoute
@@ -496,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/parties': {
+      id: '/parties'
+      path: '/parties'
+      fullPath: '/parties'
+      preLoaderRoute: typeof PartiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/parliament': {
       id: '/parliament'
       path: '/parliament'
@@ -508,6 +567,13 @@ declare module '@tanstack/react-router' {
       path: '/nhs'
       fullPath: '/nhs'
       preLoaderRoute: typeof NhsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meetings': {
@@ -615,11 +681,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/parties': {
+      id: '/api/parties'
+      path: '/api/parties'
+      fullPath: '/api/parties'
+      preLoaderRoute: typeof ApiPartiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/nhs': {
       id: '/api/nhs'
       path: '/api/nhs'
       fullPath: '/api/nhs'
       preLoaderRoute: typeof ApiNhsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/news': {
+      id: '/api/news'
+      path: '/api/news'
+      fullPath: '/api/news'
+      preLoaderRoute: typeof ApiNewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/meetings': {
@@ -706,8 +786,10 @@ const rootRouteChildren: RootRouteChildren = {
   FoiRoute: FoiRoute,
   LobbyingRoute: LobbyingRoute,
   MeetingsRoute: MeetingsRoute,
+  NewsRoute: NewsRoute,
   NhsRoute: NhsRoute,
   ParliamentRoute: ParliamentRoute,
+  PartiesRoute: PartiesRoute,
   PetitionsRoute: PetitionsRoute,
   SanctionsRoute: SanctionsRoute,
   SewageRoute: SewageRoute,
@@ -723,7 +805,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiKpisRoute: ApiKpisRoute,
   ApiLobbyingRoute: ApiLobbyingRoute,
   ApiMeetingsRoute: ApiMeetingsRoute,
+  ApiNewsRoute: ApiNewsRoute,
   ApiNhsRoute: ApiNhsRoute,
+  ApiPartiesRoute: ApiPartiesRoute,
   ApiPetitionsRoute: ApiPetitionsRoute,
   ApiSanctionsRoute: ApiSanctionsRoute,
   ApiSewageRoute: ApiSewageRoute,

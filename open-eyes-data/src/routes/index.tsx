@@ -124,6 +124,8 @@ function HomePage() {
           <NavCard to="/sewage" eyebrow="Sewage" title="Water companies dumping sewage" copy="Environment Agency data on storm overflow events — how many hours each water company spilled raw sewage into rivers and seas." />
           <NavCard to="/sanctions" eyebrow="Sanctions" title="Benefits cuts & conditionality" copy="DWP benefit sanctions applied to Universal Credit claimants. Critics argue the system disproportionately harms the most vulnerable." />
           <NavCard to="/foi" eyebrow="FOI" title="Freedom of Information refusals" copy="Which public bodies refuse the most information requests? The WhatDoTheyKnow refusal league table." />
+          <NavCard to="/parties" eyebrow="Parties & Promises" title="Are they keeping their word?" copy="Track UK party pledges on NHS, Housing, Economy, Crime, Environment, Immigration and Education — with real status on each promise." />
+          <NavCard to="/news" eyebrow="Impartial News" title="What the media is covering" copy="UK news ranked by multi-outlet coverage. Stories reported across more sources rise to the top. Filter by issue." />
           <NavCard to="/crossref" eyebrow="Xref" title="Follow the money — cross-reference" copy="Search a company or person across contracts, donations, the lobbying register and the revolving door simultaneously." />
           <NavCard to="/briefing" eyebrow="AI Briefing" title="Ask the dashboard" copy="Generate a non-partisan briefing on any UK accountability topic." />
         </div>

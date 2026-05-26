@@ -18,6 +18,8 @@ const NAV = [
   { to: "/sanctions", label: "Sanctions" },
   { to: "/foi", label: "FOI" },
   { to: "/crossref", label: "Xref" },
+  { to: "/parties", label: "Parties" },
+  { to: "/news", label: "News" },
   { to: "/briefing", label: "Briefing" },
 ] as const;
 

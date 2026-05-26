@@ -7,5 +7,12 @@
       "runtimeArgs": ["-m", "http.server", "4444", "--directory", "/tmp/consolidate/CC/dashboard"],
       "port": 4444
     }
+  ,{
+      "name": "transparenC",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "open-eyes-data",
+      "port": 8080
+    }
   ]
 }

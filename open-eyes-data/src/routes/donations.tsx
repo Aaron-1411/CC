@@ -221,7 +221,7 @@ function DonationRow({ d }: { d: Donation }) {
           </div>
           <div className="text-xs text-muted-foreground mt-1 label-mono">
             {d.receivedDate ? relTime(d.receivedDate) : ""}
-            {d.purpose ? ` · ${d.purpose}` : ""}
+            {d.nature ? ` · ${d.nature}` : ""}
           </div>
         </div>
         <div className="text-right shrink-0">
