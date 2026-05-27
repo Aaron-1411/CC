@@ -161,8 +161,13 @@ export async function GET() {
     const nDays = dailyValues.length;
     const annualisedReturn = firstValue > 0 ? Math.pow(currentValue / firstValue, 365 / nDays) - 1 : 0;
 
-    const sharpe30 = calcSharpe(annualisedReturn, RISK_FREE_RATE, vol30);
-    const sortino30 = calcSortino(dailyReturns.slice(-30), RISK_FREE_RATE);
+    // Sharpe ratio: compute from the full lookback period for stability.
+    // Using annualisedReturn with vol30d (30d window) is inconsistent — instead use
+    // full-period volatility (vol90d or the whole series) matched to the full-period return.
+    const returns30d = dailyReturns.slice(-30);
+    const volFull = calcVolatility(dailyReturns, dailyReturns.length);
+    const sharpe30 = calcSharpe(annualisedReturn, RISK_FREE_RATE, volFull);
+    const sortino30 = calcSortino(returns30d, RISK_FREE_RATE);
 
     const var95 = calcHistoricalVaR(dailyReturns, currentValue, 0.95);
     const var99 = calcHistoricalVaR(dailyReturns, currentValue, 0.99);

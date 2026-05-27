@@ -7,6 +7,7 @@ import {
   type BenchmarkComparison,
   type RollingPoint,
 } from "@/lib/analytics/benchmark";
+import { syntheticPortfolioHistory } from "@/lib/portfolioHistory";
 
 export const dynamic = "force-dynamic";
 
@@ -34,11 +35,24 @@ export async function GET(request: Request) {
   const range = searchParams.get("range") ?? "1y";
 
   try {
-    // Fetch portfolio snapshots
+    // Fetch portfolio value series: prefer DB snapshots, fall back to synthetic price history
     const snapshots = await prisma.dailySnapshot.findMany({
       orderBy: { date: "asc" },
       select: { date: true, totalValueGBP: true },
     });
+
+    // Build portfolio date→value map. Use synthetic history if <30 real snapshots.
+    let rawPortfolioPoints: { date: string; value: number }[] = [];
+    if (snapshots.length >= 30) {
+      rawPortfolioPoints = snapshots.map((s) => ({
+        date: s.date.toISOString().slice(0, 10),
+        value: s.totalValueGBP,
+      }));
+    } else {
+      // Fall back to synthetic portfolio history derived from PriceHistory bars
+      const synthetic = await syntheticPortfolioHistory(9999);
+      rawPortfolioPoints = synthetic.map((p) => ({ date: p.date, value: p.valueGBP }));
+    }
 
     // Fetch benchmark data from Yahoo Finance
     const benchmarkCacheKey = `benchmark-${symbol}-${range}`;
@@ -82,8 +96,8 @@ export async function GET(request: Request) {
 
     // Build date-indexed maps for alignment
     const portfolioMap = new Map<string, number>();
-    for (const snap of snapshots) {
-      portfolioMap.set(snap.date.toISOString().slice(0, 10), snap.totalValueGBP);
+    for (const pt of rawPortfolioPoints) {
+      portfolioMap.set(pt.date, pt.value);
     }
 
     const benchmarkMap = new Map<string, number>();

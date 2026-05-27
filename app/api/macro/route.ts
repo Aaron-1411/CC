@@ -24,15 +24,15 @@ async function vixFromDb(limitDays = 252): Promise<MacroPoint[]> {
   } catch { return []; }
 }
 
-/** Read a single latest value from PriceHistory DB. */
-async function latestFromDb(ticker: string): Promise<number | null> {
+/** Read a single latest value+date from PriceHistory DB. */
+async function latestFromDb(ticker: string): Promise<{ value: number; date: string } | null> {
   try {
     const row = await prisma.priceHistory.findFirst({
       where: { ticker },
       orderBy: { date: "desc" },
-      select: { close: true },
+      select: { close: true, date: true },
     });
-    return row ? Math.round(row.close * 100) / 100 : null;
+    return row ? { value: Math.round(row.close * 100) / 100, date: row.date } : null;
   } catch { return null; }
 }
 
@@ -93,17 +93,20 @@ export async function GET(req: Request) {
   const [dbIrx, liveIrx] = await Promise.allSettled([latestFromDb("^IRX"), fetchYahooLatest("^IRX")]);
   const [dbFx,  liveFx]  = await Promise.allSettled([latestFromDb("GBPUSD=X"), fetchYahooLatest("GBPUSD=X")]);
 
-  const tnxResult  = (liveTnx.status  === "fulfilled" ? liveTnx.value  : null);
-  const irxResult  = (liveIrx.status  === "fulfilled" ? liveIrx.value  : null);
-  const fxResult   = (liveFx.status   === "fulfilled" ? liveFx.value   : null);
+  const liveTnxVal  = liveTnx.status  === "fulfilled" ? liveTnx.value  : null;
+  const liveIrxVal  = liveIrx.status  === "fulfilled" ? liveIrx.value  : null;
+  const liveFxVal   = liveFx.status   === "fulfilled" ? liveFx.value   : null;
+  const dbTnxVal    = dbTnx.status    === "fulfilled" ? dbTnx.value    : null;
+  const dbIrxVal    = dbIrx.status    === "fulfilled" ? dbIrx.value    : null;
+  const dbFxVal     = dbFx.status     === "fulfilled" ? dbFx.value     : null;
 
-  const tnx  = tnxResult?.value  ?? (dbTnx.status  === "fulfilled" ? dbTnx.value  : null);
-  const irx  = irxResult?.value  ?? (dbIrx.status  === "fulfilled" ? dbIrx.value  : null);
-  const fx   = fxResult?.value   ?? (dbFx.status   === "fulfilled" ? dbFx.value   : null);
+  const tnx  = liveTnxVal?.value ?? dbTnxVal?.value ?? null;
+  const irx  = liveIrxVal?.value ?? dbIrxVal?.value ?? null;
+  const fx   = liveFxVal?.value  ?? dbFxVal?.value  ?? null;
 
-  const tnxDate  = tnxResult?.date  ?? "";
-  const irxDate  = irxResult?.date  ?? "";
-  const fxDate   = fxResult?.date   ?? "";
+  const tnxDate  = liveTnxVal?.date ?? dbTnxVal?.date ?? "";
+  const irxDate  = liveIrxVal?.date ?? dbIrxVal?.date ?? "";
+  const fxDate   = liveFxVal?.date  ?? dbFxVal?.date  ?? "";
 
   const latestVix = vix.length ? vix[vix.length - 1].value : null;
 

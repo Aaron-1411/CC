@@ -98,10 +98,10 @@ export default function RiskPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {([
-            { label: 'VaR (95%, 1D)',   v: risk ? `£${Math.abs(risk.var95_1d).toFixed(0)}`  : '--', sub: risk ? `${risk.var95pct.toFixed(2)}%`  : '--', note: 'Historical sim.',   color: 'text-[var(--negative)]' },
-            { label: 'VaR (99%, 1D)',   v: risk ? `£${Math.abs(risk.var99_1d).toFixed(0)}`  : '--', sub: risk ? `${risk.var99pct.toFixed(2)}%`  : '--', note: 'Historical sim.',   color: 'text-[var(--negative)]' },
-            { label: 'CVaR (95%, 1D)',  v: risk ? `£${Math.abs(risk.cvar95_1d).toFixed(0)}` : '--', sub: risk ? `${risk.cvar95pct.toFixed(2)}%` : '--', note: 'Expected shortfall', color: 'text-[var(--negative)]' },
-            { label: 'Current Drawdown',v: risk ? `${risk.currentDrawdown.toFixed(1)}%`      : '--', sub: risk ? `Peak: £${risk.currentPeak.toFixed(0)}` : '--', note: 'From peak', color: 'text-[var(--negative)]' },
+            { label: 'VaR (95%, 1D)',   v: risk ? `£${Math.abs(risk.var95_1d).toFixed(0)}`  : '--', sub: risk ? `${(risk.var95pct * 100).toFixed(2)}%`  : '--', note: 'Historical sim.',   color: 'text-[var(--negative)]' },
+            { label: 'VaR (99%, 1D)',   v: risk ? `£${Math.abs(risk.var99_1d).toFixed(0)}`  : '--', sub: risk ? `${(risk.var99pct * 100).toFixed(2)}%`  : '--', note: 'Historical sim.',   color: 'text-[var(--negative)]' },
+            { label: 'CVaR (95%, 1D)',  v: risk ? `£${Math.abs(risk.cvar95_1d).toFixed(0)}` : '--', sub: risk ? `${(risk.cvar95pct * 100).toFixed(2)}%` : '--', note: 'Expected shortfall', color: 'text-[var(--negative)]' },
+            { label: 'Current Drawdown',v: risk ? `${(risk.currentDrawdown * 100).toFixed(2)}%` : '--', sub: risk ? `Peak: £${risk.currentPeak.toFixed(0)}` : '--', note: 'From peak', color: 'text-[var(--negative)]' },
           ] as { label: string; v: string; sub: string; note: string; color: string }[]).map((c) => (
             <div key={c.label} className="rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-3">
               <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] mb-2">{c.label}</div>

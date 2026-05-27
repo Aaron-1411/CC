@@ -357,15 +357,19 @@ export default function PerformancePage() {
             <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-tertiary)]">Underwater Equity Curve</div>
             {riskMetrics.currentDrawdown !== 0 && (
               <div className="text-[11px] font-mono text-[var(--negative)]">
-                Currently {riskMetrics.currentDrawdown.toFixed(1)}% below peak
+                Currently {(riskMetrics.currentDrawdown * 100).toFixed(2)}% below peak
               </div>
             )}
           </div>
+          {/* drawdownSeries values are decimal fractions; convert to % for chart */}
           <ResponsiveContainer width="100%" height={120}>
-            <AreaChart data={riskMetrics.drawdownSeries} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+            <AreaChart
+              data={(riskMetrics.drawdownSeries ?? []).map((d) => ({ date: d.date, drawdown: d.drawdown * 100 }))}
+              margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" vertical={false} />
               <XAxis dataKey="date" tick={{ fill: 'var(--text-tertiary)', fontSize: 9, fontFamily: 'var(--font-ibm-plex-mono)' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-              <YAxis tickFormatter={(v: unknown) => `${Number(v).toFixed(0)}%`} tick={{ fill: 'var(--text-tertiary)', fontSize: 9 }} axisLine={false} tickLine={false} width={32} />
+              <YAxis tickFormatter={(v: unknown) => `${Number(v).toFixed(1)}%`} tick={{ fill: 'var(--text-tertiary)', fontSize: 9 }} axisLine={false} tickLine={false} width={40} />
               <Tooltip
                 contentStyle={{ background: 'var(--bg-overlay)', border: '1px solid var(--border-normal)', borderRadius: 8, fontFamily: 'var(--font-ibm-plex-mono)', fontSize: 11 }}
                 formatter={(v: unknown) => [`${Number(v).toFixed(2)}%`, 'Drawdown']}
