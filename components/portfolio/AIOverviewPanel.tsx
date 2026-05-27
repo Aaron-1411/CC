@@ -106,7 +106,7 @@ export function AIOverviewPanel() {
     return (
       <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 text-center">
         <div className="text-[var(--text-tertiary)] text-sm mb-2">AI Overview requires an Anthropic API key</div>
-        <div className="text-[11px] font-mono text-[var(--text-tertiary)]">Set XAI_API_KEY in .env.local to enable</div>
+        <div className="text-[11px] font-mono text-[var(--text-tertiary)]">Set ANTHROPIC_API_KEY in .env.local to enable</div>
       </div>
     );
   }

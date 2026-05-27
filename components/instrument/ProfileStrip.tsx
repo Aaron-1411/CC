@@ -70,8 +70,8 @@ export function ProfileStrip({ ticker, yfSymbol, type }: Props) {
   const website   = ap?.website ?? null;
   const bio       = ap?.longBusinessSummary ?? null;
 
-  const pe       = fmt2(ks?.trailingPE);
-  const fwdPE    = fmt2(ks?.forwardPE);
+  const pe       = fmt2(ks?.trailingPE ?? sd?.trailingPE);
+  const fwdPE    = fmt2(ks?.forwardPE ?? sd?.forwardPE);
   const evEbitda = fmt2(ks?.enterpriseToEbitda);
   const pb       = fmt2(ks?.priceToBook);
   const beta     = fmt2(ks?.beta);
