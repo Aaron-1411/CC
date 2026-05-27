@@ -113,9 +113,16 @@ export function SiteShell() {
             ))}
           </nav>
 
-          {/* Postcode bar (desktop only) */}
-          <div className="hidden lg:flex items-center shrink-0">
+          {/* Postcode bar + guide link (desktop only) */}
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
             <PostcodeBar />
+            <Link
+              to="/about"
+              className="px-2 py-3 text-[11px] label-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
+              title="How to use transparenC"
+            >
+              Guide
+            </Link>
           </div>
 
           {/* Mobile hamburger */}
@@ -172,11 +179,16 @@ export function SiteShell() {
       </main>
 
       <footer className="border-t border-border mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 text-xs text-muted-foreground space-y-2">
-          <p className="label-mono uppercase tracking-wider">transparenC — built on open public data</p>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 text-xs text-muted-foreground space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="label-mono uppercase tracking-wider">transparenC — built on open public data</p>
+            <Link to="/about" className="label-mono text-[10px] uppercase tracking-wider hover:text-amber transition-colors">
+              How to use this site →
+            </Link>
+          </div>
           <p>
             Sources: Parliament APIs, Contracts Finder, Electoral Commission, IPSA, data.police.uk,
-            Environment Agency, NHS England, DWP, GOV.UK. Most content under the{" "}
+            Environment Agency, NHS England, DWP, ONS, GOV.UK. Most content under the{" "}
             <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" className="underline hover:text-amber" target="_blank" rel="noreferrer">
               Open Government Licence v3.0
             </a>.
