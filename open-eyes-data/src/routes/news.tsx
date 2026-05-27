@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
+  ActionBar,
   Card,
   DataProvenance,
   ErrorNote,
@@ -250,6 +251,11 @@ function NewsPage() {
           <StoryCard key={story.id} story={story} />
         ))}
       </div>
+
+      <ActionBar
+        briefingTopic="UK government accountability and current political news"
+        shareText="UK political news ranked by how many outlets are covering each story"
+      />
 
       <DataProvenance
         source="BBC News · The Guardian · Sky News · The Independent — RSS feeds"

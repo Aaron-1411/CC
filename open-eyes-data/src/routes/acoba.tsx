@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/acoba")({
@@ -58,6 +58,12 @@ function AcobaPage() {
           <div className="text-muted-foreground text-sm py-12 text-center">No ACOBA cases found.</div>
         )}
       </div>
+
+      <ActionBar
+        mpTopic="revolving door, ACOBA and ministers moving into private sector roles"
+        briefingTopic="UK revolving door, ACOBA approvals and ministers into private sector 2025"
+        shareText="Ministers and officials approved to take private sector jobs after leaving government"
+      />
 
       <DataProvenance
         source="ACOBA via GOV.UK"

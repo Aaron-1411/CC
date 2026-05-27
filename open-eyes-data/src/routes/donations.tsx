@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
   Card,
+  ActionBar,
   DataProvenance,
   ErrorNote,
   FlagPill,
@@ -191,6 +192,12 @@ function DonationsPage() {
           </div>
         )}
       </div>
+
+      <ActionBar
+        mpTopic="political party funding transparency and donation limits"
+        briefingTopic="UK political party donations, Electoral Commission transparency rules and party funding"
+        shareText="See who is bankrolling UK political parties — Electoral Commission data"
+      />
 
       <DataProvenance
         source="Electoral Commission — Register of Donations"

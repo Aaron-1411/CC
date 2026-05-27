@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, ThresholdBar } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, ThresholdBar } from "@/components/primitives";
 import { fmtNumber, getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/petitions")({
@@ -120,6 +120,12 @@ function PetitionsPage() {
             ))
           : items.map((p) => <PetitionRow key={p.id} p={p} />)}
       </div>
+
+      <ActionBar
+        mpTopic="parliamentary petitions and public engagement with Parliament"
+        briefingTopic="Most-signed UK parliamentary petitions and what Parliament has responded to"
+        shareText="See what the public is demanding — Parliament petition rankings live"
+      />
 
       <DataProvenance
         source="UK Parliament Petitions API"

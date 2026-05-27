@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { fmtGBP, getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/contracts")({
@@ -185,6 +185,12 @@ function ContractsPage() {
           </div>
         )}
       </div>
+
+      <ActionBar
+        mpTopic="government contract transparency and direct award practices"
+        briefingTopic="UK government contract spending, direct awards and Contracts Finder transparency"
+        shareText="Search every UK government contract over £1m — direct awards flagged"
+      />
 
       <DataProvenance
         source="Contracts Finder — Cabinet Office (OCDS API)"

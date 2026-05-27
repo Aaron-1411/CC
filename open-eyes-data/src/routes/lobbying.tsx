@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/lobbying")({
@@ -137,6 +137,12 @@ function LobbyingPage() {
       {!q.isLoading && publications.length === 0 && registerEntries.length === 0 && !q.error && (
         <div className="text-muted-foreground text-sm py-12 text-center">No lobbying data found.</div>
       )}
+
+      <ActionBar
+        mpTopic="lobbying transparency, consultant lobbyists register and influence on government"
+        briefingTopic="UK lobbying register, consultant lobbyists and access to ministers"
+        shareText="See who is paid to lobby UK government ministers — the statutory register"
+      />
 
       <DataProvenance
         source="Office of the Registrar of Consultant Lobbyists"

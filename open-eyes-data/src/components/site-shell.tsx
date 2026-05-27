@@ -5,20 +5,9 @@ import { cn } from "@/lib/utils";
 // Grouped nav — separators give visual chunking without extra text
 const NAV_GROUPS = [
   {
-    label: "Issues",
+    label: "Explore",
     items: [
-      { to: "/issues/nhs", label: "NHS" },
-      { to: "/issues/housing", label: "Housing" },
-      { to: "/issues/economy", label: "Economy" },
-      { to: "/issues/crime", label: "Crime" },
-      { to: "/issues/environment", label: "Environment" },
-      { to: "/issues/immigration", label: "Immigration" },
-      { to: "/issues/education", label: "Education" },
-    ],
-  },
-  {
-    label: "Landscape",
-    items: [
+      { to: "/issues", label: "Issues" },
       { to: "/parties", label: "Parties" },
       { to: "/news", label: "News" },
     ],
@@ -62,8 +51,6 @@ const NAV_GROUPS = [
   },
 ];
 
-// Flat list for mobile grid (preserves order)
-const ALL_NAV = NAV_GROUPS.flatMap((g) => g.items);
 
 export function SiteShell() {
   const loc = useLocation();

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import {
+  ActionBar,
   Card,
   DataProvenance,
   ErrorNote,
@@ -179,6 +180,12 @@ function MeetingsPage() {
           )}
         </div>
       )}
+
+      <ActionBar
+        mpTopic="ministerial meetings transparency and lobbying access to government"
+        briefingTopic="UK ministerial meetings transparency returns — who has access to government ministers"
+        shareText="See which companies and lobbyists are getting access to UK government ministers"
+      />
 
       <DataProvenance
         source="GOV.UK — Cabinet Office Transparency Data"

@@ -29,6 +29,7 @@ import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IssuesIndexRouteImport } from './routes/issues/index'
 import { Route as IssuesIssueRouteImport } from './routes/issues/$issue'
 import { Route as ApiVotesRouteImport } from './routes/api/votes'
 import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
@@ -148,6 +149,11 @@ const AcobaRoute = AcobaRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IssuesIndexRoute = IssuesIndexRouteImport.update({
+  id: '/issues/',
+  path: '/issues/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IssuesIssueRoute = IssuesIssueRouteImport.update({
@@ -292,6 +298,7 @@ export interface FileRoutesByFullPath {
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
+  '/issues/': typeof IssuesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -334,6 +341,7 @@ export interface FileRoutesByTo {
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
+  '/issues': typeof IssuesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -377,6 +385,7 @@ export interface FileRoutesById {
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
+  '/issues/': typeof IssuesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -421,6 +430,7 @@ export interface FileRouteTypes {
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
+    | '/issues/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
+    | '/issues'
   id:
     | '__root__'
     | '/'
@@ -505,6 +516,7 @@ export interface FileRouteTypes {
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
+    | '/issues/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -548,6 +560,7 @@ export interface RootRouteChildren {
   ApiStopSearchRoute: typeof ApiStopSearchRoute
   ApiVotesRoute: typeof ApiVotesRoute
   IssuesIssueRoute: typeof IssuesIssueRoute
+  IssuesIndexRoute: typeof IssuesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -690,6 +703,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/issues/': {
+      id: '/issues/'
+      path: '/issues'
+      fullPath: '/issues/'
+      preLoaderRoute: typeof IssuesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/issues/$issue': {
@@ -876,6 +896,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStopSearchRoute: ApiStopSearchRoute,
   ApiVotesRoute: ApiVotesRoute,
   IssuesIssueRoute: IssuesIssueRoute,
+  IssuesIndexRoute: IssuesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

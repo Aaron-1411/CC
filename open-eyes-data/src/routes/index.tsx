@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Card, ErrorNote, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
@@ -127,6 +127,7 @@ function Hero() {
 
 function IssueGrid() {
   const [topic, setTopic] = useState("");
+  const router = useRouter();
 
   return (
     <section className="space-y-5">
@@ -170,7 +171,7 @@ function IssueGrid() {
           onSubmit={(e) => {
             e.preventDefault();
             if (topic.trim()) {
-              window.location.href = `/briefing?topic=${encodeURIComponent(topic.trim())}`;
+              router.navigate({ to: "/briefing", search: { topic: topic.trim() } });
             }
           }}
           className="flex gap-2"

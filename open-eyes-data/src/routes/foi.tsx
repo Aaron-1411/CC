@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { Card, DataProvenance, ErrorNote, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
 import { fmtNumber, getJSON } from "@/lib/api";
 
 export const Route = createFileRoute("/foi")({
@@ -166,6 +166,12 @@ function FOIPage() {
             })}
         </div>
       </div>
+
+      <ActionBar
+        mpTopic="Freedom of Information Act, government transparency and FOI refusals"
+        briefingTopic="UK Freedom of Information Act, government refusal rates and transparency 2025"
+        shareText="Which government departments refuse the most FOI requests — Cabinet Office data"
+      />
 
       <DataProvenance
         source="Cabinet Office — Freedom of Information Statistics"

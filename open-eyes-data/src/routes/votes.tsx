@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/votes")({
@@ -64,6 +64,12 @@ function VotesPage() {
           <div className="text-muted-foreground text-sm py-12 text-center">No divisions found.</div>
         )}
       </div>
+
+      <ActionBar
+        mpTopic="how my MP votes and parliamentary accountability"
+        briefingTopic="Recent House of Commons votes and key parliamentary divisions"
+        shareText="See how Parliament voted — every Commons division with ayes, noes and margin"
+      />
 
       <DataProvenance
         source="UK Parliament Votes API"

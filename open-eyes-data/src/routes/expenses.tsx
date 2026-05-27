@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
+  ActionBar,
   Card,
   DataProvenance,
   ErrorNote,
@@ -235,6 +236,12 @@ function ExpensesPage() {
           </div>
         )}
       </Card>
+
+      <ActionBar
+        mpTopic="MP expenses, IPSA and parliamentary allowances reform"
+        briefingTopic="UK MP expenses, IPSA annual data and parliamentary allowances 2024-25"
+        shareText="What your MP claimed on expenses in 2024-25 — IPSA data"
+      />
 
       <DataProvenance
         source="IPSA — Independent Parliamentary Standards Authority"

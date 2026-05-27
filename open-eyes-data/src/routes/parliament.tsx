@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -98,6 +98,12 @@ function ParliamentPage() {
             ))
           : items.map((b) => <BillRow key={b.billId} b={b} />)}
       </div>
+
+      <ActionBar
+        mpTopic="parliamentary legislation, bills and law-making process"
+        briefingTopic="Current UK bills before Parliament — stages, recent updates and what they do"
+        shareText="Track every active bill in Parliament — see what laws are being made"
+      />
 
       <DataProvenance
         source="UK Parliament Bills API"
