@@ -215,3 +215,97 @@ export function ErrorNote({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+/**
+ * ContextBlock — plain-English "what does this mean?" card.
+ * Use it to anchor raw numbers with comparisons, legal benchmarks and consequences.
+ */
+export function ContextBlock({
+  heading,
+  children,
+  variant = "default",
+}: {
+  heading: string;
+  children: ReactNode;
+  variant?: "default" | "warn" | "critical";
+}) {
+  const border =
+    variant === "critical"
+      ? "border-flag/30 bg-flag/5"
+      : variant === "warn"
+      ? "border-amber/30 bg-amber/5"
+      : "border-border bg-surface-2/40";
+  return (
+    <div className={cn("rounded-lg border p-4 sm:p-5 space-y-2", border)}>
+      <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        What this means
+      </div>
+      <h4 className="font-display text-base font-bold leading-snug">{heading}</h4>
+      <div className="text-sm text-muted-foreground leading-relaxed space-y-2">{children}</div>
+    </div>
+  );
+}
+
+/**
+ * ActionBar — "what can I do?" row on every data page.
+ * Provides write-to-MP, share, and AI briefing entry points.
+ */
+export function ActionBar({
+  mpTopic,
+  briefingTopic,
+  shareText,
+}: {
+  mpTopic?: string;
+  briefingTopic?: string;
+  shareText?: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  function handleShare() {
+    const text = shareText ? `${shareText} — transparenC` : "Check this out on transparenC";
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    if (typeof navigator !== "undefined" && navigator.share) {
+      navigator.share({ title: text, url }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2 py-4 border-t border-border">
+      <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground self-center mr-1">
+        Take action:
+      </span>
+
+      {mpTopic && (
+        <a
+          href={`https://www.writetothem.com/?a=W`}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-amber/40 bg-amber/5 text-amber label-mono text-[11px] uppercase tracking-wider hover:bg-amber/10 transition-colors"
+        >
+          ✉ Write to your MP
+        </a>
+      )}
+
+      <button
+        onClick={handleShare}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
+      >
+        {copied ? "✓ Copied" : "↗ Share this"}
+      </button>
+
+      {briefingTopic && (
+        <a
+          href={`/briefing?topic=${encodeURIComponent(briefingTopic)}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
+        >
+          ✦ Ask AI about this
+        </a>
+      )}
+    </div>
+  );
+}

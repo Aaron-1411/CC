@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
+import { ActionBar, Card, ContextBlock, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/nhs")({
@@ -97,25 +97,22 @@ function NHSPage() {
           })}
       </div>
 
-      {/* Target comparison callout */}
+      {/* What this means */}
       {!q.isLoading && (
-        <Card className="border-flag/30 bg-flag/5">
-          <div className="flex items-start gap-4">
-            <div className="shrink-0">
-              <FlagPill variant="direct">Below Target</FlagPill>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">
-                The NHS 4-hour A&E target — that 95% of patients should be seen, treated, admitted
-                or discharged within 4 hours — has not been met nationally since{" "}
-                <span className="text-foreground">July 2015</span>. Performance in early 2025 stood
-                at approximately{" "}
-                <span className="text-flag font-mono font-bold">76%</span>, far below the{" "}
-                <span className="text-amber font-mono">95%</span> target.
-              </p>
-            </div>
-          </div>
-        </Card>
+        <ContextBlock heading="The NHS has missed its own A&E target every single month since July 2015 — nearly a decade" variant="critical">
+          <p>
+            The target is that <strong className="text-foreground">95% of A&E patients</strong> should be seen,
+            treated, admitted or discharged within 4 hours. In early 2025 the figure was around{" "}
+            <strong className="text-foreground">76%</strong> — meaning roughly 1 in 4 patients waits longer
+            than 4 hours. That gap represents hundreds of thousands of people per month.
+          </p>
+          <p>
+            Nine different Health Secretaries have held the post since the target was last met. The NHS waiting
+            list peaked at <strong className="text-foreground">7.8 million</strong> in 2023 and has only
+            partially reduced. Labour's manifesto promised 2 million extra appointments per week. The NHS
+            England tracking data below shows whether publications confirm that progress.
+          </p>
+        </ContextBlock>
       )}
 
       {q.error && <ErrorNote>{(q.error as Error).message}</ErrorNote>}
@@ -203,6 +200,12 @@ function NHSPage() {
             ))}
         </div>
       </div>
+
+      <ActionBar
+        mpTopic="NHS waiting times, A&E performance and waiting list reduction"
+        briefingTopic="NHS England A&E performance, waiting list and Labour's 2 million appointments pledge"
+        shareText="The NHS has missed its A&E 4-hour target every month since 2015"
+      />
 
       <DataProvenance
         source="NHS England — A&E Attendances and Emergency Admissions"

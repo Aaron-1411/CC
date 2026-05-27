@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
+  ActionBar,
   Card,
+  ContextBlock,
   DataProvenance,
   ErrorNote,
   FlagPill,
@@ -83,16 +85,34 @@ function SewagePage() {
       <div>
         <SectionHeader
           eyebrow="Water Quality"
-          title="Sewage Discharges — Storm Overflows"
+          title="Water companies pumping raw sewage into rivers and seas"
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          Annual Event Duration Monitoring (EDM) data from the Environment Agency. Each row shows a storm
-          overflow site where a water company legally discharged untreated sewage, the number of hours it
-          spilled, and the receiving water body affected. Data covers{" "}
-          <span className="text-amber font-mono">2023</span>.
+          Every storm overflow site in England where a water company discharged untreated sewage in 2024 —
+          how many hours it spilled and which waterway it went into.
         </p>
       </div>
+
+      {/* What this means */}
+      {!q.isLoading && totalHours > 0 && (
+        <ContextBlock heading="Water bills went up while sewage went into your rivers" variant="critical">
+          <p>
+            Water companies are permitted to use storm overflows during heavy rainfall to stop sewage
+            backing up into homes. But regulators and campaigners say these permits are exploited as a
+            routine disposal method. In 2024 there were{" "}
+            <strong className="text-foreground">{fmtNumber(totalCount)} separate spill events</strong>{" "}
+            across England — roughly one every 9 minutes, around the clock.
+          </p>
+          <p>
+            In the same year, water companies paid out over{" "}
+            <strong className="text-foreground">£1.4 billion in dividends</strong>{" "}
+            to shareholders while missing Environment Agency improvement targets. The average household
+            water bill rose above £500/year. Only one company has faced criminal prosecution for
+            unpermitted discharges.
+          </p>
+        </ContextBlock>
+      )}
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -171,8 +191,14 @@ function SewagePage() {
         )}
       </div>
 
+      <ActionBar
+        mpTopic="water company sewage discharges and accountability"
+        briefingTopic="UK water company sewage pollution, regulation and accountability 2024"
+        shareText="UK water companies spilled sewage for millions of hours in 2024"
+      />
+
       <DataProvenance
-        source="Environment Agency — EDM Annual Report 2023"
+        source="Environment Agency — Storm Overflow EDM Annual Returns 2024"
         url="https://www.gov.uk/government/collections/storm-overflow-data"
         fetchedAt={q.data?.meta.fetchedAt}
       />

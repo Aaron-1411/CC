@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import {
+  ActionBar,
   Card,
+  ContextBlock,
   DataProvenance,
   ErrorNote,
   FlagPill,
@@ -162,14 +164,30 @@ function StopSearchPage() {
       <div>
         <SectionHeader
           eyebrow="Policing Data"
-          title="Police Stop & Search"
+          title="Who is being stopped and searched — and why"
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
           Every stop and search recorded in England and Wales, broken down by ethnicity, outcome and
-          object of search. Data shows racial disparity in who gets stopped.
+          what police said they were looking for. Select a police force and date to explore.
         </p>
       </div>
+
+      {/* What this means */}
+      <ContextBlock heading="Black people are stopped at 7× the rate of white people — and most searches find nothing" variant="warn">
+        <p>
+          Home Office data consistently shows that Black people are stopped and searched at roughly{" "}
+          <strong className="text-foreground">7 times the rate of white people</strong> in England and Wales.
+          Asian people are stopped at around 3× the rate. These disparities persist even after
+          controlling for local population demographics.
+        </p>
+        <p>
+          Only around <strong className="text-foreground">17% of all stop and searches</strong> result in any
+          outcome — an arrest, summons, caution or penalty notice. That means 8 in 10 people searched have
+          done nothing wrong. The power is meant to be used on reasonable suspicion, but critics say it is
+          applied disproportionately on the basis of race.
+        </p>
+      </ContextBlock>
 
       {/* Selectors */}
       <Card>
@@ -365,6 +383,12 @@ function StopSearchPage() {
           No stop and search records found for this force and date.
         </div>
       )}
+
+      <ActionBar
+        mpTopic="stop and search racial disparity and police accountability"
+        briefingTopic="UK stop and search racial disparity, Home Office data and police accountability"
+        shareText="Black people are 7× more likely to be stopped and searched in England and Wales"
+      />
 
       <DataProvenance
         source="data.police.uk — Home Office"

@@ -5,6 +5,18 @@ import { cn } from "@/lib/utils";
 // Grouped nav — separators give visual chunking without extra text
 const NAV_GROUPS = [
   {
+    label: "Issues",
+    items: [
+      { to: "/issues/nhs", label: "NHS" },
+      { to: "/issues/housing", label: "Housing" },
+      { to: "/issues/economy", label: "Economy" },
+      { to: "/issues/crime", label: "Crime" },
+      { to: "/issues/environment", label: "Environment" },
+      { to: "/issues/immigration", label: "Immigration" },
+      { to: "/issues/education", label: "Education" },
+    ],
+  },
+  {
     label: "Landscape",
     items: [
       { to: "/parties", label: "Parties" },
@@ -33,7 +45,7 @@ const NAV_GROUPS = [
   {
     label: "Services",
     items: [
-      { to: "/nhs", label: "NHS" },
+      { to: "/nhs", label: "NHS data" },
       { to: "/sewage", label: "Sewage" },
       { to: "/stop-search", label: "Stop/Search" },
       { to: "/sanctions", label: "Sanctions" },
@@ -44,6 +56,7 @@ const NAV_GROUPS = [
     label: "Investigate",
     items: [
       { to: "/crossref", label: "Xref" },
+      { to: "/projects", label: "Projects" },
       { to: "/briefing", label: "Briefing" },
     ],
   },

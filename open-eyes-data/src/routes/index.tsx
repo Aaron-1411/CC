@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, ErrorNote, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
+import { ISSUES, ISSUE_KEYS } from "@/data/issues";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -83,7 +84,8 @@ const TOOL_GROUPS = [
     description: "Power tools for cross-referencing data and generating briefings.",
     tools: [
       { to: "/crossref", eyebrow: "Cross-reference", title: "Follow the money — in depth", copy: "Search a company or person across contracts, donations, ACOBA and the lobbying register at once." },
-      { to: "/briefing", eyebrow: "AI Briefing", title: "Ask the dashboard", copy: "Generate a non-partisan briefing on any UK accountability topic using the data in this app." },
+      { to: "/briefing", eyebrow: "AI Briefing", title: "Ask about any UK issue", copy: "Generate a non-partisan briefing on any UK accountability topic — ministers named, real figures, department by department." },
+      { to: "/projects", eyebrow: "Major Projects", title: "HS2, Hinkley & beyond", copy: "Every IPA Government Major Projects Portfolio entry — budget, delivery confidence RAG status, and named department." },
     ],
   },
 ];
@@ -94,6 +96,7 @@ function HomePage() {
   return (
     <div className="space-y-16">
       <Hero />
+      <IssueGrid />
       <LiveSnapshot />
       {TOOL_GROUPS.map((group) => (
         <ToolGroup key={group.id} group={group} />
@@ -116,6 +119,77 @@ function Hero() {
         Live feeds from Parliament, the Electoral Commission, NHS England, the Environment Agency
         and more — surfaced in one place, free of spin.
       </p>
+    </section>
+  );
+}
+
+// ─── Issue grid ───────────────────────────────────────────────────────────────
+
+function IssueGrid() {
+  const [topic, setTopic] = useState("");
+
+  return (
+    <section className="space-y-5">
+      <div>
+        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+          Explore by issue
+        </div>
+        <h2 className="font-display text-2xl font-bold">What do you want to understand?</h2>
+        <p className="text-muted-foreground text-sm mt-1 max-w-xl">
+          Pick an issue to see the data, what parties promised, and how to take action.
+        </p>
+      </div>
+
+      {/* Issue chips */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+        {ISSUE_KEYS.map((key) => {
+          const def = ISSUES[key];
+          return (
+            <Link
+              key={key}
+              to="/issues/$issue"
+              params={{ issue: key }}
+              className="group flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-4 hover:border-amber/50 hover:bg-surface-2 transition-colors text-center"
+            >
+              <span className="text-2xl">{def.icon}</span>
+              <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-amber transition-colors leading-tight">
+                {def.title}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Quick briefing CTA */}
+      <div className="rounded-lg border border-amber/20 bg-amber/5 p-5">
+        <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-2">AI Briefing</div>
+        <p className="text-sm text-muted-foreground mb-3">
+          Ask any question about UK government accountability — ministers named, real figures, department by department.
+        </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (topic.trim()) {
+              window.location.href = `/briefing?topic=${encodeURIComponent(topic.trim())}`;
+            }
+          }}
+          className="flex gap-2"
+        >
+          <input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="e.g. NHS waiting list progress, HS2 overspend, asylum backlog…"
+            className="flex-1 bg-background border border-border rounded px-3 py-2 text-sm focus:border-amber outline-none min-w-0"
+          />
+          <button
+            type="submit"
+            disabled={topic.trim().length < 2}
+            className="px-4 py-2 bg-amber text-amber-foreground rounded label-mono text-xs uppercase tracking-wider disabled:opacity-50 shrink-0"
+          >
+            Ask →
+          </button>
+        </form>
+      </div>
     </section>
   );
 }

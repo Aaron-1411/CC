@@ -13,6 +13,7 @@ import { Route as VotesRouteImport } from './routes/votes'
 import { Route as StopSearchRouteImport } from './routes/stop-search'
 import { Route as SewageRouteImport } from './routes/sewage'
 import { Route as SanctionsRouteImport } from './routes/sanctions'
+import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PetitionsRouteImport } from './routes/petitions'
 import { Route as PartiesRouteImport } from './routes/parties'
 import { Route as ParliamentRouteImport } from './routes/parliament'
@@ -28,10 +29,12 @@ import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IssuesIssueRouteImport } from './routes/issues/$issue'
 import { Route as ApiVotesRouteImport } from './routes/api/votes'
 import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
 import { Route as ApiSewageRouteImport } from './routes/api/sewage'
 import { Route as ApiSanctionsRouteImport } from './routes/api/sanctions'
+import { Route as ApiProjectsRouteImport } from './routes/api/projects'
 import { Route as ApiPetitionsRouteImport } from './routes/api/petitions'
 import { Route as ApiPartiesRouteImport } from './routes/api/parties'
 import { Route as ApiNhsRouteImport } from './routes/api/nhs'
@@ -65,6 +68,11 @@ const SewageRoute = SewageRouteImport.update({
 const SanctionsRoute = SanctionsRouteImport.update({
   id: '/sanctions',
   path: '/sanctions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PetitionsRoute = PetitionsRouteImport.update({
@@ -142,6 +150,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IssuesIssueRoute = IssuesIssueRouteImport.update({
+  id: '/issues/$issue',
+  path: '/issues/$issue',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiVotesRoute = ApiVotesRouteImport.update({
   id: '/api/votes',
   path: '/api/votes',
@@ -160,6 +173,11 @@ const ApiSewageRoute = ApiSewageRouteImport.update({
 const ApiSanctionsRoute = ApiSanctionsRouteImport.update({
   id: '/api/sanctions',
   path: '/api/sanctions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProjectsRoute = ApiProjectsRouteImport.update({
+  id: '/api/projects',
+  path: '/api/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPetitionsRoute = ApiPetitionsRouteImport.update({
@@ -249,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/parliament': typeof ParliamentRoute
   '/parties': typeof PartiesRoute
   '/petitions': typeof PetitionsRoute
+  '/projects': typeof ProjectsRoute
   '/sanctions': typeof SanctionsRoute
   '/sewage': typeof SewageRoute
   '/stop-search': typeof StopSearchRoute
@@ -267,10 +286,12 @@ export interface FileRoutesByFullPath {
   '/api/nhs': typeof ApiNhsRoute
   '/api/parties': typeof ApiPartiesRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/projects': typeof ApiProjectsRoute
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
+  '/issues/$issue': typeof IssuesIssueRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -288,6 +309,7 @@ export interface FileRoutesByTo {
   '/parliament': typeof ParliamentRoute
   '/parties': typeof PartiesRoute
   '/petitions': typeof PetitionsRoute
+  '/projects': typeof ProjectsRoute
   '/sanctions': typeof SanctionsRoute
   '/sewage': typeof SewageRoute
   '/stop-search': typeof StopSearchRoute
@@ -306,10 +328,12 @@ export interface FileRoutesByTo {
   '/api/nhs': typeof ApiNhsRoute
   '/api/parties': typeof ApiPartiesRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/projects': typeof ApiProjectsRoute
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
+  '/issues/$issue': typeof IssuesIssueRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -328,6 +352,7 @@ export interface FileRoutesById {
   '/parliament': typeof ParliamentRoute
   '/parties': typeof PartiesRoute
   '/petitions': typeof PetitionsRoute
+  '/projects': typeof ProjectsRoute
   '/sanctions': typeof SanctionsRoute
   '/sewage': typeof SewageRoute
   '/stop-search': typeof StopSearchRoute
@@ -346,10 +371,12 @@ export interface FileRoutesById {
   '/api/nhs': typeof ApiNhsRoute
   '/api/parties': typeof ApiPartiesRoute
   '/api/petitions': typeof ApiPetitionsRoute
+  '/api/projects': typeof ApiProjectsRoute
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
+  '/issues/$issue': typeof IssuesIssueRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -369,6 +396,7 @@ export interface FileRouteTypes {
     | '/parliament'
     | '/parties'
     | '/petitions'
+    | '/projects'
     | '/sanctions'
     | '/sewage'
     | '/stop-search'
@@ -387,10 +415,12 @@ export interface FileRouteTypes {
     | '/api/nhs'
     | '/api/parties'
     | '/api/petitions'
+    | '/api/projects'
     | '/api/sanctions'
     | '/api/sewage'
     | '/api/stop-search'
     | '/api/votes'
+    | '/issues/$issue'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -408,6 +438,7 @@ export interface FileRouteTypes {
     | '/parliament'
     | '/parties'
     | '/petitions'
+    | '/projects'
     | '/sanctions'
     | '/sewage'
     | '/stop-search'
@@ -426,10 +457,12 @@ export interface FileRouteTypes {
     | '/api/nhs'
     | '/api/parties'
     | '/api/petitions'
+    | '/api/projects'
     | '/api/sanctions'
     | '/api/sewage'
     | '/api/stop-search'
     | '/api/votes'
+    | '/issues/$issue'
   id:
     | '__root__'
     | '/'
@@ -447,6 +480,7 @@ export interface FileRouteTypes {
     | '/parliament'
     | '/parties'
     | '/petitions'
+    | '/projects'
     | '/sanctions'
     | '/sewage'
     | '/stop-search'
@@ -465,10 +499,12 @@ export interface FileRouteTypes {
     | '/api/nhs'
     | '/api/parties'
     | '/api/petitions'
+    | '/api/projects'
     | '/api/sanctions'
     | '/api/sewage'
     | '/api/stop-search'
     | '/api/votes'
+    | '/issues/$issue'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -487,6 +523,7 @@ export interface RootRouteChildren {
   ParliamentRoute: typeof ParliamentRoute
   PartiesRoute: typeof PartiesRoute
   PetitionsRoute: typeof PetitionsRoute
+  ProjectsRoute: typeof ProjectsRoute
   SanctionsRoute: typeof SanctionsRoute
   SewageRoute: typeof SewageRoute
   StopSearchRoute: typeof StopSearchRoute
@@ -505,10 +542,12 @@ export interface RootRouteChildren {
   ApiNhsRoute: typeof ApiNhsRoute
   ApiPartiesRoute: typeof ApiPartiesRoute
   ApiPetitionsRoute: typeof ApiPetitionsRoute
+  ApiProjectsRoute: typeof ApiProjectsRoute
   ApiSanctionsRoute: typeof ApiSanctionsRoute
   ApiSewageRoute: typeof ApiSewageRoute
   ApiStopSearchRoute: typeof ApiStopSearchRoute
   ApiVotesRoute: typeof ApiVotesRoute
+  IssuesIssueRoute: typeof IssuesIssueRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -539,6 +578,13 @@ declare module '@tanstack/react-router' {
       path: '/sanctions'
       fullPath: '/sanctions'
       preLoaderRoute: typeof SanctionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/petitions': {
@@ -646,6 +692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/issues/$issue': {
+      id: '/issues/$issue'
+      path: '/issues/$issue'
+      fullPath: '/issues/$issue'
+      preLoaderRoute: typeof IssuesIssueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/votes': {
       id: '/api/votes'
       path: '/api/votes'
@@ -672,6 +725,13 @@ declare module '@tanstack/react-router' {
       path: '/api/sanctions'
       fullPath: '/api/sanctions'
       preLoaderRoute: typeof ApiSanctionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/projects': {
+      id: '/api/projects'
+      path: '/api/projects'
+      fullPath: '/api/projects'
+      preLoaderRoute: typeof ApiProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/petitions': {
@@ -791,6 +851,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParliamentRoute: ParliamentRoute,
   PartiesRoute: PartiesRoute,
   PetitionsRoute: PetitionsRoute,
+  ProjectsRoute: ProjectsRoute,
   SanctionsRoute: SanctionsRoute,
   SewageRoute: SewageRoute,
   StopSearchRoute: StopSearchRoute,
@@ -809,10 +870,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiNhsRoute: ApiNhsRoute,
   ApiPartiesRoute: ApiPartiesRoute,
   ApiPetitionsRoute: ApiPetitionsRoute,
+  ApiProjectsRoute: ApiProjectsRoute,
   ApiSanctionsRoute: ApiSanctionsRoute,
   ApiSewageRoute: ApiSewageRoute,
   ApiStopSearchRoute: ApiStopSearchRoute,
   ApiVotesRoute: ApiVotesRoute,
+  IssuesIssueRoute: IssuesIssueRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

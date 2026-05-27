@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
+import { ActionBar, Card, ContextBlock, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/sanctions")({
@@ -51,16 +51,32 @@ function SanctionsPage() {
     <div className="space-y-6">
       <div>
         <SectionHeader
-          eyebrow="DWP — Welfare"
-          title="Benefits Sanctions Tracker"
+          eyebrow="Welfare"
+          title="Benefits sanctions — when the safety net has conditions"
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          DWP applies sanctions — temporary benefit cuts — to claimants for failing conditionality
-          requirements. Critics argue the system is punitive and disproportionately targets the
-          most vulnerable claimants.
+          The DWP can cut or stop Universal Credit payments when claimants miss appointments or
+          fail to meet job-search requirements. This is called a sanction. Here is the published data
+          on how often this happens and who it affects.
         </p>
       </div>
+
+      {/* What this means */}
+      <ContextBlock heading="Hundreds of thousands of people have their only income cut — often for missing an appointment" variant="warn">
+        <p>
+          A sanction can reduce a claimant's Universal Credit payment to zero for up to three years in
+          the most severe cases. The most common reason for a sanction is{" "}
+          <strong className="text-foreground">missing a Jobcentre appointment</strong>, which can happen
+          due to illness, caring responsibilities, or simply not receiving the letter in time.
+        </p>
+        <p>
+          Independent research has linked sanctions to increased foodbank use, debt, homelessness and
+          mental illness. A significant proportion of sanctioned claimants have disabilities or mental
+          health conditions. The DWP's own data shows that sanctions do not consistently improve
+          employment outcomes.
+        </p>
+      </ContextBlock>
 
       {/* Context stats */}
       <div>
@@ -175,6 +191,12 @@ function SanctionsPage() {
             ))}
         </div>
       </div>
+
+      <ActionBar
+        mpTopic="Universal Credit sanctions, welfare conditionality and foodbank use"
+        briefingTopic="UK Universal Credit sanctions system, DWP conditionality and impact on vulnerable claimants"
+        shareText="Hundreds of thousands of people have their benefits cut each year — often for missing an appointment"
+      />
 
       <DataProvenance
         source="Department for Work and Pensions — Benefit Sanctions Statistics"

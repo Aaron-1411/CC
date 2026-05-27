@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, DataProvenance, ErrorNote, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { Markdown } from "@/components/markdown";
 import { getJSON } from "@/lib/api";
 
 export const Route = createFileRoute("/briefing")({
+  validateSearch: (s: Record<string, unknown>) => ({ topic: typeof s.topic === "string" ? s.topic : "" }),
   head: () => ({
     meta: [
       { title: "AI Accountability Briefing — transparenC" },
@@ -28,7 +29,8 @@ const QUICK = [
 ];
 
 function BriefingPage() {
-  const [topic, setTopic] = useState("");
+  const search = useSearch({ from: "/briefing" });
+  const [topic, setTopic] = useState(search.topic ?? "");
   const m = useMutation({
     mutationFn: (t: string) =>
       getJSON<{ markdown: string; topic: string }>("/api/briefing", {
@@ -38,12 +40,20 @@ function BriefingPage() {
       }),
   });
 
+  // Auto-submit if topic arrived via URL param
+  useEffect(() => {
+    if (search.topic && search.topic.trim().length > 2 && !m.data && !m.isPending) {
+      m.mutate(search.topic.trim());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.topic]);
+
   return (
     <div className="space-y-6">
       <div>
         <SectionHeader
           eyebrow="AI Briefing"
-          title="Ask the dashboard"
+          title="Ask about any UK accountability topic"
           right={<LiveBadge timestamp={m.data?.meta.fetchedAt} label="AI" />}
         />
         <p className="text-muted-foreground max-w-2xl">

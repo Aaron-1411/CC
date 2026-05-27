@@ -307,6 +307,126 @@ async function fetchNews() {
     .slice(0, 40);
 }
 
+// ─── 6. IPA GMPP Projects ─────────────────────────────────────────────────────
+
+type MajorProject = {
+  name: string;
+  department: string;
+  dca: string;
+  dcaNormalized: "green" | "amber-green" | "amber-red" | "red" | "reset" | "unknown";
+  wholeLifeCostGBPm: number | null;
+  description: string;
+  deliveryPhase: string;
+};
+
+function normalizeDca(raw: string): MajorProject["dcaNormalized"] {
+  const s = raw.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+  if (s.includes("green")) {
+    if (s.includes("amber")) return "amber-green";
+    return "green";
+  }
+  if (s.includes("amber")) {
+    if (s.includes("red")) return "amber-red";
+    return "amber-green";
+  }
+  if (s.includes("red")) return "red";
+  if (s.includes("reset")) return "reset";
+  return "unknown";
+}
+
+function findColIndex(header: string[], keyword: string): number {
+  const kw = keyword.toLowerCase();
+  return header.findIndex((h) => h.toLowerCase().includes(kw));
+}
+
+function parseProjectsCsv(text: string): MajorProject[] {
+  const lines = text.split("\n").filter((l) => l.trim());
+  if (lines.length < 2) return [];
+  const header = parseCSVRow(lines[0]).map((h) => h.trim());
+
+  const iName = findColIndex(header, "project") !== -1
+    ? findColIndex(header, "project")
+    : findColIndex(header, "name");
+  const iDept = findColIndex(header, "department");
+  const iDca = findColIndex(header, "dca");
+  const iCost = findColIndex(header, "whole") !== -1
+    ? findColIndex(header, "whole")
+    : findColIndex(header, "cost");
+  const iDesc = findColIndex(header, "description");
+  const iPhase = findColIndex(header, "phase");
+
+  const projects: MajorProject[] = [];
+  for (const line of lines.slice(1)) {
+    const f = parseCSVRow(line).map((v) => v.trim());
+    if (!f[iName]) continue;
+    const rawCost = iCost >= 0 ? f[iCost] ?? "" : "";
+    const costStr = rawCost.replace(/[£,\s]/g, "");
+    const costNum = costStr ? parseFloat(costStr) : null;
+    projects.push({
+      name: f[iName] ?? "",
+      department: iDept >= 0 ? (f[iDept] ?? "") : "",
+      dca: iDca >= 0 ? (f[iDca] ?? "") : "",
+      dcaNormalized: normalizeDca(iDca >= 0 ? (f[iDca] ?? "") : ""),
+      wholeLifeCostGBPm: costNum && !isNaN(costNum) ? costNum : null,
+      description: iDesc >= 0 ? (f[iDesc] ?? "") : "",
+      deliveryPhase: iPhase >= 0 ? (f[iPhase] ?? "") : "",
+    });
+  }
+  // Sort: red → amber-red → amber-green → green → reset → unknown
+  const ORDER: Record<string, number> = { red: 0, "amber-red": 1, "amber-green": 2, green: 3, reset: 4, unknown: 5 };
+  return projects.sort((a, b) => (ORDER[a.dcaNormalized] ?? 5) - (ORDER[b.dcaNormalized] ?? 5));
+}
+
+async function fetchProjects(): Promise<{ projects: MajorProject[]; source: string; year: string }> {
+  console.log("  Fetching IPA GMPP projects (GOV.UK)…");
+  // Step 1: get the collection page to find the latest publication
+  const collectionResp = await fetch("https://www.gov.uk/api/content/government/collections/government-major-projects-portfolio-data", {
+    headers: { accept: "application/json" },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!collectionResp.ok) throw new Error(`Collection API ${collectionResp.status}`);
+  const collection = await collectionResp.json() as {
+    links?: { documents?: Array<{ api_url?: string; base_path?: string; title?: string }> };
+  };
+  const docs = collection.links?.documents ?? [];
+  // Find the most recent GMPP publication
+  const gmppDoc = docs.find((d) => d.title?.toLowerCase().includes("government major projects portfolio")) ?? docs[0];
+  if (!gmppDoc?.api_url) throw new Error("No GMPP publication found in collection");
+
+  // Step 2: get the publication page to find CSV attachments
+  const pubResp = await fetch(gmppDoc.api_url, {
+    headers: { accept: "application/json" },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!pubResp.ok) throw new Error(`Publication API ${pubResp.status}`);
+  const pub = await pubResp.json() as {
+    details?: { attachments?: Array<{ url?: string; content_type?: string; title?: string }> };
+    title?: string;
+  };
+  const attachments = pub.details?.attachments ?? [];
+  const csvAttachment = attachments.find((a) =>
+    a.content_type?.includes("csv") || a.url?.endsWith(".csv")
+  );
+  if (!csvAttachment?.url) throw new Error("No CSV attachment found in GMPP publication");
+
+  // Step 3: download and parse the CSV
+  const csvResp = await fetch(csvAttachment.url, {
+    headers: { accept: "text/csv,*/*" },
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!csvResp.ok) throw new Error(`CSV download ${csvResp.status}`);
+  const csvText = await csvResp.text();
+  const projects = parseProjectsCsv(csvText);
+  if (projects.length === 0) throw new Error("CSV parsed to 0 projects");
+  // Extract year from the publication title
+  const yearMatch = (pub.title ?? "").match(/\b(20\d\d)\b/);
+  return {
+    projects,
+    source: pub.title ?? "IPA GMPP",
+    year: yearMatch ? yearMatch[1] : new Date().getFullYear().toString(),
+  };
+}
+
 // ─── main ─────────────────────────────────────────────────────────────────────
 
 async function run(label: string, key: string, fn: () => Promise<unknown>) {
@@ -322,12 +442,12 @@ async function run(label: string, key: string, fn: () => Promise<unknown>) {
 
 async function main() {
   console.log("=== transparenC daily snapshot builder ===");
-  // Run all in parallel for speed, sequential for cleaner log output
-  await run("1/5 Sewage", "sewage_edm_2024", fetchSewage);
-  await run("2/5 FOI", "foi_2025", fetchFOI);
-  await run("3/5 Expenses", "expenses_2425", fetchExpenses);
-  await run("4/5 NHS", "nhs_publications", fetchNHS);
-  await run("5/5 News", "news_uk_v1", fetchNews);
+  await run("1/6 Sewage", "sewage_edm_2024", fetchSewage);
+  await run("2/6 FOI", "foi_2025", fetchFOI);
+  await run("3/6 Expenses", "expenses_2425", fetchExpenses);
+  await run("4/6 NHS", "nhs_publications", fetchNHS);
+  await run("5/6 News", "news_uk_v1", fetchNews);
+  await run("6/6 Projects", "projects_gmpp", fetchProjects);
   console.log("\n=== All snapshots complete ===");
 }
 
