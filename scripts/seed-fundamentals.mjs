@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 const __dir = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(join(__dir, '../package.json'));
 const { PrismaClient } = require('@prisma/client');
-const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
+const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const TICKERS = [
@@ -57,7 +57,7 @@ async function fetchOne(yf, auth) {
   return null;
 }
 
-const adapter = new PrismaBetterSqlite3({ url: 'file:./dev.db' });
+const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL ?? 'file:./dev.db' });
 const prisma = new PrismaClient({ adapter });
 console.log('Acquiring crumb...');
 const auth = await acquireCrumb();

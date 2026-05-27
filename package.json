@@ -11,19 +11,21 @@
     "test": "vitest run",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "pages:build": "npx @cloudflare/next-on-pages@1",
+    "cf:preview": "npx wrangler pages dev .vercel/output/static"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
-    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@libsql/client": "^0.17.3",
+    "@prisma/adapter-libsql": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@tanstack/react-query": "^5.100.10",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.24",
-    "better-sqlite3": "^12.10.0",
     "framer-motion": "^12.38.0",
     "lru-cache": "^11.3.6",
     "mathjs": "^15.2.0",
@@ -38,7 +40,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/mathjs": "^9.4.1",
     "@types/node": "^20",
     "@types/react": "^19",

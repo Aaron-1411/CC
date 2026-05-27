@@ -3,9 +3,8 @@
   "configurations": [
     {
       "name": "investment",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "cwd": "/Users/aaronmanu/Downloads/Investment_extracted/claude-code",
+      "runtimeExecutable": "/usr/local/bin/node",
+      "runtimeArgs": ["/Users/aaronmanu/Downloads/Investment_extracted/claude-code/node_modules/.bin/next", "dev", "--turbopack"],
       "port": 3000
     }
   ]

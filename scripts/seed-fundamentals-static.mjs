@@ -10,7 +10,7 @@ import { dirname, join } from 'path';
 const __dir = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(join(__dir, '../package.json'));
 const { PrismaClient } = require('@prisma/client');
-const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
+const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
 function v(raw, decimals = 2) {
   if (raw == null) return null;
@@ -523,7 +523,7 @@ const SNAPSHOTS = {
   },
 };
 
-const adapter = new PrismaBetterSqlite3({ url: 'file:./dev.db' });
+const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL ?? 'file:./dev.db' });
 const prisma = new PrismaClient({ adapter });
 
 let ok = 0;
