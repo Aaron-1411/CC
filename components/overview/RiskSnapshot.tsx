@@ -32,7 +32,7 @@ export function RiskSnapshot() {
     {
       label: 'VaR (95%, 1D)',
       value: d ? `£${Math.abs(d.var95_1d).toFixed(0)}` : '--',
-      sub: d ? `${d.var95pct.toFixed(2)}%` : '--',
+      sub: d ? `${(d.var95pct * 100).toFixed(2)}%` : '--',
       note: 'Historical sim.',
       color: 'text-[var(--negative)]',
     },
@@ -45,8 +45,8 @@ export function RiskSnapshot() {
     },
     {
       label: 'Max Drawdown',
-      value: d ? `${d.maxDrawdown.toFixed(1)}%` : '--',
-      sub: d ? `Now: ${d.currentDrawdown.toFixed(1)}%` : '--',
+      value: d ? `${(d.maxDrawdown * 100).toFixed(1)}%` : '--',
+      sub: d ? `Now: ${(d.currentDrawdown * 100).toFixed(1)}%` : '--',
       note: 'From peak',
       color: 'text-[var(--negative)]',
     },
