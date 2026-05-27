@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useConstituency } from "@/hooks/useConstituency";
 import {
   ActionBar,
   Card,
@@ -116,6 +117,16 @@ function StopSearchPage() {
   const [force, setForce] = useState("metropolitan");
   const [date, setDate] = useState(defaultDate);
   const [page, setPage] = useState(0);
+  const [autoDetected, setAutoDetected] = useState(false);
+  const constituency = useConstituency();
+
+  // Auto-select user's local police force if they have a postcode set
+  useEffect(() => {
+    if (constituency.data?.policeForceId && !autoDetected) {
+      setForce(constituency.data.policeForceId);
+      setAutoDetected(true);
+    }
+  }, [constituency.data?.policeForceId, autoDetected]);
   const PAGE_SIZE = 50;
 
   const q = useQuery({
@@ -193,12 +204,15 @@ function StopSearchPage() {
       <Card>
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex flex-col gap-1 min-w-[220px]">
-            <label className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            <label className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-2">
               Police Force
+              {autoDetected && constituency.data?.constituency && (
+                <span className="text-amber">📍 Your local force</span>
+              )}
             </label>
             <select
               value={force}
-              onChange={(e) => { setForce(e.target.value); setPage(0); }}
+              onChange={(e) => { setForce(e.target.value); setPage(0); setAutoDetected(false); }}
               className="bg-background border border-border rounded px-3 py-2 text-sm focus:border-amber outline-none"
             >
               {forces.length === 0 && (
@@ -388,6 +402,25 @@ function StopSearchPage() {
         mpTopic="stop and search racial disparity and police accountability"
         briefingTopic="UK stop and search racial disparity, Home Office data and police accountability"
         shareText="Black people are 7× more likely to be stopped and searched in England and Wales"
+        letterTemplate={`Dear [MP Name],
+
+I am writing as a constituent about racial disparity in stop and search policing.
+
+Home Office data consistently shows that Black people are stopped and searched at roughly 7 times the rate of white people in England and Wales. Asian people are stopped at approximately 3 times the rate. These disparities persist even after controlling for local population demographics.
+
+Only around 17% of all stop and searches result in any outcome — an arrest, summons, caution or penalty notice. That means 8 in 10 people searched have done nothing wrong.
+
+I would like to know:
+1. How many stop and searches were conducted in our constituency last year, and what was the ethnic breakdown?
+2. What local measures are in place to scrutinise disproportionality in our police force?
+3. Do you support the use of body-worn camera footage for all stop and search encounters, made available on request?
+4. What is your view on the evidence that no-suspicion stop and search powers (Section 60) disproportionately target Black communities?
+
+I would be grateful for your response.
+
+Yours sincerely,
+[Your name]
+[Your address]`}
       />
 
       <DataProvenance

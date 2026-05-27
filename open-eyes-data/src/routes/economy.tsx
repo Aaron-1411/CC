@@ -71,9 +71,20 @@ function IndicatorCard({ s, loading }: { s?: EconSeries; loading: boolean }) {
 
   const latestNum = parseFloat(s.latestValue);
   const trend = s.trend.map((p) => p.value);
+  const displayValue = `${s!.latestValue}${s!.unit === "%" ? "%" : " " + s!.unit}`;
+
+  function handleShare() {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const text = `UK ${s!.label}: ${displayValue} (${s!.latestDate}) — live ONS data`;
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} — transparenC`)}&url=${encodeURIComponent(url)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
 
   return (
-    <Card className="flex flex-col gap-2">
+    <Card className="flex flex-col gap-2 relative group">
       <div>
         <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</div>
         <div className="flex items-end gap-2 mt-1">
@@ -96,6 +107,15 @@ function IndicatorCard({ s, loading }: { s?: EconSeries; loading: boolean }) {
           </div>
         </div>
       )}
+      <button
+        onClick={handleShare}
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded text-muted-foreground hover:text-amber"
+        title="Share this indicator on X/Twitter"
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5.5 7.5V1.5" /><path d="M3 4L5.5 1.5L8 4" /><path d="M1.5 7.5V9.5h8V7.5" />
+        </svg>
+      </button>
     </Card>
   );
 }

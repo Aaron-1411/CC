@@ -127,12 +127,16 @@ function SewagePage() {
           value={fmtNumber(totalHours)}
           accent="flag"
           loading={q.isLoading}
+          shareable
+          shareText={`UK water companies dumped sewage for ${fmtNumber(totalHours)} hours in 2024 — while paying out £1.4bn in dividends`}
         />
         <Stat
           label="Total spill events"
           value={fmtNumber(totalCount)}
           accent="flag"
           loading={q.isLoading}
+          shareable
+          shareText={`${fmtNumber(totalCount)} sewage spill events in England in 2024 — roughly one every 9 minutes, around the clock`}
         />
       </div>
 

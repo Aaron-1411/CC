@@ -179,15 +179,27 @@ export function Stat({
   hint,
   accent,
   loading,
+  shareable,
+  shareText,
 }: {
   label: string;
   value: ReactNode;
   hint?: ReactNode;
   accent?: "amber" | "flag" | "ok";
   loading?: boolean;
+  /** If true, show a share-to-X button on hover. Provide shareText for the tweet copy. */
+  shareable?: boolean;
+  shareText?: string;
 }) {
+  function handleShareStat() {
+    const text = shareText ?? (typeof value === "string" ? `${value} — ${label}` : label);
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} — transparenC`)}&url=${encodeURIComponent(url)}`;
+    window.open(tweetUrl, "_blank", "noopener,noreferrer");
+  }
+
   return (
-    <div className="border border-border bg-surface rounded-lg p-4">
+    <div className="border border-border bg-surface rounded-lg p-4 relative group">
       <div className="label-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
         {label}
       </div>
@@ -203,6 +215,17 @@ export function Stat({
       </div>
       {hint && (
         <div className="label-mono text-[11px] text-muted-foreground mt-1">{hint}</div>
+      )}
+      {shareable && !loading && (
+        <button
+          onClick={handleShareStat}
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded text-muted-foreground hover:text-amber"
+          title="Share this stat on X/Twitter"
+        >
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5.5 7.5V1.5" /><path d="M3 4L5.5 1.5L8 4" /><path d="M1.5 7.5V9.5h8V7.5" />
+          </svg>
+        </button>
       )}
     </div>
   );
@@ -269,7 +292,11 @@ export function ActionBar({
   function handleShare() {
     const text = shareText ? `${shareText} — transparenC` : "Check this out on transparenC";
     const url = typeof window !== "undefined" ? window.location.href : "";
-    if (typeof navigator !== "undefined" && navigator.share) {
+    if (shareText) {
+      // Open Twitter/X share intent with the stat pre-filled — most effective for spreading data
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+      window.open(tweetUrl, "_blank", "noopener,noreferrer");
+    } else if (typeof navigator !== "undefined" && navigator.share) {
       navigator.share({ title: text, url }).catch(() => {});
     } else {
       navigator.clipboard?.writeText(url).then(() => {
@@ -318,7 +345,7 @@ export function ActionBar({
           onClick={handleShare}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
         >
-          {copied ? "✓ Copied" : "↗ Share this"}
+          {copied ? "✓ Copied" : shareText ? "↗ Share on X" : "↗ Share this"}
         </button>
 
         {briefingTopic && (

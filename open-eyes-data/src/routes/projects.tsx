@@ -31,6 +31,51 @@ export const Route = createFileRoute("/projects")({
   component: ProjectsPage,
 });
 
+// ─── Notorious overruns ───────────────────────────────────────────────────────
+
+const NOTORIOUS_OVERRUNS = [
+  {
+    name: "HS2",
+    department: "DfT",
+    originalGBPbn: 33,
+    currentGBPbn: 45,
+    status: "Phase 2 cancelled",
+    note: "Originally scoped as a full London–Manchester network. The Manchester leg was cancelled in Oct 2023. Phase 1 (London–Birmingham) alone now costs more than the entire original estimate.",
+    sourceUrl: "https://www.nao.org.uk/reports/hs2-progress-update/",
+    sourceLabel: "NAO 2023",
+  },
+  {
+    name: "Hinkley Point C",
+    department: "DESNZ",
+    originalGBPbn: 18,
+    currentGBPbn: 35,
+    status: "Under construction",
+    note: "EDF's 2016 estimate was £18bn. By 2024, estimates ranged from £25bn to £46bn. Still years from completion. UK electricity consumers will fund the overrun via a fixed-price 'strike rate' deal.",
+    sourceUrl: "https://www.nao.org.uk/reports/hinkley-point-c/",
+    sourceLabel: "NAO 2024",
+  },
+  {
+    name: "Universal Credit",
+    department: "DWP",
+    originalGBPbn: 2.4,
+    currentGBPbn: 22,
+    status: "Delivered (9× over budget)",
+    note: "The 2010 business case estimated £2.4bn. After multiple IT resets, delayed rollout and rising administration costs, cumulative spend exceeded £22bn by 2023. The PAC called it 'one of the government's most troubled IT programmes'.",
+    sourceUrl: "https://www.nao.org.uk/reports/universal-credit/",
+    sourceLabel: "NAO UC reports",
+  },
+  {
+    name: "NHS National Programme for IT",
+    department: "DHSC",
+    originalGBPbn: 6.2,
+    currentGBPbn: 12.7,
+    status: "Abandoned 2011",
+    note: "Launched in 2003 to digitise NHS patient records nationally. Cancelled in 2011 after 8 years. £12.7bn spent. The core national patient record system was never delivered. Named one of the costliest IT failures in history.",
+    sourceUrl: "https://www.nao.org.uk/reports/dismantling-the-nhs-national-programme-for-it/",
+    sourceLabel: "NAO 2011",
+  },
+];
+
 type DCAFilter = "all" | "green" | "amber-green" | "amber-red" | "red" | "reset" | "unknown";
 
 const DCA_LABELS: Record<string, string> = {
@@ -144,6 +189,64 @@ function ProjectsPage() {
           </p>
         </ContextBlock>
       )}
+
+      {/* Notorious overruns */}
+      <div>
+        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
+          Notorious cost overruns — original budget vs. final / current cost
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {NOTORIOUS_OVERRUNS.map((p) => {
+            const multiplier = p.currentGBPbn / p.originalGBPbn;
+            const overspendGBPbn = p.currentGBPbn - p.originalGBPbn;
+            return (
+              <Card key={p.name} className="space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <FlagPill variant="direct">{p.status}</FlagPill>
+                      <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground border border-border rounded px-1.5 py-0.5">{p.department}</span>
+                    </div>
+                    <h3 className="font-display text-base font-bold">{p.name}</h3>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="label-mono text-[9px] uppercase text-muted-foreground">Overrun</div>
+                    <div className="font-display text-2xl font-bold text-flag">×{multiplier.toFixed(1)}</div>
+                    <div className="label-mono text-[9px] text-flag">+£{overspendGBPbn >= 1 ? `${overspendGBPbn.toFixed(0)}bn` : `${(overspendGBPbn * 1000).toFixed(0)}m`} extra</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-2.5 bg-surface-2 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-flag rounded-full"
+                      style={{ width: `${Math.min((1 / multiplier) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 label-mono text-[10px]">
+                  <div>
+                    <span className="text-muted-foreground uppercase tracking-wider">Original: </span>
+                    <span className="text-ok font-bold">£{p.originalGBPbn}bn</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground uppercase tracking-wider">Now: </span>
+                    <span className="text-amber font-bold">£{p.currentGBPbn}bn+</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{p.note}</p>
+                <a
+                  href={p.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 hover:text-amber"
+                >
+                  Source: {p.sourceLabel} →
+                </a>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Filters */}
       <Card>
