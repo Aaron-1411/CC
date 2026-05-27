@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { PostcodeBar } from "@/components/postcode-widget";
 
 // Grouped nav — separators give visual chunking without extra text
 const NAV_GROUPS = [
@@ -21,6 +22,13 @@ const NAV_GROUPS = [
     ],
   },
   {
+    label: "Economy",
+    items: [
+      { to: "/economy", label: "Indicators" },
+      { to: "/spending", label: "Spending" },
+    ],
+  },
+  {
     label: "Money",
     items: [
       { to: "/contracts", label: "Contracts" },
@@ -34,7 +42,7 @@ const NAV_GROUPS = [
   {
     label: "Services",
     items: [
-      { to: "/nhs", label: "NHS data" },
+      { to: "/nhs", label: "NHS" },
       { to: "/sewage", label: "Sewage" },
       { to: "/stop-search", label: "Stop/Search" },
       { to: "/sanctions", label: "Sanctions" },
@@ -42,11 +50,18 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: "Investigate",
+    label: "Scrutiny",
     items: [
+      { to: "/committees", label: "Committees" },
       { to: "/crossref", label: "Xref" },
       { to: "/projects", label: "Projects" },
       { to: "/briefing", label: "Briefing" },
+    ],
+  },
+  {
+    label: "My Area",
+    items: [
+      { to: "/my-area", label: "My Area" },
     ],
   },
 ];
@@ -97,6 +112,11 @@ export function SiteShell() {
               </div>
             ))}
           </nav>
+
+          {/* Postcode bar (desktop only) */}
+          <div className="hidden lg:flex items-center shrink-0">
+            <PostcodeBar />
+          </div>
 
           {/* Mobile hamburger */}
           <button

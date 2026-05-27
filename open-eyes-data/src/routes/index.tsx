@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, ErrorNote, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
 import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
 import { ISSUES, ISSUE_KEYS } from "@/data/issues";
+import { PostcodeWidget } from "@/components/postcode-widget";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -51,12 +52,22 @@ const TOOL_GROUPS = [
     ],
   },
   {
+    id: "economy",
+    eyebrow: "The economic scorecard",
+    title: "How is the economy actually performing?",
+    description: "Live ONS data — the numbers behind the political debate.",
+    tools: [
+      { to: "/economy", eyebrow: "Indicators", title: "GDP, inflation, wages & debt", copy: "Live ONS time-series: GDP growth, CPI, unemployment, real wages, government deficit and national debt — the full scorecard." },
+      { to: "/spending", eyebrow: "Public spending", title: "Where your £1.2 trillion goes", copy: "HM Treasury PESA data — total managed expenditure by government department. Health, welfare, defence, education." },
+    ],
+  },
+  {
     id: "money",
     eyebrow: "Follow the money",
     title: "Contracts, donations & influence",
     description: "Where public money goes, who funds parties, and who has access.",
     tools: [
-      { to: "/contracts", eyebrow: "Contracts", title: "Where the money goes", copy: "Every government contract over £1m. Direct awards and no-tender deals flagged in red." },
+      { to: "/contracts", eyebrow: "Contracts", title: "Top recipients & direct awards", copy: "Every contract over £1m — including aggregated view of top suppliers, procedure breakdowns, and direct awards flagged." },
       { to: "/donations", eyebrow: "Donations", title: "Who funds the parties", copy: "The Electoral Commission register of donations. See who is bankrolling which party and by how much." },
       { to: "/expenses", eyebrow: "Expenses", title: "What MPs are claiming", copy: "IPSA 2024-25 expense totals per MP — sorted by total spend, filterable by name or constituency." },
       { to: "/meetings", eyebrow: "Ministers", title: "Who ministers are meeting", copy: "Quarterly returns showing which companies and lobbyists are getting access to government ministers." },
@@ -96,6 +107,7 @@ function HomePage() {
   return (
     <div className="space-y-16">
       <Hero />
+      <PostcodeWidget />
       <IssueGrid />
       <LiveSnapshot />
       {TOOL_GROUPS.map((group) => (

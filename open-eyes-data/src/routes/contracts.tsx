@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ActionBar, Card, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
-import { fmtGBP, getJSON, relTime } from "@/lib/api";
+import { ActionBar, Card, ContextBlock, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/contracts")({
   head: () => ({
@@ -124,6 +124,97 @@ function ContractsPage() {
             <div className="font-display text-3xl font-bold mt-1">{(q.data.data.results.length > 0 ? "2,000+" : "—")}</div>
           </div>
         </div>
+      )}
+
+      {/* Aggregation: top recipients + direct award breakdown */}
+      {!q.isLoading && all.length > 0 && (
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Top 10 suppliers */}
+          <Card>
+            <h3 className="label-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-3">
+              Top 10 suppliers by value
+            </h3>
+            <div className="space-y-1">
+              {Object.entries(
+                all.reduce<Record<string, number>>((acc, n) => {
+                  if (!n.awardedSupplier || n.awardedSupplier === "—") return acc;
+                  acc[n.awardedSupplier] = (acc[n.awardedSupplier] ?? 0) + n.awardedValue;
+                  return acc;
+                }, {}),
+              )
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 10)
+                .map(([supplier, value]) => {
+                  const maxVal = all.reduce((m, n) => Math.max(m, n.awardedValue), 0);
+                  const pct = maxVal > 0 ? (value / (maxVal * 2)) * 100 : 0;
+                  return (
+                    <div key={supplier} className="flex items-center gap-2 py-1">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs truncate" title={supplier}>{supplier}</div>
+                        <div className="h-1 bg-surface-2 rounded-full mt-0.5 overflow-hidden">
+                          <div className="h-full bg-amber/50 rounded-full" style={{ width: `${Math.min(pct, 100)}%` }} />
+                        </div>
+                      </div>
+                      <div className="label-mono text-[10px] text-amber shrink-0 w-16 text-right">{fmtGBP(value)}</div>
+                    </div>
+                  );
+                })}
+            </div>
+          </Card>
+
+          {/* Direct award analysis */}
+          <Card>
+            <h3 className="label-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-3">
+              Procedure type breakdown
+            </h3>
+            <div className="space-y-2">
+              {Object.entries(
+                all.reduce<Record<string, { count: number; value: number }>>((acc, n) => {
+                  const key = (() => {
+                    const p = (n.procedureType ?? "Unknown").toLowerCase();
+                    if (p.includes("direct")) return "Direct award";
+                    if (p.includes("negotiated") || p.includes("no competition")) return "Negotiated / no tender";
+                    if (p.includes("open")) return "Open tender";
+                    if (p.includes("restricted")) return "Restricted";
+                    return "Other / unknown";
+                  })();
+                  const ex = acc[key] ?? { count: 0, value: 0 };
+                  acc[key] = { count: ex.count + 1, value: ex.value + n.awardedValue };
+                  return acc;
+                }, {}),
+              )
+                .sort(([, a], [, b]) => b.value - a.value)
+                .map(([proc, { count, value }]) => {
+                  const isDirect = proc.toLowerCase().includes("direct") || proc.toLowerCase().includes("negotiated");
+                  return (
+                    <div key={proc} className="flex items-center justify-between gap-2 py-1.5 border-b border-border last:border-0">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${isDirect ? "bg-flag" : "bg-muted-foreground/40"}`} />
+                        <span className="text-sm">{proc}</span>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="label-mono text-xs text-amber">{fmtGBP(value)}</div>
+                        <div className="label-mono text-[9px] text-muted-foreground">{fmtNumber(count)} contracts</div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Context block */}
+      {!q.isLoading && directCount > 0 && (
+        <ContextBlock heading={`${directCount} contracts in this dataset were awarded directly — bypassing open competition`} variant="warn">
+          <p>
+            Direct awards are legal — they are permitted where only one supplier can do the work,
+            for genuine emergencies, or for low-value contracts. But they remove competitive pressure
+            on price and quality, and they create greater risk of conflicts of interest.
+            The Public Accounts Committee has repeatedly criticised the government's overuse of
+            direct awards, particularly during the pandemic.
+          </p>
+        </ContextBlock>
       )}
 
       {/* Filters */}

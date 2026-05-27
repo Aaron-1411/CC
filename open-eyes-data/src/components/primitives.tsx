@@ -248,18 +248,23 @@ export function ContextBlock({
 
 /**
  * ActionBar — "what can I do?" row on every data page.
- * Provides write-to-MP, share, and AI briefing entry points.
+ * Provides write-to-MP (with optional pre-drafted letter), share, and AI briefing entry points.
  */
 export function ActionBar({
   mpTopic,
   briefingTopic,
   shareText,
+  letterTemplate,
 }: {
   mpTopic?: string;
   briefingTopic?: string;
   shareText?: string;
+  /** Pre-drafted letter body. If provided, shows a "Draft letter" button that opens a modal. */
+  letterTemplate?: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const [letterOpen, setLetterOpen] = useState(false);
+  const [letterCopied, setLetterCopied] = useState(false);
 
   function handleShare() {
     const text = shareText ? `${shareText} — transparenC` : "Check this out on transparenC";
@@ -274,38 +279,107 @@ export function ActionBar({
     }
   }
 
+  function copyLetter() {
+    if (!letterTemplate) return;
+    navigator.clipboard?.writeText(letterTemplate).then(() => {
+      setLetterCopied(true);
+      setTimeout(() => setLetterCopied(false), 2000);
+    });
+  }
+
   return (
-    <div className="flex flex-wrap gap-2 py-4 border-t border-border">
-      <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground self-center mr-1">
-        Take action:
-      </span>
+    <>
+      <div className="flex flex-wrap gap-2 py-4 border-t border-border">
+        <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground self-center mr-1">
+          Take action:
+        </span>
 
-      {mpTopic && (
-        <a
-          href={`https://www.writetothem.com/?a=W`}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-amber/40 bg-amber/5 text-amber label-mono text-[11px] uppercase tracking-wider hover:bg-amber/10 transition-colors"
-        >
-          ✉ Write to your MP
-        </a>
-      )}
+        {mpTopic && (
+          <a
+            href="https://www.writetothem.com/?a=W"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-amber/40 bg-amber/5 text-amber label-mono text-[11px] uppercase tracking-wider hover:bg-amber/10 transition-colors"
+          >
+            ✉ Write to your MP
+          </a>
+        )}
 
-      <button
-        onClick={handleShare}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
-      >
-        {copied ? "✓ Copied" : "↗ Share this"}
-      </button>
+        {letterTemplate && (
+          <button
+            onClick={() => setLetterOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-amber/20 bg-amber/5 label-mono text-[11px] uppercase tracking-wider text-amber/80 hover:text-amber hover:border-amber/40 transition-colors"
+          >
+            ✦ Draft letter
+          </button>
+        )}
 
-      {briefingTopic && (
-        <a
-          href={`/briefing?topic=${encodeURIComponent(briefingTopic)}`}
+        <button
+          onClick={handleShare}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
         >
-          ✦ Ask AI about this
-        </a>
+          {copied ? "✓ Copied" : "↗ Share this"}
+        </button>
+
+        {briefingTopic && (
+          <a
+            href={`/briefing?topic=${encodeURIComponent(briefingTopic)}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
+          >
+            ✦ Ask AI about this
+          </a>
+        )}
+      </div>
+
+      {/* Letter modal */}
+      {letterOpen && letterTemplate && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          onClick={() => setLetterOpen(false)}
+        >
+          <div
+            className="bg-surface border border-border rounded-xl max-w-2xl w-full max-h-[80vh] flex flex-col shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <div>
+                <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Pre-drafted letter</div>
+                <div className="font-display text-base font-bold mt-0.5">Copy, personalise and send</div>
+              </div>
+              <button
+                onClick={() => setLetterOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <line x1="2" y1="2" x2="14" y2="14" /><line x1="14" y1="2" x2="2" y2="14" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-5">
+              <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans text-foreground">{letterTemplate}</pre>
+            </div>
+            <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-border bg-surface-2/40 rounded-b-xl">
+              <p className="text-xs text-muted-foreground">Edit before sending — personalise with your name and local detail.</p>
+              <div className="flex gap-2 shrink-0">
+                <button
+                  onClick={copyLetter}
+                  className="px-3 py-2 bg-amber text-amber-foreground rounded label-mono text-xs uppercase tracking-wider hover:opacity-90"
+                >
+                  {letterCopied ? "✓ Copied!" : "Copy letter"}
+                </button>
+                <a
+                  href="https://www.writetothem.com/?a=W"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-2 border border-border rounded label-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                >
+                  Open Write to Them →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }

@@ -20,6 +20,10 @@ export type PartyPromise = {
   promise: string;
   status: PromiseStatus;
   detail?: string;
+  /** Primary source URL for the status assessment */
+  sourceUrl?: string;
+  /** Short label for the source (e.g. "NHS England", "OBR") */
+  sourceLabel?: string;
 };
 
 export type Party = {
@@ -103,78 +107,104 @@ export const PLEDGES: Record<string, PartyPromise[]> = {
       promise: "2 million extra NHS appointments per week",
       status: "in-progress",
       detail: "Appointment volumes rising but full target not yet confirmed by NHS England.",
+      sourceUrl: "https://www.england.nhs.uk/statistics/statistical-work-areas/ae-waiting-times-and-activity/",
+      sourceLabel: "NHS England",
     },
     {
       issue: "NHS",
       promise: "40 new hospitals by 2030",
       status: "stalled",
       detail: "Programme reviewed; many sites delayed or redesignated as refurbishments.",
+      sourceUrl: "https://www.nao.org.uk/reports/the-new-hospital-programme/",
+      sourceLabel: "NAO report",
     },
     {
       issue: "Housing",
       promise: "1.5 million new homes this parliament",
       status: "behind-target",
       detail: "Build rates below trajectory needed; planning reform passed but delivery slow.",
+      sourceUrl: "https://www.ons.gov.uk/peoplepopulationandcommunity/housing/bulletins/housingaffordabilityinenglandandwales/latest",
+      sourceLabel: "ONS housing data",
     },
     {
       issue: "Housing",
       promise: "Renters Reform Act — end no-fault evictions",
       status: "done",
       detail: "Renters Rights Bill passed 2025. Section 21 no-fault evictions abolished.",
+      sourceUrl: "https://www.legislation.gov.uk/ukpga/2025/15/contents",
+      sourceLabel: "Renters Rights Act 2025",
     },
     {
       issue: "Economy",
       promise: "No return to austerity",
       status: "contested",
       detail: "£40bn tax rise in Oct 2024 budget; critics argue it contradicts the pledge.",
+      sourceUrl: "https://obr.uk/efo/economic-and-fiscal-outlook-october-2024/",
+      sourceLabel: "OBR Oct 2024",
     },
     {
       issue: "Economy",
       promise: "Deliver the highest sustained growth in the G7",
       status: "in-progress",
       detail: "Growth mission underway; OBR forecasts revised down to ~1% for 2025.",
+      sourceUrl: "https://obr.uk/efo/economic-and-fiscal-outlook-march-2025/",
+      sourceLabel: "OBR Mar 2025",
     },
     {
       issue: "Crime",
       promise: "Reduce knife crime by 50% within a decade",
       status: "in-progress",
       detail: "Knife Crime Prevention Orders expanded; early data mixed.",
+      sourceUrl: "https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/bulletins/crimeinenglandandwales/latest",
+      sourceLabel: "ONS Crime stats",
     },
     {
       issue: "Crime",
       promise: "13,000 more neighbourhood police officers",
       status: "in-progress",
       detail: "Recruitment underway; numbers not yet fully verified.",
+      sourceUrl: "https://www.gov.uk/government/statistics/police-workforce-england-and-wales",
+      sourceLabel: "Home Office workforce",
     },
     {
       issue: "Environment",
       promise: "Clean power by 2030",
       status: "in-progress",
       detail: "Great British Energy launched; renewable capacity targets set.",
+      sourceUrl: "https://www.gov.uk/government/publications/clean-power-2030-action-plan",
+      sourceLabel: "DESNZ action plan",
     },
     {
       issue: "Environment",
       promise: "Great British Energy — public clean energy company",
       status: "done",
       detail: "GBE established and operational as of 2025.",
+      sourceUrl: "https://www.legislation.gov.uk/ukpga/2025/4/contents",
+      sourceLabel: "Great British Energy Act",
     },
     {
       issue: "Immigration",
       promise: "Reduce net migration significantly",
       status: "in-progress",
       detail: "Net migration still at ~728k in latest ONS figures; further curbs announced.",
+      sourceUrl: "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/internationalmigrationbulletin/latest",
+      sourceLabel: "ONS migration stats",
     },
     {
       issue: "Education",
       promise: "Free breakfast clubs in every primary school",
       status: "done",
       detail: "Pilots launched in thousands of schools from April 2025.",
+      sourceUrl: "https://www.gov.uk/government/news/thousands-of-children-to-benefit-from-free-breakfast-clubs",
+      sourceLabel: "DfE announcement",
     },
     {
       issue: "Education",
       promise: "Recruit 6,500 new teachers",
       status: "in-progress",
       detail: "Teacher training bursaries increased; recruitment below target in some subjects.",
+      sourceUrl: "https://www.gov.uk/government/statistics/initial-teacher-training-trainee-number-census",
+      sourceLabel: "DfE ITT census",
     },
   ],
   conservative: [

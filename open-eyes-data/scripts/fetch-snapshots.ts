@@ -427,6 +427,148 @@ async function fetchProjects(): Promise<{ projects: MajorProject[]; source: stri
   };
 }
 
+// ─── 7. Economy (ONS) ─────────────────────────────────────────────────────────
+
+type ONSResponse = {
+  months?: Array<{ date: string; value: string }>;
+  quarters?: Array<{ date: string; value: string }>;
+  years?: Array<{ date: string; value: string }>;
+};
+
+async function fetchONSSeries(
+  dataset: string,
+  seriesId: string,
+  label: string,
+  description: string,
+  unit: string,
+  granularity: "months" | "quarters" | "years" = "quarters",
+) {
+  const url = `https://api.ons.gov.uk/v1/datasets/${dataset}/timeseries/${seriesId}/data`;
+  const r = await fetch(url, {
+    headers: { accept: "application/json" },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!r.ok) throw new Error(`ONS ${seriesId}: HTTP ${r.status}`);
+  const json = (await r.json()) as ONSResponse;
+  const points = (json[granularity] ?? [])
+    .filter((p) => p.value !== "" && p.value !== ".")
+    .map((p) => ({ date: p.date, value: parseFloat(p.value) }))
+    .filter((p) => !isNaN(p.value));
+  const latest = points[points.length - 1];
+  return {
+    label, description, unit,
+    latestValue: latest ? latest.value.toFixed(1) : "—",
+    latestDate: latest?.date ?? "—",
+    trend: points.slice(-12),
+    source: `ONS — ${dataset.toUpperCase()} series ${seriesId}`,
+    sourceId: seriesId,
+  };
+}
+
+async function fetchEconomyONS() {
+  console.log("  Fetching ONS economic indicators…");
+  const SERIES: Array<[string, string, string, string, string, "months" | "quarters" | "years"]> = [
+    ["qna", "IHYQ", "GDP growth", "Quarter-on-quarter GDP growth (seasonally adjusted)", "%", "quarters"],
+    ["mm23", "D7G7", "CPI inflation", "Consumer Prices Index — 12-month rate", "%", "months"],
+    ["lms", "MGSX", "Unemployment", "ILO unemployment rate (16+)", "%", "months"],
+    ["earn", "KAB9", "Real wage growth", "Real regular pay — 3 month on year change (CPIH adjusted)", "%", "months"],
+    ["pusf", "HF6W", "Public debt", "Public sector net debt excluding Bank of England (£bn)", "£bn", "months"],
+    ["pusf", "J5II", "Government deficit", "Public sector net borrowing (PSNB), rolling 12 months (£bn)", "£bn", "months"],
+  ];
+  const results = await Promise.allSettled(
+    SERIES.map(([d, s, l, desc, u, g]) => fetchONSSeries(d, s, l, desc, u, g)),
+  );
+  const series = results.map((r, i) => {
+    if (r.status === "fulfilled") return r.value;
+    const [, seriesId, label, description, unit] = SERIES[i];
+    console.warn(`    ONS ${seriesId} failed: ${(r.reason as Error).message}`);
+    return { label, description, unit, latestValue: "—", latestDate: "—", trend: [], source: `ONS — ${SERIES[i][0].toUpperCase()} series ${seriesId}`, sourceId: seriesId };
+  });
+  return { series, updatedAt: new Date().toISOString() };
+}
+
+// ─── 8. Committees (Parliament) ───────────────────────────────────────────────
+
+async function fetchCommittees() {
+  console.log("  Fetching Parliament select committee reports…");
+  const urls = [
+    "https://committees.api.parliament.uk/api/v1/Publications?publicationTypes=4&House=Commons&take=30&skip=0",
+    "https://committees.api.parliament.uk/api/v1/Publications?publicationTypes=4&House=Lords&take=15&skip=0",
+  ];
+  const results = await Promise.allSettled(
+    urls.map((url) =>
+      fetch(url, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(15_000) }).then(
+        (r) => {
+          if (!r.ok) throw new Error(`Committees API: ${r.status}`);
+          return r.json() as Promise<{
+            items: Array<{
+              id: number; title: string; summary?: string; publicationDate: string;
+              links: Array<{ url: string; contentType: string }>;
+              inquiry?: { title: string };
+              committee: { id: number; name: string; house: number };
+            }>;
+          }>;
+        },
+      ),
+    ),
+  );
+  const reports: Array<{
+    id: number; title: string; summary: string; publishedAt: string;
+    committee: string; committeeId: number; house: string; url: string; inquiry?: string;
+  }> = [];
+  for (const result of results) {
+    if (result.status !== "fulfilled") { console.warn("    Committee fetch failed:", result.reason); continue; }
+    for (const item of result.value.items ?? []) {
+      const house = item.committee.house === 1 ? "Commons" : item.committee.house === 2 ? "Lords" : "Joint";
+      const link = item.links?.find((l) => l.contentType?.includes("html") || l.url?.includes("parliament.uk"))?.url
+        ?? `https://committees.parliament.uk/committee/${item.committee.id}/publications/`;
+      reports.push({
+        id: item.id, title: item.title,
+        summary: (item.summary ?? "").slice(0, 300),
+        publishedAt: item.publicationDate,
+        committee: item.committee.name,
+        committeeId: item.committee.id,
+        house, url: link,
+        inquiry: item.inquiry?.title,
+      });
+    }
+  }
+  reports.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  return { reports: reports.slice(0, 40) };
+}
+
+// ─── 9. Spending (PESA hardcoded fallback) ────────────────────────────────────
+
+const PESA_HARDCODED = {
+  year: "2023-24",
+  source: "HM Treasury — PESA 2024 (hardcoded outturn figures)",
+  totalGBPbn: 1220,
+  departments: [
+    { department: "Department for Work and Pensions", totalSpendGBPbn: 257.6, resourceSpendGBPbn: 257.2, capitalSpendGBPbn: 0.4, year: "2023-24" },
+    { department: "Department of Health and Social Care", totalSpendGBPbn: 212.1, resourceSpendGBPbn: 200.3, capitalSpendGBPbn: 11.8, year: "2023-24" },
+    { department: "Department for Education", totalSpendGBPbn: 115.7, resourceSpendGBPbn: 107.3, capitalSpendGBPbn: 8.4, year: "2023-24" },
+    { department: "HM Treasury", totalSpendGBPbn: 114.8, resourceSpendGBPbn: 114.6, capitalSpendGBPbn: 0.2, year: "2023-24" },
+    { department: "Ministry of Defence", totalSpendGBPbn: 59.5, resourceSpendGBPbn: 47.4, capitalSpendGBPbn: 12.1, year: "2023-24" },
+    { department: "Department for Levelling Up, Housing and Communities", totalSpendGBPbn: 51.3, resourceSpendGBPbn: 49.8, capitalSpendGBPbn: 1.5, year: "2023-24" },
+    { department: "Department for Transport", totalSpendGBPbn: 37.7, resourceSpendGBPbn: 19.4, capitalSpendGBPbn: 18.3, year: "2023-24" },
+    { department: "Home Office", totalSpendGBPbn: 23.1, resourceSpendGBPbn: 21.8, capitalSpendGBPbn: 1.3, year: "2023-24" },
+    { department: "Department for Business and Trade", totalSpendGBPbn: 22.1, resourceSpendGBPbn: 18.4, capitalSpendGBPbn: 3.7, year: "2023-24" },
+    { department: "Department for Science, Innovation and Technology", totalSpendGBPbn: 20.3, resourceSpendGBPbn: 12.8, capitalSpendGBPbn: 7.5, year: "2023-24" },
+    { department: "Foreign, Commonwealth and Development Office", totalSpendGBPbn: 18.9, resourceSpendGBPbn: 15.6, capitalSpendGBPbn: 3.3, year: "2023-24" },
+    { department: "Department for Energy Security and Net Zero", totalSpendGBPbn: 14.8, resourceSpendGBPbn: 9.2, capitalSpendGBPbn: 5.6, year: "2023-24" },
+    { department: "Ministry of Justice", totalSpendGBPbn: 14.0, resourceSpendGBPbn: 12.9, capitalSpendGBPbn: 1.1, year: "2023-24" },
+    { department: "Department for Environment, Food and Rural Affairs", totalSpendGBPbn: 12.2, resourceSpendGBPbn: 10.4, capitalSpendGBPbn: 1.8, year: "2023-24" },
+    { department: "Cabinet Office", totalSpendGBPbn: 7.6, resourceSpendGBPbn: 5.2, capitalSpendGBPbn: 2.4, year: "2023-24" },
+  ],
+};
+
+async function fetchSpending() {
+  console.log("  Using PESA hardcoded outturn data (2023-24)…");
+  // The PESA CSV format changes each year making reliable parsing difficult.
+  // Hardcoded figures match PESA 2024 Table 1.14 outturn. Update annually.
+  return PESA_HARDCODED;
+}
+
 // ─── main ─────────────────────────────────────────────────────────────────────
 
 async function run(label: string, key: string, fn: () => Promise<unknown>) {
@@ -442,12 +584,15 @@ async function run(label: string, key: string, fn: () => Promise<unknown>) {
 
 async function main() {
   console.log("=== transparenC daily snapshot builder ===");
-  await run("1/6 Sewage", "sewage_edm_2024", fetchSewage);
-  await run("2/6 FOI", "foi_2025", fetchFOI);
-  await run("3/6 Expenses", "expenses_2425", fetchExpenses);
-  await run("4/6 NHS", "nhs_publications", fetchNHS);
-  await run("5/6 News", "news_uk_v1", fetchNews);
-  await run("6/6 Projects", "projects_gmpp", fetchProjects);
+  await run("1/9 Sewage", "sewage_edm_2024", fetchSewage);
+  await run("2/9 FOI", "foi_2025", fetchFOI);
+  await run("3/9 Expenses", "expenses_2425", fetchExpenses);
+  await run("4/9 NHS", "nhs_publications", fetchNHS);
+  await run("5/9 News", "news_uk_v1", fetchNews);
+  await run("6/9 Projects", "projects_gmpp", fetchProjects);
+  await run("7/9 Economy", "economy_ons", fetchEconomyONS);
+  await run("8/9 Committees", "committees_reports", fetchCommittees);
+  await run("9/9 Spending", "spending_pesa", fetchSpending);
   console.log("\n=== All snapshots complete ===");
 }
 

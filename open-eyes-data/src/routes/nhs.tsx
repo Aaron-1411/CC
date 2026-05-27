@@ -205,6 +205,24 @@ function NHSPage() {
         mpTopic="NHS waiting times, A&E performance and waiting list reduction"
         briefingTopic="NHS England A&E performance, waiting list and Labour's 2 million appointments pledge"
         shareText="The NHS has missed its A&E 4-hour target every month since 2015"
+        letterTemplate={`Dear [MP Name],
+
+I am writing to you as a constituent about NHS performance in our area.
+
+NHS England data shows that only around 76% of A&E patients are being seen within the 4-hour target — well below the 95% standard. The NHS has missed this target every single month since July 2015.
+
+The waiting list, which peaked at 7.8 million, remains extremely long. Labour's manifesto pledge of 2 million additional appointments per week has not yet been independently verified by NHS England.
+
+I would like to know:
+1. What is the current A&E performance at our local hospital trust?
+2. What specific actions is the government taking to hit the 95% target?
+3. When does the government expect the waiting list to return to pre-pandemic levels?
+
+I would be grateful for your response.
+
+Yours sincerely,
+[Your name]
+[Your address]`}
       />
 
       <DataProvenance

@@ -195,6 +195,25 @@ function SewagePage() {
         mpTopic="water company sewage discharges and accountability"
         briefingTopic="UK water company sewage pollution, regulation and accountability 2024"
         shareText="UK water companies spilled sewage for millions of hours in 2024"
+        letterTemplate={`Dear [MP Name],
+
+I am writing as a constituent who is deeply concerned about sewage pollution in our waterways.
+
+Environment Agency data shows that in 2024, water companies across England discharged untreated or partially-treated sewage for over 3.6 million hours. This equates to roughly one spill event every 9 minutes, around the clock, for the entire year.
+
+During the same period, water companies paid out over £1.4 billion in dividends to shareholders — while failing to meet their own improvement targets set by the Environment Agency.
+
+I would like to know:
+1. Which water company serves our constituency, and how many hours did they spill sewage in 2024?
+2. What enforcement action has been taken against water companies failing their targets?
+3. Will you support criminal prosecution for unpermitted discharges, not just civil penalties?
+4. What will you do to ensure water bill increases are linked to actual improvement, not shareholder returns?
+
+I would be grateful for your response.
+
+Yours sincerely,
+[Your name]
+[Your address]`}
       />
 
       <DataProvenance

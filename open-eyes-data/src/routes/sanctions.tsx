@@ -196,6 +196,25 @@ function SanctionsPage() {
         mpTopic="Universal Credit sanctions, welfare conditionality and foodbank use"
         briefingTopic="UK Universal Credit sanctions system, DWP conditionality and impact on vulnerable claimants"
         shareText="Hundreds of thousands of people have their benefits cut each year — often for missing an appointment"
+        letterTemplate={`Dear [MP Name],
+
+I am writing as a constituent about the DWP's Universal Credit sanctions system.
+
+Published DWP data shows that hundreds of thousands of people have their only income cut — sometimes to zero — each year under the sanctions system. The most common reason for a sanction is missing a Jobcentre appointment, which can happen due to illness, caring responsibilities, or simply not receiving a letter in time.
+
+Independent research has linked sanctions to increased foodbank use, debt, homelessness and mental illness. A significant proportion of sanctioned claimants have disabilities or mental health conditions.
+
+I would like to know:
+1. How many sanctions were applied in our constituency last year?
+2. What proportion of sanctioned claimants successfully appealed or had their sanction reversed?
+3. Does the government have evidence that sanctions actually improve employment outcomes?
+4. What safeguards exist for claimants with disabilities or mental health conditions who miss appointments due to their condition?
+
+I would be grateful for your response.
+
+Yours sincerely,
+[Your name]
+[Your address]`}
       />
 
       <DataProvenance

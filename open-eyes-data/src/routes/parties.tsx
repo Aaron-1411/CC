@@ -405,6 +405,16 @@ function PartiesPage() {
                             {pledge.detail}
                           </p>
                         )}
+                        {pledge.sourceUrl && (
+                          <a
+                            href={pledge.sourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 hover:text-amber mt-0.5 inline-block"
+                          >
+                            Source: {pledge.sourceLabel ?? "Gov.uk"} →
+                          </a>
+                        )}
                       </div>
                     </div>
                   ))}
