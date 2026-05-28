@@ -1,0 +1,91 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-playfair);
+  --font-mono: var(--font-geist-mono);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* Always dark — no light mode */
+:root {
+  --background: oklch(0.07 0 0);
+  --foreground: oklch(0.96 0.003 90);
+  --card: oklch(0.11 0 0);
+  --card-foreground: oklch(0.96 0.003 90);
+  --popover: oklch(0.11 0 0);
+  --popover-foreground: oklch(0.96 0.003 90);
+  --primary: oklch(0.73 0.13 78);
+  --primary-foreground: oklch(0.09 0 0);
+  --secondary: oklch(0.15 0 0);
+  --secondary-foreground: oklch(0.96 0.003 90);
+  --muted: oklch(0.14 0 0);
+  --muted-foreground: oklch(0.58 0 0);
+  --accent: oklch(0.15 0 0);
+  --accent-foreground: oklch(0.96 0.003 90);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.20 0 0);
+  --input: oklch(0.14 0 0);
+  --ring: oklch(0.73 0.13 78);
+  --radius: 0.375rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair), Georgia, serif;
+  }
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(0.07 0 0);
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.25 0 0);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.73 0.13 78);
+}
