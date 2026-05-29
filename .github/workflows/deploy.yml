@@ -123,6 +123,31 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"name":"inkspector-app","production_branch":"main"}' || true
+      - name: Set CF Pages environment variables
+        run: |
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/inkspector-app" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_configs": {
+                "production": {
+                  "env_vars": {
+                    "NEXT_PUBLIC_SUPABASE_URL": {"value": "${{ secrets.INKSPECTOR_SUPABASE_URL }}", "type": "plain_text"},
+                    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {"value": "${{ secrets.INKSPECTOR_SUPABASE_ANON_KEY }}", "type": "plain_text"},
+                    "SUPABASE_SERVICE_ROLE_KEY": {"value": "${{ secrets.INKSPECTOR_SUPABASE_SERVICE_ROLE_KEY }}", "type": "secret_text"},
+                    "RESEND_API_KEY": {"value": "${{ secrets.RESEND_API_KEY }}", "type": "secret_text"}
+                  }
+                },
+                "preview": {
+                  "env_vars": {
+                    "NEXT_PUBLIC_SUPABASE_URL": {"value": "${{ secrets.INKSPECTOR_SUPABASE_URL }}", "type": "plain_text"},
+                    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {"value": "${{ secrets.INKSPECTOR_SUPABASE_ANON_KEY }}", "type": "plain_text"},
+                    "SUPABASE_SERVICE_ROLE_KEY": {"value": "${{ secrets.INKSPECTOR_SUPABASE_SERVICE_ROLE_KEY }}", "type": "secret_text"},
+                    "RESEND_API_KEY": {"value": "${{ secrets.RESEND_API_KEY }}", "type": "secret_text"}
+                  }
+                }
+              }
+            }'
       - run: cd inkspector && bun install && bunx @cloudflare/next-on-pages
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.INKSPECTOR_SUPABASE_URL }}
