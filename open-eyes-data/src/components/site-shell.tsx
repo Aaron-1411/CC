@@ -36,7 +36,7 @@ const NAV_GROUPS = [
       { to: "/expenses", label: "Expenses" },
       { to: "/meetings", label: "Ministers" },
       { to: "/lobbying", label: "Lobbying" },
-      { to: "/acoba", label: "ACOBA" },
+      { to: "/acoba", label: "Revolving Door" },
     ],
   },
   {
@@ -44,7 +44,7 @@ const NAV_GROUPS = [
     items: [
       { to: "/nhs", label: "NHS" },
       { to: "/sewage", label: "Sewage" },
-      { to: "/stop-search", label: "Stop/Search" },
+      { to: "/stop-search", label: "Policing" },
       { to: "/sanctions", label: "Sanctions" },
       { to: "/foi", label: "FOI" },
     ],
@@ -53,7 +53,7 @@ const NAV_GROUPS = [
     label: "Scrutiny",
     items: [
       { to: "/committees", label: "Committees" },
-      { to: "/crossref", label: "Xref" },
+      { to: "/crossref", label: "Cross-ref" },
       { to: "/projects", label: "Projects" },
       { to: "/briefing", label: "Briefing" },
     ],
