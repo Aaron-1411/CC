@@ -10,11 +10,15 @@ export const runtime = 'edge'
 
 
 export default async function PortfolioPage() {
-  const supabase = await createClient()
-  const { data: images } = await supabase
-    .from('portfolio_images')
-    .select('*')
-    .order('display_order')
+  let images: import('@/types/booking').PortfolioImage[] = []
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('portfolio_images')
+      .select('*')
+      .order('display_order')
+    images = data ?? []
+  } catch {}
 
   return (
     <>
@@ -33,7 +37,7 @@ export default async function PortfolioPage() {
           </p>
         </div>
 
-        <PortfolioGrid images={images ?? []} />
+        <PortfolioGrid images={images} />
       </main>
 
       <footer className="border-t border-border px-6 py-10">

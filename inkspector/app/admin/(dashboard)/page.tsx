@@ -12,20 +12,23 @@ export const runtime = 'edge'
 const STATUS_OPTIONS: BookingStatus[] = ['pending', 'confirmed', 'completed', 'cancelled', 'waitlist']
 
 export default async function AdminDashboard() {
-  const supabase = await createClient()
-
-  const { data: bookings } = await supabase
-    .from('bookings')
-    .select('id, name, tattoo_style, status, created_at')
-    .order('created_at', { ascending: false })
-    .limit(10)
-
+  let bookings: { id: string; name: string; tattoo_style: string; status: string; created_at: string }[] = []
   const counts: Record<string, number> = {}
-  const { data: allStatuses } = await supabase.from('bookings').select('status')
-  for (const row of allStatuses ?? []) {
-    counts[row.status] = (counts[row.status] ?? 0) + 1
-  }
-  const total = allStatuses?.length ?? 0
+  let total = 0
+  try {
+    const supabase = await createClient()
+    const { data: recentData } = await supabase
+      .from('bookings')
+      .select('id, name, tattoo_style, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10)
+    bookings = recentData ?? []
+    const { data: allStatuses } = await supabase.from('bookings').select('status')
+    for (const row of allStatuses ?? []) {
+      counts[row.status] = (counts[row.status] ?? 0) + 1
+    }
+    total = allStatuses?.length ?? 0
+  } catch {}
 
   return (
     <div className="p-8 max-w-5xl mx-auto">

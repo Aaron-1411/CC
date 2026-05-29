@@ -1,26 +1,25 @@
 import Link from 'next/link'
-
 import Image from 'next/image'
-
 import { ArrowRight } from 'lucide-react'
-
 import Nav from '@/components/nav'
-
 import { InstagramIcon } from '@/components/icons'
-
 import { createClient } from '@/lib/supabase-server'
+import type { PortfolioImage } from '@/types/booking'
 
 export const runtime = 'edge'
 
-
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: featured } = await supabase
-    .from('portfolio_images')
-    .select('*')
-    .eq('featured', true)
-    .order('display_order')
-    .limit(6)
+  let featured: PortfolioImage[] = []
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('portfolio_images')
+      .select('*')
+      .eq('featured', true)
+      .order('display_order')
+      .limit(6)
+    featured = data ?? []
+  } catch {}
 
   return (
     <>
@@ -59,7 +58,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured work */}
-      {featured && featured.length > 0 && (
+      {featured.length > 0 && (
         <section className="max-w-6xl mx-auto px-6 py-20">
           <div className="flex items-end justify-between mb-10">
             <h2 className="font-heading text-3xl md:text-4xl">Featured Work</h2>
@@ -122,12 +121,7 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p className="font-heading font-bold text-foreground tracking-widest uppercase">Inkspector</p>
           <p>One by One Tattoo · London</p>
-          <a
-            href="https://instagram.com/inkspector_"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 hover:text-foreground transition-colors"
-          >
+          <a href="https://instagram.com/inkspector_" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-foreground transition-colors">
             <InstagramIcon size={16} /> @inkspector_
           </a>
         </div>

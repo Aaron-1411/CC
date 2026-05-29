@@ -17,23 +17,28 @@ export default async function AdminBookingsPage({
   searchParams: Promise<{ status?: string }>
 }) {
   const { status = 'all' } = await searchParams
-  const supabase = await createClient()
-
-  let query = supabase
-    .from('bookings')
-    .select('id, name, email, tattoo_style, body_part, size_category, preferred_date, budget_range, status, created_at')
-    .order('created_at', { ascending: false })
-
-  if (status !== 'all') {
-    query = query.eq('status', status)
-  }
-
-  const { data: bookings } = await query
+  let bookings: {
+    id: string; name: string; email: string; tattoo_style: string; body_part: string;
+    size_category: string; preferred_date: string | null; budget_range: string | null;
+    status: string; created_at: string;
+  }[] = []
+  try {
+    const supabase = await createClient()
+    let query = supabase
+      .from('bookings')
+      .select('id, name, email, tattoo_style, body_part, size_category, preferred_date, budget_range, status, created_at')
+      .order('created_at', { ascending: false })
+    if (status !== 'all') {
+      query = query.eq('status', status)
+    }
+    const { data } = await query
+    bookings = data ?? []
+  } catch {}
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="font-heading text-3xl font-bold mb-2">Bookings</h1>
-      <p className="text-muted-foreground mb-6 text-sm">{bookings?.length ?? 0} request{bookings?.length !== 1 ? 's' : ''}</p>
+      <p className="text-muted-foreground mb-6 text-sm">{bookings.length} request{bookings?.length !== 1 ? 's' : ''}</p>
 
       {/* Status filter */}
       <div className="flex flex-wrap gap-2 mb-6">
