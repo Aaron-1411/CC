@@ -9,7 +9,9 @@ export const bookingSchema = z.object({
 
   // Design
   tattoo_style: z.string().min(1, 'Please select a tattoo style'),
-  description: z.string().min(20, 'Please describe your tattoo idea in at least 20 characters'),
+  colour_preference: z.string().min(1, 'Please select a colour preference'),
+  complexity: z.string().min(1, 'Please select a complexity level'),
+  description: z.string().min(50, 'Please describe your idea in at least 50 characters — the more detail the better'),
   reference_images: z.array(z.string()),
   is_cover_up: z.boolean(),
   cover_up_notes: z.string().optional(),
@@ -18,6 +20,7 @@ export const bookingSchema = z.object({
   body_part: z.string().min(1, 'Please select a body part'),
   placement_detail: z.string().optional(),
   size_category: z.string().min(1, 'Please select a size'),
+  dimensions: z.string().optional(),
   size_notes: z.string().optional(),
 
   // Session
@@ -32,6 +35,19 @@ export const bookingSchema = z.object({
 })
 
 export type BookingFormValues = z.infer<typeof bookingSchema>
+
+export const COLOUR_PREFERENCES = [
+  'Black & grey only',
+  'Full colour',
+  'Colour with black & grey shading',
+  'Not sure yet',
+]
+
+export const COMPLEXITY_OPTIONS = [
+  { value: 'simple', label: 'Simple / minimal — clean lines, little shading' },
+  { value: 'moderate', label: 'Moderate — some detail, shading or texture' },
+  { value: 'detailed', label: 'Highly detailed — complex composition, fine detail' },
+]
 
 export const TATTOO_STYLES = [
   'Blackwork',

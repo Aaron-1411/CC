@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Upload, X } from 'lucide-react'
-import { bookingSchema, type BookingFormValues, TATTOO_STYLES, BODY_PARTS, SIZE_CATEGORIES, BUDGET_RANGES, TIME_PREFERENCES } from '@/lib/validations/booking'
+import { bookingSchema, type BookingFormValues, TATTOO_STYLES, BODY_PARTS, SIZE_CATEGORIES, BUDGET_RANGES, TIME_PREFERENCES, COLOUR_PREFERENCES, COMPLEXITY_OPTIONS } from '@/lib/validations/booking'
 import { createClient } from '@/lib/supabase-browser'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -47,6 +47,8 @@ export default function BookingForm() {
       is_cover_up: false,
       is_first_tattoo: false,
       consent: false,
+      colour_preference: '',
+      complexity: '',
     },
   })
 
@@ -150,14 +152,45 @@ export default function BookingForm() {
             <FieldError message={errors.tattoo_style?.message} />
           </div>
 
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div>
+              <Label>Colour preference *</Label>
+              <div className="space-y-2 mt-1.5">
+                {COLOUR_PREFERENCES.map(c => (
+                  <label key={c} className="flex items-center gap-3 cursor-pointer group">
+                    <input type="radio" value={c} {...register('colour_preference')} className="peer sr-only" />
+                    <div className="w-4 h-4 rounded-full border border-border flex-shrink-0 peer-checked:border-primary peer-checked:bg-primary transition-colors" />
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors peer-checked:text-foreground">{c}</span>
+                  </label>
+                ))}
+              </div>
+              <FieldError message={errors.colour_preference?.message} />
+            </div>
+
+            <div>
+              <Label>Complexity *</Label>
+              <div className="space-y-2 mt-1.5">
+                {COMPLEXITY_OPTIONS.map(({ value, label }) => (
+                  <label key={value} className="flex items-start gap-3 cursor-pointer group">
+                    <input type="radio" value={value} {...register('complexity')} className="peer sr-only" />
+                    <div className="w-4 h-4 rounded-full border border-border flex-shrink-0 mt-0.5 peer-checked:border-primary peer-checked:bg-primary transition-colors" />
+                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-snug">{label}</span>
+                  </label>
+                ))}
+              </div>
+              <FieldError message={errors.complexity?.message} />
+            </div>
+          </div>
+
           <div>
             <Label htmlFor="description">Describe your tattoo idea *</Label>
             <Textarea
               id="description"
               {...register('description')}
               className="mt-1.5 min-h-[140px]"
-              placeholder="Tell Jordan exactly what you have in mind — imagery, meanings, feelings, anything relevant. The more detail, the better."
+              placeholder="Tell Jordan exactly what you have in mind — imagery, meanings, feelings, any specific elements. The more detail here, the faster Jordan can quote you."
             />
+            <p className="text-xs text-muted-foreground mt-1">Minimum 50 characters. Think: subject matter, mood, any must-haves or deal-breakers.</p>
             <FieldError message={errors.description?.message} />
           </div>
 
@@ -264,9 +297,16 @@ export default function BookingForm() {
             <FieldError message={errors.size_category?.message} />
           </div>
 
-          <div>
-            <Label htmlFor="size_notes">Size notes</Label>
-            <Input id="size_notes" {...register('size_notes')} className="mt-1.5" placeholder="Any specifics about the size or shape" />
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div>
+              <Label htmlFor="dimensions">Rough dimensions</Label>
+              <Input id="dimensions" {...register('dimensions')} className="mt-1.5" placeholder="e.g. 10cm × 8cm, or wrist to elbow" />
+              <p className="text-xs text-muted-foreground mt-1">More precise than the size bracket — really helps with quoting.</p>
+            </div>
+            <div>
+              <Label htmlFor="size_notes">Size notes</Label>
+              <Input id="size_notes" {...register('size_notes')} className="mt-1.5" placeholder="Wrapping around the limb? Stretching across the back?" />
+            </div>
           </div>
         </div>
       </section>
