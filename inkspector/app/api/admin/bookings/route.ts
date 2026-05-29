@@ -13,14 +13,18 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url)
   const status = searchParams.get('status')
+  const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : undefined
 
   let query = supabase
     .from('bookings')
-    .select('*')
+    .select('id, name, email, tattoo_style, body_part, size_category, preferred_date, budget_range, status, created_at')
     .order('created_at', { ascending: false })
 
   if (status && status !== 'all') {
     query = query.eq('status', status)
+  }
+  if (limit) {
+    query = query.limit(limit)
   }
 
   const { data, error } = await query

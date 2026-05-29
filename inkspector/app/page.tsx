@@ -3,15 +3,15 @@ import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import Nav from '@/components/nav'
 import { InstagramIcon } from '@/components/icons'
-import { createClient } from '@/lib/supabase-server'
+import { createStaticClient } from '@/lib/supabase-static'
 import type { PortfolioImage } from '@/types/booking'
 
-export const runtime = 'edge'
+export const revalidate = 3600
 
 export default async function HomePage() {
   let featured: PortfolioImage[] = []
   try {
-    const supabase = await createClient()
+    const supabase = createStaticClient()
     const { data } = await supabase
       .from('portfolio_images')
       .select('*')

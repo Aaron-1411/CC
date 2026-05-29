@@ -4,15 +4,14 @@ import { InstagramIcon } from '@/components/icons'
 
 import PortfolioGrid from '@/components/portfolio-grid'
 
-import { createClient } from '@/lib/supabase-server'
+import { createStaticClient } from '@/lib/supabase-static'
 
-export const runtime = 'edge'
-
+export const revalidate = 3600
 
 export default async function PortfolioPage() {
   let images: import('@/types/booking').PortfolioImage[] = []
   try {
-    const supabase = await createClient()
+    const supabase = createStaticClient()
     const { data } = await supabase
       .from('portfolio_images')
       .select('*')
