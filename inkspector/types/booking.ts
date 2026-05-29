@@ -13,6 +13,8 @@ export interface Booking {
 
   // Design
   tattoo_style: string
+  colour_preference: string | null
+  complexity: string | null
   description: string
   reference_images: string[]
   is_cover_up: boolean
@@ -22,6 +24,7 @@ export interface Booking {
   body_part: string
   placement_detail: string | null
   size_category: string
+  dimensions: string | null
   size_notes: string | null
 
   // Session

@@ -102,6 +102,8 @@ export default function BookingDetailClient() {
             <h2 className="text-xs uppercase tracking-widest text-primary font-medium mb-4">Design</h2>
             <dl>
               <DetailRow label="Style" value={booking.tattoo_style} />
+              <DetailRow label="Colour" value={booking.colour_preference} />
+              <DetailRow label="Complexity" value={booking.complexity} />
               <DetailRow label="Description" value={<p className="whitespace-pre-wrap">{booking.description}</p>} />
               <DetailRow label="Cover-up" value={booking.is_cover_up ? `Yes${booking.cover_up_notes ? ` — ${booking.cover_up_notes}` : ''}` : 'No'} />
               <DetailRow label="First tattoo" value={booking.is_first_tattoo ? 'Yes' : 'No'} />
@@ -126,6 +128,7 @@ export default function BookingDetailClient() {
               <DetailRow label="Body area" value={booking.body_part} />
               <DetailRow label="Specific placement" value={booking.placement_detail} />
               <DetailRow label="Size" value={booking.size_category} />
+              <DetailRow label="Dimensions" value={booking.dimensions} />
               <DetailRow label="Size notes" value={booking.size_notes} />
             </dl>
           </div>
