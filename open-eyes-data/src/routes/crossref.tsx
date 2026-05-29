@@ -129,6 +129,20 @@ function CrossRefPage() {
         </p>
       </div>
 
+      {/* Example chips */}
+      <div className="flex flex-wrap gap-2">
+        {["Serco", "G4S", "Capita", "BAE Systems", "McKinsey"].map((example) => (
+          <button
+            key={example}
+            onClick={() => { setQuery(example); search(example); }}
+            className="px-3 py-1.5 bg-surface border border-border rounded-full label-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-amber hover:border-amber/40 transition-colors"
+          >
+            {example}
+          </button>
+        ))}
+        <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground self-center">— or type any name</span>
+      </div>
+
       {/* Search box */}
       <Card>
         <form
@@ -139,7 +153,7 @@ function CrossRefPage() {
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Enter a company or person name…"
+            placeholder="Company or person name — e.g. Serco, G4S, BAE Systems, Nigel Farage…"
             className="flex-1 bg-background border border-border rounded px-3 py-2 text-sm focus:border-amber outline-none"
           />
           <button
@@ -147,11 +161,11 @@ function CrossRefPage() {
             disabled={status === "loading" || !query.trim()}
             className="px-4 py-2 bg-amber text-amber-foreground rounded label-mono text-xs uppercase tracking-wider disabled:opacity-50"
           >
-            {status === "loading" ? "Searching…" : "Search"}
+            {status === "loading" ? "Searching…" : "Search →"}
           </button>
         </form>
         <p className="text-[11px] text-muted-foreground mt-2 label-mono">
-          Searches across: Government Contracts · Electoral Commission Donations · ACOBA Revolving Door · Lobbyist Register
+          Searches simultaneously: Contracts (£1m+) · Donations (Electoral Commission) · Revolving Door (ACOBA) · Lobbying Register
         </p>
       </Card>
 

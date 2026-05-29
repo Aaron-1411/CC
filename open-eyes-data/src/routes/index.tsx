@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Card, ErrorNote, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import { Card, ErrorNote, LiveBadge, Skeleton } from "@/components/primitives";
 import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
 import { ISSUES, ISSUE_KEYS } from "@/data/issues";
 import { PostcodeWidget } from "@/components/postcode-widget";
@@ -27,76 +27,57 @@ type SearchResp = {
   noticesData?: Array<{ title?: string; organisationName?: string; awardedValue?: number; valueHigh?: number; valueLow?: number }>;
 };
 
-// ─── Tool groups ─────────────────────────────────────────────────────────────
+// ─── All tools (compact grid) ─────────────────────────────────────────────────
 
-const TOOL_GROUPS = [
+const TOOL_SECTIONS: Array<{
+  label: string;
+  tools: Array<{ to: string; label: string; copy: string }>;
+}> = [
   {
-    id: "landscape",
-    eyebrow: "Today's picture",
-    title: "What's happening & what was promised",
-    description: "Know the political landscape before diving into the data.",
+    label: "Politics & democracy",
     tools: [
-      { to: "/parties", eyebrow: "Parties & Promises", title: "Are they keeping their word?", copy: "Track every UK party pledge on NHS, Housing, Economy, Crime, Environment, Immigration and Education — with real delivery status." },
-      { to: "/news", eyebrow: "News", title: "What the media is covering", copy: "UK news ranked by how many outlets are covering each story. Filter by issue to see what's dominating each area." },
-      { to: "/petitions", eyebrow: "Petitions", title: "What the public is demanding", copy: "Open petitions sorted by signatures, with progress to the 10k response and 100k debate thresholds." },
+      { to: "/parties",    label: "Party pledges",   copy: "Are they keeping their word?" },
+      { to: "/news",       label: "News",             copy: "Stories ranked by coverage" },
+      { to: "/petitions",  label: "Petitions",        copy: "Most-signed open petitions" },
+      { to: "/parliament", label: "Bills",            copy: "Legislation in Parliament" },
+      { to: "/votes",      label: "Votes",            copy: "How MPs actually vote" },
+      { to: "/committees", label: "Committees",       copy: "Select committee reports" },
     ],
   },
   {
-    id: "democracy",
-    eyebrow: "Democracy in motion",
-    title: "Parliament, votes & legislation",
-    description: "What's being passed, who voted which way, and what it means.",
+    label: "Economy & spending",
     tools: [
-      { to: "/parliament", eyebrow: "Bills", title: "Legislation in motion", copy: "Every active bill — current stage, last updated — straight from the Parliament Bills API." },
-      { to: "/votes", eyebrow: "Votes", title: "How MPs actually vote", copy: "Every House of Commons division live from Parliament. See the ayes, noes, and which way it went." },
+      { to: "/economy",  label: "Indicators",      copy: "GDP, inflation, wages & debt" },
+      { to: "/spending", label: "Public spending",  copy: "Where your £1.2 trillion goes" },
     ],
   },
   {
-    id: "economy",
-    eyebrow: "The economic scorecard",
-    title: "How is the economy actually performing?",
-    description: "Live ONS data — the numbers behind the political debate.",
+    label: "Follow the money",
     tools: [
-      { to: "/economy", eyebrow: "Indicators", title: "GDP, inflation, wages & debt", copy: "Live ONS time-series: GDP growth, CPI, unemployment, real wages, government deficit and national debt — the full scorecard." },
-      { to: "/spending", eyebrow: "Public spending", title: "Where your £1.2 trillion goes", copy: "HM Treasury PESA data — total managed expenditure by government department. Health, welfare, defence, education." },
+      { to: "/contracts", label: "Contracts",      copy: "Every contract over £1m" },
+      { to: "/donations", label: "Donations",      copy: "Who funds the parties" },
+      { to: "/expenses",  label: "MP Expenses",    copy: "What MPs are claiming" },
+      { to: "/meetings",  label: "Ministers",      copy: "Who ministers are meeting" },
+      { to: "/lobbying",  label: "Lobbying",       copy: "Paid influence register" },
+      { to: "/acoba",     label: "Revolving Door", copy: "Ministers to private sector" },
     ],
   },
   {
-    id: "money",
-    eyebrow: "Follow the money",
-    title: "Contracts, donations & influence",
-    description: "Where public money goes, who funds parties, and who has access.",
+    label: "Public services",
     tools: [
-      { to: "/contracts", eyebrow: "Contracts", title: "Top recipients & direct awards", copy: "Every contract over £1m — including aggregated view of top suppliers, procedure breakdowns, and direct awards flagged." },
-      { to: "/donations", eyebrow: "Donations", title: "Who funds the parties", copy: "The Electoral Commission register of donations. See who is bankrolling which party and by how much." },
-      { to: "/expenses", eyebrow: "Expenses", title: "What MPs are claiming", copy: "IPSA 2024-25 expense totals per MP — sorted by total spend, filterable by name or constituency." },
-      { to: "/meetings", eyebrow: "Ministers", title: "Who ministers are meeting", copy: "Quarterly returns showing which companies and lobbyists are getting access to government ministers." },
-      { to: "/lobbying", eyebrow: "Lobbying", title: "Paid influence register", copy: "Organisations legally required to disclose paid lobbying activity — who's paying whom to lobby government." },
-      { to: "/acoba", eyebrow: "Revolving Door", title: "Ministers into private sector", copy: "Every case of a minister or senior official moving into a private sector role connected to their government work." },
+      { to: "/nhs",         label: "NHS",           copy: "Waiting times & A&E performance" },
+      { to: "/sewage",      label: "Sewage",        copy: "Water company discharge hours" },
+      { to: "/stop-search", label: "Policing",      copy: "Stop & search racial disparity" },
+      { to: "/sanctions",   label: "Sanctions",     copy: "Benefits conditionality data" },
+      { to: "/foi",         label: "FOI",           copy: "Who withholds the most info" },
     ],
   },
   {
-    id: "services",
-    eyebrow: "Public services",
-    title: "NHS, environment, policing & welfare",
-    description: "Real-world data on the services that affect everyone.",
+    label: "Investigate",
     tools: [
-      { to: "/nhs", eyebrow: "NHS", title: "Waiting times & performance", copy: "A&E four-hour target (last hit: never since 2015), waiting lists, and latest NHS England statistics." },
-      { to: "/sewage", eyebrow: "Sewage", title: "Water companies dumping raw sewage", copy: "Environment Agency EDM data — how many hours each water company spilled untreated sewage into rivers and seas in 2024." },
-      { to: "/stop-search", eyebrow: "Stop & Search", title: "Racial disparity in policing", copy: "Every stop and search in England and Wales, broken down by ethnicity, outcome and force." },
-      { to: "/sanctions", eyebrow: "Sanctions", title: "Benefits conditionality", copy: "DWP Universal Credit sanctions data. Critics argue the system disproportionately harms the most vulnerable." },
-      { to: "/foi", eyebrow: "FOI", title: "Freedom of Information refusals", copy: "Which public bodies refuse the most requests? The Cabinet Office league table of withheld information." },
-    ],
-  },
-  {
-    id: "investigate",
-    eyebrow: "Investigate",
-    title: "Connect the dots",
-    description: "Power tools for cross-referencing data and generating briefings.",
-    tools: [
-      { to: "/crossref", eyebrow: "Cross-reference", title: "Follow the money — in depth", copy: "Search a company or person across contracts, donations, ACOBA and the lobbying register at once." },
-      { to: "/briefing", eyebrow: "AI Briefing", title: "Ask about any UK issue", copy: "Generate a non-partisan briefing on any UK accountability topic — ministers named, real figures, department by department." },
-      { to: "/projects", eyebrow: "Major Projects", title: "HS2, Hinkley & beyond", copy: "Every IPA Government Major Projects Portfolio entry — budget, delivery confidence RAG status, and named department." },
+      { to: "/crossref", label: "Cross-reference", copy: "Search across all databases at once" },
+      { to: "/projects", label: "Major Projects",  copy: "HS2, Hinkley & cost overruns" },
+      { to: "/briefing", label: "AI Briefing",     copy: "Non-partisan topic briefings" },
     ],
   },
 ];
@@ -105,14 +86,12 @@ const TOOL_GROUPS = [
 
 function HomePage() {
   return (
-    <div className="space-y-16">
+    <div className="space-y-14">
       <Hero />
       <PostcodeWidget />
       <IssueGrid />
       <LiveSnapshot />
-      {TOOL_GROUPS.map((group) => (
-        <ToolGroup key={group.id} group={group} />
-      ))}
+      <AllTools />
     </div>
   );
 }
@@ -244,9 +223,11 @@ function LiveSnapshot() {
 
   return (
     <section>
-      <div className="flex items-center gap-2 mb-3">
-        <LiveBadge timestamp={petitions.data?.meta.fetchedAt} />
-        <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Right now</span>
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <LiveBadge timestamp={petitions.data?.meta.fetchedAt} />
+          <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Three things happening right now</span>
+        </div>
       </div>
       <div className="grid sm:grid-cols-3 gap-3">
         <Card className="flex flex-col gap-3">
@@ -294,35 +275,43 @@ function LiveSnapshot() {
   );
 }
 
-// ─── Tool group ───────────────────────────────────────────────────────────────
+// ─── All tools (compact grid) ─────────────────────────────────────────────────
 
-type ToolGroupDef = typeof TOOL_GROUPS[number];
-
-function ToolGroup({ group }: { group: ToolGroupDef }) {
-  return (
-    <section>
-      <SectionHeader eyebrow={group.eyebrow} title={group.title} />
-      {group.description && (
-        <p className="text-muted-foreground text-sm mb-4 -mt-2 max-w-xl">{group.description}</p>
-      )}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {group.tools.map((tool) => (
-          <NavCard key={tool.to} {...tool} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function NavCard({ to, eyebrow, title, copy }: { to: string; eyebrow: string; title: string; copy: string }) {
+function CompactToolCard({ to, label, copy }: { to: string; label: string; copy: string }) {
   return (
     <Link
       to={to}
-      className="group flex flex-col bg-surface border border-border rounded-lg p-5 hover:border-amber/40 hover:bg-surface-2 transition-colors"
+      className="group flex flex-col bg-surface border border-border rounded-lg px-4 py-3 hover:border-amber/40 hover:bg-surface-2 transition-colors"
     >
-      <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber">{eyebrow}</div>
-      <h3 className="font-display text-lg font-bold mt-1 group-hover:text-amber transition-colors leading-snug">{title}</h3>
-      <p className="text-sm text-muted-foreground mt-2 leading-relaxed flex-1">{copy}</p>
+      <span className="font-display text-sm font-semibold group-hover:text-amber transition-colors leading-snug">
+        {label}
+      </span>
+      <span className="text-xs text-muted-foreground mt-0.5 leading-snug">{copy}</span>
     </Link>
+  );
+}
+
+function AllTools() {
+  return (
+    <section className="space-y-6">
+      <div>
+        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+          All {TOOL_SECTIONS.reduce((n, s) => n + s.tools.length, 0)} tools
+        </div>
+        <h2 className="font-display text-2xl font-bold">Explore the full dataset</h2>
+      </div>
+      {TOOL_SECTIONS.map((section) => (
+        <div key={section.label}>
+          <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+            {section.label}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            {section.tools.map((tool) => (
+              <CompactToolCard key={tool.to} {...tool} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }
