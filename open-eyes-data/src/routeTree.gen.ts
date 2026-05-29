@@ -32,6 +32,7 @@ import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CommitteesRouteImport } from './routes/committees'
 import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AcobaRouteImport } from './routes/acoba'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as IssuesIndexRouteImport } from './routes/issues/index'
 import { Route as IssuesIssueRouteImport } from './routes/issues/$issue'
@@ -175,6 +176,11 @@ const AcobaRoute = AcobaRouteImport.update({
   path: '/acoba',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -313,6 +319,7 @@ const ApiAcobaRoute = ApiAcobaRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/committees': typeof CommitteesRoute
@@ -365,6 +372,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/committees': typeof CommitteesRoute
@@ -418,6 +426,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
   '/briefing': typeof BriefingRoute
   '/committees': typeof CommitteesRoute
@@ -472,6 +481,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/acoba'
     | '/briefing'
     | '/committees'
@@ -524,6 +534,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/acoba'
     | '/briefing'
     | '/committees'
@@ -576,6 +587,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/acoba'
     | '/briefing'
     | '/committees'
@@ -629,6 +641,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AcobaRoute: typeof AcobaRoute
   BriefingRoute: typeof BriefingRoute
   CommitteesRoute: typeof CommitteesRoute
@@ -843,6 +856,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcobaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -1037,6 +1057,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AcobaRoute: AcobaRoute,
   BriefingRoute: BriefingRoute,
   CommitteesRoute: CommitteesRoute,
