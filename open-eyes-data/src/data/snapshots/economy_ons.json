@@ -1,0 +1,362 @@
+{
+  "data": {
+    "series": [
+      {
+        "label": "GDP growth",
+        "description": "Quarter-on-quarter GDP growth (seasonally adjusted)",
+        "unit": "%",
+        "latestValue": "0.1",
+        "latestDate": "2025 Q4",
+        "trend": [
+          {
+            "date": "2023 Q1",
+            "value": 0.1
+          },
+          {
+            "date": "2023 Q2",
+            "value": 0
+          },
+          {
+            "date": "2023 Q3",
+            "value": -0.2
+          },
+          {
+            "date": "2023 Q4",
+            "value": -0.3
+          },
+          {
+            "date": "2024 Q1",
+            "value": 0.8
+          },
+          {
+            "date": "2024 Q2",
+            "value": 0.6
+          },
+          {
+            "date": "2024 Q3",
+            "value": 0.2
+          },
+          {
+            "date": "2024 Q4",
+            "value": 0.3
+          },
+          {
+            "date": "2025 Q1",
+            "value": 0.7
+          },
+          {
+            "date": "2025 Q2",
+            "value": 0.2
+          },
+          {
+            "date": "2025 Q3",
+            "value": 0.1
+          },
+          {
+            "date": "2025 Q4",
+            "value": 0.1
+          }
+        ],
+        "source": "ONS — series IHYQ",
+        "sourceId": "IHYQ"
+      },
+      {
+        "label": "CPI inflation",
+        "description": "Consumer Prices Index — 12-month rate",
+        "unit": "%",
+        "latestValue": "2.8",
+        "latestDate": "2026 APR",
+        "trend": [
+          {
+            "date": "2025 MAY",
+            "value": 3.4
+          },
+          {
+            "date": "2025 JUN",
+            "value": 3.6
+          },
+          {
+            "date": "2025 JUL",
+            "value": 3.8
+          },
+          {
+            "date": "2025 AUG",
+            "value": 3.8
+          },
+          {
+            "date": "2025 SEP",
+            "value": 3.8
+          },
+          {
+            "date": "2025 OCT",
+            "value": 3.6
+          },
+          {
+            "date": "2025 NOV",
+            "value": 3.2
+          },
+          {
+            "date": "2025 DEC",
+            "value": 3.4
+          },
+          {
+            "date": "2026 JAN",
+            "value": 3
+          },
+          {
+            "date": "2026 FEB",
+            "value": 3
+          },
+          {
+            "date": "2026 MAR",
+            "value": 3.3
+          },
+          {
+            "date": "2026 APR",
+            "value": 2.8
+          }
+        ],
+        "source": "ONS — series D7G7",
+        "sourceId": "D7G7"
+      },
+      {
+        "label": "Unemployment",
+        "description": "ILO unemployment rate (16+)",
+        "unit": "%",
+        "latestValue": "5.0",
+        "latestDate": "2026 FEB",
+        "trend": [
+          {
+            "date": "2025 MAR",
+            "value": 4.6
+          },
+          {
+            "date": "2025 APR",
+            "value": 4.7
+          },
+          {
+            "date": "2025 MAY",
+            "value": 4.7
+          },
+          {
+            "date": "2025 JUN",
+            "value": 4.7
+          },
+          {
+            "date": "2025 JUL",
+            "value": 4.8
+          },
+          {
+            "date": "2025 AUG",
+            "value": 5
+          },
+          {
+            "date": "2025 SEP",
+            "value": 5.1
+          },
+          {
+            "date": "2025 OCT",
+            "value": 5.1
+          },
+          {
+            "date": "2025 NOV",
+            "value": 5.2
+          },
+          {
+            "date": "2025 DEC",
+            "value": 5.2
+          },
+          {
+            "date": "2026 JAN",
+            "value": 4.9
+          },
+          {
+            "date": "2026 FEB",
+            "value": 5
+          }
+        ],
+        "source": "ONS — series MGSX",
+        "sourceId": "MGSX"
+      },
+      {
+        "label": "Wage growth",
+        "description": "Nominal regular pay — annual growth rate (3-month average)",
+        "unit": "%",
+        "latestValue": "4.1",
+        "latestDate": "2026 MAR",
+        "trend": [
+          {
+            "date": "2025 APR",
+            "value": 5.3
+          },
+          {
+            "date": "2025 MAY",
+            "value": 4.9
+          },
+          {
+            "date": "2025 JUN",
+            "value": 4.6
+          },
+          {
+            "date": "2025 JUL",
+            "value": 4.8
+          },
+          {
+            "date": "2025 AUG",
+            "value": 5
+          },
+          {
+            "date": "2025 SEP",
+            "value": 4.9
+          },
+          {
+            "date": "2025 OCT",
+            "value": 4.8
+          },
+          {
+            "date": "2025 NOV",
+            "value": 4.6
+          },
+          {
+            "date": "2025 DEC",
+            "value": 4.2
+          },
+          {
+            "date": "2026 JAN",
+            "value": 4.1
+          },
+          {
+            "date": "2026 FEB",
+            "value": 3.9
+          },
+          {
+            "date": "2026 MAR",
+            "value": 4.1
+          }
+        ],
+        "source": "ONS — series KAC3",
+        "sourceId": "KAC3"
+      },
+      {
+        "label": "Public debt",
+        "description": "Public sector net debt excluding Bank of England (£bn)",
+        "unit": "£bn",
+        "latestValue": "2943.0",
+        "latestDate": "2026 APR",
+        "trend": [
+          {
+            "date": "2025 MAY",
+            "value": 2867.5
+          },
+          {
+            "date": "2025 JUN",
+            "value": 2867.6
+          },
+          {
+            "date": "2025 JUL",
+            "value": 2889
+          },
+          {
+            "date": "2025 AUG",
+            "value": 2906.8
+          },
+          {
+            "date": "2025 SEP",
+            "value": 2913.4
+          },
+          {
+            "date": "2025 OCT",
+            "value": 2897
+          },
+          {
+            "date": "2025 NOV",
+            "value": 2927.1
+          },
+          {
+            "date": "2025 DEC",
+            "value": 2925.6
+          },
+          {
+            "date": "2026 JAN",
+            "value": 2871.1
+          },
+          {
+            "date": "2026 FEB",
+            "value": 2881.8
+          },
+          {
+            "date": "2026 MAR",
+            "value": 2917.2
+          },
+          {
+            "date": "2026 APR",
+            "value": 2943
+          }
+        ],
+        "source": "ONS — series HF6W",
+        "sourceId": "HF6W"
+      },
+      {
+        "label": "Government deficit",
+        "description": "Public sector net borrowing (PSNB), rolling 12 months (£bn)",
+        "unit": "£bn",
+        "latestValue": "-24343.0",
+        "latestDate": "2026 APR",
+        "trend": [
+          {
+            "date": "2025 MAY",
+            "value": -18203
+          },
+          {
+            "date": "2025 JUN",
+            "value": -24222
+          },
+          {
+            "date": "2025 JUL",
+            "value": -1298
+          },
+          {
+            "date": "2025 AUG",
+            "value": -15144
+          },
+          {
+            "date": "2025 SEP",
+            "value": -22123
+          },
+          {
+            "date": "2025 OCT",
+            "value": -15855
+          },
+          {
+            "date": "2025 NOV",
+            "value": -9739
+          },
+          {
+            "date": "2025 DEC",
+            "value": -12805
+          },
+          {
+            "date": "2026 JAN",
+            "value": 33129
+          },
+          {
+            "date": "2026 FEB",
+            "value": -11774
+          },
+          {
+            "date": "2026 MAR",
+            "value": -11483
+          },
+          {
+            "date": "2026 APR",
+            "value": -24343
+          }
+        ],
+        "source": "ONS — series J5II",
+        "sourceId": "J5II"
+      }
+    ],
+    "updatedAt": "2026-05-29T00:21:20.600Z"
+  },
+  "fetchedAt": "2026-05-29T00:21:20.600Z"
+}

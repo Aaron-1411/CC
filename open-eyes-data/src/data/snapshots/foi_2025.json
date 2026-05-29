@@ -1,0 +1,190 @@
+{
+  "data": {
+    "refusals": [
+      {
+        "bodyName": "National Archives",
+        "refusedCount": 3555,
+        "totalReceived": 33634,
+        "withheldPct": 17.8
+      },
+      {
+        "bodyName": "Home Office",
+        "refusedCount": 2784,
+        "totalReceived": 8702,
+        "withheldPct": 45.2
+      },
+      {
+        "bodyName": "Department for Work and Pensions",
+        "refusedCount": 1647,
+        "totalReceived": 4097,
+        "withheldPct": 53.6
+      },
+      {
+        "bodyName": "Ministry of Defence",
+        "refusedCount": 1582,
+        "totalReceived": 5578,
+        "withheldPct": 40
+      },
+      {
+        "bodyName": "HM Revenue and Customs",
+        "refusedCount": 1331,
+        "totalReceived": 2997,
+        "withheldPct": 53.4
+      },
+      {
+        "bodyName": "Ministry of Justice",
+        "refusedCount": 1277,
+        "totalReceived": 5144,
+        "withheldPct": 42.4
+      },
+      {
+        "bodyName": "Cabinet Office",
+        "refusedCount": 1003,
+        "totalReceived": 2480,
+        "withheldPct": 58.9
+      },
+      {
+        "bodyName": "HM Treasury",
+        "refusedCount": 945,
+        "totalReceived": 1939,
+        "withheldPct": 67.9
+      },
+      {
+        "bodyName": "Health and Safety Executive",
+        "refusedCount": 890,
+        "totalReceived": 4683,
+        "withheldPct": 45.2
+      },
+      {
+        "bodyName": "Department for Transport",
+        "refusedCount": 779,
+        "totalReceived": 3635,
+        "withheldPct": 28.9
+      },
+      {
+        "bodyName": "Foreign, Commonwealth and Development Office",
+        "refusedCount": 709,
+        "totalReceived": 1847,
+        "withheldPct": 48.7
+      },
+      {
+        "bodyName": "Department for Education",
+        "refusedCount": 626,
+        "totalReceived": 2789,
+        "withheldPct": 30.7
+      },
+      {
+        "bodyName": "Department for Environment, Food and Rural Affairs",
+        "refusedCount": 608,
+        "totalReceived": 1447,
+        "withheldPct": 57.5
+      },
+      {
+        "bodyName": "Crown Prosecution Service",
+        "refusedCount": 556,
+        "totalReceived": 1129,
+        "withheldPct": 62.5
+      },
+      {
+        "bodyName": "Ministry of Housing, Communities and Local Government",
+        "refusedCount": 449,
+        "totalReceived": 1183,
+        "withheldPct": 48.5
+      },
+      {
+        "bodyName": "Department for Business and Trade",
+        "refusedCount": 441,
+        "totalReceived": 1459,
+        "withheldPct": 39.8
+      },
+      {
+        "bodyName": "Department for Energy Security and Net Zero",
+        "refusedCount": 403,
+        "totalReceived": 1498,
+        "withheldPct": 35
+      },
+      {
+        "bodyName": "Department for Science, Innovation and Technology",
+        "refusedCount": 380,
+        "totalReceived": 1065,
+        "withheldPct": 47.3
+      },
+      {
+        "bodyName": "Charity Commission",
+        "refusedCount": 359,
+        "totalReceived": 1532,
+        "withheldPct": 27.2
+      },
+      {
+        "bodyName": "Department of Health and Social Care",
+        "refusedCount": 320,
+        "totalReceived": 1767,
+        "withheldPct": 28.6
+      },
+      {
+        "bodyName": "Department for Culture, Media and Sport",
+        "refusedCount": 257,
+        "totalReceived": 751,
+        "withheldPct": 50.7
+      },
+      {
+        "bodyName": "Office of Gas and Electricity Markets",
+        "refusedCount": 136,
+        "totalReceived": 777,
+        "withheldPct": 20.3
+      },
+      {
+        "bodyName": "Office for Standards in Education, Children's Services and Skills",
+        "refusedCount": 107,
+        "totalReceived": 446,
+        "withheldPct": 36.5
+      },
+      {
+        "bodyName": "Government Legal Department",
+        "refusedCount": 102,
+        "totalReceived": 312,
+        "withheldPct": 42.1
+      },
+      {
+        "bodyName": "Office for National Statistics",
+        "refusedCount": 96,
+        "totalReceived": 576,
+        "withheldPct": 29.3
+      },
+      {
+        "bodyName": "Competition and Markets Authority",
+        "refusedCount": 89,
+        "totalReceived": 237,
+        "withheldPct": 42.6
+      },
+      {
+        "bodyName": "HM Land Registry",
+        "refusedCount": 82,
+        "totalReceived": 256,
+        "withheldPct": 40
+      },
+      {
+        "bodyName": "Northern Ireland Office",
+        "refusedCount": 66,
+        "totalReceived": 268,
+        "withheldPct": 30.7
+      },
+      {
+        "bodyName": "Attorney General's Office",
+        "refusedCount": 49,
+        "totalReceived": 348,
+        "withheldPct": 25.3
+      },
+      {
+        "bodyName": "Water Services Regulation Authority",
+        "refusedCount": 40,
+        "totalReceived": 202,
+        "withheldPct": 23.3
+      }
+    ],
+    "year": 2025,
+    "totalRequests": 94526,
+    "totalWithheld": 21890
+  },
+  "fetchedAt": "2026-05-29T00:21:19.392Z"
+}

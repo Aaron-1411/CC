@@ -435,17 +435,18 @@ type ONSResponse = {
   years?: Array<{ date: string; value: string }>;
 };
 
+// ONS website timeseries API (api.ons.gov.uk/v1 decommissioned Nov 2024)
 async function fetchONSSeries(
-  dataset: string,
+  onsPath: string,   // path after www.ons.gov.uk, e.g. "economy/gdp/timeseries/ihyq/qna"
   seriesId: string,
   label: string,
   description: string,
   unit: string,
   granularity: "months" | "quarters" | "years" = "quarters",
 ) {
-  const url = `https://api.ons.gov.uk/v1/datasets/${dataset}/timeseries/${seriesId}/data`;
+  const url = `https://www.ons.gov.uk/${onsPath}/data`;
   const r = await fetch(url, {
-    headers: { accept: "application/json" },
+    headers: { accept: "application/json", "user-agent": "transparenC/1.0 (public accountability tool)" },
     signal: AbortSignal.timeout(15_000),
   });
   if (!r.ok) throw new Error(`ONS ${seriesId}: HTTP ${r.status}`);
@@ -460,29 +461,47 @@ async function fetchONSSeries(
     latestValue: latest ? latest.value.toFixed(1) : "—",
     latestDate: latest?.date ?? "—",
     trend: points.slice(-12),
-    source: `ONS — ${dataset.toUpperCase()} series ${seriesId}`,
+    source: `ONS — series ${seriesId}`,
     sourceId: seriesId,
   };
 }
 
 async function fetchEconomyONS() {
   console.log("  Fetching ONS economic indicators…");
-  const SERIES: Array<[string, string, string, string, string, "months" | "quarters" | "years"]> = [
-    ["qna", "IHYQ", "GDP growth", "Quarter-on-quarter GDP growth (seasonally adjusted)", "%", "quarters"],
-    ["mm23", "D7G7", "CPI inflation", "Consumer Prices Index — 12-month rate", "%", "months"],
-    ["lms", "MGSX", "Unemployment", "ILO unemployment rate (16+)", "%", "months"],
-    ["earn", "KAB9", "Real wage growth", "Real regular pay — 3 month on year change (CPIH adjusted)", "%", "months"],
-    ["pusf", "HF6W", "Public debt", "Public sector net debt excluding Bank of England (£bn)", "£bn", "months"],
-    ["pusf", "J5II", "Government deficit", "Public sector net borrowing (PSNB), rolling 12 months (£bn)", "£bn", "months"],
+  const SERIES: Array<[string, string, string, string, string, "months" | "quarters"]> = [
+    [
+      "economy/grossdomesticproductgdp/timeseries/ihyq/qna",
+      "IHYQ", "GDP growth", "Quarter-on-quarter GDP growth (seasonally adjusted)", "%", "quarters",
+    ],
+    [
+      "economy/inflationandpriceindices/timeseries/d7g7/mm23",
+      "D7G7", "CPI inflation", "Consumer Prices Index — 12-month rate", "%", "months",
+    ],
+    [
+      "employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/mgsx/lms",
+      "MGSX", "Unemployment", "ILO unemployment rate (16+)", "%", "months",
+    ],
+    [
+      "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kac3",
+      "KAC3", "Wage growth", "Nominal regular pay — annual growth rate (3-month average)", "%", "months",
+    ],
+    [
+      "economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6w/pusf",
+      "HF6W", "Public debt", "Public sector net debt excluding Bank of England (£bn)", "£bn", "months",
+    ],
+    [
+      "economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/j5ii/pusf",
+      "J5II", "Government deficit", "Public sector net borrowing (PSNB), rolling 12 months (£bn)", "£bn", "months",
+    ],
   ];
   const results = await Promise.allSettled(
-    SERIES.map(([d, s, l, desc, u, g]) => fetchONSSeries(d, s, l, desc, u, g)),
+    SERIES.map(([path, id, l, desc, u, g]) => fetchONSSeries(path, id, l, desc, u, g)),
   );
   const series = results.map((r, i) => {
     if (r.status === "fulfilled") return r.value;
     const [, seriesId, label, description, unit] = SERIES[i];
     console.warn(`    ONS ${seriesId} failed: ${(r.reason as Error).message}`);
-    return { label, description, unit, latestValue: "—", latestDate: "—", trend: [], source: `ONS — ${SERIES[i][0].toUpperCase()} series ${seriesId}`, sourceId: seriesId };
+    return { label, description, unit, latestValue: "—", latestDate: "—", trend: [], source: `ONS — series ${seriesId}`, sourceId: seriesId };
   });
   return { series, updatedAt: new Date().toISOString() };
 }
