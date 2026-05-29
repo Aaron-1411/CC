@@ -37,5 +37,13 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: a1a1276a1a278339d95c187e0bf6de47
+
+      - name: Set Worker secrets
+        run: |
+          printf '%s' "$DATABASE_URL" | npx wrangler secret put DATABASE_URL --name isa-platform
+          printf '%s' "$DATABASE_AUTH_TOKEN" | npx wrangler secret put DATABASE_AUTH_TOKEN --name isa-platform
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: a1a1276a1a278339d95c187e0bf6de47
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
