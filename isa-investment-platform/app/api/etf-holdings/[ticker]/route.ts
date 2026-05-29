@@ -3,7 +3,6 @@ import { fundamentalsCache } from "@/lib/cache";
 import { prisma } from "@/lib/db";
 import { HOLDINGS_DEFINITION } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 const BASE_V11 = "https://query2.finance.yahoo.com/v11/finance/quoteSummary";

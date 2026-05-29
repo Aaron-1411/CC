@@ -8,7 +8,6 @@ import {
   type RollingPoint,
 } from "@/lib/analytics/benchmark";
 
-export const dynamic = "force-dynamic";
 
 const BASE_V8 = "https://query1.finance.yahoo.com/v8/finance/chart";
 const HEADERS = {

@@ -4,7 +4,6 @@ import { newsCache } from "@/lib/cache";
 import { TICKER_TO_YF, fetchYahooNews } from "@/lib/data/yahoo";
 import { HOLDINGS_DEFINITION } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 export async function GET(
   _request: Request,

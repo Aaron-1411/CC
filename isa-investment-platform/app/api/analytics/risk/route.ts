@@ -7,7 +7,6 @@ import {
 import { calcUlcerIndex, calcPctTimeBelowHWM, calcTopDrawdowns } from "@/lib/analytics/benchmark";
 import { HOLDINGS_DEFINITION, BASELINE_SNAPSHOT } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 const RISK_FREE_RATE = 0.04;
 const RISK_FREE_RATE_LABEL = "UK base rate (hardcoded 4.0% p.a.)";

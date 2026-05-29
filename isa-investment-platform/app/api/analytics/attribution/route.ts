@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 import { calcBHBAttribution } from "@/lib/analytics/attribution";
 import { HOLDING_COLORS } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import { HOLDINGS_DEFINITION, HOLDING_COLORS, BASELINE_SNAPSHOT } from "@/lib/constants";
 import { streamGrok, hasGrokKey, streamAnthropic, hasAnthropicKey, SSE_HEADERS, type GrokMessage } from "@/lib/grok";
 
-export const dynamic = "force-dynamic";
 
 void HOLDING_COLORS; // used in context below
 

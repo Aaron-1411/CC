@@ -4,7 +4,6 @@ import { historyCache } from "@/lib/cache";
 import { getHistory, barCount } from "@/lib/priceHistory";
 import { HOLDINGS_DEFINITION } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 // Range string → approximate trading days needed
 const RANGE_DAYS: Record<string, number> = {

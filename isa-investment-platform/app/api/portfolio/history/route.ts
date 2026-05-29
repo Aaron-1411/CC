@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { syntheticPortfolioHistory } from "@/lib/portfolioHistory";
 
-export const dynamic = "force-dynamic";
 
 const RANGE_DAYS: Record<string, number> = {
   "1W": 7,

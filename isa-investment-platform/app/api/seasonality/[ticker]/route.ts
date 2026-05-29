@@ -3,7 +3,6 @@ import { HOLDINGS_DEFINITION } from "@/lib/constants";
 import { getHistory, barCount } from "@/lib/priceHistory";
 import { fetchOHLCV, TICKER_TO_YF } from "@/lib/data/yahoo";
 
-export const dynamic = "force-dynamic";
 
 export interface SeasonalityBucket {
   label: string;

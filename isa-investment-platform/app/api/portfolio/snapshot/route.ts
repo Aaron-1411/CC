@@ -4,7 +4,6 @@ import { fetchBatchQuotes, ALL_YF_SYMBOLS, TICKER_TO_YF } from "@/lib/data/yahoo
 import { fetchFXRates } from "@/lib/data/fx";
 import { HOLDINGS_DEFINITION } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 export async function POST() {
   try {

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { fetchFXRates } from "@/lib/data/fx";
 import { fxCache } from "@/lib/cache";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const cacheKey = "fx-rates";

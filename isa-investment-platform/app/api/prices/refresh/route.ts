@@ -6,7 +6,6 @@
 import { NextResponse } from 'next/server';
 import { refreshAll, storeSummary } from '@/lib/priceHistory';
 
-export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

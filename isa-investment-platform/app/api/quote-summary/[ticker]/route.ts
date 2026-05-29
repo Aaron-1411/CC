@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { fundamentalsCache } from "@/lib/cache";
 import { prisma } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
 
 const BASE_V10 = "https://query2.finance.yahoo.com/v10/finance/quoteSummary";
 const BASE_V11 = "https://query2.finance.yahoo.com/v11/finance/quoteSummary";

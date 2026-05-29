@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { storeSummary } from "@/lib/priceHistory";
 import { HOLDINGS_DEFINITION } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const summary = await storeSummary();

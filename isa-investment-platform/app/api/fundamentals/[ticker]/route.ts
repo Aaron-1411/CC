@@ -7,7 +7,6 @@ import {
 } from "@/lib/data/fmp";
 import { fundamentalsCache } from "@/lib/cache";
 
-export const dynamic = "force-dynamic";
 
 export async function GET(
   _request: Request,

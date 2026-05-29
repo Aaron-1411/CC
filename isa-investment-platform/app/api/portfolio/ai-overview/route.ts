@@ -3,7 +3,6 @@ import { PORTFOLIO_META, THEME_DESCRIPTIONS } from "@/lib/portfolioMeta";
 import { prisma } from "@/lib/db";
 import { streamGrok, hasGrokKey, streamAnthropic, hasAnthropicKey, SSE_HEADERS, type GrokMessage } from "@/lib/grok";
 
-export const dynamic = "force-dynamic";
 
 async function buildContext(): Promise<string> {
   let weights: Record<string, number> = {};

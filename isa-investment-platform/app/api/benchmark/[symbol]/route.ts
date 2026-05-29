@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { historyCache } from "@/lib/cache";
 
-export const dynamic = "force-dynamic";
 
 const BASE_V8 = "https://query1.finance.yahoo.com/v8/finance/chart";
 const HEADERS = {

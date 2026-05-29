@@ -7,7 +7,6 @@ import {
 import { syntheticPortfolioHistory, calcPeriodsFromHistory } from "@/lib/portfolioHistory";
 import { BASELINE_SNAPSHOT } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

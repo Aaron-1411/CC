@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 import { calcCorrelationMatrix } from "@/lib/analytics/risk";
 import { HOLDINGS_DEFINITION } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
 
 // Build return series from adjClose bars stored in PriceHistory
 async function correlationFromPriceHistory(days = 252) {

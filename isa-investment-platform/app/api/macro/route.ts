@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { macroCache } from "@/lib/cache";
 import { prisma } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 const BASE_V8 = "https://query1.finance.yahoo.com/v8/finance/chart";

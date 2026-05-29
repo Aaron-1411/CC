@@ -5,7 +5,6 @@ import { HOLDINGS_DEFINITION } from "@/lib/constants";
 import { fetchYahooNews } from "@/lib/data/yahoo";
 import type { NewsItem } from "@/types/market";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const cacheKey = "all-news";

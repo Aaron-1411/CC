@@ -1,6 +1,5 @@
 import { fetchBatchQuotes, ALL_YF_SYMBOLS } from "@/lib/data/yahoo";
 
-export const dynamic = "force-dynamic";
 
 const REFRESH_INTERVAL = parseInt(
   process.env.NEXT_PUBLIC_REFRESH_INTERVAL ?? "15000"

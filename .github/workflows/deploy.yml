@@ -156,4 +156,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: a1a1276a1a278339d95c187e0bf6de47
+          wranglerVersion: '3.114.0'
           command: pages deploy inkspector/.vercel/output/static --project-name=inkspector-app --branch=main

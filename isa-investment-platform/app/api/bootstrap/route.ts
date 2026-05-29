@@ -9,7 +9,6 @@ import { NextResponse } from 'next/server';
 import { refreshTicker, refreshAll, storeSummary } from '@/lib/priceHistory';
 import { HOLDINGS_DEFINITION } from '@/lib/constants';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 120; // 2 min timeout for full bootstrap
 
 const MACRO_TICKERS: Record<string, string> = {

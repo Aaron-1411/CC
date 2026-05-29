@@ -4,7 +4,6 @@ import { PORTFOLIO_META, type SectorName, type RegionName } from "@/lib/portfoli
 import { prisma } from "@/lib/db";
 import { getHistory } from "@/lib/priceHistory";
 
-export const dynamic = "force-dynamic";
 
 async function getWeights(): Promise<Record<string, number>> {
   try {

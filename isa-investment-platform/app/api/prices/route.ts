@@ -3,7 +3,6 @@ import { fetchBatchQuotes, ALL_YF_SYMBOLS } from "@/lib/data/yahoo";
 import { priceCache } from "@/lib/cache";
 import type { Quote } from "@/types/market";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET() {

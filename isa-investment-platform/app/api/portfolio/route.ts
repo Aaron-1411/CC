@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 import { HOLDINGS_DEFINITION, HOLDING_COLORS, BASELINE_SNAPSHOT } from "@/lib/constants";
 import type { PortfolioState, Position } from "@/types/portfolio";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
