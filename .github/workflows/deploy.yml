@@ -99,17 +99,9 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           command: pages deploy tastybot/dist --project-name=tastybot-app --branch=main
 
-  deploy-isa-platform:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: cd isa-investment-platform && bun install && bun run build
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: a1a1276a1a278339d95c187e0bf6de47
-          command: pages deploy isa-investment-platform/out --project-name=isa-investment-platform-app --branch=main
+  # isa-investment-platform is a local-only Prisma/SQLite dev tool — API routes
+  # cannot be statically exported to CF Pages. Excluded from CI until migrated
+  # to a runtime that supports server-side execution (e.g. CF Workers + D1).
 
   deploy-inkspector:
     runs-on: ubuntu-latest
@@ -156,5 +148,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: a1a1276a1a278339d95c187e0bf6de47
-          wranglerVersion: '3.114.0'
+          wranglerVersion: '4.94.0'
           command: pages deploy inkspector/.vercel/output/static --project-name=inkspector-app --branch=main
