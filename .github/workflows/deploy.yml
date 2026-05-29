@@ -116,6 +116,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"inkspector-app","production_branch":"main"}' || true
       - run: cd inkspector && bun install && bunx @cloudflare/next-on-pages
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.INKSPECTOR_SUPABASE_URL }}
