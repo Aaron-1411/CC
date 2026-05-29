@@ -10,15 +10,19 @@ export interface Booking {
   email: string
   phone: string | null
   instagram: string | null
+  is_returning_client: boolean
 
   // Design
+  is_flash: boolean
   tattoo_style: string
   colour_preference: string | null
   complexity: string | null
+  skin_tone: string | null
   description: string
   reference_images: string[]
   is_cover_up: boolean
   cover_up_notes: string | null
+  cover_up_darkness: string | null
 
   // Placement
   body_part: string
@@ -32,9 +36,13 @@ export interface Booking {
   preferred_date: string | null
   time_preference: string | null
   budget_range: string | null
+  has_deadline: string | null
+  join_waitlist: boolean
 
   // Extra
   additional_notes: string | null
+  has_medical_condition: boolean
+  referral_source: string | null
 
   // Admin
   status: BookingStatus

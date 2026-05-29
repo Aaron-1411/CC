@@ -17,6 +17,8 @@ import {
   COLOUR_PREFERENCES,
   COMPLEXITY_OPTIONS,
   COVER_UP_DARKNESS,
+  SKIN_TONES,
+  REFERRAL_SOURCES,
 } from '@/lib/validations/booking'
 import { createClient } from '@/lib/supabase-browser'
 import { Input } from '@/components/ui/input'
@@ -57,15 +59,27 @@ export default function BookingForm() {
       reference_images: [],
       is_cover_up: false,
       is_first_tattoo: false,
+      is_flash: false,
+      is_returning_client: false,
+      has_medical_condition: false,
+      join_waitlist: false,
+      age_confirmed: false,
       consent: false,
       colour_preference: undefined,
       complexity: undefined,
+      skin_tone: undefined,
+      referral_source: undefined,
       budget_range: '',
     },
   })
 
   const isCoverUp = watch('is_cover_up')
   const isFirstTattoo = watch('is_first_tattoo')
+  const isFlash = watch('is_flash')
+  const isReturning = watch('is_returning_client')
+  const hasMedical = watch('has_medical_condition')
+  const joinWaitlist = watch('join_waitlist')
+  const ageConfirmed = watch('age_confirmed')
   const consent = watch('consent')
   const tattooStyle = watch('tattoo_style')
 
@@ -106,7 +120,7 @@ export default function BookingForm() {
   }
 
   async function onSubmit(data: BookingFormValues) {
-    const { consent: _consent, ...payload } = data
+    const { consent: _consent, age_confirmed: _age, ...payload } = data
     const res = await fetch('/api/bookings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -128,26 +142,38 @@ export default function BookingForm() {
       {/* Contact */}
       <section>
         <SectionHeader title="Contact Details" subtitle="How Jordan can reach you." />
-        <div className="grid sm:grid-cols-2 gap-5">
-          <div>
-            <Label htmlFor="name">Full name *</Label>
-            <Input id="name" {...register('name')} className="mt-1.5" placeholder="Your name" />
-            <FieldError message={errors.name?.message} />
+        <div className="space-y-5">
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div>
+              <Label htmlFor="name">Full name *</Label>
+              <Input id="name" {...register('name')} className="mt-1.5" placeholder="Your name" />
+              <FieldError message={errors.name?.message} />
+            </div>
+            <div>
+              <Label htmlFor="email">Email address *</Label>
+              <Input id="email" type="email" {...register('email')} className="mt-1.5" placeholder="you@example.com" />
+              <FieldError message={errors.email?.message} />
+            </div>
+            <div>
+              <Label htmlFor="phone">Phone number</Label>
+              <Input id="phone" type="tel" {...register('phone')} className="mt-1.5" placeholder="+44 7700 000000" />
+              <FieldError message={errors.phone?.message} />
+            </div>
+            <div>
+              <Label htmlFor="instagram">Instagram handle</Label>
+              <Input id="instagram" {...register('instagram')} className="mt-1.5" placeholder="@yourhandle" />
+              <p className="text-xs text-muted-foreground mt-1">Without the @ is fine too.</p>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="email">Email address *</Label>
-            <Input id="email" type="email" {...register('email')} className="mt-1.5" placeholder="you@example.com" />
-            <FieldError message={errors.email?.message} />
-          </div>
-          <div>
-            <Label htmlFor="phone">Phone number</Label>
-            <Input id="phone" type="tel" {...register('phone')} className="mt-1.5" placeholder="+44 7700 000000" />
-            <FieldError message={errors.phone?.message} />
-          </div>
-          <div>
-            <Label htmlFor="instagram">Instagram handle</Label>
-            <Input id="instagram" {...register('instagram')} className="mt-1.5" placeholder="@yourhandle" />
-            <p className="text-xs text-muted-foreground mt-1">Without the @ is fine too.</p>
+
+          {/* Returning client */}
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="is_returning_client"
+              checked={isReturning}
+              onCheckedChange={v => setValue('is_returning_client', Boolean(v))}
+            />
+            <Label htmlFor="is_returning_client" className="cursor-pointer">I already have a tattoo by Jordan</Label>
           </div>
         </div>
       </section>
@@ -156,6 +182,31 @@ export default function BookingForm() {
       <section>
         <SectionHeader title="Your Design" subtitle="The more detail here, the better Jordan can estimate time and pricing." />
         <div className="space-y-5">
+
+          {/* Flash vs custom */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <label className="relative cursor-pointer">
+              <input type="radio" checked={!isFlash} onChange={() => setValue('is_flash', false)} className="peer sr-only" />
+              <div className={cn(
+                'p-4 rounded-sm border text-sm transition-colors',
+                !isFlash ? 'border-primary bg-primary/5 text-foreground' : 'border-border text-muted-foreground hover:border-muted-foreground'
+              )}>
+                <p className="font-medium mb-0.5">Custom design</p>
+                <p className="text-xs opacity-70">Something created specifically for you</p>
+              </div>
+            </label>
+            <label className="relative cursor-pointer">
+              <input type="radio" checked={isFlash} onChange={() => setValue('is_flash', true)} className="peer sr-only" />
+              <div className={cn(
+                'p-4 rounded-sm border text-sm transition-colors',
+                isFlash ? 'border-primary bg-primary/5 text-foreground' : 'border-border text-muted-foreground hover:border-muted-foreground'
+              )}>
+                <p className="font-medium mb-0.5">Flash piece</p>
+                <p className="text-xs opacity-70">A pre-drawn design from Jordan&apos;s available flash</p>
+              </div>
+            </label>
+          </div>
+
           <div>
             <Label htmlFor="tattoo_style">Tattoo style *</Label>
             <select
@@ -169,7 +220,6 @@ export default function BookingForm() {
             <FieldError message={errors.tattoo_style?.message} />
           </div>
 
-          {/* "Other" style elaboration */}
           {tattooStyle === 'Other' && (
             <div>
               <Label htmlFor="tattoo_style_notes">Describe the style *</Label>
@@ -210,6 +260,22 @@ export default function BookingForm() {
                 ))}
               </div>
               <FieldError message={errors.complexity?.message} />
+            </div>
+          </div>
+
+          {/* Skin tone */}
+          <div>
+            <Label>Skin tone</Label>
+            <p className="text-xs text-muted-foreground mt-0.5 mb-2">Helps Jordan advise on how colours will read and heal — especially important for full-colour work.</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {SKIN_TONES.map(({ value, label }) => (
+                <label key={value} className="relative cursor-pointer">
+                  <input type="radio" value={value} {...register('skin_tone')} className="peer sr-only" />
+                  <div className="px-3 py-2.5 rounded-sm border border-border text-sm text-muted-foreground peer-checked:border-primary peer-checked:text-primary peer-checked:bg-primary/5 hover:border-muted-foreground transition-colors leading-tight">
+                    {label}
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -414,26 +480,101 @@ export default function BookingForm() {
             <p className="text-xs text-muted-foreground mt-1">Selecting "Not sure" is fine — this just helps Jordan triage enquiries.</p>
             <FieldError message={errors.budget_range?.message} />
           </div>
+
+          {/* Deadline */}
+          <div>
+            <Label htmlFor="has_deadline">Is there a date you need this by?</Label>
+            <Input
+              id="has_deadline"
+              {...register('has_deadline')}
+              className="mt-1.5"
+              placeholder="e.g. wedding on 12 Aug, holiday on 1 Sept — leave blank if flexible"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Hard deadlines help Jordan prioritise your request.</p>
+          </div>
+
+          {/* Waitlist */}
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="join_waitlist"
+              checked={joinWaitlist}
+              onCheckedChange={v => setValue('join_waitlist', Boolean(v))}
+              className="mt-0.5"
+            />
+            <div>
+              <Label htmlFor="join_waitlist" className="cursor-pointer">Add me to the cancellation list</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">I&apos;m flexible — I can take a slot at short notice if one comes up.</p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Anything else */}
       <section>
         <SectionHeader title="Anything Else?" />
-        <Textarea
-          {...register('additional_notes')}
-          className="min-h-[100px]"
-          placeholder="Any other context, questions, or things Jordan should know before getting in touch."
-        />
+        <div className="space-y-5">
+          <Textarea
+            {...register('additional_notes')}
+            className="min-h-[100px]"
+            placeholder="Any other context, questions, or things Jordan should know before getting in touch."
+          />
+
+          {/* How did you find Jordan */}
+          <div>
+            <Label>How did you find Jordan?</Label>
+            <div className="space-y-2 mt-2">
+              {REFERRAL_SOURCES.map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-3 cursor-pointer group">
+                  <input type="radio" value={value} {...register('referral_source')} className="peer sr-only" />
+                  <div className="w-4 h-4 rounded-full border border-border flex-shrink-0 peer-checked:border-primary peer-checked:bg-primary transition-colors" />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors peer-checked:text-foreground">{label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Consent + Submit */}
-      <section className="border-t border-border pt-8 space-y-6">
+      {/* Legal + Submit */}
+      <section className="border-t border-border pt-8 space-y-4">
+
+        {/* Medical disclosure */}
+        <div className="flex items-start gap-3 p-4 rounded-sm border border-border bg-card/50">
+          <Checkbox
+            id="has_medical_condition"
+            checked={hasMedical}
+            onCheckedChange={v => setValue('has_medical_condition', Boolean(v))}
+            className="mt-0.5"
+          />
+          <div>
+            <Label htmlFor="has_medical_condition" className="cursor-pointer text-sm">I have a medical condition or take medication that may affect tattooing</Label>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Includes blood thinners, epilepsy, diabetes, keloid scarring, pregnancy, or immune conditions. You don&apos;t need to disclose details here — Jordan will discuss before your appointment.
+            </p>
+          </div>
+        </div>
+
+        {/* Age confirmation */}
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="age_confirmed"
+            checked={ageConfirmed}
+            onCheckedChange={v => setValue('age_confirmed', Boolean(v))}
+            className="mt-0.5"
+          />
+          <Label htmlFor="age_confirmed" className="cursor-pointer text-sm text-muted-foreground leading-relaxed">
+            I confirm I am <span className="text-foreground font-medium">18 years of age or older</span>. Tattooing under 18 is illegal in the UK regardless of parental consent.
+          </Label>
+        </div>
+        <FieldError message={errors.age_confirmed?.message} />
+
+        {/* Booking consent */}
         <div className="flex items-start gap-3">
           <Checkbox
             id="consent"
             checked={consent}
             onCheckedChange={v => setValue('consent', Boolean(v))}
+            className="mt-0.5"
           />
           <Label htmlFor="consent" className="cursor-pointer text-sm text-muted-foreground leading-relaxed">
             I understand this is a <span className="text-foreground font-medium">booking request</span>, not a confirmed appointment. Jordan will be in touch within 48 hours to discuss availability and pricing.

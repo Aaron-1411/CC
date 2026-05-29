@@ -9,8 +9,10 @@ export const bookingSchema = z.object({
     .optional()
     .refine(v => !v || /^[\d\s\+\-\(\)]{7,20}$/.test(v), 'Please enter a valid phone number'),
   instagram: z.string().optional(),
+  is_returning_client: z.boolean(),
 
   // Design
+  is_flash: z.boolean(),
   tattoo_style: z.string().min(1, 'Please select a tattoo style'),
   tattoo_style_notes: z.string().optional(),
   colour_preference: z.enum(
@@ -20,6 +22,7 @@ export const bookingSchema = z.object({
   complexity: z.enum(['simple', 'moderate', 'detailed'], {
     error: 'Please select a complexity level',
   }),
+  skin_tone: z.enum(['fair', 'medium', 'olive', 'brown', 'deep']).optional(),
   description: z.string().min(50, 'Please describe your idea in at least 50 characters — the more detail the better'),
   reference_images: z.array(z.string()),
   is_cover_up: z.boolean(),
@@ -47,9 +50,16 @@ export const bookingSchema = z.object({
     }, 'Please choose a date within the next 6 months'),
   time_preference: z.string().optional(),
   budget_range: z.string().min(1, 'Please select a budget range — even "Not sure" helps Jordan plan'),
+  has_deadline: z.string().optional(),
+  join_waitlist: z.boolean(),
 
   // Extra
   additional_notes: z.string().optional(),
+  referral_source: z.enum(['word_of_mouth', 'instagram', 'google', 'existing_tattoo', 'other']).optional(),
+  has_medical_condition: z.boolean(),
+
+  // Legal
+  age_confirmed: z.boolean().refine(val => val === true, 'You must confirm you are 18 or older'),
   consent: z.boolean().refine(val => val === true, 'You must confirm this is a request, not a confirmed booking'),
 })
 
@@ -66,6 +76,22 @@ export const COMPLEXITY_OPTIONS = [
   { value: 'simple', label: 'Simple / minimal — clean lines, little shading' },
   { value: 'moderate', label: 'Moderate — some detail, shading or texture' },
   { value: 'detailed', label: 'Highly detailed — complex composition, fine detail' },
+]
+
+export const SKIN_TONES = [
+  { value: 'fair', label: 'Fair — light, burns easily' },
+  { value: 'medium', label: 'Medium — tans gradually' },
+  { value: 'olive', label: 'Olive — Mediterranean / Latin tones' },
+  { value: 'brown', label: 'Brown — South Asian / Middle Eastern tones' },
+  { value: 'deep', label: 'Deep — rich, dark tones' },
+]
+
+export const REFERRAL_SOURCES = [
+  { value: 'word_of_mouth', label: 'Word of mouth / recommendation' },
+  { value: 'instagram', label: 'Instagram (@inkspector_)' },
+  { value: 'google', label: 'Google search' },
+  { value: 'existing_tattoo', label: 'I already have a tattoo by Jordan' },
+  { value: 'other', label: 'Other' },
 ]
 
 export const TATTOO_STYLES = [

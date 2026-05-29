@@ -76,6 +76,29 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* Pricing */}
+        <div className="mb-20 border-t border-border pt-16">
+          <h2 className="font-heading text-2xl md:text-3xl mb-2">Pricing</h2>
+          <p className="text-muted-foreground mb-8 text-sm">All prices are a guide — final quotes are given after reviewing your booking request.</p>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-px bg-border mb-6">
+            {[
+              { label: 'Minimum charge', price: '£80', note: 'Any placement, any size' },
+              { label: 'Small piece', price: '£80–150', note: 'Tiny to small, simple design' },
+              { label: 'Half day', price: 'from £300', note: '~3–4 hours of tattooing' },
+              { label: 'Full day', price: 'from £500', note: '~6–7 hours of tattooing' },
+            ].map(({ label, price, note }) => (
+              <div key={label} className="bg-background p-6">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{label}</p>
+                <p className="font-heading text-2xl text-primary mb-1">{price}</p>
+                <p className="text-xs text-muted-foreground">{note}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Cover-ups, fine line work, and colour pieces may be priced differently. A deposit of <span className="text-foreground">£50</span> is required to secure your appointment — this is non-refundable but comes off the final price.
+          </p>
+        </div>
+
         {/* FAQ */}
         <div className="mb-20 border-t border-border pt-16">
           <h2 className="font-heading text-2xl md:text-3xl mb-8">Common Questions</h2>

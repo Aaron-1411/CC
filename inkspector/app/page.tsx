@@ -133,7 +133,14 @@ export default async function HomePage() {
       <footer className="border-t border-border px-6 py-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p className="font-heading font-bold text-foreground tracking-widest uppercase">Inkspector</p>
-          <p>One by One Tattoo · London</p>
+          <a
+              href="https://maps.google.com/?q=One+by+One+Tattoo+London"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              One by One Tattoo · London
+            </a>
           <a href="https://instagram.com/inkspector_" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-foreground transition-colors">
             <InstagramIcon size={16} /> @inkspector_
           </a>

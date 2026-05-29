@@ -95,18 +95,25 @@ export default function BookingDetailClient() {
                   {booking.instagram} <ExternalLink size={12} />
                 </a>
               ) : null} />
+              <DetailRow label="Returning client" value={booking.is_returning_client ? '✓ Yes' : 'No'} />
+              <DetailRow label="Referred by" value={booking.referral_source?.replace(/_/g, ' ')} />
             </dl>
           </div>
 
           <div className="bg-card border border-border rounded-sm p-5">
             <h2 className="text-xs uppercase tracking-widest text-primary font-medium mb-4">Design</h2>
             <dl>
+              <DetailRow label="Type" value={booking.is_flash ? '⚡ Flash piece' : 'Custom design'} />
               <DetailRow label="Style" value={booking.tattoo_style} />
               <DetailRow label="Colour" value={booking.colour_preference} />
               <DetailRow label="Complexity" value={booking.complexity} />
+              <DetailRow label="Skin tone" value={booking.skin_tone} />
               <DetailRow label="Description" value={<p className="whitespace-pre-wrap">{booking.description}</p>} />
-              <DetailRow label="Cover-up" value={booking.is_cover_up ? `Yes${booking.cover_up_notes ? ` — ${booking.cover_up_notes}` : ''}` : 'No'} />
+              <DetailRow label="Cover-up" value={booking.is_cover_up ? `Yes${booking.cover_up_darkness ? ` — ${booking.cover_up_darkness}` : ''}${booking.cover_up_notes ? ` · ${booking.cover_up_notes}` : ''}` : 'No'} />
               <DetailRow label="First tattoo" value={booking.is_first_tattoo ? 'Yes' : 'No'} />
+              {booking.has_medical_condition && (
+                <DetailRow label="⚠ Medical" value="Client flagged a medical condition — discuss before appointment" />
+              )}
             </dl>
             {booking.reference_images.length > 0 && (
               <div className="mt-4 pt-4 border-t border-border">
@@ -141,6 +148,8 @@ export default function BookingDetailClient() {
                 : 'Flexible'} />
               <DetailRow label="Time preference" value={booking.time_preference} />
               <DetailRow label="Budget" value={booking.budget_range} />
+              <DetailRow label="Deadline" value={booking.has_deadline} />
+              <DetailRow label="Waitlist" value={booking.join_waitlist ? '✓ Happy with short notice' : null} />
               <DetailRow label="Additional notes" value={booking.additional_notes
                 ? <p className="whitespace-pre-wrap">{booking.additional_notes}</p>
                 : null} />
