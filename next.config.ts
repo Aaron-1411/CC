@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   typedRoutes: false,
+  output: "standalone",
   // Allow cross-origin requests from Yahoo Finance
   async headers() {
     return [
