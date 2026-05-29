@@ -27,7 +27,15 @@ export default async function HomePage() {
 
       {/* Hero */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background pointer-events-none" />
+        {/* Background photo */}
+        <Image
+          src="/jordan-at-work.jpg"
+          alt="Jordan Mitchell tattooing at One by One Tattoo, London"
+          fill
+          priority
+          className="object-cover object-center opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/30 to-background pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <p className="text-xs tracking-[0.3em] uppercase text-primary mb-6">One by One Tattoo · London</p>
           <h1 className="font-heading text-6xl md:text-8xl font-bold tracking-tight mb-6 leading-none">
@@ -94,8 +102,13 @@ export default async function HomePage() {
               More about me <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-card border border-border flex items-center justify-center">
-            <p className="font-heading text-muted-foreground/30 text-lg">Artist photo</p>
+          <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-card border border-border">
+            <Image
+              src="/jordan-at-work.jpg"
+              alt="Jordan Mitchell at work — One by One Tattoo, London"
+              fill
+              className="object-cover"
+            />
           </div>
         </div>
       </section>

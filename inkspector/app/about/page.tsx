@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, MapPin } from 'lucide-react'
 import Nav from '@/components/nav'
 import { InstagramIcon } from '@/components/icons'
@@ -51,8 +52,14 @@ export default function AboutPage() {
             </a>
           </div>
 
-          <div className="md:col-span-2 relative aspect-[3/4] rounded-sm overflow-hidden bg-card border border-border flex items-center justify-center">
-            <p className="font-heading text-muted-foreground/30 text-sm">Photo of Jordan</p>
+          <div className="md:col-span-2 relative aspect-[3/4] rounded-sm overflow-hidden bg-card border border-border">
+            <Image
+              src="/jordan-at-work.jpg"
+              alt="Jordan Mitchell tattooing — One by One Tattoo, London"
+              fill
+              priority
+              className="object-cover"
+            />
           </div>
         </div>
 
