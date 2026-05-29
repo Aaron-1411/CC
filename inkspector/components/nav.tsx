@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
@@ -36,8 +37,15 @@ export default function Nav() {
       )}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="font-heading text-xl font-bold tracking-widest uppercase text-foreground hover:text-primary transition-colors">
-          Inkspector
+        <Link href="/" className="hover:opacity-80 transition-opacity">
+          <Image
+            src="/inkspector-logo.png"
+            alt="Inkspector"
+            width={140}
+            height={44}
+            className="invert h-9 w-auto"
+            priority
+          />
         </Link>
 
         {/* Desktop nav */}
