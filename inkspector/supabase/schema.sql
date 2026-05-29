@@ -15,15 +15,23 @@ create table if not exists bookings (
 
   -- Design
   tattoo_style    text not null,
+  tattoo_style_notes text,
+  colour_preference text
+                  check (colour_preference in ('Black & grey only', 'Full colour', 'Colour with black & grey shading', 'Not sure yet')),
+  complexity      text
+                  check (complexity in ('simple', 'moderate', 'detailed')),
   description     text not null,
   reference_images text[] not null default '{}',
   is_cover_up     boolean not null default false,
+  cover_up_darkness text
+                  check (cover_up_darkness in ('light', 'medium', 'dark', 'scarred')),
   cover_up_notes  text,
 
   -- Placement
   body_part       text not null,
   placement_detail text,
   size_category   text not null,
+  dimensions      text,
   size_notes      text,
 
   -- Session
@@ -102,27 +110,29 @@ create policy "admin can manage portfolio"
   using (true)
   with check (true);
 
--- Storage bucket for reference images (run after enabling Storage in Supabase dashboard)
--- insert into storage.buckets (id, name, public) values ('reference-images', 'reference-images', true);
--- insert into storage.buckets (id, name, public) values ('portfolio', 'portfolio', true);
+-- Storage buckets (run after enabling Storage in the Supabase dashboard)
+insert into storage.buckets (id, name, public) values ('reference-images', 'reference-images', true)
+  on conflict (id) do nothing;
+insert into storage.buckets (id, name, public) values ('portfolio', 'portfolio', true)
+  on conflict (id) do nothing;
 
 -- Storage RLS for reference-images
--- create policy "anyone can upload reference images"
---   on storage.objects for insert
---   to anon
---   with check (bucket_id = 'reference-images');
+create policy "anyone can upload reference images"
+  on storage.objects for insert
+  to anon
+  with check (bucket_id = 'reference-images');
 
--- create policy "public can view reference images"
---   on storage.objects for select
---   to anon
---   using (bucket_id = 'reference-images');
+create policy "public can view reference images"
+  on storage.objects for select
+  to anon
+  using (bucket_id = 'reference-images');
 
--- create policy "admin can manage reference images"
---   on storage.objects for all
---   to authenticated
---   using (bucket_id = 'reference-images');
+create policy "admin can manage reference images"
+  on storage.objects for all
+  to authenticated
+  using (bucket_id = 'reference-images');
 
--- create policy "admin can manage portfolio images"
---   on storage.objects for all
---   to authenticated
---   using (bucket_id = 'portfolio');
+create policy "admin can manage portfolio images"
+  on storage.objects for all
+  to authenticated
+  using (bucket_id = 'portfolio');

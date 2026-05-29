@@ -4,17 +4,27 @@ export const bookingSchema = z.object({
   // Contact
   name: z.string().min(2, 'Please enter your full name'),
   email: z.string().email('Please enter a valid email address'),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .optional()
+    .refine(v => !v || /^[\d\s\+\-\(\)]{7,20}$/.test(v), 'Please enter a valid phone number'),
   instagram: z.string().optional(),
 
   // Design
   tattoo_style: z.string().min(1, 'Please select a tattoo style'),
-  colour_preference: z.string().min(1, 'Please select a colour preference'),
-  complexity: z.string().min(1, 'Please select a complexity level'),
+  tattoo_style_notes: z.string().optional(),
+  colour_preference: z.enum(
+    ['Black & grey only', 'Full colour', 'Colour with black & grey shading', 'Not sure yet'],
+    { error: 'Please select a colour preference' }
+  ),
+  complexity: z.enum(['simple', 'moderate', 'detailed'], {
+    error: 'Please select a complexity level',
+  }),
   description: z.string().min(50, 'Please describe your idea in at least 50 characters — the more detail the better'),
   reference_images: z.array(z.string()),
   is_cover_up: z.boolean(),
   cover_up_notes: z.string().optional(),
+  cover_up_darkness: z.string().optional(),
 
   // Placement
   body_part: z.string().min(1, 'Please select a body part'),
@@ -25,9 +35,18 @@ export const bookingSchema = z.object({
 
   // Session
   is_first_tattoo: z.boolean(),
-  preferred_date: z.string().optional(),
+  preferred_date: z
+    .string()
+    .optional()
+    .refine(v => {
+      if (!v) return true
+      const date = new Date(v)
+      const sixMonths = new Date()
+      sixMonths.setMonth(sixMonths.getMonth() + 6)
+      return date <= sixMonths
+    }, 'Please choose a date within the next 6 months'),
   time_preference: z.string().optional(),
-  budget_range: z.string().optional(),
+  budget_range: z.string().min(1, 'Please select a budget range — even "Not sure" helps Jordan plan'),
 
   // Extra
   additional_notes: z.string().optional(),
@@ -102,3 +121,10 @@ export const BUDGET_RANGES = [
 ]
 
 export const TIME_PREFERENCES = ['Morning', 'Afternoon', 'Evening', 'No preference']
+
+export const COVER_UP_DARKNESS = [
+  { value: 'light', label: 'Light — faded or lightly pigmented' },
+  { value: 'medium', label: 'Medium — still clearly visible' },
+  { value: 'dark', label: 'Dark / saturated — heavy black or bold colour' },
+  { value: 'scarred', label: 'Scarred or raised — previous work has texture' },
+]

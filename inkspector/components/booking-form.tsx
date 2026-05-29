@@ -6,7 +6,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Upload, X } from 'lucide-react'
-import { bookingSchema, type BookingFormValues, TATTOO_STYLES, BODY_PARTS, SIZE_CATEGORIES, BUDGET_RANGES, TIME_PREFERENCES, COLOUR_PREFERENCES, COMPLEXITY_OPTIONS } from '@/lib/validations/booking'
+import {
+  bookingSchema,
+  type BookingFormValues,
+  TATTOO_STYLES,
+  BODY_PARTS,
+  SIZE_CATEGORIES,
+  BUDGET_RANGES,
+  TIME_PREFERENCES,
+  COLOUR_PREFERENCES,
+  COMPLEXITY_OPTIONS,
+  COVER_UP_DARKNESS,
+} from '@/lib/validations/booking'
 import { createClient } from '@/lib/supabase-browser'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -47,12 +58,16 @@ export default function BookingForm() {
       is_cover_up: false,
       is_first_tattoo: false,
       consent: false,
-      colour_preference: '',
-      complexity: '',
+      colour_preference: undefined,
+      complexity: undefined,
+      budget_range: '',
     },
   })
 
   const isCoverUp = watch('is_cover_up')
+  const isFirstTattoo = watch('is_first_tattoo')
+  const consent = watch('consent')
+  const tattooStyle = watch('tattoo_style')
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
@@ -127,10 +142,12 @@ export default function BookingForm() {
           <div>
             <Label htmlFor="phone">Phone number</Label>
             <Input id="phone" type="tel" {...register('phone')} className="mt-1.5" placeholder="+44 7700 000000" />
+            <FieldError message={errors.phone?.message} />
           </div>
           <div>
             <Label htmlFor="instagram">Instagram handle</Label>
             <Input id="instagram" {...register('instagram')} className="mt-1.5" placeholder="@yourhandle" />
+            <p className="text-xs text-muted-foreground mt-1">Without the @ is fine too.</p>
           </div>
         </div>
       </section>
@@ -151,6 +168,20 @@ export default function BookingForm() {
             </select>
             <FieldError message={errors.tattoo_style?.message} />
           </div>
+
+          {/* "Other" style elaboration */}
+          {tattooStyle === 'Other' && (
+            <div>
+              <Label htmlFor="tattoo_style_notes">Describe the style *</Label>
+              <Input
+                id="tattoo_style_notes"
+                {...register('tattoo_style_notes')}
+                className="mt-1.5"
+                placeholder="e.g. biomechanical, surrealism, stick-and-poke, custom lettering…"
+              />
+              <FieldError message={errors.tattoo_style_notes?.message} />
+            </div>
+          )}
 
           <div className="grid sm:grid-cols-2 gap-5">
             <div>
@@ -245,14 +276,29 @@ export default function BookingForm() {
               <Label htmlFor="is_cover_up" className="cursor-pointer">This is a cover-up or rework of existing ink</Label>
             </div>
             {isCoverUp && (
-              <div>
-                <Label htmlFor="cover_up_notes">Describe the existing tattoo</Label>
-                <Textarea
-                  id="cover_up_notes"
-                  {...register('cover_up_notes')}
-                  className="mt-1.5"
-                  placeholder="Size, age, colours, darkness — a photo reference helps enormously."
-                />
+              <div className="space-y-4 pl-7 border-l border-border ml-2">
+                <div>
+                  <Label>How dark / saturated is the existing tattoo? *</Label>
+                  <div className="space-y-2 mt-1.5">
+                    {COVER_UP_DARKNESS.map(({ value, label }) => (
+                      <label key={value} className="flex items-start gap-3 cursor-pointer group">
+                        <input type="radio" value={value} {...register('cover_up_darkness')} className="peer sr-only" />
+                        <div className="w-4 h-4 rounded-full border border-border flex-shrink-0 mt-0.5 peer-checked:border-primary peer-checked:bg-primary transition-colors" />
+                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-snug">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="cover_up_notes">Describe the existing tattoo</Label>
+                  <Textarea
+                    id="cover_up_notes"
+                    {...register('cover_up_notes')}
+                    className="mt-1.5"
+                    placeholder="Subject matter, colours, approximate age. A photo of the existing tattoo in your reference images above is strongly recommended."
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Upload a photo of the existing piece in the reference images above — cover-up quotes are very hard without one.</p>
+                </div>
               </div>
             )}
           </div>
@@ -318,6 +364,7 @@ export default function BookingForm() {
           <div className="flex items-center gap-3">
             <Checkbox
               id="is_first_tattoo"
+              checked={isFirstTattoo}
               onCheckedChange={v => setValue('is_first_tattoo', Boolean(v))}
             />
             <Label htmlFor="is_first_tattoo" className="cursor-pointer">This will be my first tattoo</Label>
@@ -332,8 +379,10 @@ export default function BookingForm() {
                 {...register('preferred_date')}
                 className="mt-1.5"
                 min={new Date().toISOString().split('T')[0]}
+                max={(() => { const d = new Date(); d.setMonth(d.getMonth() + 6); return d.toISOString().split('T')[0] })()}
               />
               <p className="text-xs text-muted-foreground mt-1">Jordan will confirm availability.</p>
+              <FieldError message={errors.preferred_date?.message} />
             </div>
             <div>
               <Label>Time of day preference</Label>
@@ -351,7 +400,7 @@ export default function BookingForm() {
           </div>
 
           <div>
-            <Label>Budget range</Label>
+            <Label>Budget range *</Label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1.5">
               {BUDGET_RANGES.map(b => (
                 <label key={b} className="relative cursor-pointer">
@@ -362,6 +411,8 @@ export default function BookingForm() {
                 </label>
               ))}
             </div>
+            <p className="text-xs text-muted-foreground mt-1">Selecting "Not sure" is fine — this just helps Jordan triage enquiries.</p>
+            <FieldError message={errors.budget_range?.message} />
           </div>
         </div>
       </section>
@@ -381,6 +432,7 @@ export default function BookingForm() {
         <div className="flex items-start gap-3">
           <Checkbox
             id="consent"
+            checked={consent}
             onCheckedChange={v => setValue('consent', Boolean(v))}
           />
           <Label htmlFor="consent" className="cursor-pointer text-sm text-muted-foreground leading-relaxed">
