@@ -1,0 +1,55 @@
+{
+  "data": {
+    "publications": [
+      {
+        "title": "“Huge moment” as the health service hits 18-week target amid half-a-million waiting list drop",
+        "link": "https://www.england.nhs.uk/2026/05/health-service-hits-18-week-target-amid-half-million-waiting-list-drop/",
+        "date": "2026-05-14T09:49:40",
+        "summary": "The NHS has hit its target for the number of patients waiting 18-weeks thanks to the biggest improvement in waiting times since the launch of the iPad. In March, 65.3% of patients were waiting 18-week"
+      },
+      {
+        "title": "March was busiest month ever for A&Es amid meningitis outbreak",
+        "link": "https://www.england.nhs.uk/2026/04/march-was-busiest-month-ever-for-aes-amid-meningitis-outbreak/",
+        "date": "2026-04-16T11:06:21",
+        "summary": "A&amp;E waiting times have fallen to a five-year low, despite the NHS seeing record numbers of patients in March as the health service experienced a ‘prolonged winter’. There were a record breaking 2."
+      },
+      {
+        "title": "NHS waiting list continues to fall despite record winter",
+        "link": "https://www.england.nhs.uk/2026/03/nhs-waiting-list-continues-to-fall-despite-record-winter/",
+        "date": "2026-03-12T10:05:32",
+        "summary": "The NHS has faced its busiest winter on record while bringing waiting lists to their lowest for almost 3 years. New figures out today show the number people attending A&amp;E between November and Febr"
+      },
+      {
+        "title": "NHS waiting list lowest in almost 3 years as NHS battled busiest winter on record",
+        "link": "https://www.england.nhs.uk/2026/02/waiting-list-lowest-3-years-battled-busiest-winter-on-record/",
+        "date": "2026-02-12T10:57:05",
+        "summary": "The NHS delivered more elective activity in 2025 than any other year in its history, helping cut the waiting list to its lowest level since February 2023. Staff delivered a historic high of 18.4 milli"
+      },
+      {
+        "title": "Hospitals still under pressure with another cold snap and norovirus rise",
+        "link": "https://www.england.nhs.uk/2026/01/hospitals-still-under-pressure-with-another-cold-snap-and-norovirus-rise/",
+        "date": "2026-01-22T10:50:03",
+        "summary": "The NHS is facing continuing winter pressures as the country approaches another cold snap, and as rising pressures are pushing hospitals to their busiest levels for this time of year since before COVI"
+      }
+    ],
+    "stats": [
+      {
+        "label": "4-hour A&E target performance",
+        "value": "~76%",
+        "target": "95%",
+        "context": "Approx. Feb 2025 published figure — NHS has missed the 95% target every month since 2015."
+      },
+      {
+        "label": "Average A&E wait",
+        "value": "~2h 30m",
+        "context": "Approximate average wait in type 1 emergency departments as of early 2025 publications"
+      },
+      {
+        "label": "Monthly A&E attendances",
+        "value": "~2.4m",
+        "context": "Approximate monthly attendances across all A&E types in England"
+      }
+    ]
+  },
+  "fetchedAt": "2026-05-29T00:21:20.003Z"
+}

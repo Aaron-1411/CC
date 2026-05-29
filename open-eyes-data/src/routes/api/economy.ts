@@ -29,17 +29,19 @@ type ONSResponse = {
   years?: Array<{ date: string; value: string }>;
 };
 
+// ONS website timeseries endpoint (api.ons.gov.uk/v1 was decommissioned Nov 2024)
+// Path format: https://www.ons.gov.uk/{topicPath}/timeseries/{seriesId}[/{datasetId}]/data
 async function fetchONSSeries(
-  dataset: string,
+  onsPath: string,   // full path after www.ons.gov.uk, e.g. "economy/gdp/timeseries/ihyq/qna"
   seriesId: string,
   label: string,
   description: string,
   unit: string,
   granularity: "months" | "quarters" | "years" = "quarters",
 ): Promise<EconSeries> {
-  const url = `https://api.ons.gov.uk/v1/datasets/${dataset}/timeseries/${seriesId}/data`;
+  const url = `https://www.ons.gov.uk/${onsPath}/data`;
   const r = await fetch(url, {
-    headers: { accept: "application/json" },
+    headers: { accept: "application/json", "user-agent": "transparenC/1.0 (public accountability tool)" },
     signal: AbortSignal.timeout(12_000),
   });
   if (!r.ok) throw new Error(`ONS ${seriesId}: HTTP ${r.status}`);
@@ -60,7 +62,7 @@ async function fetchONSSeries(
     latestValue: latest ? latest.value.toFixed(1) : "—",
     latestDate: latest?.date ?? "—",
     trend,
-    source: `ONS — ${dataset.toUpperCase()} series ${seriesId}`,
+    source: `ONS — series ${seriesId}`,
     sourceId: seriesId,
   };
 }
@@ -68,23 +70,42 @@ async function fetchONSSeries(
 // ─── Fetch all indicators ─────────────────────────────────────────────────────
 
 async function fetchEconomy(): Promise<EconomyData> {
-  const SERIES: Array<Parameters<typeof fetchONSSeries>> = [
+  // [onsPath, seriesId, label, description, unit, granularity]
+  const SERIES: Array<[string, string, string, string, string, "months" | "quarters"]> = [
     // GDP quarter-on-quarter growth %
-    ["qna", "IHYQ", "GDP growth", "Quarter-on-quarter GDP growth (seasonally adjusted)", "%", "quarters"],
+    [
+      "economy/grossdomesticproductgdp/timeseries/ihyq/qna",
+      "IHYQ", "GDP growth", "Quarter-on-quarter GDP growth (seasonally adjusted)", "%", "quarters",
+    ],
     // CPI 12-month rate
-    ["mm23", "D7G7", "CPI inflation", "Consumer Prices Index — 12-month rate", "%", "months"],
+    [
+      "economy/inflationandpriceindices/timeseries/d7g7/mm23",
+      "D7G7", "CPI inflation", "Consumer Prices Index — 12-month rate", "%", "months",
+    ],
     // Unemployment rate (ILO)
-    ["lms", "MGSX", "Unemployment", "ILO unemployment rate (16+)", "%", "months"],
-    // Real wage growth (CPIH-deflated regular pay, 3m/yr)
-    ["earn", "KAB9", "Real wage growth", "Real regular pay — 3 month on year change (CPIH adjusted)", "%", "months"],
-    // Net debt as % GDP
-    ["pusf", "HF6W", "Public debt", "Public sector net debt excluding Bank of England (£bn)", "£bn", "months"],
+    [
+      "employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/mgsx/lms",
+      "MGSX", "Unemployment", "ILO unemployment rate (16+)", "%", "months",
+    ],
+    // Nominal regular pay growth (3m/yr) — best available proxy for wage pressure
+    [
+      "employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kac3",
+      "KAC3", "Wage growth", "Nominal regular pay — annual growth rate (3-month average)", "%", "months",
+    ],
+    // Public sector net debt (ex. Bank of England)
+    [
+      "economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6w/pusf",
+      "HF6W", "Public debt", "Public sector net debt excluding Bank of England (£bn)", "£bn", "months",
+    ],
     // Public sector net borrowing (deficit)
-    ["pusf", "J5II", "Government deficit", "Public sector net borrowing (PSNB), rolling 12 months (£bn)", "£bn", "months"],
+    [
+      "economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/j5ii/pusf",
+      "J5II", "Government deficit", "Public sector net borrowing (PSNB), rolling 12 months (£bn)", "£bn", "months",
+    ],
   ];
 
   const results = await Promise.allSettled(
-    SERIES.map(([d, s, l, desc, u, g]) => fetchONSSeries(d, s, l, desc, u, g)),
+    SERIES.map(([path, id, l, desc, u, g]) => fetchONSSeries(path, id, l, desc, u, g)),
   );
 
   const series: EconSeries[] = results
