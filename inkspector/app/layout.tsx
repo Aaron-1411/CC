@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Courier_Prime, Big_Shoulders_Display } from 'next/font/google'
+import { Courier_Prime, Oswald } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
@@ -10,11 +10,11 @@ const courierPrime = Courier_Prime({
   weight: ['400', '700'],
 })
 
-const bigShoulders = Big_Shoulders_Display({
+const oswald = Oswald({
   variable: '--font-big-shoulders',
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${courierPrime.variable} ${bigShoulders.variable}`}>
+    <html lang="en" className={`${courierPrime.variable} ${oswald.variable}`}>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         {children}
         <Toaster position="top-right" theme="light" />
