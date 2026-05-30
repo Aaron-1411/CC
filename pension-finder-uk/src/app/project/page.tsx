@@ -1,20 +1,22 @@
 "use client";
 import { useState, useMemo } from "react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Info } from "lucide-react";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Legend,
+} from "recharts";
+import { ChevronDown, ChevronUp, Info, TrendingDown, TrendingUp, AlertCircle } from "lucide-react";
 
 const STATE_PENSION_WEEKLY = 221.20;
-const STATE_PENSION_AGE = 67;
 
-function formatGBP(n: number) {
+function fmtGBP(n: number) {
   if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(2)}m`;
   if (n >= 1_000) return `£${(n / 1_000).toFixed(0)}k`;
-  return `£${n.toFixed(0)}`;
+  return `£${Math.round(n).toLocaleString()}`;
 }
 
-function Slider({ label, value, min, max, step, onChange, format }: {
+function Slider({ label, value, min, max, step, onChange, format, hint }: {
   label: string; value: number; min: number; max: number; step: number;
-  onChange: (v: number) => void; format: (v: number) => string;
+  onChange: (v: number) => void; format: (v: number) => string; hint?: string;
 }) {
   return (
     <div>
@@ -22,125 +24,241 @@ function Slider({ label, value, min, max, step, onChange, format }: {
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <span className="text-sm font-bold text-indigo-700">{format(value)}</span>
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
+      <input type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-indigo-600"
-      />
+        className="w-full accent-indigo-600 h-2" />
       <div className="flex justify-between text-xs text-gray-400 mt-0.5">
         <span>{format(min)}</span>
+        {hint && <span className="text-indigo-400 italic">{hint}</span>}
         <span>{format(max)}</span>
       </div>
     </div>
   );
 }
 
-function Tooltip2({ children }: { children: React.ReactNode }) {
+function InfoTip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="group relative cursor-help">
-      <Info className="w-3.5 h-3.5 text-gray-400 inline ml-1" />
-      <span className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-gray-900 text-white text-xs rounded-lg p-2 z-10 text-center">
+    <span className="group relative cursor-help inline-flex items-center">
+      <Info className="w-3.5 h-3.5 text-gray-400 ml-1" />
+      <span className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 bg-gray-900 text-white text-xs rounded-lg p-2 z-20 text-center leading-relaxed">
         {children}
       </span>
     </span>
   );
 }
 
+function buildChartData(currentAge: number, years: number, currentPot: number, monthlyContrib: number, growthRate: number) {
+  return Array.from({ length: years + 1 }, (_, y) => {
+    const g = (r: number) => r / 100;
+    const fv = (r: number) => currentPot * Math.pow(1 + g(r), y) +
+      (r > 0 ? monthlyContrib * 12 * ((Math.pow(1 + g(r), y) - 1) / g(r)) : monthlyContrib * 12 * y);
+    return {
+      age: currentAge + y,
+      pessimistic: Math.round(fv(Math.max(0.1, growthRate - 2))),
+      central: Math.round(fv(growthRate)),
+      optimistic: Math.round(fv(growthRate + 2)),
+    };
+  });
+}
+
 export default function ProjectPage() {
+  // Quick mode inputs
   const [currentAge, setCurrentAge] = useState(35);
   const [retirementAge, setRetirementAge] = useState(67);
   const [currentPot, setCurrentPot] = useState(25000);
+
+  // Advanced inputs
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [monthlyContrib, setMonthlyContrib] = useState(300);
   const [growthRate, setGrowthRate] = useState(5);
-  const [includeStatePension, setIncludeStatePension] = useState(true);
+  const [includeState, setIncludeState] = useState(true);
   const [niYears, setNiYears] = useState(20);
+  const [inflationAdjust, setInflationAdjust] = useState(false);
+  const [targetMonthly, setTargetMonthly] = useState(2000);
   const [drawdownMonthly, setDrawdownMonthly] = useState(2000);
 
-  const years = retirementAge - currentAge;
+  const years = Math.max(1, retirementAge - currentAge);
+  const INFLATION = 2.5;
 
-  const chartData = useMemo(() => {
-    const data = [];
-    let pot = currentPot;
-    const monthlyRate = growthRate / 100 / 12;
-    for (let y = 0; y <= years; y++) {
-      data.push({
-        age: currentAge + y,
-        pessimistic: Math.round(currentPot * Math.pow(1 + (growthRate - 2) / 100, y) + monthlyContrib * 12 * ((Math.pow(1 + (growthRate - 2) / 100, y) - 1) / ((growthRate - 2) / 100 || 0.001))),
-        central: Math.round(currentPot * Math.pow(1 + growthRate / 100, y) + monthlyContrib * 12 * ((Math.pow(1 + growthRate / 100, y) - 1) / (growthRate / 100 || 0.001))),
-        optimistic: Math.round(currentPot * Math.pow(1 + (growthRate + 2) / 100, y) + monthlyContrib * 12 * ((Math.pow(1 + (growthRate + 2) / 100, y) - 1) / ((growthRate + 2) / 100 || 0.001))),
-      });
-      // update pot for final value (unused, but keep for clarity)
-      for (let m = 0; m < 12; m++) {
-        pot = pot * (1 + monthlyRate) + monthlyContrib;
-      }
-    }
-    return data;
-  }, [currentAge, years, currentPot, monthlyContrib, growthRate]);
+  const chartData = useMemo(
+    () => buildChartData(currentAge, years, currentPot, monthlyContrib, growthRate),
+    [currentAge, years, currentPot, monthlyContrib, growthRate]
+  );
 
-  const finalPot = chartData[chartData.length - 1]?.central ?? 0;
-  const statePensionAnnual = includeStatePension ? Math.round((niYears / 35) * STATE_PENSION_WEEKLY * 52) : 0;
+  const nominalPot = chartData[chartData.length - 1]?.central ?? 0;
+  const realPot = inflationAdjust
+    ? Math.round(nominalPot / Math.pow(1 + INFLATION / 100, years))
+    : nominalPot;
+
+  const statePensionAnnual = includeState ? Math.round((niYears / 35) * STATE_PENSION_WEEKLY * 52) : 0;
   const statePensionMonthly = Math.round(statePensionAnnual / 12);
+  const safeMonthly = Math.round(((inflationAdjust ? realPot : nominalPot) * 0.035) / 12);
+  const totalMonthly = safeMonthly + statePensionMonthly;
+  const gap = targetMonthly - totalMonthly;
 
-  // Sustainable drawdown at 3.5% safe withdrawal rate
-  const safeMonthly = Math.round((finalPot * 0.035) / 12);
+  // How long pot lasts at chosen drawdown
+  const potLastsYears = useMemo(() => {
+    const monthlyRate = (growthRate / 2 / 100) / 12;
+    let pot = nominalPot;
+    let months = 0;
+    while (pot > 0 && months < 600) {
+      pot = pot * (1 + monthlyRate) - drawdownMonthly;
+      months++;
+    }
+    return months >= 600 ? 50 : Math.round(months / 12);
+  }, [nominalPot, drawdownMonthly, growthRate]);
 
-  // How long pot lasts at chosen drawdown (simple)
-  const monthlyPotGrowth = (growthRate / 2 / 100) / 12; // assume half growth in retirement
-  let potLeft = finalPot;
-  let yearsLast = 0;
-  while (potLeft > 0 && yearsLast < 50) {
-    potLeft = potLeft * (1 + monthlyPotGrowth) - drawdownMonthly;
-    yearsLast += 1 / 12;
-  }
-  const potLastsYears = Math.min(50, Math.round(yearsLast));
+  const displayData = inflationAdjust
+    ? chartData.map(d => ({
+        ...d,
+        pessimistic: Math.round(d.pessimistic / Math.pow(1 + INFLATION / 100, d.age - currentAge)),
+        central: Math.round(d.central / Math.pow(1 + INFLATION / 100, d.age - currentAge)),
+        optimistic: Math.round(d.optimistic / Math.pow(1 + INFLATION / 100, d.age - currentAge)),
+      }))
+    : chartData;
+
+  const gapColor = gap <= 0 ? "green" : gap < 500 ? "amber" : "red";
+  const gapBg: Record<string, string> = {
+    green: "bg-green-50 border-green-200",
+    amber: "bg-amber-50 border-amber-200",
+    red: "bg-red-50 border-red-200",
+  };
+  const gapText: Record<string, string> = {
+    green: "text-green-800",
+    amber: "text-amber-800",
+    red: "text-red-800",
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-2">Pension Projection Calculator</h1>
-      <p className="text-gray-500 mb-10">See what your pension could be worth at retirement — in plain English.</p>
+      <h1 className="text-3xl font-bold mb-1">Pension Projection Calculator</h1>
+      <p className="text-gray-500 mb-8">See what your pension could be worth at retirement — in plain English.</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Controls */}
-        <div className="lg:col-span-1 flex flex-col gap-6 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-          <h2 className="font-bold text-lg">Your details</h2>
-          <Slider label="Current age" value={currentAge} min={18} max={65} step={1} onChange={setCurrentAge} format={(v) => `${v} yrs`} />
-          <Slider label="Target retirement age" value={retirementAge} min={currentAge + 1} max={75} step={1} onChange={setRetirementAge} format={(v) => `${v} yrs`} />
-          <Slider label="Current pension pot" value={currentPot} min={0} max={500000} step={1000} onChange={setCurrentPot} format={formatGBP} />
-          <Slider label="Monthly contributions" value={monthlyContrib} min={0} max={3000} step={25} onChange={setMonthlyContrib} format={(v) => `£${v}/mo`} />
-          <Slider label="Expected annual growth" value={growthRate} min={1} max={12} step={0.5} onChange={setGrowthRate} format={(v) => `${v}%`} />
+        {/* ── Controls ── */}
+        <div className="lg:col-span-1 bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col gap-5">
+
+          {/* Quick inputs */}
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">The essentials</p>
+            <div className="flex flex-col gap-5">
+              <Slider label="Your age" value={currentAge} min={18} max={65} step={1} onChange={setCurrentAge} format={v => `${v}`} />
+              <Slider label="Retirement age" value={retirementAge} min={currentAge + 1} max={75} step={1} onChange={setRetirementAge} format={v => `${v}`} hint="State pension age is 67" />
+              <Slider label="Current pot total" value={currentPot} min={0} max={500000} step={1000} onChange={setCurrentPot} format={fmtGBP} hint="Not sure? Enter 0" />
+            </div>
+          </div>
 
           <hr />
-          <h2 className="font-bold text-lg">State Pension</h2>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input type="checkbox" checked={includeStatePension} onChange={(e) => setIncludeStatePension(e.target.checked)} className="accent-indigo-600 w-4 h-4" />
-            <span className="text-sm font-medium">Include State Pension</span>
-          </label>
-          {includeStatePension && (
-            <Slider label="NI qualifying years" value={niYears} min={1} max={35} step={1} onChange={setNiYears} format={(v) => `${v} yrs`} />
+
+          {/* Advanced toggle */}
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center justify-between text-sm font-semibold text-indigo-700 hover:text-indigo-900"
+          >
+            <span>Fine-tune the numbers</span>
+            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {showAdvanced && (
+            <div className="flex flex-col gap-5">
+              <Slider label="Monthly contributions" value={monthlyContrib} min={0} max={3000} step={25} onChange={setMonthlyContrib} format={v => `£${v}/mo`} hint="Incl. employer match" />
+              <Slider label="Expected annual growth" value={growthRate} min={1} max={12} step={0.5} onChange={setGrowthRate} format={v => `${v}%`} hint="Balanced fund ≈ 5–6%" />
+              <Slider label="Target monthly income" value={targetMonthly} min={500} max={8000} step={100} onChange={setTargetMonthly} format={v => `£${v}/mo`} />
+              <Slider label="Monthly drawdown from pot" value={drawdownMonthly} min={100} max={8000} step={50} onChange={setDrawdownMonthly} format={v => `£${v}/mo`} />
+
+              <div className="flex flex-col gap-3 pt-1">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={includeState} onChange={e => setIncludeState(e.target.checked)} className="accent-indigo-600 w-4 h-4" />
+                  <span className="text-sm font-medium text-gray-700">Include State Pension</span>
+                </label>
+                {includeState && (
+                  <Slider label="NI qualifying years" value={niYears} min={1} max={35} step={1} onChange={setNiYears} format={v => `${v} yrs`} hint="Need 35 for full pension" />
+                )}
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={inflationAdjust} onChange={e => setInflationAdjust(e.target.checked)} className="accent-indigo-600 w-4 h-4" />
+                  <span className="text-sm font-medium text-gray-700">
+                    Show in today&apos;s money
+                    <InfoTip>Adjusts all figures for 2.5% annual inflation so you can compare with your current salary.</InfoTip>
+                  </span>
+                </label>
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Chart + Results */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
+        {/* ── Results ── */}
+        <div className="lg:col-span-2 flex flex-col gap-5">
+
+          {/* Top-line summary */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="col-span-2 bg-indigo-700 text-white rounded-2xl p-5">
+              <p className="text-xs font-semibold text-indigo-200 uppercase tracking-wide mb-1">
+                Projected pot at {retirementAge}
+                {inflationAdjust && <span className="ml-1 opacity-75">(today&apos;s £)</span>}
+              </p>
+              <p className="text-3xl font-bold">{fmtGBP(realPot)}</p>
+              <p className="text-indigo-200 text-xs mt-1">at {growthRate}% growth · {years} years to go</p>
+            </div>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+              <p className="text-xs text-gray-500 mb-1">Safe monthly income
+                <InfoTip>3.5% annual withdrawal — a conservative rule of thumb for a 30+ year retirement.</InfoTip>
+              </p>
+              <p className="text-xl font-bold text-gray-900">{fmtGBP(safeMonthly)}/mo</p>
+            </div>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+              <p className="text-xs text-gray-500 mb-1">State Pension</p>
+              <p className="text-xl font-bold text-gray-900">
+                {includeState ? `£${statePensionMonthly}/mo` : "Not included"}
+              </p>
+            </div>
+          </div>
+
+          {/* Retirement income gap */}
+          {showAdvanced && (
+            <div className={`border rounded-2xl p-5 ${gapBg[gapColor]}`}>
+              <div className="flex items-start gap-3">
+                {gap <= 0
+                  ? <TrendingUp className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                  : <TrendingDown className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />}
+                <div>
+                  <h3 className={`font-bold mb-1 ${gapText[gapColor]}`}>
+                    {gap <= 0
+                      ? `You're on track — projected surplus of ${fmtGBP(Math.abs(gap))}/mo`
+                      : `Monthly shortfall: ${fmtGBP(gap)}`}
+                  </h3>
+                  <p className={`text-sm ${gapText[gapColor]}`}>
+                    {gap <= 0
+                      ? `Your combined income (£${totalMonthly.toLocaleString()}/mo) exceeds your £${targetMonthly.toLocaleString()}/mo target.`
+                      : `To close the gap, you'd need to contribute an extra £${Math.round(gap * 0.8).toLocaleString()}/mo now (or retire ${Math.ceil(gap / 150)} years later).`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Chart */}
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-            <h2 className="font-bold text-lg mb-1">Projected pot growth</h2>
-            <p className="text-xs text-gray-400 mb-4">Pessimistic ({growthRate - 2}%) · Central ({growthRate}%) · Optimistic ({growthRate + 2}%) annual growth</p>
-            <ResponsiveContainer width="100%" height={260}>
-              <AreaChart data={chartData}>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="font-bold">Pot growth over time</h2>
+              {inflationAdjust && (
+                <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">In today&apos;s money</span>
+              )}
+            </div>
+            <p className="text-xs text-gray-400 mb-4">
+              Pessimistic ({Math.max(0.1, growthRate - 2).toFixed(1)}%) · Central ({growthRate}%) · Optimistic ({growthRate + 2}%) annual growth
+            </p>
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={displayData}>
                 <defs>
                   <linearGradient id="cGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.25} />
                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="age" tick={{ fontSize: 11 }} label={{ value: "Age", position: "insideBottom", offset: -2, fontSize: 11 }} />
-                <YAxis tickFormatter={(v) => formatGBP(v)} tick={{ fontSize: 11 }} width={55} />
-                <Tooltip formatter={(v) => formatGBP(Number(v))} />
+                <XAxis dataKey="age" tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={v => fmtGBP(Number(v))} tick={{ fontSize: 11 }} width={55} />
+                <Tooltip formatter={(v) => fmtGBP(Number(v))} />
                 <Legend />
                 <Area type="monotone" dataKey="pessimistic" name="Pessimistic" stroke="#d1d5db" fill="none" strokeDasharray="4 4" />
                 <Area type="monotone" dataKey="central" name="Central" stroke="#6366f1" fill="url(#cGrad)" strokeWidth={2} />
@@ -149,48 +267,38 @@ export default function ProjectPage() {
             </ResponsiveContainer>
           </div>
 
-          {/* Summary cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-              <p className="text-xs font-semibold text-indigo-500 uppercase tracking-wide mb-1">Projected pot at {retirementAge}</p>
-              <p className="text-2xl font-bold text-indigo-800">{formatGBP(finalPot)}</p>
-              <p className="text-xs text-indigo-600 mt-1">at {growthRate}% annual growth</p>
+          {/* Drawdown durability */}
+          {showAdvanced && (
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+              <h2 className="font-bold mb-3">How long will your pot last?</h2>
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className={`rounded-xl px-5 py-3 text-center ${
+                  potLastsYears >= 30 ? "bg-green-50 border border-green-200" :
+                  potLastsYears >= 20 ? "bg-amber-50 border border-amber-200" :
+                  "bg-red-50 border border-red-200"
+                }`}>
+                  <p className="text-xs text-gray-500 mb-1">At £{drawdownMonthly.toLocaleString()}/mo drawdown</p>
+                  <p className={`text-2xl font-bold ${
+                    potLastsYears >= 30 ? "text-green-800" :
+                    potLastsYears >= 20 ? "text-amber-800" : "text-red-800"
+                  }`}>
+                    {potLastsYears >= 50 ? "50+ years" : `~${potLastsYears} years`}
+                  </p>
+                </div>
+                {potLastsYears < 25 && (
+                  <div className="flex items-start gap-2 text-sm text-amber-700 flex-1">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>Your pot may run out before age {retirementAge + potLastsYears}. Consider reducing drawdown or increasing contributions.</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-              <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1">State Pension (monthly)
-                <Tooltip2>Based on {niYears} NI qualifying years out of 35 needed for full pension of £{STATE_PENSION_WEEKLY}/wk</Tooltip2>
-              </p>
-              <p className="text-2xl font-bold text-green-800">£{statePensionMonthly}/mo</p>
-              <p className="text-xs text-green-600 mt-1">{includeStatePension ? `${niYears} NI years` : "Not included"}</p>
-            </div>
-          </div>
+          )}
 
-          {/* Drawdown section */}
-          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-            <h2 className="font-bold text-lg mb-4">Retirement income</h2>
-            <Slider label="Monthly drawdown from private pensions" value={drawdownMonthly} min={100} max={10000} step={50} onChange={setDrawdownMonthly} format={(v) => `£${v}/mo`} />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <p className="text-xs text-gray-500 mb-1">Total monthly income</p>
-                <p className="text-xl font-bold text-gray-900">£{(drawdownMonthly + statePensionMonthly).toLocaleString()}</p>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <p className="text-xs text-gray-500 mb-1">Safe withdrawal rate
-                  <Tooltip2>The "4% rule" suggests withdrawing ~3.5–4% of your pot annually is sustainable for a 30-year retirement.</Tooltip2>
-                </p>
-                <p className="text-xl font-bold text-gray-900">{formatGBP(safeMonthly)}/mo</p>
-              </div>
-              <div className={`rounded-xl p-4 text-center ${potLastsYears >= 30 ? "bg-green-50" : potLastsYears >= 20 ? "bg-amber-50" : "bg-red-50"}`}>
-                <p className="text-xs text-gray-500 mb-1">Pot lasts approx.</p>
-                <p className={`text-xl font-bold ${potLastsYears >= 30 ? "text-green-800" : potLastsYears >= 20 ? "text-amber-800" : "text-red-800"}`}>
-                  {potLastsYears >= 50 ? "50+ years" : `${potLastsYears} years`}
-                </p>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400 mt-4">
-              Projections are illustrative only. They assume contributions stay constant, growth is compound, and inflation is not modelled. Not financial advice.
-            </p>
-          </div>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            Projections are illustrative only. They assume constant contributions and compound growth. Inflation adjustment uses 2.5% p.a.
+            Past returns are not a guide to the future. Not financial advice.
+          </p>
         </div>
       </div>
     </div>
