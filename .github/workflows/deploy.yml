@@ -85,7 +85,8 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: a1a1276a1a278339d95c187e0bf6de47
-          command: pages deploy gymseek --project-name=gymseek-app --branch=main
+          workingDirectory: gymseek
+          command: pages deploy . --project-name=gymseek-app --branch=main
 
   deploy-tastybot:
     runs-on: ubuntu-latest
