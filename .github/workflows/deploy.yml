@@ -175,3 +175,47 @@ jobs:
           wranglerVersion: '4.94.0'
           workingDirectory: inkspector
           command: pages deploy .vercel/output/static --project-name=inkspector-app --branch=main
+
+  deploy-ecommerce-deep-dive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"ecommerce-deep-dive-app","production_branch":"main"}' || true
+      - name: Set CF Pages environment variables
+        run: |
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/ecommerce-deep-dive-app" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_configs": {
+                "production": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-09-23",
+                  "env_vars": {
+                    "XAI_API_KEY": {"value": "${{ secrets.XAI_API_KEY }}", "type": "secret_text"}
+                  }
+                },
+                "preview": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-09-23",
+                  "env_vars": {
+                    "XAI_API_KEY": {"value": "${{ secrets.XAI_API_KEY }}", "type": "secret_text"}
+                  }
+                }
+              }
+            }'
+      - run: cd ecommerce-deep-dive && bun install && bunx @cloudflare/next-on-pages
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          wranglerVersion: '4.94.0'
+          workingDirectory: ecommerce-deep-dive
+          command: pages deploy .vercel/output/static --project-name=ecommerce-deep-dive-app --branch=main
