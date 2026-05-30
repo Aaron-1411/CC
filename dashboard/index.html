@@ -199,6 +199,13 @@
     }
     .card:hover::before { opacity: .65; }
 
+    .card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-color: var(--border-h);
+      box-shadow: 0 4px 20px rgba(14,21,33,0.10), 0 1px 4px rgba(14,21,33,0.06);
+    }
+
     .card-head {
       display: flex; align-items: flex-start;
       justify-content: space-between; gap: 10px;
@@ -366,9 +373,9 @@
   <h1>Products built<br>to ship.</h1>
   <p class="hero-sub">Full-stack SaaS across finance, legal, data, health, and lifestyle. From idea to live in days, using Lovable and Claude Code.</p>
   <div class="hero-meta">
-    <span><strong>10</strong> live on Cloudflare</span>
+    <span><strong>11</strong> live on Cloudflare</span>
     <span class="meta-dot">·</span>
-    <span><strong>14</strong> total projects</span>
+    <span><strong>15</strong> total projects</span>
     <span class="meta-dot">·</span>
     <span>Lovable + Claude Code</span>
   </div>
@@ -381,7 +388,7 @@
     <div class="sec-head">
       <span class="sec-title">Live Apps</span>
       <span class="sec-line"></span>
-      <span class="sec-count">10 on Cloudflare</span>
+      <span class="sec-count">11 on Cloudflare</span>
     </div>
 
     <!-- Lovable group -->
@@ -392,7 +399,7 @@
       </div>
       <div class="grid-2">
 
-        <div class="card lovable" onclick="window.open('https://digital-depth-dive-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card lovable" onclick="window.open('https://digital-depth-dive-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🔍 Digital Depth Dive</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -405,7 +412,7 @@
               <span class="tag">CF Pages</span>
             </div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/digital-depth-dive" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/digital-depth-dive" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://digital-depth-dive-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
@@ -415,7 +422,7 @@
           </div>
         </div>
 
-        <div class="card lovable" onclick="window.open('https://get-settld-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card lovable" onclick="window.open('https://get-settld-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🏡 Get Settld</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -428,7 +435,7 @@
               <span class="tag">CF Pages</span>
             </div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/get-settld" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/get-settld" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://get-settld-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
@@ -438,7 +445,7 @@
           </div>
         </div>
 
-        <div class="card lovable" onclick="window.open('https://wealth-companion-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0">
+        <div class="card lovable" onclick="window.open('https://wealth-companion-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">💰 Wealth Companion</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -451,7 +458,7 @@
               <span class="tag">CF Workers</span>
             </div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/wealth-companion" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/wealth-companion" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://wealth-companion-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
@@ -461,7 +468,7 @@
           </div>
         </div>
 
-        <div class="card lovable" onclick="window.open('https://lease-guard-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0">
+        <div class="card lovable" onclick="window.open('https://lease-guard-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🏠 Lease Guard</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -474,7 +481,7 @@
               <span class="tag">CF Workers</span>
             </div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/lease-guard" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/lease-guard" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://lease-guard-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
@@ -484,7 +491,7 @@
           </div>
         </div>
 
-        <div class="card lovable" onclick="window.open('https://open-eyes-data-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0">
+        <div class="card lovable" onclick="window.open('https://open-eyes-data-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">👁️ Open Eyes Data</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -497,7 +504,7 @@
               <span class="tag">CF Workers</span>
             </div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/open-eyes-data" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/open-eyes-data" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://open-eyes-data-app.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
@@ -518,7 +525,7 @@
       </div>
       <div class="grid-auto">
 
-        <div class="card cc" onclick="window.open('https://lifedash-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card cc" onclick="window.open('https://lifedash-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">⚡ LifeDash</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -534,7 +541,7 @@
           </div>
         </div>
 
-        <div class="card cc" onclick="window.open('https://isa-platform.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0">
+        <div class="card cc" onclick="window.open('https://isa-platform.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">📈 ISA Platform</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
@@ -543,7 +550,7 @@
           <div class="card-foot">
             <div class="tags"><span class="tag">Next.js 16</span><span class="tag">Turso</span><span class="tag">CF Workers</span></div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/main" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/isa-investment-platform" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://isa-platform.mraaronmanu.workers.dev" target="_blank" onclick="event.stopPropagation()">
@@ -553,16 +560,16 @@
           </div>
         </div>
 
-        <div class="card cc" onclick="window.open('https://gymseek-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card cc" onclick="window.open('https://gymseek-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🏋️ GymSeek</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
           <p class="card-desc">AI gym finder. Enter location, budget, and preferences — get ranked results with pricing and facilities.</p>
           <div class="card-foot">
-            <div class="tags"><span class="tag">Node.js</span><span class="tag">Express</span><span class="tag">CF Pages</span></div>
+            <div class="tags"><span class="tag">Static</span><span class="tag">CF Functions</span><span class="tag">CF Pages</span></div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/gymseek" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/gymseek" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://gymseek-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
@@ -572,16 +579,16 @@
           </div>
         </div>
 
-        <div class="card cc" onclick="window.open('https://tastybot-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card cc" onclick="window.open('https://tastybot-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🤖 Tastybot</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
           <p class="card-desc">Trading bot dashboard for TastyTrade. Backtests, position management, and strategy execution.</p>
           <div class="card-foot">
-            <div class="tags"><span class="tag">Python</span><span class="tag">Vite</span><span class="tag">CF Pages</span></div>
+            <div class="tags"><span class="tag">React</span><span class="tag">Vite</span><span class="tag">CF Pages</span></div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/tastybot" target="_blank" onclick="event.stopPropagation()" title="GitHub">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/tastybot" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://tastybot-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
@@ -591,17 +598,17 @@
           </div>
         </div>
 
-        <div class="card cc" onclick="window.open('https://ecommerce-deep-dive-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card cc" onclick="window.open('https://ecommerce-deep-dive-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🛒 E-Commerce Deep Dive</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-          <p class="card-desc">13-pillar ecommerce brand audit tool. Paste a URL, get a full gap analysis powered by Gemini with live web search — outputs a Word report, PowerPoint deck, and interactive RAG dashboard.</p>
+          <p class="card-desc">13-pillar ecommerce brand audit. Paste any URL, get a full AI-powered gap analysis — outputs a Word report, PowerPoint deck, and interactive RAG dashboard.</p>
           <div class="card-foot">
             <div class="tags"><span class="tag">Next.js</span><span class="tag">Gemini</span><span class="tag">CF Pages</span></div>
             <div class="card-btns">
-              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/ecommerce-deep-dive" target="_blank" onclick="event.stopPropagation()" title="GitHub">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/ecommerce-deep-dive" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               </a>
               <a class="btn-open" href="https://ecommerce-deep-dive-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
                 Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -610,15 +617,18 @@
           </div>
         </div>
 
-        <div class="card cc" onclick="window.open('https://inkspector-app.pages.dev','_blank')" role="link" tabindex="0">
+        <div class="card cc" onclick="window.open('https://inkspector-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
           <div class="card-head">
             <span class="card-name">🖋 Inkspector</span>
             <span class="card-live"><span class="live-dot"></span>Live</span>
           </div>
-          <p class="card-desc">Tattoo artist booking site for Jordan Mitchell (Inkspector). Portfolio, aftercare guide, and detailed booking request form with admin dashboard.</p>
+          <p class="card-desc">Tattoo artist site for Jordan Mitchell at One by One Tattoo, London. Portfolio gallery, booking request form with admin dashboard, and aftercare guides.</p>
           <div class="card-foot">
             <div class="tags"><span class="tag">Next.js</span><span class="tag">Supabase</span><span class="tag">CF Pages</span></div>
             <div class="card-btns">
+              <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/inkspector" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
               <a class="btn-open" href="https://inkspector-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
                 Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               </a>
@@ -641,7 +651,7 @@
 
       <a class="client-row" href="https://fulcrumsolutions.online/" target="_blank">
         <span class="client-name">⚙️ Fulcrum Solutions</span>
-        <span class="client-desc">Business solutions platform. Client managed.</span>
+        <span class="client-desc">Process automation and business solutions consultancy. Client managed.</span>
         <span class="client-action">
           fulcrumsolutions.online
           <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -659,7 +669,7 @@
 
       <a class="client-row" href="https://plus15.co.uk/" target="_blank">
         <span class="client-name">🏢 Plus 15</span>
-        <span class="client-desc">Client platform built and delivered via Lovable. Managed by the client.</span>
+        <span class="client-desc">Membership and rewards platform built and delivered via Lovable. Client managed.</span>
         <span class="client-action">
           plus15.co.uk
           <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
