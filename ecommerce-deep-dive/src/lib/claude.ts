@@ -4,6 +4,40 @@ import { getPillarChecklist } from './pillars';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// Retry wrapper — handles 429 rate limits with exponential backoff
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4): Promise<T> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const is429 = msg.includes('429') || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED');
+      if (is429 && attempt < maxAttempts) {
+        const delay = attempt * 15000; // 15s, 30s, 45s
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
+// Robust JSON extractor — handles prose preamble, markdown fences, trailing text
+function extractJSON(text: string): Record<string, unknown> {
+  // Strip markdown fences
+  const stripped = text.replace(/```json\n?|```\n?/g, '').trim();
+  // Try direct parse first
+  try { return JSON.parse(stripped); } catch {}
+  // Find the first { ... } block
+  const start = stripped.indexOf('{');
+  const end = stripped.lastIndexOf('}');
+  if (start !== -1 && end !== -1 && end > start) {
+    try { return JSON.parse(stripped.slice(start, end + 1)); } catch {}
+  }
+  throw new Error(`No valid JSON found in response: ${stripped.slice(0, 120)}`);
+}
+
 // gemini-2.0-flash: free tier, 15 RPM, 1M context, Google Search grounding
 const MODEL = 'gemini-2.0-flash';
 
@@ -78,13 +112,12 @@ export async function runPillarAnalysis(
     tools: [{ googleSearchRetrieval: {} }],
   });
 
-  const result = await model.generateContent(
-    buildPillarPrompt(pillarId, pillarName, url, supplementaryData)
+  const result = await withRetry(() =>
+    model.generateContent(buildPillarPrompt(pillarId, pillarName, url, supplementaryData))
   );
 
   const textContent = result.response.text();
-  const clean = textContent.replace(/```json\n?|```\n?/g, '').trim();
-  const parsed = JSON.parse(clean);
+  const parsed = extractJSON(textContent);
 
   return {
     id: pillarId,
@@ -110,7 +143,7 @@ export async function buildOpportunityMatrix(
     safetySettings: SAFETY,
   });
 
-  const result = await model.generateContent(
+  const result = await withRetry(() => model.generateContent(
     `You are an ecommerce growth strategist. Given pillar findings, produce a prioritised opportunity matrix. Return ONLY valid JSON, no prose.
 
 Brand: ${url}
@@ -126,8 +159,8 @@ Return JSON:
   "longerTerm": ["action 1"]
 }
 Each action: one specific sentence with the mechanic and the commercial rationale. Maximum 5 items per quadrant.`
-  );
+  ));
 
   const text = result.response.text();
-  return JSON.parse(text.replace(/```json\n?|```\n?/g, '').trim());
+  return extractJSON(text) as OpportunityMatrix;
 }
