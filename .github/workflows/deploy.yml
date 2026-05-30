@@ -103,6 +103,25 @@ jobs:
   # cannot be statically exported to CF Pages. Excluded from CI until migrated
   # to a runtime that supports server-side execution (e.g. CF Workers + D1).
 
+  deploy-digital-depth-dive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"digital-depth-dive-app","production_branch":"main"}' || true
+      - run: cd digital-depth-dive && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy digital-depth-dive/dist --project-name=digital-depth-dive-app --branch=main
+
   deploy-inkspector:
     runs-on: ubuntu-latest
     steps:

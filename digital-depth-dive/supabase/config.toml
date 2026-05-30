@@ -1,0 +1,25 @@
+project_id = "mwoplyrjqmlvgwbkkawj"
+
+[functions.firecrawl-scrape]
+verify_jwt = false
+
+[functions.firecrawl-map]
+verify_jwt = false
+
+[functions.analyze-website]
+verify_jwt = false
+
+[functions.firecrawl-search]
+verify_jwt = false
+
+[functions.extract-leads]
+verify_jwt = false
+
+[functions.search-ad-libraries]
+verify_jwt = false
+
+[functions.generate-ads]
+verify_jwt = false
+
+[functions.case-study-research]
+verify_jwt = false
