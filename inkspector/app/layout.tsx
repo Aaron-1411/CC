@@ -1,20 +1,20 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
+import { Courier_Prime, Big_Shoulders_Display } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-  display: 'swap',
-})
-
-const playfair = Playfair_Display({
-  variable: '--font-playfair',
+const courierPrime = Courier_Prime({
+  variable: '--font-courier',
   subsets: ['latin'],
   display: 'swap',
   weight: ['400', '700'],
-  style: ['normal', 'italic'],
+})
+
+const bigShoulders = Big_Shoulders_Display({
+  variable: '--font-big-shoulders',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '600', '700', '800', '900'],
 })
 
 export const metadata: Metadata = {
@@ -33,10 +33,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} dark`}>
+    <html lang="en" className={`${courierPrime.variable} ${bigShoulders.variable}`}>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         {children}
-        <Toaster position="top-right" theme="dark" />
+        <Toaster position="top-right" theme="light" />
       </body>
     </html>
   )

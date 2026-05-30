@@ -25,36 +25,35 @@ export default async function HomePage() {
     <>
       <Nav />
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-        {/* Background photo */}
+      {/* Hero — always dark, photo full-bleed */}
+      <section className="relative min-h-screen bg-black flex flex-col items-center justify-center text-center px-6 overflow-hidden">
         <Image
           src="/jordan-at-work.jpg"
           alt="Jordan Mitchell tattooing at One by One Tattoo, London"
           fill
           priority
-          className="object-cover object-center opacity-30"
+          className="object-cover object-center opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/30 to-background pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <p className="text-xs tracking-[0.3em] uppercase text-primary mb-6">One by One Tattoo · London</p>
-          <h1 className="font-heading text-6xl md:text-8xl font-bold tracking-tight mb-6 leading-none">
+          <h1 className="font-heading text-7xl md:text-9xl font-black uppercase tracking-tight mb-6 leading-none text-white">
             Inkspector
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-lg mx-auto mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-white/60 max-w-lg mx-auto mb-10 leading-relaxed font-sans">
             Creating artwork in a fun and playful way.<br />
-            <span className="text-foreground">Your happiness is priority one.</span>
+            <span className="text-white/90">Your happiness is priority one.</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/book"
-              className="flex items-center gap-2 px-7 py-3.5 bg-primary text-primary-foreground font-medium rounded-sm hover:bg-primary/90 transition-colors text-sm tracking-wide"
+              className="flex items-center gap-2 px-7 py-3.5 bg-primary text-primary-foreground font-medium rounded-sm hover:bg-primary/90 transition-colors text-sm tracking-widest uppercase font-sans"
             >
               Book a Consultation <ArrowRight size={16} />
             </Link>
             <Link
               href="/portfolio"
-              className="px-7 py-3.5 border border-border text-foreground rounded-sm hover:border-muted-foreground transition-colors text-sm tracking-wide"
+              className="px-7 py-3.5 border border-white/30 text-white/80 rounded-sm hover:border-white/60 hover:text-white transition-colors text-sm tracking-widest uppercase font-sans"
             >
               View Portfolio
             </Link>
