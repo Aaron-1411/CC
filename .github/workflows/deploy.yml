@@ -199,14 +199,14 @@ jobs:
                   "compatibility_flags": ["nodejs_compat"],
                   "compatibility_date": "2024-09-23",
                   "env_vars": {
-                    "XAI_API_KEY": {"value": "${{ secrets.XAI_API_KEY }}", "type": "secret_text"}
+                    "GEMINI_API_KEY": {"value": "${{ secrets.GEMINI_API_KEY }}", "type": "secret_text"}
                   }
                 },
                 "preview": {
                   "compatibility_flags": ["nodejs_compat"],
                   "compatibility_date": "2024-09-23",
                   "env_vars": {
-                    "XAI_API_KEY": {"value": "${{ secrets.XAI_API_KEY }}", "type": "secret_text"}
+                    "GEMINI_API_KEY": {"value": "${{ secrets.GEMINI_API_KEY }}", "type": "secret_text"}
                   }
                 }
               }

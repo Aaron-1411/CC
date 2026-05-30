@@ -1,14 +1,19 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { PillarResult, OpportunityMatrix } from '@/types/analysis';
 import { getPillarChecklist } from './pillars';
 
-// xAI Grok — OpenAI-compatible endpoint
-export const aiClient = new OpenAI({
-  apiKey: process.env.XAI_API_KEY,
-  baseURL: 'https://api.x.ai/v1',
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const MODEL = 'grok-3';
+// gemini-2.0-flash: free tier, 15 RPM, 1M context, Google Search grounding
+const MODEL = 'gemini-2.0-flash';
+
+// Safety settings — turn off filters that block commercial audit content
+const SAFETY = [
+  { category: HarmCategory.HARM_CATEGORY_HARASSMENT,        threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,       threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+];
 
 export const SYSTEM_PROMPT = `
 You are an expert ecommerce growth analyst running a structured brand audit.
@@ -51,7 +56,7 @@ Analyse pillar ${pillarId.toString().padStart(2, '0')}: ${pillarName}
 Brand URL: ${url}
 ${supplementaryData ? `\nSupplementary data provided by user:\n${supplementaryData}` : ''}
 
-Use your live web search capability to research this brand. Browse the site where relevant.
+Use Google Search to research this brand live. Browse the site where relevant.
 For this pillar specifically, check:
 ${getPillarChecklist(pillarId)}
 
@@ -65,23 +70,19 @@ export async function runPillarAnalysis(
   url: string,
   supplementaryData?: string
 ): Promise<PillarResult> {
-  // xAI Grok: web search is enabled via search_parameters on the request body.
-  // We cast to `any` for the extra xAI-specific field since the OpenAI SDK types
-  // don't include it — it is passed through as-is to the API.
-  const response = await (aiClient.chat.completions.create as Function)({
+  const model = genAI.getGenerativeModel({
     model: MODEL,
-    max_tokens: 2000,
-    // Enable Grok live web search
-    search_parameters: { mode: 'auto' },
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user',   content: buildPillarPrompt(pillarId, pillarName, url, supplementaryData) },
-    ],
-  }) as OpenAI.Chat.ChatCompletion;
+    systemInstruction: SYSTEM_PROMPT,
+    safetySettings: SAFETY,
+    // Google Search grounding — live web data for every pillar call
+    tools: [{ googleSearchRetrieval: {} }],
+  });
 
-  const textContent = response.choices[0]?.message?.content ?? '';
+  const result = await model.generateContent(
+    buildPillarPrompt(pillarId, pillarName, url, supplementaryData)
+  );
 
-  // Strip markdown fences if present
+  const textContent = result.response.text();
   const clean = textContent.replace(/```json\n?|```\n?/g, '').trim();
   const parsed = JSON.parse(clean);
 
@@ -104,28 +105,29 @@ export async function buildOpportunityMatrix(
     .map(p => `Pillar ${p.id} (${p.name}): ${p.status}. Opportunity: ${p.opportunity}`)
     .join('\n');
 
-  const response = await aiClient.chat.completions.create({
+  const model = genAI.getGenerativeModel({
     model: MODEL,
-    max_tokens: 1000,
-    messages: [
-      {
-        role: 'system',
-        content: 'You are an ecommerce growth strategist. Given pillar findings, produce a prioritised opportunity matrix. Return ONLY valid JSON, no prose.',
-      },
-      {
-        role: 'user',
-        content: `Brand: ${url}\n\nPillar summary:\n${summary}\n\nReturn JSON:
+    safetySettings: SAFETY,
+  });
+
+  const result = await model.generateContent(
+    `You are an ecommerce growth strategist. Given pillar findings, produce a prioritised opportunity matrix. Return ONLY valid JSON, no prose.
+
+Brand: ${url}
+
+Pillar summary:
+${summary}
+
+Return JSON:
 {
   "highImpactEasy": ["action 1", "action 2"],
   "highImpactInvestment": ["action 1"],
   "lowerImpactEasy": ["action 1"],
   "longerTerm": ["action 1"]
 }
-Each action: one specific sentence with the mechanic and the commercial rationale. Maximum 5 items per quadrant.`,
-      },
-    ],
-  });
+Each action: one specific sentence with the mechanic and the commercial rationale. Maximum 5 items per quadrant.`
+  );
 
-  const text = response.choices[0]?.message?.content ?? '';
+  const text = result.response.text();
   return JSON.parse(text.replace(/```json\n?|```\n?/g, '').trim());
 }

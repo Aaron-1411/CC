@@ -1,8 +1,9 @@
 import PptxGenJS from 'pptxgenjs';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AnalysisJob, PillarResult } from '@/types/analysis';
-import { aiClient } from './claude';
 
-const MODEL = 'grok-3';
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const MODEL = 'gemini-2.0-flash';
 
 // IMPORTANT: pptxgenjs NEVER uses "#" prefix on hex colours — corrupts files
 const DARK_BG    = '1A1A1A';
@@ -32,22 +33,14 @@ async function generateSlideCopy(
     .join('\n\n');
 
   try {
-    const response = await aiClient.chat.completions.create({
+    const model = genAI.getGenerativeModel({
       model: MODEL,
-      max_tokens: 600,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a pitch deck copywriter. Write punchy, specific, revenue-focused slide copy for a founder audience. Return ONLY valid JSON.',
-        },
-        {
-          role: 'user',
-          content: `Brand: ${brandName}\nSlide type: ${slideType}\n\nFindings:\n${findingsSummary}\n\nReturn JSON with these keys: { "headline": "", "stat": "", "statLabel": "", "bodyLine1": "", "bodyLine2": "", "action": "" }. Keep headlines under 8 words. Stats should be concrete numbers or percentages.`,
-        },
-      ],
+      systemInstruction: 'You are a pitch deck copywriter. Write punchy, specific, revenue-focused slide copy for a founder audience. Return ONLY valid JSON.',
     });
-
-    const text = response.choices[0]?.message?.content ?? '';
+    const result = await model.generateContent(
+      `Brand: ${brandName}\nSlide type: ${slideType}\n\nFindings:\n${findingsSummary}\n\nReturn JSON with these keys: { "headline": "", "stat": "", "statLabel": "", "bodyLine1": "", "bodyLine2": "", "action": "" }. Keep headlines under 8 words. Stats should be concrete numbers or percentages.`
+    );
+    const text = result.response.text();
     return JSON.parse(text.replace(/```json\n?|```\n?/g, '').trim());
   } catch {
     return {
