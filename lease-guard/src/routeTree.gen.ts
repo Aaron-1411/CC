@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ForFirmsRouteImport } from './routes/for-firms'
+import { Route as AgentRaterRouteImport } from './routes/agent-rater'
+import { Route as PlanningRadarRouteImport } from './routes/planning-radar'
+import { Route as LeaseAuditRouteImport } from './routes/lease-audit'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -23,6 +26,21 @@ const ForFirmsRoute = ForFirmsRouteImport.update({
   path: '/for-firms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentRaterRoute = AgentRaterRouteImport.update({
+  id: '/agent-rater',
+  path: '/agent-rater',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanningRadarRoute = PlanningRadarRouteImport.update({
+  id: '/planning-radar',
+  path: '/planning-radar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaseAuditRoute = LeaseAuditRouteImport.update({
+  id: '/lease-audit',
+  path: '/lease-audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +49,42 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/lease-audit': typeof LeaseAuditRoute
+  '/planning-radar': typeof PlanningRadarRoute
+  '/agent-rater': typeof AgentRaterRoute
   '/for-firms': typeof ForFirmsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/lease-audit': typeof LeaseAuditRoute
+  '/planning-radar': typeof PlanningRadarRoute
+  '/agent-rater': typeof AgentRaterRoute
   '/for-firms': typeof ForFirmsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/lease-audit': typeof LeaseAuditRoute
+  '/planning-radar': typeof PlanningRadarRoute
+  '/agent-rater': typeof AgentRaterRoute
   '/for-firms': typeof ForFirmsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/for-firms' | '/sitemap.xml'
+  fullPaths: '/' | '/lease-audit' | '/planning-radar' | '/agent-rater' | '/for-firms' | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/for-firms' | '/sitemap.xml'
-  id: '__root__' | '/' | '/for-firms' | '/sitemap.xml'
+  to: '/' | '/lease-audit' | '/planning-radar' | '/agent-rater' | '/for-firms' | '/sitemap.xml'
+  id: '__root__' | '/' | '/lease-audit' | '/planning-radar' | '/agent-rater' | '/for-firms' | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LeaseAuditRoute: typeof LeaseAuditRoute
+  PlanningRadarRoute: typeof PlanningRadarRoute
+  AgentRaterRoute: typeof AgentRaterRoute
   ForFirmsRoute: typeof ForFirmsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
@@ -75,6 +105,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForFirmsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent-rater': {
+      id: '/agent-rater'
+      path: '/agent-rater'
+      fullPath: '/agent-rater'
+      preLoaderRoute: typeof AgentRaterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planning-radar': {
+      id: '/planning-radar'
+      path: '/planning-radar'
+      fullPath: '/planning-radar'
+      preLoaderRoute: typeof PlanningRadarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lease-audit': {
+      id: '/lease-audit'
+      path: '/lease-audit'
+      fullPath: '/lease-audit'
+      preLoaderRoute: typeof LeaseAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,19 +138,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LeaseAuditRoute: LeaseAuditRoute,
+  PlanningRadarRoute: PlanningRadarRoute,
+  AgentRaterRoute: AgentRaterRoute,
   ForFirmsRoute: ForFirmsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

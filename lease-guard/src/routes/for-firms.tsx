@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Check, Quote, Zap } from "lucide-react";
+import { SiteNav } from "@/components/SiteNav";
 import { ContactModal } from "@/components/ContactModal";
 
 export const Route = createFileRoute("/for-firms")({
@@ -109,7 +110,7 @@ const TIERS = [
 function ForFirmsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-
+      <SiteNav />
       <main className="mx-auto max-w-7xl px-6 py-16">
         {/* HERO */}
         <section className="grid gap-12 lg:grid-cols-12 animate-reveal">
@@ -136,7 +137,7 @@ function ForFirmsPage() {
                 See pricing <ArrowRight className="h-3 w-3" />
               </a>
               <Link
-                to="/"
+                to="/lease-audit"
                 className="inline-flex items-center gap-2 border border-border bg-surface px-5 py-3 text-[11px] font-bold uppercase tracking-widest hover:border-foreground"
               >
                 Try the live tool
@@ -347,7 +348,7 @@ function ForFirmsPage() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 text-[10px] font-mono-ui uppercase tracking-widest text-muted-foreground">
           <span>LeaseSense Pro · Partner Programme</span>
           <Link to="/" className="hover:text-foreground">
-            ← Back to the client view
+            ← Back to hub
           </Link>
         </div>
       </footer>
