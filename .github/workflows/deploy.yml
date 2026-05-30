@@ -176,6 +176,25 @@ jobs:
           workingDirectory: inkspector
           command: pages deploy .vercel/output/static --project-name=inkspector-app --branch=main
 
+  deploy-pension-finder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"pension-finder-app","production_branch":"main"}' || true
+      - run: cd pension-finder-uk && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy pension-finder-uk/out --project-name=pension-finder-app --branch=main
+
   deploy-ecommerce-deep-dive:
     runs-on: ubuntu-latest
     steps:
