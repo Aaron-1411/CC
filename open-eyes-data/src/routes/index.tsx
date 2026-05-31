@@ -109,6 +109,7 @@ function HomePage() {
       <Hero />
       <LiveSnapshot />
       <IssueGrid />
+      <TakeActionBanner />
       <PostcodeWidget />
       <AllTools />
     </div>
@@ -372,6 +373,35 @@ function CompactToolCard({ to, label, copy }: { to: string; label: string; copy:
     </Link>
   );
 }
+
+// ─── Take action banner ───────────────────────────────────────────────────────
+
+function TakeActionBanner() {
+  return (
+    <section className="rounded-lg border border-border bg-surface p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="label-mono text-[10px] uppercase tracking-wider text-amber">
+          Participation guide
+        </div>
+        <h2 className="font-display text-lg font-bold">
+          Not sure how to use this? Or how to actually drive change?
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          A step-by-step guide for every age — from under-16 to 60+ — on how to engage, hold
+          politicians accountable, and make your voice heard.
+        </p>
+      </div>
+      <Link
+        to="/take-action"
+        className="shrink-0 px-5 py-2.5 bg-amber text-amber-foreground rounded label-mono text-xs uppercase tracking-wider hover:opacity-90 transition-opacity whitespace-nowrap"
+      >
+        Take action →
+      </Link>
+    </section>
+  );
+}
+
+// ─── All tools (compact grid) ─────────────────────────────────────────────────
 
 const INITIAL_SECTION_COUNT = 2;
 const TOTAL_TOOLS = TOOL_SECTIONS.reduce((n, s) => n + s.tools.length, 0);

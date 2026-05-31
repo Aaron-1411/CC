@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VotesRouteImport } from './routes/votes'
+import { Route as TakeActionRouteImport } from './routes/take-action'
 import { Route as StopSearchRouteImport } from './routes/stop-search'
 import { Route as SpendingRouteImport } from './routes/spending'
 import { Route as SewageRouteImport } from './routes/sewage'
@@ -64,6 +65,11 @@ import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
 const VotesRoute = VotesRouteImport.update({
   id: '/votes',
   path: '/votes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TakeActionRoute = TakeActionRouteImport.update({
+  id: '/take-action',
+  path: '/take-action',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StopSearchRoute = StopSearchRouteImport.update({
@@ -342,6 +348,7 @@ export interface FileRoutesByFullPath {
   '/sewage': typeof SewageRoute
   '/spending': typeof SpendingRoute
   '/stop-search': typeof StopSearchRoute
+  '/take-action': typeof TakeActionRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/sewage': typeof SewageRoute
   '/spending': typeof SpendingRoute
   '/stop-search': typeof StopSearchRoute
+  '/take-action': typeof TakeActionRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
@@ -449,6 +457,7 @@ export interface FileRoutesById {
   '/sewage': typeof SewageRoute
   '/spending': typeof SpendingRoute
   '/stop-search': typeof StopSearchRoute
+  '/take-action': typeof TakeActionRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
@@ -504,6 +513,7 @@ export interface FileRouteTypes {
     | '/sewage'
     | '/spending'
     | '/stop-search'
+    | '/take-action'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
@@ -557,6 +567,7 @@ export interface FileRouteTypes {
     | '/sewage'
     | '/spending'
     | '/stop-search'
+    | '/take-action'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
@@ -610,6 +621,7 @@ export interface FileRouteTypes {
     | '/sewage'
     | '/spending'
     | '/stop-search'
+    | '/take-action'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
@@ -664,6 +676,7 @@ export interface RootRouteChildren {
   SewageRoute: typeof SewageRoute
   SpendingRoute: typeof SpendingRoute
   StopSearchRoute: typeof StopSearchRoute
+  TakeActionRoute: typeof TakeActionRoute
   VotesRoute: typeof VotesRoute
   ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBillsRoute: typeof ApiBillsRoute
@@ -700,6 +713,13 @@ declare module '@tanstack/react-router' {
       path: '/votes'
       fullPath: '/votes'
       preLoaderRoute: typeof VotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/take-action': {
+      id: '/take-action'
+      path: '/take-action'
+      fullPath: '/take-action'
+      preLoaderRoute: typeof TakeActionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stop-search': {
@@ -1080,6 +1100,7 @@ const rootRouteChildren: RootRouteChildren = {
   SewageRoute: SewageRoute,
   SpendingRoute: SpendingRoute,
   StopSearchRoute: StopSearchRoute,
+  TakeActionRoute: TakeActionRoute,
   VotesRoute: VotesRoute,
   ApiAcobaRoute: ApiAcobaRoute,
   ApiBillsRoute: ApiBillsRoute,
@@ -1111,13 +1132,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
