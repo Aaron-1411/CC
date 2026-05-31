@@ -1,10 +1,10 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { ChevronDown, ChevronUp, Info, TrendingDown, TrendingUp, AlertCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, Info, TrendingDown, TrendingUp, AlertCircle, Share2, Check } from "lucide-react";
 
 const STATE_PENSION_WEEKLY = 221.20;
 
@@ -61,18 +61,28 @@ function buildChartData(currentAge: number, years: number, currentPot: number, m
   });
 }
 
+function getInitial<T>(params: URLSearchParams, key: string, fallback: T): T {
+  const v = params.get(key);
+  if (v === null) return fallback;
+  if (typeof fallback === "boolean") return (v === "true") as unknown as T;
+  return Number(v) as unknown as T;
+}
+
 export default function ProjectPage() {
+  // Seed state from share URL if present
+  const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+
   // Quick mode inputs
-  const [currentAge, setCurrentAge] = useState(35);
-  const [retirementAge, setRetirementAge] = useState(67);
-  const [currentPot, setCurrentPot] = useState(25000);
+  const [currentAge, setCurrentAge] = useState(() => getInitial(params, "currentAge", 35));
+  const [retirementAge, setRetirementAge] = useState(() => getInitial(params, "retirementAge", 67));
+  const [currentPot, setCurrentPot] = useState(() => getInitial(params, "currentPot", 25000));
 
   // Advanced inputs
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [monthlyContrib, setMonthlyContrib] = useState(300);
-  const [growthRate, setGrowthRate] = useState(5);
-  const [includeState, setIncludeState] = useState(true);
-  const [niYears, setNiYears] = useState(20);
+  const [monthlyContrib, setMonthlyContrib] = useState(() => getInitial(params, "monthlyContrib", 300));
+  const [growthRate, setGrowthRate] = useState(() => getInitial(params, "growthRate", 5));
+  const [includeState, setIncludeState] = useState(() => getInitial(params, "includeState", true));
+  const [niYears, setNiYears] = useState(() => getInitial(params, "niYears", 20));
   const [inflationAdjust, setInflationAdjust] = useState(false);
   const [targetMonthly, setTargetMonthly] = useState(2000);
   const [drawdownMonthly, setDrawdownMonthly] = useState(2000);
@@ -295,6 +305,30 @@ export default function ProjectPage() {
             </div>
           )}
 
+          {/* Annuity estimate */}
+          {showAdvanced && (
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+              <h2 className="font-bold mb-1">Annuity alternative</h2>
+              <p className="text-xs text-gray-400 mb-4">Instead of drawdown, you could use your pot to buy a guaranteed income for life (an annuity). Rates vary — this uses a typical 2026 rate for a 67-year-old.</p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Level annuity", rate: 0.072, desc: "Fixed income, no inflation protection" },
+                  { label: "Inflation-linked", rate: 0.052, desc: "Rises with RPI each year" },
+                ].map(a => (
+                  <div key={a.label} className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                    <p className="text-xs font-semibold text-indigo-600 mb-1">{a.label}</p>
+                    <p className="text-xl font-bold text-indigo-800">{fmtGBP((nominalPot * a.rate) / 12)}/mo</p>
+                    <p className="text-xs text-gray-500 mt-1">{fmtGBP(nominalPot * a.rate)}/yr · {a.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-3">Annuity rates are illustrative. Get quotes from multiple providers before deciding.</p>
+            </div>
+          )}
+
+          {/* Share */}
+          <ShareButton state={{ currentAge, retirementAge, currentPot, monthlyContrib, growthRate, niYears, includeState }} />
+
           <p className="text-xs text-gray-400 leading-relaxed">
             Projections are illustrative only. They assume constant contributions and compound growth. Inflation adjustment uses 2.5% p.a.
             Past returns are not a guide to the future. Not financial advice.
@@ -302,5 +336,30 @@ export default function ProjectPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ShareButton({ state }: { state: Record<string, number | boolean> }) {
+  const [copied, setCopied] = useState(false);
+
+  const share = useCallback(() => {
+    const params = new URLSearchParams(
+      Object.entries(state).map(([k, v]) => [k, String(v)])
+    );
+    const url = `${window.location.origin}/project?${params.toString()}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [state]);
+
+  return (
+    <button
+      onClick={share}
+      className="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-700 border border-gray-200 hover:border-indigo-300 rounded-xl px-4 py-2.5 transition-colors self-start"
+    >
+      {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
+      {copied ? "Link copied!" : "Share this projection"}
+    </button>
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, BarChart2, GitMerge, ShieldCheck, ChevronRight, Users, PoundSterling, Clock, Gift } from "lucide-react";
+import { Search, BarChart2, GitMerge, ShieldCheck, ChevronRight, Users, PoundSterling, Clock, Gift, FileText } from "lucide-react";
 
 const tools = [
   {
@@ -44,6 +44,16 @@ const tools = [
   },
   {
     step: "5",
+    icon: FileText,
+    title: "NI Gaps Calculator",
+    desc: "Buying a missing NI year costs £824 but adds £328/yr to your State Pension forever. See if it's worth it for you in under a minute.",
+    href: "/ni-gaps",
+    cta: "Check NI gaps →",
+    color: "bg-blue-50 border-blue-200",
+    iconColor: "text-blue-600",
+  },
+  {
+    step: "6",
     icon: GitMerge,
     title: "Consolidate",
     desc: "Not sure whether to merge your pots? Take a 5-question quiz and get a plain-English recommendation, then follow the step-by-step guide.",

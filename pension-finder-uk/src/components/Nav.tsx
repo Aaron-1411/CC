@@ -5,10 +5,11 @@ import { useState } from "react";
 import { Menu, X, PoundSterling } from "lucide-react";
 
 const links = [
-  { href: "/find", label: "Find Lost Pensions" },
+  { href: "/find", label: "Find Pensions" },
   { href: "/track", label: "My Pensions" },
-  { href: "/project", label: "Projection Calculator" },
+  { href: "/project", label: "Projection" },
   { href: "/tax-relief", label: "Tax Relief" },
+  { href: "/ni-gaps", label: "NI Gaps" },
   { href: "/consolidate", label: "Consolidate" },
 ];
 

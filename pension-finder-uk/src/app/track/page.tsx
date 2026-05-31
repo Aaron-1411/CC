@@ -36,19 +36,44 @@ function fmtGBP(n: number) {
 
 const EMPTY: Omit<Pension, "id"> = { name: "", provider: "", type: "workplace", value: "", annualGrowth: "5", notes: "" };
 
-function healthScore(pensions: Pension[], totalValue: number): { score: number; label: string; colour: string; tip: string } {
+// Benchmarks: rough UK averages by age (Pension Policy Institute 2024)
+const AGE_BENCHMARKS: [number, number][] = [
+  [25, 5000], [30, 15000], [35, 30000], [40, 55000],
+  [45, 85000], [50, 120000], [55, 160000], [60, 200000], [65, 250000],
+];
+
+function getBenchmark(age: number): number {
+  const match = [...AGE_BENCHMARKS].reverse().find(([a]) => age >= a);
+  return match ? match[1] : 5000;
+}
+
+function healthScore(pensions: Pension[], totalValue: number, age: number): { score: number; label: string; colour: string; tip: string } {
   let score = 0;
-  if (totalValue >= 10000) score += 20;
-  if (totalValue >= 50000) score += 20;
-  if (totalValue >= 100000) score += 20;
-  if (pensions.length >= 1) score += 15;
-  if (pensions.every(p => parseFloat(p.annualGrowth) >= 4)) score += 15;
-  if (pensions.some(p => p.type === "state")) score += 10;
+  const benchmark = getBenchmark(age);
+  const ratio = totalValue / benchmark;
+
+  // Value vs age-adjusted benchmark (50 pts)
+  if (ratio >= 1.5) score += 50;
+  else if (ratio >= 1.0) score += 40;
+  else if (ratio >= 0.6) score += 25;
+  else if (ratio >= 0.3) score += 10;
+
+  // Diversification & completeness (30 pts)
+  if (pensions.some(p => p.type === "state")) score += 15;
+  if (pensions.some(p => p.type === "workplace")) score += 10;
+  if (pensions.some(p => p.type === "personal")) score += 5;
+
+  // Growth rates sensible (20 pts)
+  if (pensions.length > 0 && pensions.every(p => parseFloat(p.annualGrowth) >= 4)) score += 20;
+  else if (pensions.length > 0) score += 10;
+
   score = Math.min(100, score);
-  if (score >= 80) return { score, label: "Excellent", colour: "text-green-700", tip: "Your pension picture looks strong. Consider whether consolidation could save on fees." };
-  if (score >= 55) return { score, label: "Good", colour: "text-indigo-700", tip: "Solid foundation. Boosting monthly contributions or adding missing pots will improve your score." };
-  if (score >= 30) return { score, label: "Needs attention", colour: "text-amber-700", tip: "There may be significant gaps. Use the Pension Finder to locate any missing pots." };
-  return { score, label: "Critical", colour: "text-red-700", tip: "Start now — even small contributions today compound significantly over time." };
+  const pctOfBenchmark = Math.round(ratio * 100);
+
+  if (score >= 75) return { score, label: "Excellent", colour: "text-green-700", tip: `Your pot is ${pctOfBenchmark}% of the typical UK benchmark for age ${age}. Strong position — consider consolidating to cut fees.` };
+  if (score >= 50) return { score, label: "Good", colour: "text-indigo-700", tip: `Your pot is ${pctOfBenchmark}% of the typical benchmark for age ${age}. Solid start — boosting contributions now will make a big difference.` };
+  if (score >= 25) return { score, label: "Needs attention", colour: "text-amber-700", tip: `Your pot is ${pctOfBenchmark}% of the typical benchmark for age ${age}. Use the Pension Finder to locate any missing pots and consider increasing contributions.` };
+  return { score, label: "Critical", colour: "text-red-700", tip: `Your pot is ${pctOfBenchmark}% of the typical benchmark for age ${age}. Act now — even small contributions compound significantly over time.` };
 }
 
 export default function TrackPage() {
@@ -57,14 +82,22 @@ export default function TrackPage() {
   const [form, setForm] = useState<Omit<Pension, "id">>(EMPTY);
   const [showForm, setShowForm] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [age, setAge] = useState<number>(40);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("pf-pensions");
       if (stored) setPensions(JSON.parse(stored));
+      const storedAge = localStorage.getItem("pf-age");
+      if (storedAge) setAge(Number(storedAge));
     } catch {}
     setLoaded(true);
   }, []);
+
+  function saveAge(v: number) {
+    setAge(v);
+    localStorage.setItem("pf-age", String(v));
+  }
 
   function save(updated: Pension[]) {
     setPensions(updated);
@@ -105,7 +138,8 @@ export default function TrackPage() {
     }))
     .filter(d => d.value > 0);
 
-  const health = pensions.length > 0 ? healthScore(pensions, totalValue) : null;
+  const health = pensions.length > 0 ? healthScore(pensions, totalValue, age) : null;
+  const benchmark = getBenchmark(age);
 
   const PensionForm = ({ onSave, onCancel }: { onSave: () => void; onCancel: () => void }) => (
     <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5 flex flex-col gap-4 mb-4">
@@ -202,13 +236,23 @@ export default function TrackPage() {
           {pensions.length > 0 && health && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
-                <h3 className="font-bold mb-3">Pension health score</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold">Pension health score</h3>
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs text-gray-500">Your age</label>
+                    <input
+                      type="number" min={18} max={75} value={age}
+                      onChange={e => saveAge(Number(e.target.value))}
+                      className="w-14 border border-gray-200 rounded-lg px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
                 <div className="flex items-center gap-4">
                   <div className="relative w-20 h-20 shrink-0">
                     <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                       <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" strokeWidth="3" />
                       <circle cx="18" cy="18" r="15.9" fill="none"
-                        stroke={health.score >= 80 ? "#16a34a" : health.score >= 55 ? "#6366f1" : health.score >= 30 ? "#d97706" : "#dc2626"}
+                        stroke={health.score >= 75 ? "#16a34a" : health.score >= 50 ? "#6366f1" : health.score >= 25 ? "#d97706" : "#dc2626"}
                         strokeWidth="3"
                         strokeDasharray={`${health.score} ${100 - health.score}`}
                         strokeLinecap="round" />
@@ -218,6 +262,7 @@ export default function TrackPage() {
                   <div>
                     <p className={`font-bold text-lg ${health.colour}`}>{health.label}</p>
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">{health.tip}</p>
+                    <p className="text-xs text-gray-400 mt-1">UK avg at {age}: {fmtGBP(benchmark)}</p>
                   </div>
                 </div>
               </div>

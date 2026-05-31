@@ -59,9 +59,71 @@ export default function TaxReliefPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:grid-flow-col">
+        {/* Results — shown first on mobile via order */}
+        <div className="flex flex-col gap-4 lg:order-2">
+          {/* Headline */}
+          <div className="bg-indigo-700 text-white rounded-2xl p-6">
+            <p className="text-indigo-200 text-sm mb-1">Total going into your pension every month</p>
+            <p className="text-4xl font-bold mb-1">{fmtGBP(totalMonthly)}</p>
+            <p className="text-indigo-200 text-sm">
+              You contribute <Pill>{fmtGBP(monthly)}</Pill> · Govt adds <Pill>{fmtGBP(govTopUp)}</Pill>
+            </p>
+          </div>
+          {/* Annual breakdown */}
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+            <h3 className="font-bold mb-4">Annual breakdown</h3>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Your contributions</span>
+                <span className="font-bold text-gray-900">{fmtGBP(yourAnnual)}/yr</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Government tax relief</span>
+                <span className="font-bold text-green-700">+{fmtGBP(govAnnual)}/yr</span>
+              </div>
+              {salarySacrifice && <>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Your NI saving (est.)</span>
+                  <span className="font-bold text-green-700">+{fmtGBP(niSaving)}/yr</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Employer NI saving (est.)</span>
+                  <span className="font-bold text-green-700">+{fmtGBP(employerNiSaving)}/yr</span>
+                </div>
+              </>}
+              <hr />
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-gray-900">Total going in per year</span>
+                <span className="font-bold text-indigo-700 text-lg">{fmtGBP(totalAnnual + (salarySacrifice ? niSaving : 0))}</span>
+              </div>
+            </div>
+          </div>
+          {/* Long-term impact */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-5">
+            <div className="flex items-start gap-3">
+              <TrendingUp className="w-6 h-6 text-green-600 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-bold text-green-900 mb-1">Over 25 years (at 5% growth)</h3>
+                <p className="text-sm text-green-800 mb-3">
+                  Without tax relief your pot would reach <strong>{fmtGBP(potWithoutRelief)}</strong>.
+                  With tax relief it reaches <strong>{fmtGBP(potWithRelief)}</strong> — an extra <strong>{fmtGBP(reliefBoost)}</strong> from the government top-up alone.
+                </p>
+                <p className="text-xs text-green-700">Illustrative only. Constant contributions, 5% compound growth.</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+            <Calculator className="w-5 h-5 text-indigo-400 mb-2" />
+            <p className="text-sm text-gray-600 mb-3">Want to see how this pot grows over time?</p>
+            <Link href="/project" className="inline-flex items-center gap-2 bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-800">
+              Run a full projection →
+            </Link>
+          </div>
+        </div>
+
         {/* Controls */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col gap-6">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col gap-6 lg:order-1">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Your monthly contribution</label>
             <div className="relative">
@@ -116,75 +178,6 @@ export default function TaxReliefPage() {
           </div>
         </div>
 
-        {/* Results */}
-        <div className="flex flex-col gap-4">
-          {/* Headline */}
-          <div className="bg-indigo-700 text-white rounded-2xl p-6">
-            <p className="text-indigo-200 text-sm mb-1">Total going into your pension every month</p>
-            <p className="text-4xl font-bold mb-1">{fmtGBP(totalMonthly)}</p>
-            <p className="text-indigo-200 text-sm">
-              You contribute <Pill>{fmtGBP(monthly)}</Pill> · Govt adds <Pill>{fmtGBP(govTopUp)}</Pill>
-            </p>
-          </div>
-
-          {/* Annual breakdown */}
-          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
-            <h3 className="font-bold mb-4">Annual breakdown</h3>
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Your contributions</span>
-                <span className="font-bold text-gray-900">{fmtGBP(yourAnnual)}/yr</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Government tax relief</span>
-                <span className="font-bold text-green-700">+{fmtGBP(govAnnual)}/yr</span>
-              </div>
-              {salarySacrifice && (
-                <>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Your NI saving (est.)</span>
-                    <span className="font-bold text-green-700">+{fmtGBP(niSaving)}/yr</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Employer NI saving (est.)</span>
-                    <span className="font-bold text-green-700">+{fmtGBP(employerNiSaving)}/yr</span>
-                  </div>
-                </>
-              )}
-              <hr />
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-gray-900">Total going in per year</span>
-                <span className="font-bold text-indigo-700 text-lg">{fmtGBP(totalAnnual + (salarySacrifice ? niSaving : 0))}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Long-term impact */}
-          <div className="bg-green-50 border border-green-200 rounded-2xl p-5">
-            <div className="flex items-start gap-3">
-              <TrendingUp className="w-6 h-6 text-green-600 shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-bold text-green-900 mb-1">Over 25 years (at 5% growth)</h3>
-                <p className="text-sm text-green-800 mb-3">
-                  Without tax relief your pot would reach <strong>{fmtGBP(potWithoutRelief)}</strong>.
-                  With tax relief included it reaches <strong>{fmtGBP(potWithRelief)}</strong>.
-                  That&apos;s an extra <strong>{fmtGBP(reliefBoost)}</strong> — just from the government top-up.
-                </p>
-                <p className="text-xs text-green-700">Illustrative only. Assumes contributions stay constant and compound growth at 5% p.a.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
-            <Calculator className="w-5 h-5 text-indigo-400 mb-2" />
-            <p className="text-sm text-gray-600 mb-3">
-              Want to see how this pot grows over time? Use the full projection calculator.
-            </p>
-            <Link href="/project" className="inline-flex items-center gap-2 bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-800">
-              Run a projection →
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Explainer */}
