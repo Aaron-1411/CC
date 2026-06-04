@@ -238,3 +238,46 @@ jobs:
           wranglerVersion: '4.94.0'
           workingDirectory: ecommerce-deep-dive
           command: pages deploy .vercel/output/static --project-name=ecommerce-deep-dive-app --branch=main
+
+  deploy-moneymind-uk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"moneymind-uk-app","production_branch":"main"}' || true
+      - name: Set CF Pages environment variables
+        run: |
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/moneymind-uk-app" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_configs": {
+                "production": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "ANTHROPIC_API_KEY": {"value": "${{ secrets.ANTHROPIC_API_KEY }}", "type": "secret_text"}
+                  }
+                },
+                "preview": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "ANTHROPIC_API_KEY": {"value": "${{ secrets.ANTHROPIC_API_KEY }}", "type": "secret_text"}
+                  }
+                }
+              }
+            }'
+      - run: cd moneymind-uk && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: moneymind-uk
+          command: pages deploy dist --project-name=moneymind-uk-app --branch=main

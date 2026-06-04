@@ -1,0 +1,10 @@
+name = "moneymind-uk-app"
+compatibility_date = "2024-11-27"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+# The AI tutor needs ANTHROPIC_API_KEY. It is NOT set here (never commit secrets).
+# In CI it is injected onto the Pages project via the deploy workflow; for local
+# full-stack testing put it in `.dev.vars` (git-ignored):
+#   ANTHROPIC_API_KEY = "sk-ant-..."
+# then run:  npm run pages:dev
