@@ -13,6 +13,7 @@ import { Dashboard } from "./features/dashboard/Dashboard";
 import { ModulePage } from "./features/module/ModulePage";
 import { PersonaSelect } from "./features/onboarding/PersonaSelect";
 import { RightsPage } from "./features/rights/RightsPage";
+import { KidsPage } from "./features/kids/KidsPage";
 import { HelpPage } from "./features/help/HelpPage";
 import { AboutPage } from "./features/about/AboutPage";
 
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/start" element={<PersonaSelect updaters={updaters} />} />
           <Route path="/module/:slug" element={<ModulePage progress={progress} updaters={updaters} />} />
           <Route path="/rights" element={<RightsPage />} />
+          <Route path="/kids" element={<KidsPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/about" element={<AboutPage progress={progress} updaters={updaters} />} />
           <Route path="*" element={<NotFound />} />
@@ -88,6 +90,7 @@ function Footer() {
           education. General information for the {UK_FIGURES.taxYear} tax year, not regulated advice.
         </p>
         <nav className="flex gap-4">
+          <Link to="/kids" className="hover:text-navy-800">For Kids</Link>
           <Link to="/rights" className="hover:text-navy-800">Your Rights</Link>
           <Link to="/help" className="hover:text-navy-800">Find Help</Link>
           <Link to="/about" className="hover:text-navy-800">About</Link>

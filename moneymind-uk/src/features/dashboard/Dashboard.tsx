@@ -207,6 +207,24 @@ export function Dashboard({ progress }: DashboardProps) {
         <MoneyMinute />
       </div>
 
+      {/* ─────────────────── For Kids ─────────────────── */}
+      <div className="mt-4">
+        <Link
+          to="/kids"
+          className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50 to-white px-4 py-3 text-sm shadow-card transition-colors hover:from-sky-100"
+        >
+          <span className="flex items-center gap-2 font-semibold text-navy-800">
+            <span className="grid h-8 w-8 place-items-center rounded-xl bg-sky-100 text-sky-600">
+              <Icon name="PiggyBank" className="h-4 w-4" />
+            </span>
+            Got kids? <span className="text-navy-600">MoneyMind Kids teaches ages 5–16 the money basics — simple and playful.</span>
+          </span>
+          <span className="inline-flex items-center gap-1 font-semibold text-sky-700">
+            Explore <ChevronRight className="h-4 w-4" aria-hidden />
+          </span>
+        </Link>
+      </div>
+
       {/* ─────────────────── Graduate summit ─────────────────── */}
       {graduate && (
         <motion.div

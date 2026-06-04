@@ -18,6 +18,7 @@ const gbp = new Intl.NumberFormat("en-GB", {
 
 const NAV_LINKS = [
   { to: "/", label: "Dashboard" },
+  { to: "/kids", label: "For Kids" },
   { to: "/rights", label: "Your Rights" },
   { to: "/help", label: "Find Help" },
   { to: "/about", label: "About" },
