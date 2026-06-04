@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ShieldCheck, Check, X, Lock, ScrollText, EyeOff, FileCheck2, ArrowRight } from "lucide-react";
+import {
+  ShieldCheck, Check, X, Lock, ScrollText, EyeOff, FileCheck2, ArrowRight,
+  Stethoscope, Scale, ClipboardCheck, Megaphone,
+} from "lucide-react";
 import { clinicConfig } from "@/config/clinic";
 import { CONSENT_VERSION, CONTACT_CONSENT, SUMMARY_CONSENT, fillConsent } from "@/config/consent";
 import { Eyebrow, Card, Pill, buttonClasses } from "@/components/ui";
+import { ContentGovernanceCard } from "@/components/ContentGovernance";
 import { trackOnce } from "@/lib/analytics";
 
 const DOES = [
@@ -40,6 +44,29 @@ const DATA = [
     icon: <Lock className="h-5 w-5" />,
     title: "Data minimisation",
     body: "We collect only what's needed to respond to an enquiry, and the patient chooses whether to share their summary at all.",
+  },
+];
+
+const REGULATORY = [
+  {
+    icon: <Stethoscope className="h-5 w-5" />,
+    title: "Not a medical device",
+    body: "Under the UK Medical Devices Regulations 2002, software is a medical device only when its intended purpose is medical — diagnosis, prevention, monitoring, prediction or treatment. This tool does none of those: it gives general information and helps someone prepare for a human consultation. We keep that intended purpose deliberately narrow and documented, which is what places it outside device regulation.",
+  },
+  {
+    icon: <Scale className="h-5 w-5" />,
+    title: "Clear controller / processor split",
+    body: "The clinic is the data controller; we operate as its processor under a written agreement, acting only on the clinic's instructions. Enquiries belong to the clinic — we never sell them, profile against them, or repurpose them for our own ends.",
+  },
+  {
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    title: "DPIA on file",
+    body: "Because the service handles special-category health data systematically, a Data Protection Impact Assessment (UK GDPR Art. 35) records the lawful basis, the risks and the mitigations — minimisation, explicit versioned consent, hashed-not-raw IPs and an append-only audit trail — available to a clinic on request.",
+  },
+  {
+    icon: <Megaphone className="h-5 w-5" />,
+    title: "Advertising claims that stand up",
+    body: "In line with ASA/CAP rules, the patient-facing content makes no health or efficacy claims at all. The only outcomes we advertise to clinics are about the enquiry funnel — measured live in the dashboard, never invented.",
   },
 ];
 
@@ -101,6 +128,34 @@ export function Compliance() {
             slipping through. Safety isn't a filter bolted on afterwards; it's the architecture.
           </p>
         </Card>
+      </section>
+
+      {/* Governance record — the auditable artifact behind "reviewed once". Hides
+          itself automatically if the active content pack carries no review block. */}
+      <section className="container py-10">
+        <div className="mx-auto max-w-3xl">
+          <ContentGovernanceCard />
+        </div>
+      </section>
+
+      {/* Regulatory position */}
+      <section className="container py-10">
+        <div className="mb-8 text-center">
+          <Eyebrow className="justify-center">Regulatory position</Eyebrow>
+          <h2 className="mt-2 font-serif text-3xl sm:text-4xl">Where this sits with the regulators</h2>
+          <p className="measure mx-auto mt-2 text-muted-foreground">
+            The lines we keep bright — and the paperwork that backs them up.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {REGULATORY.map((d) => (
+            <Card key={d.title} className="p-6">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-soft text-primary">{d.icon}</span>
+              <h3 className="mt-4 font-serif text-lg">{d.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{d.body}</p>
+            </Card>
+          ))}
+        </div>
       </section>
 
       {/* Data handling */}

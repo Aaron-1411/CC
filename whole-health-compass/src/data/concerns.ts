@@ -24,10 +24,15 @@ export const LENS_SECTIONS = {
   worldview: "How this tradition sees it",
   practitionerLooksAt: "What a practitioner looks at",
   whoYouSee: "Who you'd see",
+  whatToExpect: "What a first visit looks like",
+  evidenceAndRegulation: "Regulation & evidence",
 } as const;
 
 export const CLOSING_LINE =
   "To explore this properly, speak with a qualified, registered practitioner.";
+
+/** The active pack's medical-review provenance, if declared. */
+export const contentReview = activePack.review;
 
 export function getConcern(id: string): Concern {
   return concerns.find((c) => c.id === id) ?? concerns[0];

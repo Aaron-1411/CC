@@ -67,6 +67,29 @@ export const product = {
     { title: "Compliance pack", body: "Versioned consent and an audit trail you can show a regulator or insurer." },
   ],
 
+  // Why the model is durable. Written for a clinic buyer's "will this vendor last,
+  // will my price stay sane?" — but these are also the diligence signals an
+  // acquirer underwrites: software-grade margins, a compliance moat, a compounding
+  // first-party data asset, and expansion built into the product, not bolted on.
+  moat: [
+    {
+      title: "Software margins, not AI bills",
+      body: "The education is hand-written and static, so there's no per-question AI cost. Serving one more patient journey costs effectively nothing — your price doesn't have to chase a rising inference bill.",
+    },
+    {
+      title: "A compliance position, not a feature",
+      body: "Every content version is checked against the safety rules and signed off before release, with reviewer and date on record. That governance is the hard part to copy — and why you can put your name on it.",
+    },
+    {
+      title: "Your front door compounds",
+      body: "Cookieless funnel analytics and consented enquiries build a first-party picture of what your visitors actually want — an asset that grows for you, never sold on.",
+    },
+    {
+      title: "Grows with you, not against you",
+      body: "Start solo, expand to a multi-practitioner clinic or a multi-site group on one platform. New specialisms are content packs, not rebuilds — adding a service line is a switch, not a project.",
+    },
+  ],
+
   // Three tiers. Prices are illustrative anchors for the demo.
   pricing: [
     {
@@ -116,6 +139,14 @@ export const product = {
     {
       q: "What about data protection?",
       a: "Health details are special-category data under UK GDPR. We capture explicit, versioned consent, keep an audit trail, and analytics are cookieless and first-party. See the compliance page for the full picture.",
+    },
+    {
+      q: "Will the price keep climbing like AI tools do?",
+      a: "There's no reason it should. Because the content is static rather than generated per visit, there's no inference cost that grows with your traffic. Your fee is for the platform, the content upkeep and support — not a metered AI bill.",
+    },
+    {
+      q: "What happens as we grow or add a service line?",
+      a: "You move up a tier or add a branded site on the same platform — your existing setup carries over. A new specialism is a content pack rather than a rebuild, so expanding is a switch, not a project.",
     },
     {
       q: "Who owns the patient relationship?",

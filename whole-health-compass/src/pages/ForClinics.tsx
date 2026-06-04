@@ -12,12 +12,17 @@ import {
   BarChart3,
   ScrollText,
   Calculator,
+  PiggyBank,
+  BadgeCheck,
+  Database,
+  Layers,
 } from "lucide-react";
 import { product } from "@/config/product";
 import { Eyebrow, Pill, Card, Accordion, buttonClasses } from "@/components/ui";
 import { track, trackOnce } from "@/lib/analytics";
 
 const FEATURE_ICONS = [Palette, ShieldCheck, FileText, Inbox, BarChart3, ScrollText];
+const MOAT_ICONS = [PiggyBank, BadgeCheck, Database, Layers];
 
 const gbp0 = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
 const num0 = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });
@@ -111,6 +116,32 @@ export function ForClinics() {
 
       {/* ROI calculator */}
       <RoiCalculator />
+
+      {/* Why it lasts — durability / moat. Reads as vendor-confidence for a clinic,
+          and doubles as the diligence view: margins, moat, data asset, expansion. */}
+      <section className="container py-12">
+        <div className="mb-8 text-center">
+          <Eyebrow className="justify-center">Built to last</Eyebrow>
+          <h2 className="mt-2 font-serif text-3xl sm:text-4xl">A model that holds up under scrutiny</h2>
+          <p className="measure mx-auto mt-2 text-muted-foreground">
+            The reasons this is safe to build your front door on — and to bet on for the long run.
+          </p>
+        </div>
+        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2">
+          {product.moat.map((m, i) => {
+            const Icon = MOAT_ICONS[i % MOAT_ICONS.length];
+            return (
+              <Card key={m.title} className="p-6">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-4 font-serif text-lg">{m.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{m.body}</p>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Pricing */}
       <section id="pricing" className="container scroll-mt-20 py-12">

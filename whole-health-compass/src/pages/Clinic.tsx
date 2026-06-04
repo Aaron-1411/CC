@@ -1,17 +1,31 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { Lock, LogOut, RefreshCw, Inbox, BarChart3, Mail, Phone, ShieldCheck, AlertTriangle } from "lucide-react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import {
+  Lock, LogOut, RefreshCw, Inbox, BarChart3, Mail, Phone, ShieldCheck, AlertTriangle,
+  TrendingUp, Users, Target, Clock, FileText,
+} from "lucide-react";
 import { Card, Eyebrow, Button, Input, Label, Pill, Callout, buttonClasses } from "@/components/ui";
 import { clinicConfig } from "@/config/clinic";
 
 const TOKEN_KEY = "whc_admin_token";
 
 type FunnelStep = { key: string; label: string; count: number };
+type Impact = {
+  uniqueVisitors: number;
+  enquiries: number;
+  preparedEnquiries: number;
+  enquiryRatePct: number;
+  preparednessPct: number;
+  avgMinutesToEnquiry: number | null;
+  convertingSessions: number;
+  trend: { last30: number; prev30: number };
+};
 type Stats = {
   ok: boolean;
   storage: boolean;
   totals: { events: number; leads: number };
   funnel: FunnelStep[];
   byConcern: { concernId: string; count: number }[];
+  impact: Impact;
 };
 
 type Lead = {
@@ -57,6 +71,39 @@ function fmtWhen(w: number | string): string {
   const d = new Date(w);
   if (isNaN(d.getTime())) return "";
   return d.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function fmtNum(n: number): string {
+  return n.toLocaleString("en-GB");
+}
+
+function fmtDuration(min: number): string {
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m ? `${h}h ${m}m` : `${h}h`;
+}
+
+/** A single outcome metric tile for the impact report. */
+function StatTile({ icon, value, label, sub, tone }: {
+  icon: ReactNode;
+  value: string;
+  label: string;
+  sub?: string;
+  tone?: "primary" | "foreground";
+}) {
+  return (
+    <Card className="p-5">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <span className="text-primary">{icon}</span>
+        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+      </div>
+      <div className={"mt-2 font-serif text-3xl tabular-nums " + (tone === "primary" ? "text-primary" : "text-foreground")}>
+        {value}
+      </div>
+      {sub && <div className="mt-1 text-xs text-muted-foreground">{sub}</div>}
+    </Card>
+  );
 }
 
 export function Clinic() {
@@ -278,6 +325,71 @@ export function Clinic() {
             )}
           </Card>
         </div>
+
+        {/* Impact report — outcomes, not just activity. This is the ROI story a
+            buyer underwrites: conversion, lead quality, velocity and momentum. */}
+        {stats && stats.storage && (
+          <div className="mt-8">
+            <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <h2 className="font-serif text-2xl">Impact</h2>
+              </div>
+              <span className="text-sm text-muted-foreground">— what the front door delivers, not just activity</span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <StatTile
+                icon={<Users className="h-4 w-4" />}
+                value={fmtNum(stats.impact.uniqueVisitors)}
+                label="Unique visitors"
+                sub={`${fmtNum(stats.impact.enquiries)} became enquiries`}
+              />
+              <StatTile
+                icon={<Target className="h-4 w-4" />}
+                value={`${stats.impact.enquiryRatePct}%`}
+                label="Enquiry rate"
+                tone="primary"
+                sub="Visitors who reached out"
+              />
+              <StatTile
+                icon={<FileText className="h-4 w-4" />}
+                value={`${stats.impact.preparednessPct}%`}
+                label="Arrive prepared"
+                sub={`${fmtNum(stats.impact.preparedEnquiries)} brought their summary`}
+              />
+              <StatTile
+                icon={<Clock className="h-4 w-4" />}
+                value={stats.impact.avgMinutesToEnquiry != null ? fmtDuration(stats.impact.avgMinutesToEnquiry) : "—"}
+                label="Time to enquiry"
+                sub="First visit → sending"
+              />
+            </div>
+            {(() => {
+              const { last30, prev30 } = stats.impact.trend;
+              const delta = prev30 > 0 ? Math.round(((last30 - prev30) / prev30) * 100) : null;
+              return (
+                <Card className="mt-4 p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">Enquiries · last 30 days</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-serif text-2xl tabular-nums text-foreground">{fmtNum(last30)}</span>
+                      {delta != null ? (
+                        <Pill tint={delta >= 0 ? "success" : "muted"}>
+                          {delta >= 0 ? "+" : ""}{delta}% vs prior 30
+                        </Pill>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">vs {fmtNum(prev30)} prior 30</span>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              );
+            })()}
+          </div>
+        )}
 
         {/* Leads inbox */}
         <div className="mt-8">

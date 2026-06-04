@@ -1,5 +1,6 @@
 import type { ContentPack } from "../types";
 import { integrativePack } from "./integrative";
+import { musculoskeletalPack } from "./musculoskeletal";
 
 /* ────────────────────────────────────────────────────────────────────────────
    CONTENT PACK REGISTRY  —  the horizontal seam.
@@ -11,11 +12,11 @@ import { integrativePack } from "./integrative";
 
 export const packs: Record<string, ContentPack> = {
   [integrativePack.id]: integrativePack,
-  // e.g. [musculoskeletalPack.id]: musculoskeletalPack,
+  [musculoskeletalPack.id]: musculoskeletalPack,
 };
 
 export function getPack(id: string): ContentPack {
   return packs[id] ?? integrativePack;
 }
 
-export { integrativePack };
+export { integrativePack, musculoskeletalPack };

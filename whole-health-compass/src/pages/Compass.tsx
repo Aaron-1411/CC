@@ -4,7 +4,8 @@ import { RotateCcw, Sparkles } from "lucide-react";
 import { CompassFlow } from "@/flow/CompassFlow";
 import { PractitionerSummary } from "@/components/PractitionerSummary";
 import { ComparativeLens } from "@/components/ComparativeLens";
-import { SafetyPanel, InteractionsReminder } from "@/components/SafetyPanel";
+import { SafetyPanel, InteractionsReminder, RedFlags } from "@/components/SafetyPanel";
+import { ContentGovernanceLine } from "@/components/ContentGovernance";
 import { PathwayNavigator } from "@/components/PathwayNavigator";
 import { LeadForm } from "@/components/LeadForm";
 import { Eyebrow, Button } from "@/components/ui";
@@ -84,6 +85,8 @@ export function Compass() {
 
           {hasTaking(result) && <InteractionsReminder />}
 
+          <RedFlags items={concern.redFlags} />
+
           <div>
             <h2 className="mb-4 font-serif text-2xl">How different traditions understand this</h2>
             <ComparativeLens concern={concern} patientWords={result.patientWords} />
@@ -96,6 +99,8 @@ export function Compass() {
           <div id="contact" className="scroll-mt-20">
             <LeadForm summaryData={result} />
           </div>
+
+          <ContentGovernanceLine />
 
           <p className="text-center text-sm text-muted-foreground">
             Want to look at something else?{" "}

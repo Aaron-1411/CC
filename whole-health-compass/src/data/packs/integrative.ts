@@ -18,9 +18,36 @@ import type { ContentPack, Concern, TraditionMeta } from "../types";
    ──────────────────────────────────────────────────────────────────────────── */
 
 const traditions: TraditionMeta[] = [
-  { key: "western", label: "Conventional / Western medicine", short: "Western", tint: "west" },
-  { key: "tcm", label: "Traditional Chinese Medicine", short: "TCM", tint: "tcm" },
-  { key: "ayurveda", label: "Ayurveda", short: "Ayurveda", tint: "ayur" },
+  {
+    key: "western",
+    label: "Conventional / Western medicine",
+    short: "Western",
+    tint: "208 40% 44%",
+    whatToExpect:
+      "An NHS GP appointment is usually around 10 minutes and free at the point of use; private GP or specialist visits are longer and paid. Expect questions about your history and symptoms, an examination where relevant, and sometimes tests or a referral.",
+    evidenceAndRegulation:
+      "Doctors in the UK are regulated by the General Medical Council, and care is shaped by national guidance (such as NICE) and peer-reviewed research. As with any approach, ask your clinician what the current evidence suggests for your situation.",
+  },
+  {
+    key: "tcm",
+    label: "Traditional Chinese Medicine",
+    short: "TCM",
+    tint: "6 52% 50%",
+    whatToExpect:
+      "A first TCM consultation is often 45–90 minutes and privately paid. Expect detailed questions about your health, sleep, digestion and lifestyle, plus observation such as tongue and pulse, to build an individual picture.",
+    evidenceAndRegulation:
+      "Acupuncture and TCM are voluntarily self-regulated in the UK — for acupuncture, look for membership of the British Acupuncture Council. The evidence base varies by use; a registered practitioner can discuss it honestly and tell you when to see your GP.",
+  },
+  {
+    key: "ayurveda",
+    label: "Ayurveda",
+    short: "Ayurveda",
+    tint: "38 58% 44%",
+    whatToExpect:
+      "A first Ayurvedic consultation is typically 60–90 minutes and privately paid. Expect a wide-ranging conversation about your constitution, routine, digestion and sleep, so the practitioner can understand your whole picture.",
+    evidenceAndRegulation:
+      "Ayurveda is not statutorily regulated in the UK, so credentials vary — look for a practitioner registered with a recognised professional association. Discuss the evidence for anything suggested, and keep your GP informed, especially alongside conventional care.",
+  },
 ];
 
 const concerns: Concern[] = [
@@ -30,6 +57,17 @@ const concerns: Concern[] = [
     patientPhrase: "persistent low energy and poor sleep",
     category: "Energy & sleep",
     blurb: "Tired through the day, but not resting well at night.",
+    commonGround: [
+      "Regular sleep and wake times, and protecting wind-down time, matter across every tradition.",
+      "Daylight, movement and what you eat and drink all influence energy and rest.",
+      "Caffeine and alcohol close to bedtime tend to work against good sleep.",
+      "Persistent fatigue is worth understanding properly rather than pushing through.",
+    ],
+    redFlags: [
+      "Exhaustion with breathlessness, chest pain or fainting — seek prompt medical advice.",
+      "Unexplained weight loss, fever or night sweats alongside tiredness — see your GP.",
+      "Low mood or hopelessness that won't lift — talk to your GP; in crisis, call NHS 111 or Samaritans on 116 123.",
+    ],
     lenses: {
       western: {
         oneLiner: "Looks for measurable causes across the body's systems.",
@@ -66,6 +104,15 @@ const concerns: Concern[] = [
     patientPhrase: "ongoing stress, anxiety and feeling overwhelmed",
     category: "Mind & stress",
     blurb: "A racing mind, tension, or feeling constantly “on”.",
+    commonGround: [
+      "Steady routines, sleep, movement and breathing are recognised across traditions as steadying.",
+      "Naming what's driving the stress, and reducing avoidable load, helps more than ignoring it.",
+      "Connection — talking to someone you trust — matters.",
+    ],
+    redFlags: [
+      "Panic that won't settle, or anxiety stopping you eating, sleeping or functioning — see your GP.",
+      "Any thoughts of harming yourself — contact your GP urgently, call NHS 111 or Samaritans on 116 123; in an emergency call 999.",
+    ],
     lenses: {
       western: {
         oneLiner: "Considers mind and body together, with evidence-based support.",
@@ -100,6 +147,16 @@ const concerns: Concern[] = [
     patientPhrase: "ongoing digestive discomfort such as bloating and irregularity",
     category: "Digestion",
     blurb: "Bloating, irregularity, or a gut that feels “off”.",
+    commonGround: [
+      "How, when and what you eat — and eating calmly — matters in every tradition.",
+      "Stress and sleep affect the gut, and the gut affects how you feel.",
+      "Noticing patterns and triggers, and writing them down before a visit, helps any practitioner.",
+    ],
+    redFlags: [
+      "Blood in your stool, black stools, or persistent vomiting — seek prompt medical advice.",
+      "Unexplained weight loss, difficulty swallowing, or a change in bowel habit lasting weeks — see your GP.",
+      "Severe or worsening abdominal pain — contact NHS 111 or, if severe, call 999.",
+    ],
     lenses: {
       western: {
         oneLiner: "Investigates the gut and its many influences.",
@@ -133,6 +190,16 @@ const concerns: Concern[] = [
     patientPhrase: "persistent aches and pains in the body",
     category: "Musculoskeletal",
     blurb: "Nagging muscle or joint pain that won't settle.",
+    commonGround: [
+      "Gentle movement, posture and gradually building activity matter across traditions.",
+      "Sleep, stress and past injury all influence persistent pain.",
+      "Pacing — neither overdoing nor avoiding movement — is widely encouraged.",
+    ],
+    redFlags: [
+      "Pain after a significant injury, or a hot, swollen, red joint — seek prompt medical advice.",
+      "Numbness, weakness, or loss of bladder or bowel control with back pain — this is an emergency: call 999.",
+      "Pain with unexplained weight loss, fever or night sweats — see your GP.",
+    ],
     lenses: {
       western: {
         oneLiner: "Examines structure, movement and inflammation.",
@@ -168,6 +235,14 @@ const concerns: Concern[] = [
     patientPhrase: "hormonal or menstrual changes",
     category: "Hormonal & cyclical",
     blurb: "Cycle changes, or shifts that feel hormonal.",
+    commonGround: [
+      "Sleep, stress, movement and nutrition all influence hormonal rhythms across traditions.",
+      "Tracking your cycle and symptoms gives any practitioner a clearer picture.",
+    ],
+    redFlags: [
+      "Bleeding between periods, after sex, or after menopause — see your GP.",
+      "Very heavy bleeding, severe pelvic pain, or pain with a possibility of pregnancy — seek prompt advice.",
+    ],
     lenses: {
       western: {
         oneLiner: "Looks at the endocrine system and the cycle.",
@@ -200,6 +275,15 @@ const concerns: Concern[] = [
     patientPhrase: "recurring headaches or migraines",
     category: "Head & nervous system",
     blurb: "Frequent headaches or migraine episodes.",
+    commonGround: [
+      "Hydration, sleep, regular meals, posture and screen breaks matter across traditions.",
+      "Noticing triggers — and keeping a simple headache diary — helps any practitioner.",
+    ],
+    redFlags: [
+      "A sudden, severe “worst-ever” headache — call 999.",
+      "Headache with fever and a stiff neck, a rash, confusion, weakness, or after a head injury — seek emergency help.",
+      "A new or changing headache pattern, especially over 50 — see your GP.",
+    ],
     lenses: {
       western: {
         oneLiner: "Identifies the headache type and its triggers.",
@@ -233,6 +317,14 @@ const concerns: Concern[] = [
     patientPhrase: "low mood and low motivation",
     category: "Mind & stress",
     blurb: "Flat, low, or struggling to find motivation.",
+    commonGround: [
+      "Routine, daylight, movement, sleep and connection are recognised as supportive across traditions.",
+      "Talking to someone, and not carrying it alone, helps.",
+    ],
+    redFlags: [
+      "Low mood lasting more than two weeks, or affecting daily life — see your GP.",
+      "Any thoughts of harming yourself — contact your GP urgently, call NHS 111 or Samaritans on 116 123; in an emergency call 999.",
+    ],
     lenses: {
       western: {
         oneLiner: "Treats mood as real, with evidence-based support.",
@@ -265,6 +357,14 @@ const concerns: Concern[] = [
     patientPhrase: "getting ill often and feeling low in resilience",
     category: "Immunity & resilience",
     blurb: "Catching everything going, slow to bounce back.",
+    commonGround: [
+      "Sleep, nutrition, stress and activity all support normal resilience across traditions.",
+      "Recovery time, and not running yourself down, matter.",
+    ],
+    redFlags: [
+      "Frequent or severe infections, or any that are slow to clear — see your GP.",
+      "High fever, breathlessness, or feeling very unwell — contact NHS 111 or, if severe, call 999.",
+    ],
     lenses: {
       western: {
         oneLiner: "Looks at overall health and what supports immunity.",
@@ -298,6 +398,14 @@ const concerns: Concern[] = [
     patientPhrase: "something else I'd like to understand",
     category: "General",
     blurb: "Describe it in your own words — we'll still show you each perspective.",
+    commonGround: [
+      "Sleep, movement, nutrition, stress and routine influence almost everything, in every tradition.",
+      "Writing down what you've noticed — and what you want from the visit — helps any practitioner.",
+    ],
+    redFlags: [
+      "Anything severe, rapidly worsening, or frightening — contact NHS 111, or in an emergency call 999.",
+      "New, unexplained or persistent symptoms are always worth discussing with your GP.",
+    ],
     lenses: {
       western: {
         oneLiner: "Starts from physiology and evidence.",
@@ -333,4 +441,12 @@ export const integrativePack: ContentPack = {
     "The flagship pack: nine everyday concerns, each seen through Western, Chinese and Ayurvedic lenses.",
   traditions,
   concerns,
+  review: {
+    reviewedBy: "Clinical sign-off recorded at each release",
+    role: "UK-registered medical reviewer",
+    date: "2026-06-01",
+    version: "1.0",
+    statement:
+      "Before release, every entry is checked against the safety rules — education only, no diagnosis, no named remedy or dosage, no efficacy or ranking claims — with each concern routing to a qualified, registered practitioner. The reviewing clinician's name and registration are recorded with each signed-off version.",
+  },
 };
