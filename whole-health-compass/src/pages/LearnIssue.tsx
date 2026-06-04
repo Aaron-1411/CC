@@ -8,6 +8,7 @@ import { Eyebrow, Card, Pill, buttonClasses } from "@/components/ui";
 import { ComparativeLens } from "@/components/ComparativeLens";
 import { RedFlags } from "@/components/SafetyPanel";
 import { ContentGovernanceLine } from "@/components/ContentGovernance";
+import { usePageMeta } from "@/lib/usePageMeta";
 import { track } from "@/lib/analytics";
 
 /* A single knowledge-base topic. Reuses the concern's comparative lens, common
@@ -17,6 +18,11 @@ import { track } from "@/lib/analytics";
 export function LearnIssue() {
   const { id } = useParams<{ id: string }>();
   const issue = id ? getIssue(id) : undefined;
+
+  usePageMeta(
+    issue ? `${issue.label} — ${clinicConfig.name}` : `Knowledge base — ${clinicConfig.name}`,
+    issue?.summary,
+  );
 
   useEffect(() => {
     if (issue) track("knowledge_issue_view", { concernId: issue.concernId, meta: { issueId: issue.id } });

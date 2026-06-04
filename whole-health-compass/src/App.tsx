@@ -22,10 +22,18 @@ function ScrollToTop() {
   return null;
 }
 
+// White-label default title, applied at module load (before React effects run)
+// so it's correct on a direct or crawler load. Individual pages — e.g. the
+// knowledge base — override it via usePageMeta and restore this on unmount.
+// Setting it in a mount effect here would clobber a child page's title, because
+// React runs child effects before the parent's.
+if (typeof document !== "undefined") {
+  document.title = `${clinicConfig.name} — ${clinicConfig.tagline}`;
+}
+
 export default function App() {
   useEffect(() => {
     applyClinicTheme({ primary: clinicConfig.primaryColor, accent: clinicConfig.accentColor });
-    document.title = `${clinicConfig.name} — ${clinicConfig.tagline}`;
   }, []);
 
   return (

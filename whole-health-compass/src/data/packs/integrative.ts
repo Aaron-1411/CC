@@ -500,6 +500,28 @@ const knowledgeBase: KnowledgeBase = {
       ],
     },
     {
+      id: "periods",
+      label: "Period problems",
+      summary: "Painful, irregular, heavy or unpredictable periods — and changes to your usual cycle.",
+      commonFor: ["women", "younger"],
+      concernId: "hormonal",
+      general: [
+        "Period-related concerns — pain, heavy or irregular bleeding, or a change from what is normal for you — are among the most commonly raised health topics.",
+        "Cycles vary a lot between people, so what matters most is a change from your own usual pattern, which is why tracking it helps any practitioner.",
+        "Period pain or changes that disrupt your life, or bleeding that is unusually heavy, are worth a conversation rather than just putting up with.",
+      ],
+      byAudience: [
+        {
+          audience: "women",
+          note: "By definition this is raised by women and others who menstruate; what counts as 'normal' is individual, so personalised input from a practitioner matters.",
+        },
+        {
+          audience: "younger",
+          note: "In the teens and early 20s, cycles are often still settling and can be irregular. Knowing what is typical for you — and what is worth checking — is commonly discussed at this stage.",
+        },
+      ],
+    },
+    {
       id: "low-energy",
       label: "Low energy & tiredness",
       summary: "Feeling persistently drained or running low — a very common reason people seek support.",
@@ -512,12 +534,38 @@ const knowledgeBase: KnowledgeBase = {
       ],
       byAudience: [
         {
+          audience: "men",
+          note: "Men sometimes attribute ongoing tiredness to a busy life and leave it longer before asking. Persistent, unexplained fatigue is a common and valid reason to check in with a professional.",
+        },
+        {
           audience: "midlife",
           note: "In midlife, low energy is often discussed alongside busy life stages, sleep changes and, for some, hormonal transitions — which is why a rounded conversation helps.",
         },
         {
           audience: "older",
           note: "Energy naturally shifts with age, and in later life tiredness is commonly considered alongside overall health, activity and sleep. A practitioner can help tell apart the expected from the worth-checking.",
+        },
+      ],
+    },
+    {
+      id: "sleep",
+      label: "Trouble sleeping",
+      summary: "Difficulty falling asleep, staying asleep, or waking unrefreshed.",
+      commonFor: ["everyone", "younger", "older"],
+      concernId: "low-energy-sleep",
+      general: [
+        "Trouble sleeping — taking a long time to drop off, waking in the night, or not feeling refreshed — is very common and often comes and goes with what is happening in life.",
+        "Sleep is closely tied to routine, stress, light, activity and what you eat and drink, so practitioners tend to look at the whole day, not just the night.",
+        "The occasional bad night is normal; sleep problems that persist for weeks, or affect your daytime functioning, are worth raising with a professional.",
+      ],
+      byAudience: [
+        {
+          audience: "younger",
+          note: "Irregular schedules, late screens and study or shift patterns commonly disrupt sleep for people in their teens and 20s.",
+        },
+        {
+          audience: "older",
+          note: "Sleep naturally changes with age — often lighter and a little earlier. In later life it is commonly discussed alongside daytime energy and overall health.",
         },
       ],
     },
@@ -558,6 +606,28 @@ const knowledgeBase: KnowledgeBase = {
         {
           audience: "older",
           note: "Joint changes become more common with age. In later life they are frequently discussed alongside mobility and staying independent.",
+        },
+      ],
+    },
+    {
+      id: "back-pain",
+      label: "Back pain",
+      summary: "Lower or upper back pain — from a short-lived strain to a niggle that keeps coming back.",
+      commonFor: ["everyone", "men", "midlife"],
+      concernId: "aches-pains",
+      general: [
+        "Back pain is extremely common — most people experience it at some point — and the majority of episodes settle with time and gentle movement.",
+        "It is influenced by things like posture, activity, lifting, stress and past strain, so practitioners look at how you move and what eases or worsens it.",
+        "Some back-pain symptoms need prompt attention — see the 'when to seek help sooner' notes below.",
+      ],
+      byAudience: [
+        {
+          audience: "men",
+          note: "Back pain is very commonly raised by men, often linked to physically demanding work, lifting or sport. It is worth getting persistent pain looked at rather than working through it.",
+        },
+        {
+          audience: "midlife",
+          note: "From midlife, back niggles are more frequently raised, often tied to activity, desk work and earlier strain. Staying gently active is commonly encouraged.",
         },
       ],
     },

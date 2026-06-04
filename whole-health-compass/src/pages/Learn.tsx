@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Users, ArrowRight, ShieldCheck, Compass as CompassIcon } from "lucide-react";
-import type { AudienceKey } from "@/data/types";
+import type { AudienceKey, IssueGuide } from "@/data/types";
 import { knowledgeBase } from "@/data/concerns";
 import { clinicConfig } from "@/config/clinic";
 import { Eyebrow, Card, Pill, buttonClasses } from "@/components/ui";
 import { ContentGovernanceLine } from "@/components/ContentGovernance";
+import { usePageMeta } from "@/lib/usePageMeta";
 import { track, trackOnce } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 
@@ -21,34 +22,48 @@ import { cn } from "@/lib/cn";
 
 type StageKey = AudienceKey | "any";
 
+const WHO_OPTIONS: { key: AudienceKey; label: string }[] = [
+  { key: "everyone", label: "Everyone" },
+  ...(knowledgeBase?.audiences.filter((a) => a.facet === "who") ?? []),
+];
+const STAGE_OPTIONS: { key: StageKey; label: string }[] = [
+  { key: "any", label: "Any age" },
+  ...(knowledgeBase?.audiences.filter((a) => a.facet === "stage") ?? []),
+];
+const ALL_ISSUES = knowledgeBase?.issues ?? [];
+
+function audienceLabel(k: AudienceKey) {
+  return knowledgeBase?.audiences.find((a) => a.key === k)?.label ?? k;
+}
+
 export function Learn() {
   const [who, setWho] = useState<AudienceKey>("everyone");
   const [stage, setStage] = useState<StageKey>("any");
+
+  usePageMeta(
+    `Health knowledge base — ${clinicConfig.name}`,
+    "Plain-English education on common health topics like bloating, menopause, sleep and back pain — with guidance for different life stages. Always routes you to a qualified practitioner.",
+  );
 
   useEffect(() => {
     trackOnce("knowledge_view");
   }, []);
 
-  const whoOptions = useMemo<{ key: AudienceKey; label: string }[]>(
-    () => [{ key: "everyone", label: "Everyone" }, ...(knowledgeBase?.audiences.filter((a) => a.facet === "who") ?? [])],
-    [],
-  );
-  const stageOptions = useMemo<{ key: StageKey; label: string }[]>(
-    () => [{ key: "any", label: "Any age" }, ...(knowledgeBase?.audiences.filter((a) => a.facet === "stage") ?? [])],
-    [],
-  );
-
-  const audienceLabel = (k: AudienceKey) => knowledgeBase?.audiences.find((a) => a.key === k)?.label ?? k;
-
-  // The single audience whose note we surface on a card, if a filter is active.
+  // The single audience whose relevance + note we surface, if a filter is active.
   const activeAudience: AudienceKey | null = who !== "everyone" ? who : stage !== "any" ? stage : null;
 
-  const issues = knowledgeBase?.issues ?? [];
-  const filtered = issues.filter((issue) => {
+  const filtered = ALL_ISSUES.filter((issue) => {
     const passesWho = who === "everyone" || issue.commonFor.includes(who) || issue.commonFor.includes("everyone");
     const passesStage = stage === "any" || issue.commonFor.includes(stage) || issue.commonFor.includes("everyone");
     return passesWho && passesStage;
   });
+
+  // When a demographic is active, lift the topics it's *especially* tied to above
+  // the universally-common ones — so the filter actually reorganises around you,
+  // rather than just hiding the handful that don't apply.
+  const especially = activeAudience ? filtered.filter((i) => i.commonFor.includes(activeAudience)) : [];
+  const alsoCommon = activeAudience ? filtered.filter((i) => !i.commonFor.includes(activeAudience)) : filtered;
+  const grouped = activeAudience !== null && especially.length > 0;
 
   function chooseWho(next: AudienceKey) {
     setWho(next);
@@ -84,13 +99,14 @@ export function Learn() {
             <Users className="h-4 w-4 text-primary" /> Tailor it to you
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Optional — pick what fits and we'll highlight what's most often raised. Everything here is general education.
+            Optional — pick what fits and we'll bring the most relevant topics to the top. Everything here is general
+            education.
           </p>
 
-          <div className="mt-4">
+          <div className="mt-4" role="group" aria-label="Filter by who you are">
             <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">I'm looking for</div>
             <div className="flex flex-wrap gap-2">
-              {whoOptions.map((o) => (
+              {WHO_OPTIONS.map((o) => (
                 <FilterChip key={o.key} selected={who === o.key} onClick={() => chooseWho(o.key)}>
                   {o.label}
                 </FilterChip>
@@ -98,10 +114,10 @@ export function Learn() {
             </div>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4" role="group" aria-label="Filter by life stage">
             <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Life stage</div>
             <div className="flex flex-wrap gap-2">
-              {stageOptions.map((o) => (
+              {STAGE_OPTIONS.map((o) => (
                 <FilterChip key={o.key} selected={stage === o.key} onClick={() => chooseStage(o.key)}>
                   {o.label}
                 </FilterChip>
@@ -126,49 +142,30 @@ export function Learn() {
       {/* Issue grid */}
       <section className="container pb-10">
         <p className="mb-4 text-sm text-muted-foreground">
-          Showing <span className="font-medium text-foreground">{filtered.length}</span> of {issues.length} topics
+          Showing <span className="font-medium text-foreground">{filtered.length}</span> of {ALL_ISSUES.length} topics
         </p>
 
         {filtered.length === 0 ? (
           <Card className="p-8 text-center text-muted-foreground">
             No topics match that combination yet. Try clearing the filters.
           </Card>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((issue) => {
-              const tags = issue.commonFor.filter((a) => a !== "everyone");
-              const note = activeAudience ? issue.byAudience?.find((n) => n.audience === activeAudience) : undefined;
-              return (
-                <Link
-                  key={issue.id}
-                  to={`/learn/${issue.id}`}
-                  className="group flex flex-col rounded-xl border border-border bg-card p-5 text-left shadow-soft transition-all hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <h2 className="font-serif text-xl leading-tight group-hover:text-primary">{issue.label}</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{issue.summary}</p>
-
-                  {tags.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {tags.map((t) => (
-                        <Pill key={t} tint="muted">{audienceLabel(t)}</Pill>
-                      ))}
-                    </div>
-                  )}
-
-                  {note && (
-                    <p className="mt-3 rounded-lg bg-primary-soft/60 px-3 py-2 text-xs leading-relaxed text-foreground/85">
-                      <span className="font-semibold">For {audienceLabel(note.audience).toLowerCase()}: </span>
-                      {note.note}
-                    </p>
-                  )}
-
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-                    Read the guide <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
-              );
-            })}
+        ) : grouped ? (
+          <div className="space-y-8">
+            <div>
+              <h2 className="mb-3 font-serif text-xl">
+                Especially relevant for {audienceLabel(activeAudience!).toLowerCase()}
+              </h2>
+              <IssueGrid issues={especially} activeAudience={activeAudience} />
+            </div>
+            {alsoCommon.length > 0 && (
+              <div>
+                <h2 className="mb-3 font-serif text-xl text-muted-foreground">Also commonly raised by everyone</h2>
+                <IssueGrid issues={alsoCommon} activeAudience={activeAudience} />
+              </div>
+            )}
           </div>
+        ) : (
+          <IssueGrid issues={filtered} activeAudience={activeAudience} />
         )}
       </section>
 
@@ -195,6 +192,49 @@ export function Learn() {
         </Card>
       </section>
     </div>
+  );
+}
+
+function IssueGrid({ issues, activeAudience }: { issues: IssueGuide[]; activeAudience: AudienceKey | null }) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {issues.map((issue) => (
+        <IssueCard key={issue.id} issue={issue} activeAudience={activeAudience} />
+      ))}
+    </div>
+  );
+}
+
+function IssueCard({ issue, activeAudience }: { issue: IssueGuide; activeAudience: AudienceKey | null }) {
+  const tags = issue.commonFor.filter((a) => a !== "everyone");
+  const note = activeAudience ? issue.byAudience?.find((n) => n.audience === activeAudience) : undefined;
+  return (
+    <Link
+      to={`/learn/${issue.id}`}
+      className="group flex flex-col rounded-xl border border-border bg-card p-5 text-left shadow-soft transition-all hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <h3 className="font-serif text-xl leading-tight group-hover:text-primary">{issue.label}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{issue.summary}</p>
+
+      {tags.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {tags.map((t) => (
+            <Pill key={t} tint="muted">{audienceLabel(t)}</Pill>
+          ))}
+        </div>
+      )}
+
+      {note && (
+        <p className="mt-3 rounded-lg bg-primary-soft/60 px-3 py-2 text-xs leading-relaxed text-foreground/85">
+          <span className="font-semibold">For {audienceLabel(note.audience).toLowerCase()}: </span>
+          {note.note}
+        </p>
+      )}
+
+      <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+        Read the guide <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </Link>
   );
 }
 
