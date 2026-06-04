@@ -42,3 +42,5 @@ next-env.d.ts
 
 # generated outputs
 /outputs/
+package-lock.json
+.vercel/
