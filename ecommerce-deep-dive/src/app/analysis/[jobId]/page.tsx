@@ -1,9 +1,12 @@
 'use client';
+export const runtime = 'edge';
 import { useEffect, useState, useRef, use } from 'react';
 import { AnalysisJob, PillarResult } from '@/types/analysis';
 import { PillarCard } from '@/components/PillarCard';
 import { PillarSidebar } from '@/components/PillarSidebar';
 import { OpportunityMatrix } from '@/components/OpportunityMatrix';
+
+export const runtime = 'edge';
 
 interface Props { params: Promise<{ jobId: string }> }
 
