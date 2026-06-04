@@ -1,4 +1,4 @@
-import type { ContentPack, Concern, TraditionMeta } from "../types";
+import type { ContentPack, Concern, KnowledgeBase, TraditionMeta } from "../types";
 
 /* ────────────────────────────────────────────────────────────────────────────
    CONTENT PACK: "integrative"  —  the flagship, whole-person pack.
@@ -434,6 +434,198 @@ const concerns: Concern[] = [
   },
 ];
 
+/* ────────────────────────────────────────────────────────────────────────────
+   KNOWLEDGE BASE  —  browseable, demographic-aware education for high-frequency
+   topics (bloating, menopause, low energy…). Each issue maps to a concern above
+   so the comparative lens, common ground and red-flag safety content are reused.
+
+   Compliance, applied to every line below:
+     • General education and neutral life-stage context only.
+     • Demographic notes are framed as "more commonly raised by…" / what tends to
+       be discussed — NEVER "you have X because you're Y", never a remedy, dose,
+       or any treats/cures/works claim.
+     • "everyone" in commonFor marks a genuinely universal issue (passes every
+       filter); gender- or stage-specific issues (e.g. menopause) omit it so the
+       filters can correctly narrow them.
+   ──────────────────────────────────────────────────────────────────────────── */
+const knowledgeBase: KnowledgeBase = {
+  audiences: [
+    { key: "women", label: "Women", facet: "who" },
+    { key: "men", label: "Men", facet: "who" },
+    { key: "younger", label: "Teens & 20s", facet: "stage" },
+    { key: "midlife", label: "Midlife (40s–50s)", facet: "stage" },
+    { key: "older", label: "60+", facet: "stage" },
+  ],
+  issues: [
+    {
+      id: "bloating",
+      label: "Bloating",
+      summary: "That full, swollen or gassy feeling in the tummy — one of the most common everyday complaints.",
+      commonFor: ["everyone", "women"],
+      concernId: "digestion",
+      general: [
+        "Bloating is the sensation of fullness, tightness or visible swelling in the abdomen. It is extremely common and usually comes and goes.",
+        "It is often connected with digestion, eating patterns and the natural rhythm of the gut — but the picture is individual, which is why a practitioner asks about the whole context.",
+        "Because the gut is sensitive to stress, sleep and routine, bloating is frequently discussed alongside those things rather than on its own.",
+        "Occasional bloating is usually unremarkable; a change in your usual pattern is the kind of thing worth raising with a professional.",
+      ],
+      byAudience: [
+        {
+          audience: "women",
+          note: "Bloating that rises and falls across the menstrual cycle is very commonly described. It is a normal pattern to mention, and a practitioner will ask how it tracks against your cycle.",
+        },
+      ],
+    },
+    {
+      id: "menopause",
+      label: "Menopause & perimenopause",
+      summary: "The natural transition as periods change and eventually stop — and the years of shifting symptoms that can lead up to it.",
+      commonFor: ["women", "midlife"],
+      concernId: "hormonal",
+      general: [
+        "Menopause is a natural life stage, marked when periods have stopped for twelve months. Perimenopause is the transition leading up to it, which can last several years.",
+        "It is associated with a wide range of experiences — changes to sleep, temperature, mood, energy and the menstrual cycle — and these vary enormously from person to person.",
+        "Because it touches many systems at once, it is often discussed as a whole-person picture rather than a single symptom.",
+        "There is a great deal of general information available, but what is right for an individual is a conversation to have with a qualified practitioner.",
+      ],
+      byAudience: [
+        {
+          audience: "women",
+          note: "By definition this is an experience raised by women — but the timing, length and nature of the transition differ widely, so personalised guidance from a practitioner matters.",
+        },
+        {
+          audience: "midlife",
+          note: "Perimenopause most commonly begins in the 40s, though it can start earlier or later. In midlife it is frequently discussed alongside sleep and energy changes.",
+        },
+      ],
+    },
+    {
+      id: "low-energy",
+      label: "Low energy & tiredness",
+      summary: "Feeling persistently drained or running low — a very common reason people seek support.",
+      commonFor: ["everyone", "midlife", "older"],
+      concernId: "low-energy-sleep",
+      general: [
+        "Feeling tired or low on energy is one of the most common health complaints, and it has many possible contributors — sleep, stress, routine, mood and physical health among them.",
+        "Because energy reflects so many parts of life, practitioners tend to look at the whole picture rather than a single cause.",
+        "Short-lived tiredness after a busy period or poor sleep is familiar to most people; persistent or unexplained fatigue is worth raising with a professional.",
+      ],
+      byAudience: [
+        {
+          audience: "midlife",
+          note: "In midlife, low energy is often discussed alongside busy life stages, sleep changes and, for some, hormonal transitions — which is why a rounded conversation helps.",
+        },
+        {
+          audience: "older",
+          note: "Energy naturally shifts with age, and in later life tiredness is commonly considered alongside overall health, activity and sleep. A practitioner can help tell apart the expected from the worth-checking.",
+        },
+      ],
+    },
+    {
+      id: "stress-anxiety",
+      label: "Stress & anxiety",
+      summary: "Feeling wound up, worried or unable to switch off — and how that shows up in the body.",
+      commonFor: ["everyone", "younger"],
+      concernId: "stress-anxiety",
+      general: [
+        "Stress and anxiety are common experiences that can affect both mind and body — sleep, digestion, energy and muscle tension are often involved.",
+        "Everyone experiences stress; what a practitioner explores is how much it is affecting your daily life and wellbeing.",
+        "Because mind and body are closely linked, this is frequently discussed alongside sleep, energy and digestion.",
+      ],
+      byAudience: [
+        {
+          audience: "younger",
+          note: "Stress and anxiety are very commonly raised by teenagers and people in their 20s, often around study, work, identity and change. Talking it through early with a professional is something many find helpful.",
+        },
+      ],
+    },
+    {
+      id: "joint-aches",
+      label: "Joint aches & stiffness",
+      summary: "Everyday aches, stiffness or niggles in the joints and muscles.",
+      commonFor: ["everyone", "midlife", "older"],
+      concernId: "aches-pains",
+      general: [
+        "Aches, stiffness and niggles in the joints or muscles are extremely common and have many possible contributors — activity, posture, past injury and the natural changes of age among them.",
+        "Practitioners tend to ask when it happens, what eases or worsens it, and how it affects movement and daily life.",
+        "Occasional aches are part of life; pain that is severe, persistent or stops you doing things is worth professional input.",
+      ],
+      byAudience: [
+        {
+          audience: "midlife",
+          note: "From midlife onward, joint and muscle stiffness is more commonly raised, often linked to activity levels and earlier wear. A practitioner can help you keep moving comfortably.",
+        },
+        {
+          audience: "older",
+          note: "Joint changes become more common with age. In later life they are frequently discussed alongside mobility and staying independent.",
+        },
+      ],
+    },
+    {
+      id: "headaches",
+      label: "Headaches",
+      summary: "From everyday tension headaches to recurring patterns that disrupt daily life.",
+      commonFor: ["everyone", "women"],
+      concernId: "headaches",
+      general: [
+        "Headaches are very common and come in different patterns. Most are not serious, but they can be disruptive.",
+        "They are often linked with things like tension, sleep, hydration, screens and routine — practitioners explore the pattern and triggers rather than treating every headache the same.",
+        "A sudden, severe or unusual headache, or one with other symptoms, should be checked promptly — see the 'when to seek help sooner' notes.",
+      ],
+      byAudience: [
+        {
+          audience: "women",
+          note: "Some headache patterns are more commonly reported by women and can track with the menstrual cycle. Noting the timing helps a practitioner understand the pattern.",
+        },
+      ],
+    },
+    {
+      id: "low-mood",
+      label: "Low mood",
+      summary: "Feeling down, flat or not yourself — and knowing when to reach out.",
+      commonFor: ["everyone", "men", "younger"],
+      concernId: "low-mood",
+      general: [
+        "Low mood is a common human experience that can range from a passing dip to something more persistent that affects daily life.",
+        "It is often connected with sleep, energy, stress and life circumstances, so it is usually considered as part of a wider picture.",
+        "If low mood lasts, deepens, or affects how you function, reaching out to a professional is important — and if you ever feel unsafe, seek urgent help straight away.",
+      ],
+      byAudience: [
+        {
+          audience: "men",
+          note: "Low mood can show up differently for different people; men sometimes describe it more as irritability, tiredness or physical symptoms than sadness. It is just as valid a reason to reach out.",
+        },
+        {
+          audience: "younger",
+          note: "Mood changes are commonly raised by younger people navigating study, work and change. Talking to someone early is a strength, not a last resort.",
+        },
+      ],
+    },
+    {
+      id: "immunity",
+      label: "Immunity & frequent colds",
+      summary: "Wanting to support general resilience, or feeling like you catch everything going around.",
+      commonFor: ["everyone", "younger", "older"],
+      concernId: "immune",
+      general: [
+        "Interest in 'immunity' usually comes down to general resilience — how often you pick up coughs and colds, and how you recover.",
+        "Everyday resilience is shaped by many ordinary things — sleep, activity, nutrition and stress — which is why practitioners look at the whole routine.",
+        "Frequent, severe or unusually slow-to-clear infections are worth raising with a professional rather than self-managing.",
+      ],
+      byAudience: [
+        {
+          audience: "younger",
+          note: "People in their teens and 20s, especially in busy mixing environments like college or shared housing, often pick up more coughs and colds. How often alone is usually less telling than how each one behaves.",
+        },
+        {
+          audience: "older",
+          note: "In later life, resilience can change, and infections are commonly considered alongside overall health. A practitioner can advise on what is sensible for you.",
+        },
+      ],
+    },
+  ],
+};
+
 export const integrativePack: ContentPack = {
   id: "integrative",
   label: "Integrative & whole-person",
@@ -441,6 +633,7 @@ export const integrativePack: ContentPack = {
     "The flagship pack: nine everyday concerns, each seen through Western, Chinese and Ayurvedic lenses.",
   traditions,
   concerns,
+  knowledgeBase,
   review: {
     reviewedBy: "Clinical sign-off recorded at each release",
     role: "UK-registered medical reviewer",

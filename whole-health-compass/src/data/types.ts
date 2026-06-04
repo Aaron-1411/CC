@@ -34,6 +34,63 @@ export type Concern = {
   redFlags?: string[];
 };
 
+/* ────────────────────────────────────────────────────────────────────────────
+   KNOWLEDGE BASE  —  browseable, demographic-aware education.
+
+   A second way into the same curated content: instead of the guided journey,
+   a reader can browse high-frequency issues (bloating, menopause, low energy…)
+   and filter by who they are (gender) and life-stage (age band). Each issue
+   carries general education PLUS audience-specific notes.
+
+   Compliance: notes are framed as "more commonly raised by…" / neutral
+   life-stage education — NEVER "you have X because you're Y" and NEVER a
+   remedy, dose or efficacy claim. Every issue links back to a concern, which
+   routes the reader to a qualified, registered human.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/** A demographic facet. "everyone"/"any" are UI defaults; the rest are the
+ *  gender and life-stage bands an issue can be tagged as commonly raised by. */
+export type AudienceKey = "everyone" | "women" | "men" | "younger" | "midlife" | "older";
+
+/** One audience-specific education note for an issue. */
+export type AudienceNote = {
+  audience: AudienceKey;
+  /** Neutral, life-stage framing — never personalised diagnosis or a remedy. */
+  note: string;
+};
+
+/** A browseable health issue: general education plus demographic notes, mapped
+ *  to a Concern so the comparative lens + safety content can be reused. */
+export type IssueGuide = {
+  id: string;
+  /** Plain-English title, e.g. "Bloating" or "Menopause & perimenopause". */
+  label: string;
+  /** One scannable line for the index card. */
+  summary: string;
+  /** Which audiences this is most commonly raised by (drives the filters). */
+  commonFor: AudienceKey[];
+  /** The Concern this issue maps to — reuses its lenses, common ground, red flags. */
+  concernId: string;
+  /** General, audience-agnostic education bullets. */
+  general: string[];
+  /** Audience-specific education notes, shown when relevant. Optional. */
+  byAudience?: AudienceNote[];
+};
+
+/** Selectable filter chip metadata. `facet` splits gender ("who") from
+ *  life-stage ("stage") so the UI can present two filter rows. */
+export type AudienceMeta = {
+  key: AudienceKey;
+  label: string;
+  facet: "who" | "stage";
+};
+
+/** The browseable knowledge base attached to a content pack. */
+export type KnowledgeBase = {
+  audiences: AudienceMeta[];
+  issues: IssueGuide[];
+};
+
 export type TraditionMeta = {
   key: TraditionKey;
   label: string;
@@ -76,6 +133,8 @@ export type ContentPack = {
   description: string;
   traditions: TraditionMeta[];
   concerns: Concern[];
+  /** Browseable, demographic-aware education built on the same concerns. Optional. */
+  knowledgeBase?: KnowledgeBase;
   /** Medical-review provenance for this pack's content. Optional. */
   review?: ContentReview;
 };

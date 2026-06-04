@@ -47,6 +47,9 @@ export function SiteHeader() {
               </a>
             </>
           )}
+          <Link to="/learn" className="hidden rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex">
+            Learn
+          </Link>
           <Link to="/for-clinics" className="hidden rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex">
             For clinics
           </Link>

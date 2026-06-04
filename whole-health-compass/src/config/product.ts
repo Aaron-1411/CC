@@ -62,6 +62,7 @@ export const product = {
     { title: "Your brand in a day", body: "Two hex colours, your logo and details — the whole app re-skins. No dev work." },
     { title: "Safe by design", body: "Hand-written comparative education that can't hallucinate a medical claim." },
     { title: "Practitioner summaries", body: "Patients arrive understood; first consults start further ahead." },
+    { title: "Browseable knowledge base", body: "An SEO-friendly library of common topics — bloating, menopause, low energy — filtered by life-stage, that pulls visitors in and feeds the same safe journey." },
     { title: "Lead capture + inbox", body: "Enquiries land in your inbox and a private dashboard, with consent on file." },
     { title: "Funnel analytics", body: "See where people drop off — cookieless, first-party, GDPR-friendly." },
     { title: "Compliance pack", body: "Versioned consent and an audit trail you can show a regulator or insurer." },
@@ -135,6 +136,10 @@ export const product = {
     {
       q: "How long does it take to launch?",
       a: "A branded site is a same-day setup: your colours, logo and details, then deploy. No development work on your side.",
+    },
+    {
+      q: "What's the knowledge base, and does it stay compliant?",
+      a: "It's a browseable library of high-frequency topics — like bloating or menopause — that visitors can filter by life-stage. It's the same hand-written, static education as the rest of the product: general information only, no diagnosis, no named remedies, every topic routing to a qualified practitioner. It gives you a safe, search-friendly front door that feeds the same prepared-enquiry journey.",
     },
     {
       q: "What about data protection?",

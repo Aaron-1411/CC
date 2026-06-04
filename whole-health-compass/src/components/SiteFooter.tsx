@@ -31,6 +31,7 @@ export function SiteFooter() {
                 {clinicConfig.contactPhone}
               </a>
             )}
+            <Link to="/learn" className="text-muted-foreground hover:text-foreground">Knowledge base</Link>
             <Link to="/about" className="text-muted-foreground hover:text-foreground">About this tool</Link>
             <Link to="/privacy" className="text-muted-foreground hover:text-foreground">Privacy & your data</Link>
             <Link to="/compliance" className="text-muted-foreground hover:text-foreground">Compliance & safety</Link>

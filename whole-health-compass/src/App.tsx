@@ -11,6 +11,8 @@ import { Privacy } from "@/pages/Privacy";
 import { ForClinics } from "@/pages/ForClinics";
 import { Compliance } from "@/pages/Compliance";
 import { Clinic } from "@/pages/Clinic";
+import { Learn } from "@/pages/Learn";
+import { LearnIssue } from "@/pages/LearnIssue";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -36,6 +38,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/compass" element={<Compass />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/learn/:id" element={<LearnIssue />} />
             <Route path="/for-clinics" element={<ForClinics />} />
             <Route path="/compliance" element={<Compliance />} />
             <Route path="/clinic" element={<Clinic />} />

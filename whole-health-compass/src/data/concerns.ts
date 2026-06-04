@@ -1,4 +1,4 @@
-import type { Concern, TraditionKey } from "./types";
+import type { Concern, IssueGuide, TraditionKey } from "./types";
 import { clinicConfig } from "@/config/clinic";
 import { getPack } from "./packs";
 
@@ -39,3 +39,14 @@ export function getConcern(id: string): Concern {
 }
 
 export const lensValue = (lens: Record<TraditionKey, unknown>, key: TraditionKey) => lens[key];
+
+/* ── Knowledge base ──────────────────────────────────────────────────────────
+   The active pack's browseable, demographic-aware education. May be absent on a
+   pack — the /learn routes handle an undefined knowledge base gracefully. */
+
+export const knowledgeBase = activePack.knowledgeBase;
+
+/** Look up a single issue guide by id, if the active pack has a knowledge base. */
+export function getIssue(id: string): IssueGuide | undefined {
+  return knowledgeBase?.issues.find((i) => i.id === id);
+}
