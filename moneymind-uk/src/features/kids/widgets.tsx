@@ -191,6 +191,7 @@ function SortColumn({ title, tone, items }: { title: string; tone: "emerald" | "
 
 // ── Savings jar (ages 5–7 / 7–11) ────────────────────────────────────────────
 function SavingsJar({ accentText }: { accentText: string }) {
+  const reduce = useReducedMotion();
   const goal = 20;
   const [saved, setSaved] = useState(0);
   const pct = Math.min(100, (saved / goal) * 100);
@@ -205,7 +206,7 @@ function SavingsJar({ accentText }: { accentText: string }) {
             className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-emerald-400 to-emerald-300"
             initial={false}
             animate={{ height: `${pct}%` }}
-            transition={{ type: "spring", stiffness: 120, damping: 18 }}
+            transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 120, damping: 18 }}
           />
           <div className="absolute inset-0 grid place-items-center">
             <span className="text-lg font-bold text-navy-900 tabular-nums">{gbp0.format(saved)}</span>
@@ -369,6 +370,7 @@ function BorrowCost() {
 
 // ── Payslip split (ages 14–16) ───────────────────────────────────────────────
 function PayslipSplit({ accentText }: { accentText: string }) {
+  const reduce = useReducedMotion();
   const [gross, setGross] = useState(1500); // monthly
   const monthlyPA = 12570 / 12; // tax-free slice per month (simplified)
   const taxable = Math.max(0, gross - monthlyPA);
@@ -394,9 +396,9 @@ function PayslipSplit({ accentText }: { accentText: string }) {
       />
       {/* Stacked bar */}
       <div className="mt-4 flex h-7 w-full overflow-hidden rounded-lg">
-        <motion.div className="bg-emerald-500" animate={{ width: bar(net) }} initial={false} title="Take-home" />
-        <motion.div className="bg-navy-400" animate={{ width: bar(tax) }} initial={false} title="Income Tax" />
-        <motion.div className="bg-amber-400" animate={{ width: bar(ni) }} initial={false} title="National Insurance" />
+        <motion.div className="bg-emerald-500" animate={{ width: bar(net) }} initial={false} transition={reduce ? { duration: 0 } : undefined} title="Take-home" />
+        <motion.div className="bg-navy-400" animate={{ width: bar(tax) }} initial={false} transition={reduce ? { duration: 0 } : undefined} title="Income Tax" />
+        <motion.div className="bg-amber-400" animate={{ width: bar(ni) }} initial={false} transition={reduce ? { duration: 0 } : undefined} title="National Insurance" />
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
         <Stat label="Take-home" value={net} className={accentText} dot="bg-emerald-500" big />

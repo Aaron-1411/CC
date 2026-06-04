@@ -13,10 +13,11 @@ const MD = clsx(
   "[&_ul]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:marker:text-emerald-500",
   "[&_ol]:mb-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1.5 [&_ol]:marker:font-semibold [&_ol]:marker:text-emerald-600",
   "[&_li]:leading-relaxed",
-  // Keyword highlight: bold terms get a soft highlighter-pen treatment so the
-  // words that matter jump off the page. This is the single most direct lever
-  // for "make keywords stand out" — authors already mark key terms with **bold**.
-  "[&_strong]:font-bold [&_strong]:text-navy-900 [&_strong]:rounded [&_strong]:bg-emerald-100/70 [&_strong]:px-1 [&_strong]:py-px [&_strong]:box-decoration-clone",
+  // Keyword highlight: bold terms get a key-term token treatment — dark ink on
+  // a soft emerald wash so the words that matter jump off the page. Semibold
+  // (not bold) keeps it from going double-loud where several terms cluster in
+  // one sentence; box-decoration-clone keeps the wash tidy across line breaks.
+  "[&_strong]:font-semibold [&_strong]:text-navy-900 [&_strong]:rounded-[3px] [&_strong]:bg-emerald-100 [&_strong]:px-1 [&_strong]:py-px [&_strong]:box-decoration-clone",
   // Emphasis stays distinct but quieter — navy ink, no highlight, so it reads as
   // a secondary signal next to the emerald keyword highlight.
   "[&_em]:not-italic [&_em]:font-semibold [&_em]:text-emerald-700",
