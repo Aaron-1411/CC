@@ -24,7 +24,7 @@ import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { Icon } from "../../components/Icon";
 import { StatusPill } from "../../components/Pill";
-import { LessonDeck } from "./LessonDeck";
+import { Lesson } from "./Lesson";
 import { Quiz } from "../quiz/Quiz";
 import { ToolRouter } from "../tools/ToolRouter";
 import { TutorPanel } from "../tutor/TutorPanel";
@@ -187,7 +187,7 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
       {/* Step content */}
       <div className="mt-6">
         {step === "lesson" && (
-          <LessonDeck
+          <Lesson
             sections={mod.lesson}
             lessonDone={lessonDone}
             onComplete={() => updaters.markLessonComplete(mod.id)}

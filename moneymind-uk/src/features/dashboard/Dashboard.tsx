@@ -32,6 +32,7 @@ import {
 } from "../../lib/gamification";
 import { Card } from "../../components/Card";
 import { CountUp } from "../../components/CountUp";
+import { Reveal } from "../../components/Reveal";
 import { ProgressBar } from "../../components/ProgressBar";
 import { StatusPill } from "../../components/Pill";
 import { Icon } from "../../components/Icon";
@@ -94,6 +95,7 @@ export function Dashboard({ progress }: DashboardProps) {
                 value={progress.moneyFound}
                 format={(v) => gbp.format(v)}
                 className="text-5xl font-bold tabular-nums"
+                startOnView
               />
             </div>
             <p className="mt-2 max-w-md text-sm text-emerald-50">
@@ -290,7 +292,7 @@ function TierBand({
       <p className="mb-4 text-sm text-navy-500">{tier.tagline}</p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {mods.map((mod) => {
+        {mods.map((mod, idx) => {
           const status = getModuleStatus(mod.id, progress);
           const locked = !unlocked;
           const highlighted = floatIds.has(mod.id) && unlocked;
@@ -339,19 +341,25 @@ function TierBand({
             highlighted ? "ring-2 ring-emerald-400" : ""
           }`;
 
-          return locked ? (
-            <div key={mod.id} className={`${cardClass} opacity-60`} aria-disabled>
-              {content}
-            </div>
-          ) : (
-            <Link
-              key={mod.id}
-              to={`/module/${mod.slug}`}
-              className={`group ${cardClass} transition-shadow duration-200 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2`}
-              aria-label={`${mod.title} — ${status}`}
-            >
-              {content}
-            </Link>
+          // Stagger reveals across the row, capped so later cards don't lag.
+          const delay = Math.min(idx, 3) * 0.06;
+
+          return (
+            <Reveal key={mod.id} delay={delay} className="h-full">
+              {locked ? (
+                <div className={`${cardClass} opacity-60`} aria-disabled>
+                  {content}
+                </div>
+              ) : (
+                <Link
+                  to={`/module/${mod.slug}`}
+                  className={`group ${cardClass} transition-shadow duration-200 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2`}
+                  aria-label={`${mod.title} — ${status}`}
+                >
+                  {content}
+                </Link>
+              )}
+            </Reveal>
           );
         })}
       </div>
