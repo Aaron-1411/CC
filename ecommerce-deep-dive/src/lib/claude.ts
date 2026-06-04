@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-import { PillarResult, OpportunityMatrix } from '@/types/analysis';
+import { PillarResult, OpportunityMatrix, RAGStatus, Finding } from '@/types/analysis';
 import { getPillarChecklist } from './pillars';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -117,7 +117,12 @@ export async function runPillarAnalysis(
   );
 
   const textContent = result.response.text();
-  const parsed = extractJSON(textContent);
+  const parsed = extractJSON(textContent) as unknown as {
+    status: RAGStatus;
+    findings: Finding[];
+    opportunity: string;
+    dataGap?: string;
+  };
 
   return {
     id: pillarId,
@@ -162,5 +167,5 @@ Each action: one specific sentence with the mechanic and the commercial rational
   ));
 
   const text = result.response.text();
-  return extractJSON(text) as OpportunityMatrix;
+  return extractJSON(text) as unknown as OpportunityMatrix;
 }
