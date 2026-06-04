@@ -6,7 +6,6 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  ExternalLink,
   ListChecks,
   PoundSterling,
   Sparkles,
@@ -19,15 +18,13 @@ import { getModuleBySlug, nextModule } from "../../content/modules";
 import { tierInfo } from "../../content/tiers";
 import type { ProgressState } from "../../lib/types";
 import type { ProgressUpdaters } from "../../lib/storage";
-import { XP_REWARDS } from "../../lib/storage";
 import { getModuleStatus } from "../../lib/gamification";
 import { PageContainer } from "../../components/PageContainer";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { Icon } from "../../components/Icon";
-import { Callout } from "../../components/Callout";
-import { Markdown } from "../../components/Markdown";
 import { StatusPill } from "../../components/Pill";
+import { LessonDeck } from "./LessonDeck";
 import { Quiz } from "../quiz/Quiz";
 import { ToolRouter } from "../tools/ToolRouter";
 import { TutorPanel } from "../tutor/TutorPanel";
@@ -190,44 +187,12 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
       {/* Step content */}
       <div className="mt-6">
         {step === "lesson" && (
-          <div className="flex flex-col gap-5">
-            {mod.lesson.map((section, i) => (
-              <Card key={i} className="flex flex-col gap-3">
-                <h2 className="text-lg font-bold text-navy-900">{section.heading}</h2>
-                <Markdown>{section.body}</Markdown>
-                {section.callout && <Callout type={section.callout.type} text={section.callout.text} />}
-                {section.govLink && (
-                  <a
-                    href={section.govLink.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:underline"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" aria-hidden /> {section.govLink.label}
-                  </a>
-                )}
-              </Card>
-            ))}
-
-            <div className="flex items-center justify-between gap-3">
-              {lessonDone ? (
-                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600">
-                  <CheckCircle2 className="h-4 w-4" aria-hidden /> Lesson complete
-                </span>
-              ) : (
-                <span className="text-sm text-navy-400">Finished reading?</span>
-              )}
-              <Button
-                onClick={() => {
-                  if (!lessonDone) updaters.markLessonComplete(mod.id);
-                  setStep("quiz");
-                }}
-              >
-                {lessonDone ? "Next: Quiz" : `Mark complete (+${XP_REWARDS.lesson} XP)`}
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </Button>
-            </div>
-          </div>
+          <LessonDeck
+            sections={mod.lesson}
+            lessonDone={lessonDone}
+            onComplete={() => updaters.markLessonComplete(mod.id)}
+            onNext={() => setStep("quiz")}
+          />
         )}
 
         {step === "quiz" && (

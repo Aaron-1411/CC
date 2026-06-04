@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
+  ArrowRight,
   ChevronRight,
   Flame,
   Lock,
@@ -30,6 +31,7 @@ import {
   tierProgress,
 } from "../../lib/gamification";
 import { Card } from "../../components/Card";
+import { CountUp } from "../../components/CountUp";
 import { ProgressBar } from "../../components/ProgressBar";
 import { StatusPill } from "../../components/Pill";
 import { Icon } from "../../components/Icon";
@@ -63,6 +65,19 @@ export function Dashboard({ progress }: DashboardProps) {
   const persona = progress.persona ? personaInfo(progress.persona) : undefined;
   const floatIds = new Set(persona?.floatIds ?? []);
 
+  // The single obvious next action — in-progress module first, else the next
+  // unlocked one. Gives returning users one clear target instead of 23 cards.
+  const nextUp = useMemo(() => {
+    const open = modules.filter(
+      (m) => isTierUnlocked(m.tier, progress) && getModuleStatus(m.id, progress) !== "complete",
+    );
+    return open.find((m) => getModuleStatus(m.id, progress) === "in-progress") ?? open[0];
+  }, [progress]);
+  const startedAny =
+    progress.completedLessons.length > 0 ||
+    Object.keys(progress.quizScores).length > 0 ||
+    progress.questsCompleted.length > 0;
+
   return (
     <PageContainer className="py-8">
       {/* ───────────────────────── HUD ───────────────────────── */}
@@ -75,7 +90,11 @@ export function Dashboard({ progress }: DashboardProps) {
             </div>
             <div className="mt-2 flex items-center gap-2">
               <PoundSterling className="h-8 w-8 text-emerald-200" aria-hidden />
-              <span className="text-5xl font-bold tabular-nums">{gbp.format(progress.moneyFound)}</span>
+              <CountUp
+                value={progress.moneyFound}
+                format={(v) => gbp.format(v)}
+                className="text-5xl font-bold tabular-nums"
+              />
             </div>
             <p className="mt-2 max-w-md text-sm text-emerald-50">
               Real money you could unlock by completing quests — claimed allowances, switched bills and
@@ -124,6 +143,33 @@ export function Dashboard({ progress }: DashboardProps) {
           </Card>
         </motion.div>
       </motion.div>
+
+      {/* ─────────────────── Continue / Next up ─────────────────── */}
+      {nextUp && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+          <Link
+            to={`/module/${nextUp.slug}`}
+            className="group flex items-center gap-4 rounded-2xl bg-navy-900 p-5 text-white shadow-card transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+          >
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/10 text-emerald-300">
+              <Icon name={nextUp.icon} className="h-6 w-6" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                {startedAny ? "Pick up where you left off" : "Start here"}
+              </div>
+              <div className="truncate text-lg font-bold">{nextUp.title}</div>
+              <div className="text-sm text-navy-300">
+                ~{nextUp.estMinutes} min · Tier {nextUp.tier}
+              </div>
+            </div>
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold transition-colors group-hover:bg-emerald-400">
+              <span className="hidden sm:inline">{startedAny ? "Continue" : "Start"}</span>
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </span>
+          </Link>
+        </motion.div>
+      )}
 
       {/* ─────────────────── Persona on-ramp ─────────────────── */}
       <div className="mt-4">

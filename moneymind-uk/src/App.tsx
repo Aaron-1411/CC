@@ -8,6 +8,7 @@ import { getModuleStatus, isGraduate, GRADUATE_BADGE_ID } from "./lib/gamificati
 import { NavBar } from "./components/NavBar";
 import { PageContainer } from "./components/PageContainer";
 import { Button } from "./components/Button";
+import { RewardProvider, ProgressRewards } from "./components/Reward";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import { ModulePage } from "./features/module/ModulePage";
 import { PersonaSelect } from "./features/onboarding/PersonaSelect";
@@ -36,7 +37,9 @@ export default function App() {
   }, [progress, awardBadge]);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <RewardProvider>
+      <ProgressRewards progress={progress} />
+      <div className="flex min-h-screen flex-col">
       <NavBar progress={progress} />
       <main className="flex-1">
         <Routes>
@@ -59,7 +62,8 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
-    </div>
+      </div>
+    </RewardProvider>
   );
 }
 
