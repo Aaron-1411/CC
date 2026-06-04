@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Default theme: calm, clinical-but-warm.
+  Brand colours (--primary / --accent and their foregrounds + soft tints) are the
+  only tokens overridden at runtime by clinicConfig via src/lib/theme.ts, so the
+  whole app re-skins from one config object. Everything else stays consistent.
+*/
+@layer base {
+  :root {
+    --background: 40 33% 97%;
+    --surface: 44 30% 95%;
+    --foreground: 170 22% 15%;
+
+    --card: 40 40% 99%;
+    --card-foreground: 170 22% 15%;
+
+    --muted: 150 14% 93%;
+    --muted-foreground: 168 9% 40%;
+
+    --border: 150 13% 87%;
+    --input: 150 13% 85%;
+
+    --primary: 168 44% 23%;
+    --primary-foreground: 44 40% 97%;
+    --primary-soft: 168 32% 91%;
+
+    --accent: 26 52% 50%;
+    --accent-foreground: 40 40% 98%;
+    --accent-soft: 28 58% 93%;
+
+    --ring: 168 44% 30%;
+
+    --destructive: 2 64% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 36 86% 44%;
+    --warning-foreground: 30 60% 16%;
+    --warning-soft: 40 88% 92%;
+
+    --success: 150 46% 34%;
+    --success-foreground: 0 0% 100%;
+
+    /* Tradition tints — distinct hues, matched lightness so none looks superior. */
+    --west: 208 40% 44%;
+    --west-soft: 208 48% 95%;
+    --tcm: 6 52% 50%;
+    --tcm-soft: 8 58% 95%;
+    --ayur: 38 58% 44%;
+    --ayur-soft: 40 68% 94%;
+
+    --shadow-color: 170 30% 18%;
+    --radius: 0.9rem;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: theme("fontFamily.sans");
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: theme("fontFamily.serif");
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.12;
+    color: hsl(var(--foreground));
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.15);
+  }
+}
+
+@layer components {
+  .measure {
+    max-width: 68ch;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -3rem;
+    z-index: 100;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius);
+    transition: top 0.2s ease;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  /* Subtle background texture for the warm, calm feel */
+  .bg-paper {
+    background-image:
+      radial-gradient(60rem 60rem at 75% -10%, hsl(var(--primary) / 0.05), transparent 60%),
+      radial-gradient(50rem 50rem at 0% 10%, hsl(var(--accent) / 0.05), transparent 55%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

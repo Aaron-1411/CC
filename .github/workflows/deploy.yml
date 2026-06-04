@@ -281,3 +281,55 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           workingDirectory: moneymind-uk
           command: pages deploy dist --project-name=moneymind-uk-app --branch=main
+
+  deploy-whole-health-compass:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"whole-health-compass-app","production_branch":"main"}' || true
+      # Backend secrets. The app degrades gracefully when these are unset (empty ->
+      # persistence/email/admin stay dormant), so CI is green from the first push.
+      # Activate by adding the GitHub secrets below, then re-run (see whole-health-compass/ACTIVATION.md).
+      - name: Set CF Pages environment variables
+        run: |
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/whole-health-compass-app" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_configs": {
+                "production": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "RESEND_API_KEY": {"value": "${{ secrets.RESEND_API_KEY }}", "type": "secret_text"},
+                    "LEAD_FROM": {"value": "${{ secrets.WHC_LEAD_FROM }}", "type": "plain_text"},
+                    "LEAD_NOTIFY_TO": {"value": "${{ secrets.WHC_LEAD_NOTIFY_TO }}", "type": "plain_text"},
+                    "ADMIN_TOKEN": {"value": "${{ secrets.WHC_ADMIN_TOKEN }}", "type": "secret_text"}
+                  }
+                },
+                "preview": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "RESEND_API_KEY": {"value": "${{ secrets.RESEND_API_KEY }}", "type": "secret_text"},
+                    "LEAD_FROM": {"value": "${{ secrets.WHC_LEAD_FROM }}", "type": "plain_text"},
+                    "LEAD_NOTIFY_TO": {"value": "${{ secrets.WHC_LEAD_NOTIFY_TO }}", "type": "plain_text"},
+                    "ADMIN_TOKEN": {"value": "${{ secrets.WHC_ADMIN_TOKEN }}", "type": "secret_text"}
+                  }
+                }
+              }
+            }' || true
+      - run: cd whole-health-compass && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: whole-health-compass
+          command: pages deploy dist --project-name=whole-health-compass-app --branch=main

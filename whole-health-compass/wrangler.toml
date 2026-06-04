@@ -1,0 +1,29 @@
+name = "whole-health-compass-app"
+compatibility_date = "2024-11-27"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GRACEFUL-DEGRADATION BACKEND
+#
+# The site and its Pages Functions deploy and run with ZERO configuration below.
+# Each capability switches on only when its binding/secret is present — so CI is
+# always green and "going live for real" is a short, documented activation step
+# (see ACTIVATION.md). Until then the API returns friendly "accepted" responses.
+#
+#   1) Persistence + clinic dashboard  →  bind a D1 database as `DB`
+#        bunx wrangler d1 create whole-health-compass
+#        bunx wrangler d1 execute whole-health-compass --remote --file=./schema.sql
+#      then uncomment and fill database_id:
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "whole-health-compass"
+# database_id = "REPLACE_WITH_ID_FROM_CREATE"
+#
+#   2) Lead emails  →  set secrets RESEND_API_KEY, LEAD_FROM, LEAD_NOTIFY_TO
+#   3) Dashboard auth →  set secret ADMIN_TOKEN
+#
+# Secrets are injected onto the Pages project by .github/workflows/deploy.yml
+# (PATCH step). Never commit secrets here.
+# ─────────────────────────────────────────────────────────────────────────────
