@@ -207,7 +207,23 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"name":"ecommerce-deep-dive-app","production_branch":"main"}' || true
-      - name: Set CF Pages environment variables
+      - name: Create KV namespace (idempotent)
+        id: kv
+        run: |
+          RESULT=$(curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/storage/kv/namespaces" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"title":"ecommerce-deep-dive-audits"}')
+          KV_ID=$(echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('result',{}).get('id',''))" 2>/dev/null)
+          if [ -z "$KV_ID" ]; then
+            KV_ID=$(curl -s \
+              "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/storage/kv/namespaces?per_page=100" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" | \
+              python3 -c "import sys,json; ns=json.load(sys.stdin)['result']; print(next((n['id'] for n in ns if n['title']=='ecommerce-deep-dive-audits'),''))" 2>/dev/null)
+          fi
+          echo "kv_id=$KV_ID" >> "$GITHUB_OUTPUT"
+      - name: Set CF Pages environment variables and KV binding
         run: |
           curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/ecommerce-deep-dive-app" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
@@ -218,14 +234,22 @@ jobs:
                   "compatibility_flags": ["nodejs_compat"],
                   "compatibility_date": "2024-09-23",
                   "env_vars": {
-                    "GEMINI_API_KEY": {"value": "${{ secrets.GEMINI_API_KEY }}", "type": "secret_text"}
+                    "GEMINI_API_KEY":   {"value": "${{ secrets.GEMINI_API_KEY }}",   "type": "secret_text"},
+                    "ADMIN_PASSWORD":   {"value": "${{ secrets.ADMIN_PASSWORD }}",   "type": "secret_text"}
+                  },
+                  "kv_namespaces": {
+                    "AUDITS_KV": {"namespace_id": "${{ steps.kv.outputs.kv_id }}"}
                   }
                 },
                 "preview": {
                   "compatibility_flags": ["nodejs_compat"],
                   "compatibility_date": "2024-09-23",
                   "env_vars": {
-                    "GEMINI_API_KEY": {"value": "${{ secrets.GEMINI_API_KEY }}", "type": "secret_text"}
+                    "GEMINI_API_KEY":   {"value": "${{ secrets.GEMINI_API_KEY }}",   "type": "secret_text"},
+                    "ADMIN_PASSWORD":   {"value": "${{ secrets.ADMIN_PASSWORD }}",   "type": "secret_text"}
+                  },
+                  "kv_namespaces": {
+                    "AUDITS_KV": {"namespace_id": "${{ steps.kv.outputs.kv_id }}"}
                   }
                 }
               }

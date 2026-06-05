@@ -2,7 +2,7 @@ export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { setJob, updateJob, getJob } from '@/lib/store';
+import { setJob, updateJob, getJob, persistJob } from '@/lib/store';
 import { runPillarAnalysis, buildOpportunityMatrix } from '@/lib/claude';
 import { PILLARS, PILLAR_ORDER } from '@/lib/pillars';
 import { AnalysisJob, PillarResult } from '@/types/analysis';
@@ -108,5 +108,11 @@ async function runAnalysis(
       completedAt: new Date(),
       pillars: completedPillars,
     });
+  }
+
+  // Persist completed job to KV for admin archive
+  const finalJob = getJob(jobId);
+  if (finalJob) {
+    await persistJob(finalJob).catch(() => {});
   }
 }
