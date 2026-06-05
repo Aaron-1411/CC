@@ -23,6 +23,7 @@
       --t3:       #a8b4c2;
       --accent:   #1d4ed8;
       --green:    #15803d;
+      --amber:    #b45309;
     }
 
     html { scroll-behavior: smooth; }
@@ -196,6 +197,14 @@
     .live-dot {
       width: 5px; height: 5px; border-radius: 50%;
       background: var(--green);
+    }
+
+    /* Self-hosted (Python — runs locally or on a Python host, not Cloudflare) */
+    .card-self { color: var(--amber); }
+    .card-self .live-dot { background: var(--amber); }
+    .tag-py {
+      background: rgba(180,83,9,0.07); color: var(--amber);
+      border-color: rgba(180,83,9,0.18);
     }
 
     .card-desc {
@@ -559,6 +568,30 @@
             </a>
             <a class="btn-open" href="https://tastybot-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
               Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="window.open('https://github.com/Aaron-1411/quant-desk','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
+        <div class="card-head">
+          <span class="card-name">📊 Tr4d3 · Quant Desk</span>
+          <span class="card-live card-self" title="Python app — runs locally or on a Python host (Render/Fly), not Cloudflare"><span class="live-dot"></span>Self-host</span>
+        </div>
+        <p class="card-desc">12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro and a position risk book. Every number computed from real data; analysis-only, never trades. Single FastAPI app serving its own React dashboard.</p>
+        <div class="card-foot">
+          <div class="tags">
+            <span class="tag tag-cc">Claude Code</span>
+            <span class="tag tag-py">Python</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">React</span>
+          </div>
+          <div class="card-btns">
+            <a class="btn-sq" href="https://github.com/Aaron-1411/quant-desk" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
+              <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a class="btn-open" href="https://github.com/Aaron-1411/quant-desk" target="_blank" onclick="event.stopPropagation()">
+              Repo <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
         </div>
