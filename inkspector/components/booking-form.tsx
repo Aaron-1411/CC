@@ -212,7 +212,7 @@ export default function BookingForm() {
             <select
               id="tattoo_style"
               {...register('tattoo_style')}
-              className="mt-1.5 w-full h-10 rounded-md border border-input bg-input px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="mt-1.5 w-full h-10 rounded-md border border-input bg-input px-3 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">Select a style</option>
               {TATTOO_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -381,7 +381,7 @@ export default function BookingForm() {
               <select
                 id="body_part"
                 {...register('body_part')}
-                className="mt-1.5 w-full h-10 rounded-md border border-input bg-input px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="mt-1.5 w-full h-10 rounded-md border border-input bg-input px-3 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="">Select body area</option>
                 {BODY_PARTS.map(p => <option key={p} value={p}>{p}</option>)}
