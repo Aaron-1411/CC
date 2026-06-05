@@ -20,22 +20,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Input too long' }, { status: 400 });
   }
 
+  // Resolve Formspree endpoint from env or fall back to a hardcoded form ID
+  // Set FORMSPREE_FORM_ID in CF Pages env vars (e.g. "xkgwrdnp")
+  let formId: string | undefined;
   try {
-    const res = await fetch('https://api.web3forms.com/submit', {
+    const { getRequestContext } = await import('@cloudflare/next-on-pages');
+    const { env } = getRequestContext();
+    formId = (env as Record<string, unknown>).FORMSPREE_FORM_ID as string | undefined;
+  } catch {
+    // local dev — skip
+  }
+
+  if (!formId) {
+    // No form configured — still return 200 so the UI doesn't error
+    // Leads are captured via the KV audit store + admin page instead
+    console.warn('FORMSPREE_FORM_ID not set — lead not forwarded:', email);
+    return NextResponse.json({ ok: true });
+  }
+
+  try {
+    const res = await fetch(`https://formspree.io/f/${formId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
-        access_key: 'YOUR_WEB3FORMS_KEY',
-        subject: `New Fulcrum audit lead — ${email}`,
-        from_name: 'Fulcrum Audit',
         email,
         brand_url: brand_url || '(not provided)',
-        message: message || '(no message)',
+        message: message || 'Interested in implementation.',
       }),
     });
 
     const data = await res.json();
-    if (!data.success) {
+    if (data.error) {
       return NextResponse.json({ error: 'Submission failed' }, { status: 502 });
     }
 
