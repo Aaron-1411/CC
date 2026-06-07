@@ -7,23 +7,25 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #f5f5f2;
-      --surface:  #ffffff;
-      --raised:   #eeede9;
-      --border:   rgba(14,21,33,0.09);
-      --border-s: rgba(14,21,33,0.055);
-      --border-h: rgba(14,21,33,0.22);
-      --text:     #0e1521;
-      --t2:       #5e6e85;
-      --t3:       #a8b4c2;
-      --accent:   #1d4ed8;
-      --green:    #15803d;
-      --amber:    #b45309;
+      --bg:        #07080f;
+      --surface:   #0d0f1a;
+      --raised:    #131724;
+      --border:    rgba(255,255,255,0.07);
+      --border-s:  rgba(255,255,255,0.04);
+      --border-h:  rgba(255,255,255,0.16);
+      --text:      #f0f2f7;
+      --t2:        #8892a4;
+      --t3:        #414d60;
+      --accent:    #3b82f6;
+      --green:     #10b981;
+      --amber:     #f59e0b;
+      --domain-color: #3b82f6;
+      --domain-rgb:   59,130,246;
     }
 
     html { scroll-behavior: smooth; }
@@ -44,8 +46,8 @@
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 48px; height: 56px;
-      background: rgba(245,245,242,0.92);
-      backdrop-filter: blur(16px) saturate(180%);
+      background: rgba(7,8,15,0.88);
+      backdrop-filter: blur(20px) saturate(160%);
       border-bottom: 1px solid var(--border-s);
     }
 
@@ -62,7 +64,7 @@
       padding: 5px 11px; border-radius: 6px;
       transition: color 0.12s, background 0.12s;
     }
-    .nav-link:hover { color: var(--text); background: rgba(14,21,33,0.055); }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
     .nav-gh {
       display: flex; align-items: center; gap: 5px;
@@ -76,18 +78,32 @@
     /* ── HERO ── */
     .hero {
       max-width: 900px; margin: 0 auto;
-      padding: 80px 48px 64px;
+      padding: 88px 48px 72px;
+      position: relative;
+    }
+
+    /* dot-grid with fade mask */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+      pointer-events: none;
     }
 
     .hero-role {
-      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
       text-transform: uppercase; color: var(--t3);
       margin-bottom: 28px;
       display: flex; align-items: center; gap: 8px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      position: relative;
     }
     .hero-role::before {
       content: '';
-      display: inline-block; width: 20px; height: 1.5px;
+      display: inline-block; width: 20px; height: 1px;
       background: var(--t3);
     }
 
@@ -96,24 +112,37 @@
       font-weight: 700;
       letter-spacing: -2.5px;
       line-height: 0.96;
-      margin-bottom: 22px;
+      margin-bottom: 24px;
       color: var(--text);
+      position: relative;
+    }
+
+    .hero-accent {
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 60%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hero-sub {
       font-size: 17px; color: var(--t2);
       line-height: 1.65; max-width: 480px;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       font-weight: 400;
+      position: relative;
     }
 
-    .hero-meta {
+    .hero-stats {
       display: flex; align-items: center; gap: 0;
-      font-size: 13px; color: var(--t2);
+      font-size: 12px; color: var(--t2);
       flex-wrap: wrap;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      position: relative;
     }
-
-    .hero-meta strong { color: var(--text); font-weight: 600; }
+    .hero-stats strong {
+      color: var(--text); font-weight: 500;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
     .meta-dot { margin: 0 14px; color: var(--t3); }
 
     /* ── MAIN ── */
@@ -131,29 +160,46 @@
     }
 
     .sec-title {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+      font-size: 10px; font-weight: 600; letter-spacing: 1px;
       text-transform: uppercase; color: var(--t3);
       white-space: nowrap;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
     }
 
     .sec-line { flex: 1; height: 1px; background: var(--border-s); }
-    .sec-count { font-size: 11px; color: var(--t3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .sec-count {
+      font-size: 10px; color: var(--t3); white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
 
     /* ── GRID ── */
     .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 10px; }
 
     /* ── DOMAIN GROUPS ── */
-    .domain-group { margin-bottom: 28px; }
+    .domain-group { margin-bottom: 32px; }
     .domain-group:last-child { margin-bottom: 0; }
+
     .domain-label {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.7px;
-      text-transform: uppercase; color: var(--t3);
-      margin-bottom: 12px;
-      display: flex; align-items: center; gap: 12px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--domain-color);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
     }
     .domain-label::after {
-      content: ''; flex: 1; height: 1px; background: var(--border-s);
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(var(--domain-rgb),0.25) 0%, transparent 100%);
     }
+
+    .domain-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 5px;
+      background: rgba(var(--domain-rgb),0.12);
+      flex-shrink: 0;
+    }
+    .domain-icon svg { display: block; }
 
     /* ── CARD ── */
     .card {
@@ -163,31 +209,40 @@
       border-radius: 10px;
       padding: 20px 22px 18px;
       display: flex; flex-direction: column;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.18s;
       overflow: hidden;
       cursor: pointer;
-      box-shadow: 0 1px 2px rgba(14,21,33,0.04);
+      /* scroll reveal start state */
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .card.in-view {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.42s cubic-bezier(0.16,1,0.3,1), transform 0.42s cubic-bezier(0.16,1,0.3,1),
+                  border-color 0.2s, box-shadow 0.2s;
     }
 
     .card::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: var(--accent); opacity: .1;
-      transition: opacity 0.15s;
+      background: var(--domain-color);
+      opacity: 0.2;
+      transition: opacity 0.2s;
     }
 
     .card:hover {
-      border-color: var(--border-h);
-      box-shadow: 0 4px 20px rgba(14,21,33,0.10), 0 1px 4px rgba(14,21,33,0.06);
-      transform: translateY(-1px);
+      border-color: rgba(var(--domain-rgb),0.3);
+      box-shadow: 0 0 0 1px rgba(var(--domain-rgb),0.12),
+                  0 8px 32px rgba(var(--domain-rgb),0.10),
+                  0 2px 8px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
     }
-    .card:hover::before { opacity: .7; }
+    .card:hover::before { opacity: 0.8; }
 
     .card:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
-      border-color: var(--border-h);
-      box-shadow: 0 4px 20px rgba(14,21,33,0.10), 0 1px 4px rgba(14,21,33,0.06);
     }
 
     .card-head {
@@ -202,22 +257,40 @@
     }
 
     .card-live {
-      display: flex; align-items: center; gap: 4px;
+      display: flex; align-items: center; gap: 5px;
       font-size: 10px; font-weight: 600; color: var(--green);
       flex-shrink: 0; margin-top: 2px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      letter-spacing: 0.3px;
     }
 
     .live-dot {
-      width: 5px; height: 5px; border-radius: 50%;
+      width: 6px; height: 6px; border-radius: 50%;
       background: var(--green);
+      animation: pulse-dot 2.4s ease-out infinite;
     }
 
-    /* Self-hosted (Python — runs locally or on a Python host, not Cloudflare) */
-    .card-self { color: var(--amber); }
-    .card-self .live-dot { background: var(--amber); }
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+      60%  { box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+
+    /* Self-hosted */
+    .card-self { color: var(--amber) !important; }
+    .card-self .live-dot {
+      background: var(--amber);
+      animation: pulse-dot-amber 2.4s ease-out infinite;
+    }
+    @keyframes pulse-dot-amber {
+      0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); }
+      60%  { box-shadow: 0 0 0 5px rgba(245,158,11,0); }
+      100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    }
+
     .tag-py {
-      background: rgba(180,83,9,0.07); color: var(--amber);
-      border-color: rgba(180,83,9,0.18);
+      background: rgba(245,158,11,0.08); color: var(--amber);
+      border-color: rgba(245,158,11,0.2);
     }
 
     .card-desc {
@@ -233,47 +306,52 @@
     .tags { display: flex; gap: 4px; flex-wrap: wrap; }
 
     .tag {
-      font-size: 10px; font-weight: 500; letter-spacing: 0.1px;
-      padding: 2px 6px; border-radius: 4px;
-      background: var(--raised);
-      border: 1px solid var(--border-s); color: var(--t2);
+      font-size: 10px; font-weight: 500;
+      padding: 2px 8px; border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); color: var(--t2);
+      letter-spacing: 0.1px;
     }
 
     /* Tool origin tags */
     .tag-lovable {
-      background: rgba(109,40,217,0.07); color: #7c3aed;
-      border-color: rgba(109,40,217,0.18);
+      background: rgba(139,92,246,0.1); color: #a78bfa;
+      border-color: rgba(139,92,246,0.2);
     }
     .tag-cc {
-      background: rgba(29,78,216,0.07); color: #1d4ed8;
-      border-color: rgba(29,78,216,0.18);
+      background: rgba(59,130,246,0.1); color: #60a5fa;
+      border-color: rgba(59,130,246,0.2);
     }
 
     .card-btns { display: flex; gap: 5px; flex-shrink: 0; }
 
     .btn-sq {
       width: 27px; height: 27px; border-radius: 6px;
-      background: var(--raised); border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
       color: var(--t2); transition: all 0.12s; flex-shrink: 0;
     }
-    .btn-sq:hover { color: var(--text); border-color: var(--border-h); background: var(--surface); }
+    .btn-sq:hover { color: var(--text); border-color: var(--border-h); background: var(--raised); }
 
     .btn-open {
       display: flex; align-items: center; gap: 5px;
       height: 27px; padding: 0 10px; border-radius: 6px;
-      background: var(--accent); font-size: 11px; font-weight: 600;
-      color: #fff; transition: filter 0.12s, box-shadow 0.12s;
+      background: rgba(59,130,246,0.15); font-size: 11px; font-weight: 600;
+      color: #60a5fa; border: 1px solid rgba(59,130,246,0.25);
+      transition: background 0.12s, box-shadow 0.12s;
       letter-spacing: 0.1px;
     }
-    .btn-open:hover { filter: brightness(1.1); box-shadow: 0 2px 8px rgba(29,78,216,0.3); }
+    .btn-open:hover {
+      background: rgba(59,130,246,0.25);
+      box-shadow: 0 2px 12px rgba(59,130,246,0.2);
+      color: #93c5fd;
+    }
 
     /* ── CLIENT LIST ── */
     .client-list {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 10px; overflow: hidden;
-      box-shadow: 0 1px 2px rgba(14,21,33,0.04);
     }
 
     .client-row {
@@ -285,7 +363,7 @@
       transition: background 0.12s;
     }
     .client-row:last-child { border-bottom: none; }
-    .client-row:hover { background: var(--bg); }
+    .client-row:hover { background: rgba(255,255,255,0.025); }
 
     .client-name {
       font-size: 13.5px; font-weight: 600; color: var(--text);
@@ -300,7 +378,7 @@
       font-size: 11.5px; font-weight: 500; color: var(--t2);
       border: 1px solid var(--border); border-radius: 6px;
       padding: 5px 10px; white-space: nowrap;
-      transition: all 0.12s; background: var(--surface);
+      transition: all 0.12s;
     }
     .client-action:hover { color: var(--text); border-color: var(--border-h); }
 
@@ -317,6 +395,7 @@
       padding: 24px 48px;
       display: flex; align-items: center; justify-content: space-between;
       font-size: 12px; color: var(--t3);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
     }
     footer a { color: var(--t2); transition: color 0.12s; }
     footer a:hover { color: var(--text); }
@@ -328,7 +407,7 @@
       .nav-link[href="#live"],
       .nav-link[href="#client"] { display: none; }
 
-      .hero { padding: 52px 20px 44px; }
+      .hero { padding: 52px 20px 48px; }
       .hero h1 { letter-spacing: -2px; }
       .hero-sub { font-size: 15px; }
       .meta-dot { margin: 0 10px; }
@@ -367,12 +446,12 @@
 <!-- HERO -->
 <div class="hero">
   <div class="hero-role">Product builder &amp; founder</div>
-  <h1>Products built<br>to ship.</h1>
+  <h1>Products built<br>to <span class="hero-accent">ship.</span></h1>
   <p class="hero-sub">Full-stack SaaS across finance, property, data, and health. From idea to live in days.</p>
-  <div class="hero-meta">
-    <span><strong>15</strong> live on Cloudflare</span>
+  <div class="hero-stats">
+    <span><strong data-count="15">15</strong>&nbsp;live on Cloudflare</span>
     <span class="meta-dot">·</span>
-    <span><strong>19</strong> total projects</span>
+    <span><strong data-count="19">19</strong>&nbsp;total projects</span>
     <span class="meta-dot">·</span>
     <span>Lovable + Claude Code</span>
   </div>
@@ -385,12 +464,21 @@
     <div class="sec-head">
       <span class="sec-title">Live Apps</span>
       <span class="sec-line"></span>
-      <span class="sec-count">15 on Cloudflare</span>
+      <span class="sec-count"><span data-count="15">15</span> on Cloudflare</span>
     </div>
 
     <!-- Analysis & Data -->
-    <div class="domain-group">
-      <p class="domain-label">Analysis &amp; Data</p>
+    <div class="domain-group" style="--domain-color:#3b82f6;--domain-rgb:59,130,246;">
+      <p class="domain-label">
+        <span class="domain-icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="7" width="2" height="4" rx="0.5"/>
+            <rect x="5" y="4" width="2" height="7" rx="0.5"/>
+            <rect x="9" y="1" width="2" height="10" rx="0.5"/>
+          </svg>
+        </span>
+        Analysis &amp; Data
+      </p>
       <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://ecommerce-deep-dive-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -469,8 +557,16 @@
     </div>
 
     <!-- Finance -->
-    <div class="domain-group">
-      <p class="domain-label">Finance</p>
+    <div class="domain-group" style="--domain-color:#10b981;--domain-rgb:16,185,129;">
+      <p class="domain-label">
+        <span class="domain-icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1,9 4,5 7,7 11,2"/>
+            <polyline points="8,2 11,2 11,5"/>
+          </svg>
+        </span>
+        Finance
+      </p>
       <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://wealth-companion-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -596,9 +692,9 @@
       <div class="card" onclick="window.open('https://github.com/Aaron-1411/quant-desk','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
           <span class="card-name">📊 Tr4d3 · Quant Desk</span>
-          <span class="card-live card-self" title="Python app — runs locally or on a Python host (Render/Fly), not Cloudflare"><span class="live-dot"></span>Self-host</span>
+          <span class="card-live card-self" title="Python app — runs locally or on a Python host, not Cloudflare"><span class="live-dot"></span>Self-host</span>
         </div>
-        <p class="card-desc">12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro and a position risk book. Every number computed from real data; analysis-only, never trades. Single FastAPI app serving its own React dashboard.</p>
+        <p class="card-desc">12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro and a position risk book. Every number computed from real data; analysis-only, never trades.</p>
         <div class="card-foot">
           <div class="tags">
             <span class="tag tag-cc">Claude Code</span>
@@ -621,8 +717,17 @@
     </div>
 
     <!-- Property -->
-    <div class="domain-group">
-      <p class="domain-label">Property</p>
+    <div class="domain-group" style="--domain-color:#f59e0b;--domain-rgb:245,158,11;">
+      <p class="domain-label">
+        <span class="domain-icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 5.5 6 1.5 11 5.5"/>
+            <path d="M2.5 4.5V10.5H9.5V4.5"/>
+            <rect x="4.5" y="7" width="3" height="3.5" rx="0.5"/>
+          </svg>
+        </span>
+        Property
+      </p>
       <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://get-settld-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -677,8 +782,15 @@
     </div>
 
     <!-- Health & Fitness -->
-    <div class="domain-group">
-      <p class="domain-label">Health &amp; Fitness</p>
+    <div class="domain-group" style="--domain-color:#06b6d4;--domain-rgb:6,182,212;">
+      <p class="domain-label">
+        <span class="domain-icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1,6 3,6 4,2 5.5,10 7,4 8.5,7 9,6 11,6"/>
+          </svg>
+        </span>
+        Health &amp; Fitness
+      </p>
       <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://whole-health-compass-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -753,8 +865,16 @@
     </div>
 
     <!-- Lifestyle -->
-    <div class="domain-group">
-      <p class="domain-label">Lifestyle</p>
+    <div class="domain-group" style="--domain-color:#8b5cf6;--domain-rgb:139,92,246;">
+      <p class="domain-label">
+        <span class="domain-icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#8b5cf6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 1v1M6 10v1M1 6h1M10 6h1M2.6 2.6l.7.7M8.7 8.7l.7.7M2.6 9.4l.7-.7M8.7 3.3l.7-.7"/>
+            <circle cx="6" cy="6" r="2"/>
+          </svg>
+        </span>
+        Lifestyle
+      </p>
       <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://platespin-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
@@ -867,6 +987,50 @@
     <a href="https://github.com/Aaron-1411/CC">Aaron-1411/CC</a>
   </span>
 </footer>
+
+<script>
+  /* ── SCROLL REVEAL ── */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const card = entry.target;
+        const group = card.closest('.grid-auto');
+        const siblings = group ? [...group.querySelectorAll('.card')] : [card];
+        const idx = siblings.indexOf(card);
+        setTimeout(() => card.classList.add('in-view'), idx * 55);
+        revealObserver.unobserve(card);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+  document.querySelectorAll('.card').forEach(card => revealObserver.observe(card));
+
+  /* ── COUNT-UP ── */
+  function countUp(el) {
+    const target = parseInt(el.dataset.count, 10);
+    const dur = 900;
+    const start = performance.now();
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      el.textContent = Math.round(easeOut(t) * target);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const countObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        countUp(entry.target);
+        countObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
+</script>
 
 </body>
 </html>
