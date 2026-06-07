@@ -142,6 +142,19 @@
     /* ── GRID ── */
     .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 10px; }
 
+    /* ── DOMAIN GROUPS ── */
+    .domain-group { margin-bottom: 28px; }
+    .domain-group:last-child { margin-bottom: 0; }
+    .domain-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.7px;
+      text-transform: uppercase; color: var(--t3);
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .domain-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border-s);
+    }
+
     /* ── CARD ── */
     .card {
       position: relative;
@@ -357,9 +370,9 @@
   <h1>Products built<br>to ship.</h1>
   <p class="hero-sub">Full-stack SaaS across finance, property, data, and health. From idea to live in days.</p>
   <div class="hero-meta">
-    <span><strong>13</strong> live on Cloudflare</span>
+    <span><strong>15</strong> live on Cloudflare</span>
     <span class="meta-dot">·</span>
-    <span><strong>18</strong> total projects</span>
+    <span><strong>19</strong> total projects</span>
     <span class="meta-dot">·</span>
     <span>Lovable + Claude Code</span>
   </div>
@@ -372,38 +385,13 @@
     <div class="sec-head">
       <span class="sec-title">Live Apps</span>
       <span class="sec-line"></span>
-      <span class="sec-count">14 on Cloudflare</span>
+      <span class="sec-count">15 on Cloudflare</span>
     </div>
 
-    <div class="grid-auto">
-
-      <!-- Food & Lifestyle -->
-
-      <div class="card" onclick="window.open('https://platespin-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
-        <div class="card-head">
-          <span class="card-name">🍽️ PlateSpin</span>
-          <span class="card-live"><span class="live-dot"></span>Live</span>
-        </div>
-        <p class="card-desc">Can't decide where to eat? Spin a wheel of your cuisines, set your location and dietary needs, and get matched to nearby spots — free, no login.</p>
-        <div class="card-foot">
-          <div class="tags">
-            <span class="tag tag-cc">Claude Code</span>
-            <span class="tag">React</span>
-            <span class="tag">Vite</span>
-            <span class="tag">CF Pages</span>
-          </div>
-          <div class="card-btns">
-            <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/platespin" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
-              <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-            </a>
-            <a class="btn-open" href="https://platespin-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
-              Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Analysis & Data -->
+    <!-- Analysis & Data -->
+    <div class="domain-group">
+      <p class="domain-label">Analysis &amp; Data</p>
+      <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://ecommerce-deep-dive-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
@@ -477,7 +465,13 @@
         </div>
       </div>
 
-      <!-- Finance & Money -->
+      </div>
+    </div>
+
+    <!-- Finance -->
+    <div class="domain-group">
+      <p class="domain-label">Finance</p>
+      <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://wealth-companion-app.mraaronmanu.workers.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
@@ -623,7 +617,13 @@
         </div>
       </div>
 
-      <!-- Property -->
+      </div>
+    </div>
+
+    <!-- Property -->
+    <div class="domain-group">
+      <p class="domain-label">Property</p>
+      <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://get-settld-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
@@ -673,7 +673,13 @@
         </div>
       </div>
 
-      <!-- Health & Wellness -->
+      </div>
+    </div>
+
+    <!-- Health & Fitness -->
+    <div class="domain-group">
+      <p class="domain-label">Health &amp; Fitness</p>
+      <div class="grid-auto">
 
       <div class="card" onclick="window.open('https://whole-health-compass-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
@@ -719,8 +725,6 @@
         </div>
       </div>
 
-      <!-- Lifestyle & Creative -->
-
       <div class="card" onclick="window.open('https://gymseek-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
           <span class="card-name">🏋️ GymSeek</span>
@@ -739,6 +743,38 @@
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
             </a>
             <a class="btn-open" href="https://gymseek-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
+              Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+    <!-- Lifestyle -->
+    <div class="domain-group">
+      <p class="domain-label">Lifestyle</p>
+      <div class="grid-auto">
+
+      <div class="card" onclick="window.open('https://platespin-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
+        <div class="card-head">
+          <span class="card-name">🍽️ PlateSpin</span>
+          <span class="card-live"><span class="live-dot"></span>Live</span>
+        </div>
+        <p class="card-desc">Can't decide where to eat? Spin a wheel of your cuisines, set your location and dietary needs, and get matched to nearby spots — free, no login.</p>
+        <div class="card-foot">
+          <div class="tags">
+            <span class="tag tag-cc">Claude Code</span>
+            <span class="tag">React</span>
+            <span class="tag">Vite</span>
+            <span class="tag">CF Pages</span>
+          </div>
+          <div class="card-btns">
+            <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/platespin" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
+              <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a class="btn-open" href="https://platespin-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
               Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
@@ -769,7 +805,9 @@
         </div>
       </div>
 
+      </div>
     </div>
+
   </div>
 
   <!-- CLIENT WORK -->
