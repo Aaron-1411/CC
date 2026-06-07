@@ -1,0 +1,11 @@
+name = "platespin-app"
+compatibility_date = "2024-11-27"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+# PlateSpin's secure proxies live in /functions/api/* (added from Phase 3:
+# geocode, places, video, enrich). No secrets ship to the client — keyed/rate-
+# limited upstreams are injected onto the Pages project via the deploy workflow.
+# For local full-stack testing put keys in `.dev.vars` (git-ignored), e.g.:
+#   YOUTUBE_API_KEY = "..."
+# then run:  bunx wrangler pages dev dist

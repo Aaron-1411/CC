@@ -357,3 +357,23 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           workingDirectory: whole-health-compass
           command: pages deploy dist --project-name=whole-health-compass-app --branch=main
+
+  deploy-platespin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"platespin-app","production_branch":"main"}' || true
+      - run: cd platespin && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: platespin
+          command: pages deploy dist --project-name=platespin-app --branch=main
