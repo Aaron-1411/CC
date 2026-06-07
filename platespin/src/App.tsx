@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { AvailabilityMap, CuisineId, UserState } from "@/contract/types";
+import type { CuisineId, UserState } from "@/contract/types";
 import {
   loadUserState,
   recordSpinResult,
@@ -12,6 +12,7 @@ import {
 import { CuisinePicker } from "@/features/wheel/CuisinePicker";
 import { Wheel } from "@/features/wheel/Wheel";
 import { useSpin } from "@/features/wheel/useSpin";
+import { useAvailability } from "@/features/wheel/useAvailability";
 import { DietProfile } from "@/features/diet/DietProfile";
 import { LocationInput } from "@/features/location/LocationInput";
 import { SpinResultCard } from "@/features/results/SpinResultCard";
@@ -22,10 +23,15 @@ export default function App() {
   // Persist on every change.
   useEffect(() => saveUserState(state), [state]);
 
-  // Phase 2 has no API → availability is unknown (every selected cuisine is "in
-  // play"). Phase 3 fills this from a cached Overpass pre-flight so the wheel
+  // Honest wheel: pre-flight the area (one cached Overpass call) so the wheel
   // only spins to cuisines that actually have nearby, diet-compliant results.
-  const availability: AvailabilityMap | undefined = undefined;
+  // Until we have a real location/selection this is `undefined` (all in play).
+  const { availability, degraded } = useAvailability(
+    state.lastLocation,
+    state.spin.selected,
+    state.diet.profile,
+    state.diet.strictness,
+  );
 
   const onResult = useCallback((id: CuisineId) => {
     setState((s) => recordSpinResult(s, id));
@@ -50,13 +56,14 @@ export default function App() {
   const selectedCount = state.spin.selected.length;
   const canShowWheel = selectedCount > 0;
 
-  const headerSub = useMemo(
-    () =>
-      selectedCount === 0
-        ? "Pick a few cuisines to get started"
-        : `${selectedCount} cuisine${selectedCount === 1 ? "" : "s"} in play`,
-    [selectedCount],
-  );
+  const headerSub = useMemo(() => {
+    if (selectedCount === 0) return "Pick a few cuisines to get started";
+    if (availability) {
+      const live = state.spin.selected.filter((c) => (availability[c] ?? 0) > 0).length;
+      return `${live} of ${selectedCount} available nearby`;
+    }
+    return `${selectedCount} cuisine${selectedCount === 1 ? "" : "s"} in play`;
+  }, [selectedCount, availability, state.spin.selected]);
 
   return (
     <div className="mx-auto flex min-h-full max-w-md flex-col gap-4 px-4 pb-12 pt-6">
@@ -68,6 +75,13 @@ export default function App() {
       </header>
 
       <LocationInput value={state.lastLocation} onSet={(loc) => setState((s) => setLastLocation(s, loc))} />
+
+      {degraded && (
+        <p className="rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2 text-xs text-amber-200/90">
+          Live place data is temporarily unavailable — the wheel still spins, and
+          deep-links out work as normal.
+        </p>
+      )}
 
       <DietProfile
         profile={state.diet.profile}
