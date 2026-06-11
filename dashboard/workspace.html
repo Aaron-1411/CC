@@ -658,6 +658,67 @@
     .mem-empty { font-size: 12.5px; color: var(--t3); padding: 4px 2px 12px; }
     .mem-pick { font-size: 14px; color: var(--t3); text-align: center; padding: 60px 20px; }
 
+    /* ── memory branch view (Phase 2) ── */
+    .seg-btn.on { color: var(--text); border-color: var(--border-h); background: var(--raised); }
+    .mem-proj { cursor: pointer; }
+    .mem-proj::before { background: var(--purple); }
+    .mem-bhead { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+    .mem-btitle { font-size: 20px; font-weight: 700; color: var(--text); }
+    .mem-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .mem-tab {
+      font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 8px; color: var(--t2);
+      background: transparent; border: 1px solid transparent; transition: all 0.12s;
+    }
+    .mem-tab:hover { color: var(--text); background: var(--surface); }
+    .mem-tab.active { color: var(--text); background: var(--raised); border-color: var(--border); }
+    .mem-tab .mch-count { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px;
+      border-radius: 5px; font-size: 9.5px; background: rgba(167,139,250,0.18); color: var(--purple); margin-left: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .mem-tabbody { min-height: 200px; }
+    .mem-toolrow { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .md-toolbar { display: flex; gap: 6px; margin-bottom: 10px; }
+    .md-tab .mem-text { min-height: 280px; }
+    .md-preview {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px;
+      font-size: 14px; line-height: 1.65; color: var(--text); min-height: 280px;
+    }
+    .md-preview h1,.md-preview h2,.md-preview h3,.md-preview h4 { margin: 14px 0 8px; line-height: 1.3; }
+    .md-preview h1 { font-size: 20px; } .md-preview h2 { font-size: 17px; } .md-preview h3 { font-size: 15px; } .md-preview h4 { font-size: 13.5px; color: var(--t2); }
+    .md-preview p { margin: 8px 0; color: var(--t2); }
+    .md-preview ul,.md-preview ol { margin: 8px 0 8px 22px; color: var(--t2); }
+    .md-preview li { margin: 3px 0; }
+    .md-preview code { background: var(--raised); padding: 1px 6px; border-radius: 5px; font-size: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .md-preview a { color: var(--accent); }
+    .md-preview strong { color: var(--text); }
+    /* ADR decisions */
+    .adr { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 14px 16px; margin-bottom: 12px; }
+    .adr-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .adr-title { font-size: 14.5px; font-weight: 700; color: var(--text); }
+    .adr-date { font-size: 11px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .adr-actions { margin-left: auto; display: flex; gap: 6px; }
+    .adr-field { margin-top: 8px; }
+    .adr-label { font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .adr-field p { font-size: 13px; color: var(--t2); line-height: 1.55; margin-top: 3px; white-space: pre-wrap; }
+    /* sessions */
+    .sess { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 14px 16px; margin-bottom: 12px; }
+    .sess-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .sess-title { font-size: 14.5px; font-weight: 700; color: var(--text); }
+    .sess-meta { font-size: 11px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: auto; }
+    .sess-body { font-size: 13px; color: var(--t2); line-height: 1.6; }
+    .sess-body h1,.sess-body h2,.sess-body h3 { font-size: 14px; color: var(--text); margin: 8px 0 4px; }
+    .sess-body ul { margin: 6px 0 6px 20px; }
+    /* repositories inline */
+    .repo-row { display: grid; grid-template-columns: 1fr 1.4fr 1.2fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+    .repo-row input {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+      color: var(--text); font-family: inherit; font-size: 12.5px; min-width: 0;
+    }
+    .repo-row input:focus { outline: none; border-color: var(--border-h); }
+    .repo-row .mem-add-btn { flex-shrink: 0; padding: 0 14px; height: 36px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      color: var(--text); background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); }
+    .repo-add { border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 4px; }
+    #skill-pick { width: 100%; height: 38px; padding: 0 10px; border-radius: 9px; color: var(--text); background: var(--bg); border: 1px solid var(--border); font-size: 13px; }
+    @media (max-width: 560px){ .repo-row { grid-template-columns: 1fr 1fr; } }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 720px) {
       nav { padding: 0 16px; gap: 10px; }
@@ -856,20 +917,26 @@
 
   <!-- ════ MEMORY ════ -->
   <section class="view" id="view-memory">
-    <div class="page-head">
-      <div class="page-title">Project Memory</div>
-      <div class="page-sub">Obsidian-style knowledge branches — one per project. Compressed context that future agents can retrieve.</div>
-    </div>
-    <div class="mem-layout">
-      <aside class="mem-rail">
-        <div class="mem-rail-head">
-          <span>Branches</span>
-          <button class="mem-add-branch" id="mem-add-branch" title="Add a memory branch">+</button>
+    <!-- list of project memory branches -->
+    <div id="mem-list-view">
+      <div class="page-head">
+        <div class="page-title">Project Memory</div>
+        <div class="page-sub">Obsidian-style knowledge branches — one per project. Compressed, editable, exportable.</div>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="mem-search" placeholder="Search project memory…" />
         </div>
-        <div class="mem-branches" id="mem-branches"></div>
-      </aside>
-      <div class="mem-main" id="mem-main"></div>
+        <button class="btn-add" id="mem-export-all" title="Download every project's memory as an Obsidian-ready zip">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          Export Vault
+        </button>
+      </div>
+      <div class="grid" id="mem-list"></div>
     </div>
+    <!-- single project's branch, tabbed -->
+    <div id="mem-branch-view" hidden></div>
   </section>
 
   <!-- ════ TOOL STACK ════ -->
@@ -1041,6 +1108,32 @@
   </div>
 </div>
 
+<!-- ADD / EDIT DECISION MODAL (ADR) -->
+<div class="modal-card" id="decision-modal">
+  <h3 id="dec-heading">Add Decision</h3>
+  <div class="field"><label>Date</label><input id="dec-date" type="date" /></div>
+  <div class="field"><label>Title</label><input id="dec-title" placeholder="e.g. Store memory in HubStore" /></div>
+  <div class="field"><label>Context</label><textarea id="dec-context" placeholder="What situation forced a decision?"></textarea></div>
+  <div class="field"><label>Decision</label><textarea id="dec-decision" placeholder="What did we decide?"></textarea></div>
+  <div class="field"><label>Consequences</label><textarea id="dec-consequences" placeholder="What follows from it — trade-offs, follow-ups?"></textarea></div>
+  <div class="modal-actions">
+    <button class="btn-ghost" data-close-modal>Cancel</button>
+    <button class="btn-primary" id="dec-save">Save Decision</button>
+  </div>
+</div>
+
+<!-- ADD SESSION SUMMARY MODAL -->
+<div class="modal-card" id="session-modal">
+  <h3>Add Session Summary</h3>
+  <div class="field"><label>Title</label><input id="ses-title" placeholder="e.g. Phase 2 — Memory architecture" /></div>
+  <div class="field"><label>Summary (markdown)</label><textarea id="ses-summary" placeholder="What happened this session…"></textarea></div>
+  <div class="field"><label>Token estimate (optional)</label><input id="ses-tokens" type="number" min="0" placeholder="e.g. 24000" /></div>
+  <div class="modal-actions">
+    <button class="btn-ghost" data-close-modal>Cancel</button>
+    <button class="btn-primary" id="ses-save">Save Session</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- Phase A data layer (load before the inline script; attach window.HubStore / window.runSeed). -->
@@ -1133,8 +1226,6 @@ const LS = {
 // Projects, skills and prompts now live in HubStore (see getters below).
 let focusText     = LS.get('focus', '');
 let focusPinned   = LS.get('focusPinned', ['platespin','inkspector','quant']);
-let memStore      = LS.get('memory', {});      // branchId -> partial memory object (Phase 2)
-let memBranchesEx = LS.get('memBranches', []); // custom branches [{id,name,emoji}]
 let activity      = LS.get('activity', []);    // [{icon, text, ts}]
 const today = () => new Date().toISOString().slice(0,10);
 
@@ -1188,37 +1279,24 @@ function allSkills(){
 }
 function allAgents(){ return SEED_AGENTS; }
 
-/* ── memory branches & data ── */
-const EMPTY_MEM = () => ({ summary:'', architecture:'', decisions:[], skillsUsed:[], repoRefs:[], roadmap:[], openIssues:[], sessions:[] });
-function memBranches(){
-  const list = [];
-  const seen = {};
-  // seeded special branches (e.g. personal-hub)
-  Object.keys(SEED_MEMORY).forEach(id => {
-    const s = SEED_MEMORY[id];
-    list.push({ id, name:s.name, emoji:s.emoji, status:s.status });
-    seen[id] = true;
-  });
-  // every project is a branch (from HubStore), skipping any already added above
-  projects().forEach(p => {
-    if (seen[p.id]) return;
-    list.push({ id:p.id, name:plainName(p.name), emoji:pinEmojiRaw(p.name), status:p.status });
-    seen[p.id] = true;
-  });
-  // custom user branches
-  memBranchesEx.forEach(b => list.push({ id:b.id, name:b.name, emoji:b.emoji||'📁', status:'idea' }));
-  return list;
+/* ── memory branches (HubStore.memory; one MemoryBranch per project) ── */
+const EMPTY_SECTIONS = () => ({ summary:'', architecture:'', decisions:[], skillsUsed:[], repositories:[], roadmap:'', openIssues:'' });
+function emptyBranch(projectId){ return { id:'mem-'+projectId, projectId, sections:EMPTY_SECTIONS(), sessions:[] }; }
+// Get the branch for a project, creating + persisting an empty one if missing (1:1).
+function memBranchFor(projectId){
+  let b = HubStore.memory.getAll().find(x => x.projectId === projectId);
+  if (!b){ b = emptyBranch(projectId); HubStore.memory.save(b); }
+  // defensive: ensure all section keys exist (forward-compatible)
+  b.sections = Object.assign(EMPTY_SECTIONS(), b.sections || {});
+  if (!Array.isArray(b.sessions)) b.sessions = [];
+  return b;
 }
-function memData(id){
-  const seed = SEED_MEMORY[id] ? { ...EMPTY_MEM(), ...SEED_MEMORY[id] } : EMPTY_MEM();
-  const ov = memStore[id] || {};
-  return { ...seed, ...ov };
-}
-function saveMem(id, patch){
-  memStore[id] = { ...memData(id), ...patch };
-  // strip seed-only meta fields we never edit
-  delete memStore[id].name; delete memStore[id].emoji; delete memStore[id].status;
-  LS.set('memory', memStore);
+function saveBranch(b){ HubStore.memory.save(b); }
+// Patch one section field and persist.
+function saveSection(projectId, key, value){
+  const b = memBranchFor(projectId);
+  b.sections[key] = value;
+  saveBranch(b);
 }
 const CAT_LABEL = { development:'Development', research:'Research', marketing:'Marketing', content:'Content' };
 function allPrompts(){
@@ -1436,7 +1514,7 @@ function renderWsContext(id){
     <p class="ws-ctx-desc">${esc(p.description)}</p>
     <button class="mini-btn" id="ws-open-mem" data-mem="${p.id}">Open Memory →</button>`;
   const ob = $('#ws-open-mem');
-  if (ob) ob.onclick = ()=>{ memCurrent = p.id; LS.set('memCurrent', memCurrent); memToc='all'; switchView('memory'); };
+  if (ob) ob.onclick = ()=>openMemBranch(p.id);
 }
 function plainName(n){ return n.replace(/^\S+\s/, ''); }
 function pinEmoji(n){ const m=n.match(/^(\S+)\s/); return `<span class="emoji">${m?m[1]:'•'}</span>`; }
@@ -1524,139 +1602,256 @@ function renderTools(){
     : `<div class="empty">${toolConfig().length ? 'No tools match.' : 'No tools configured yet.'}</div>`;
 }
 
-/* ─────────── MEMORY VIEW ─────────── */
-let memCurrent = LS.get('memCurrent', 'personal-hub');
-let memToc = 'all'; // all | summary | sessions | decisions | roadmap
-function renderMemBranches(){
-  const rail = $('#mem-branches');
-  rail.innerHTML = memBranches().map(b=>`<button class="mem-branch ${b.id===memCurrent?'active':''}" data-branch="${esc(b.id)}">
-    <span class="mb-emoji">${esc(b.emoji||'📁')}</span>
-    <span class="mb-name">${esc(b.name)}</span>
-    <span class="mb-dot status-dot-${esc(b.status)}" style="background:${statusColor(b.status)}"></span>
-  </button>`).join('');
+/* ─────────── MEMORY VIEW (Phase 2) ─────────── */
+let memCurrent = LS.get('memCurrent', 'personal-hub'); // open branch projectId
+let memMode = 'list';        // 'list' | 'branch'
+let memTab = 'summary';
+let memListQuery = '';
+let memPreview = {};         // {summary:true} → preview vs edit per md tab
+
+const MEM_TABS = [
+  { k:'summary',      label:'Summary',      type:'md' },
+  { k:'architecture', label:'Architecture', type:'md' },
+  { k:'decisions',    label:'Decisions',    type:'decisions' },
+  { k:'skillsUsed',   label:'Skills Used',  type:'skills' },
+  { k:'repositories', label:'Repositories', type:'repos' },
+  { k:'roadmap',      label:'Roadmap',      type:'md' },
+  { k:'openIssues',   label:'Open Issues',  type:'md' },
+  { k:'sessions',     label:'Sessions',     type:'sessions' },
+];
+
+/* tiny markdown renderer (preview only) */
+function mdInline(t){
+  return esc(t)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g,'<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
-function statusColor(s){
-  return ({idea:'#a78bfa',planning:'#60a5fa',building:'#f59e0b',testing:'#f472b6',live:'#10b981',archived:'#414d60'})[s] || '#414d60';
-}
-function renderMemory(){
-  renderMemBranches();
-  const main = $('#mem-main');
-  const b = memBranches().find(x=>x.id===memCurrent);
-  if(!b){ main.innerHTML = `<div class="mem-pick">Select a branch to view its memory.</div>`; return; }
-  const m = memData(memCurrent);
-  const tocBtn = (k,label)=>`<button class="filter ${memToc===k?'active':''}" data-toc="${k}">${label}</button>`;
-  const visible = MEM_SECTIONS.filter(s => {
-    if (memToc==='all') return true;
-    if (memToc==='summary') return s.key==='summary' || s.key==='architecture';
-    if (memToc==='sessions') return s.key==='sessions';
-    if (memToc==='decisions') return s.key==='decisions';
-    if (memToc==='roadmap') return s.key==='roadmap';
-    return true;
+function mdToHtml(src){
+  const lines=(src||'').split('\n'); const out=[]; let list=null;
+  const close=()=>{ if(list){ out.push('</'+list+'>'); list=null; } };
+  lines.forEach(ln=>{
+    if(/^\s*$/.test(ln)){ close(); return; }
+    let m;
+    if((m=ln.match(/^(#{1,4})\s+(.*)$/))){ close(); const n=m[1].length; out.push(`<h${n}>${mdInline(m[2])}</h${n}>`); return; }
+    if((m=ln.match(/^\s*[-*]\s+(.*)$/))){ if(list!=='ul'){ close(); out.push('<ul>'); list='ul'; } out.push(`<li>${mdInline(m[1])}</li>`); return; }
+    if((m=ln.match(/^\s*\d+\.\s+(.*)$/))){ if(list!=='ol'){ close(); out.push('<ol>'); list='ol'; } out.push(`<li>${mdInline(m[1])}</li>`); return; }
+    close(); out.push(`<p>${mdInline(ln)}</p>`);
   });
-  main.innerHTML = `
-    <div class="mem-head">
-      <span style="font-size:24px">${esc(b.emoji||'📁')}</span>
-      <span class="mem-title">${esc(b.name)}</span>
-      ${statusPill(b.status)}
-    </div>
-    <div class="mem-sub">Project memory branch · ${esc(memCurrent)}</div>
-    <div class="mem-toc">
-      ${tocBtn('all','Project Memory')}
-      ${tocBtn('summary','Summary')}
-      ${tocBtn('sessions','Session Summaries')}
-      ${tocBtn('decisions','Decision Log')}
-      ${tocBtn('roadmap','Roadmap')}
-    </div>
-    ${visible.map(s=>memSection(s, m)).join('')}
-  `;
-  wireMemory();
+  close(); return out.join('');
 }
-function memSection(s, m){
-  const val = m[s.key];
-  let body = '';
-  if (s.type==='text'){
-    body = `<textarea class="mem-text" data-mtext="${s.key}" placeholder="${esc(s.placeholder)}">${esc(val||'')}</textarea>`;
-  } else if (s.type==='log'){
-    const items = (val||[]);
-    body = `<div class="mem-items">${items.length ? items.map((it,i)=>`<div class="mem-item">
-        <div class="mi-body"><div class="mi-text">${esc(it.text)}</div>${it.date?`<div class="mi-meta">${esc(it.date)}</div>`:''}</div>
-        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
-      </div>`).join('') : `<div class="mem-empty">Nothing logged yet.</div>`}</div>
-      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
-        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
-  } else if (s.type==='list'){
-    const items = (val||[]);
-    body = `<div class="mem-items">${items.length ? items.map((it,i)=>`<div class="mem-item">
-        <div class="mi-body"><div class="mi-text">${esc(it.text)}</div></div>
-        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
-      </div>`).join('') : `<div class="mem-empty">None.</div>`}</div>
-      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
-        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
-  } else if (s.type==='todo'){
-    const items = (val||[]);
-    body = `<div class="mem-items mem-roadmap">${items.length ? items.map((it,i)=>`<div class="mem-item">
-        <span class="mem-check ${it.done?'on':''}" data-mtoggle="${s.key}" data-i="${i}">${it.done?'✓':''}</span>
-        <div class="mi-body"><div class="mi-text ${it.done?'done':''}">${esc(it.text)}</div></div>
-        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
-      </div>`).join('') : `<div class="mem-empty">No roadmap items yet.</div>`}</div>
-      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
-        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
-  } else if (s.type==='tags'){
-    const items = (val||[]);
-    body = `<div class="tags" style="margin-bottom:12px">${items.length ? items.map((t,i)=>`<span class="tag">${esc(t)} <button class="mi-del" data-mdel="${s.key}" data-i="${i}" style="width:16px;height:16px;display:inline-grid">×</button></span>`).join('') : `<span class="mem-empty">No skills linked.</span>`}</div>
-      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
-        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
-  } else if (s.type==='links'){
-    const items = (val||[]);
-    body = `<div class="mem-items">${items.length ? items.map((it,i)=>`<div class="mem-item">
-        <div class="mi-body"><div class="mi-text">${esc(it.label||it.url)}</div>${it.url?`<div class="mi-meta"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.url)}</a></div>`:''}</div>
-        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
-      </div>`).join('') : `<div class="mem-empty">No references.</div>`}</div>
-      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
-        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
-  }
-  const count = Array.isArray(val) ? val.length : (val ? '' : 0);
-  return `<div class="mem-card">
-    <div class="mem-card-head"><span class="mch-ico">${s.icon}</span>${esc(s.title)}
-      ${Array.isArray(val)?`<span class="mch-count">${val.length}</span>`:''}</div>
-    ${body}
+function slugify(s){ return (s||'').replace(/[^\x00-\x7F]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase() || 'untitled'; }
+
+function openMemBranch(projectId){ memCurrent=projectId; LS.set('memCurrent',projectId); memMode='branch'; memTab='summary'; switchView('memory'); }
+
+function renderMemory(){
+  if (memMode==='branch' && memCurrent && project(memCurrent)) renderMemBranchView(memCurrent);
+  else { memMode='list'; renderMemList(); }
+}
+
+function renderMemList(){
+  $('#mem-list-view').hidden=false; $('#mem-branch-view').hidden=true;
+  const q=memListQuery.trim().toLowerCase();
+  let ps=projects();
+  if(q) ps=ps.filter(p=>plainName(p.name).toLowerCase().includes(q));
+  $('#mem-list').innerHTML = ps.length ? ps.map(memListCard).join('')
+    : `<div class="empty">No projects match.</div>`;
+}
+function memListCard(p){
+  const b=HubStore.memory.getAll().find(x=>x.projectId===p.id);
+  const s=b?Object.assign(EMPTY_SECTIONS(),b.sections):null;
+  const counts = b ? `${(s.decisions||[]).length} decisions · ${(b.sessions||[]).length} sessions` : 'Empty branch';
+  const first = b && s.summary ? s.summary.split('\n').find(l=>l.trim()) : '';
+  return `<div class="card mem-proj" data-membranch="${p.id}">
+    <div class="card-head"><span class="card-name">${esc(p.name)}</span>${statusPill(p.status)}</div>
+    <p class="card-desc">${esc(first ? first.replace(/^#+\s*/,'').slice(0,100) : 'No summary yet.')}</p>
+    <div class="meta-row"><span class="meta-x">🧠 ${esc(counts)}</span></div>
   </div>`;
 }
-function memAdd(key, raw){
-  const v = raw.trim(); if(!v) return;
-  const m = memData(memCurrent);
-  const arr = [...(m[key]||[])];
-  if (key==='decisions' || key==='sessions') arr.unshift({ text:v, date:today() });
-  else if (key==='roadmap') arr.push({ text:v, done:false });
-  else if (key==='openIssues') arr.push({ text:v });
-  else if (key==='skillsUsed') arr.push(v);
-  else if (key==='repoRefs') arr.push(/^https?:/.test(v) ? { label:v, url:v } : { label:v, url:'' });
-  saveMem(memCurrent, { [key]: arr });
-  const branchName = (memBranches().find(x=>x.id===memCurrent)||{}).name || memCurrent;
-  logActivity('🧠', `Updated <b>${esc(branchName)}</b> memory · ${esc(MEM_SECTIONS.find(s=>s.key===key).title)}`);
-  renderMemory();
+
+function tabCount(b,t){
+  const n = t.type==='decisions' ? b.sections.decisions.length
+    : t.type==='repos' ? b.sections.repositories.length
+    : t.type==='skills' ? b.sections.skillsUsed.length
+    : t.type==='sessions' ? b.sessions.length : null;
+  return n===null ? '' : ` <span class="mch-count">${n}</span>`;
 }
-function memDel(key, i){
-  const m = memData(memCurrent);
-  const arr = [...(m[key]||[])]; arr.splice(i,1);
-  saveMem(memCurrent, { [key]: arr }); renderMemory();
+function renderMemBranchView(projectId){
+  $('#mem-list-view').hidden=true; $('#mem-branch-view').hidden=false;
+  const p=project(projectId); const b=memBranchFor(projectId);
+  const tab = MEM_TABS.find(t=>t.k===memTab) || MEM_TABS[0];
+  $('#mem-branch-view').innerHTML = `
+    <div class="mem-bhead">
+      <button class="mini-btn" id="mem-back">← All projects</button>
+      <span class="mem-btitle">${esc(p?p.name:projectId)}</span>
+      ${p?statusPill(p.status):''}
+      <button class="btn-add sm" id="mem-export-branch" style="margin-left:auto">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Export Vault</button>
+    </div>
+    <div class="mem-tabs">${MEM_TABS.map(t=>`<button class="mem-tab ${t.k===memTab?'active':''}" data-memtab="${t.k}">${t.label}${tabCount(b,t)}</button>`).join('')}</div>
+    <div class="mem-tabbody" id="mem-tabbody">${memTabBody(p,b,tab)}</div>`;
+  wireMemBranch(projectId);
 }
-function memToggle(key, i){
-  const m = memData(memCurrent);
-  const arr = (m[key]||[]).map((it,idx)=> idx===i ? { ...it, done:!it.done } : it);
-  saveMem(memCurrent, { [key]: arr }); renderMemory();
+
+function mdTabBody(key,b){
+  const val=b.sections[key]||''; const preview=!!memPreview[key];
+  return `<div class="md-tab">
+    <div class="md-toolbar">
+      <button class="seg-btn ${!preview?'on':''}" data-mdmode="${key}|edit">Edit</button>
+      <button class="seg-btn ${preview?'on':''}" data-mdmode="${key}|preview">Preview</button>
+    </div>
+    ${preview
+      ? `<div class="md-preview">${val.trim()?mdToHtml(val):'<span class="mem-empty">Nothing here yet.</span>'}</div>`
+      : `<textarea class="mem-text" data-mdtext="${key}" placeholder="Write markdown…">${esc(val)}</textarea>`}
+  </div>`;
 }
-function wireMemory(){
-  $$('#mem-main [data-mtext]').forEach(t=>t.addEventListener('input', e=>{
-    saveMem(memCurrent, { [e.target.dataset.mtext]: e.target.value });
-  }));
-  $$('#mem-main [data-maddbtn]').forEach(b=>b.onclick=()=>{
-    const key=b.dataset.maddbtn; const inp=$(`#mem-main [data-madd="${key}"]`); memAdd(key, inp.value); });
-  $$('#mem-main [data-madd]').forEach(inp=>inp.addEventListener('keydown', e=>{
-    if(e.key==='Enter'){ e.preventDefault(); memAdd(inp.dataset.madd, inp.value); } }));
-  $$('#mem-main [data-mdel]').forEach(b=>b.onclick=()=>memDel(b.dataset.mdel, +b.dataset.i));
-  $$('#mem-main [data-mtoggle]').forEach(b=>b.onclick=()=>memToggle(b.dataset.mtoggle, +b.dataset.i));
-  $$('#mem-main [data-toc]').forEach(b=>b.onclick=()=>{ memToc=b.dataset.toc; renderMemory(); });
+function memTabBody(p,b,tab){
+  const s=b.sections;
+  if (tab.type==='md') return mdTabBody(tab.k,b);
+  if (tab.type==='decisions'){
+    const ds=s.decisions||[];
+    return `<div class="mem-toolrow"><button class="btn-add sm" id="add-decision">+ Add Decision</button></div>
+      ${ds.length ? ds.map(d=>`<div class="adr">
+        <div class="adr-head"><span class="adr-title">${esc(d.title)}</span><span class="adr-date">${esc(d.date||'')}</span>
+          <span class="adr-actions"><button class="mini-btn" data-decedit="${esc(d.id)}">Edit</button><button class="mi-del" data-decdel="${esc(d.id)}">×</button></span></div>
+        ${d.context?`<div class="adr-field"><span class="adr-label">Context</span><p>${esc(d.context)}</p></div>`:''}
+        ${d.decision?`<div class="adr-field"><span class="adr-label">Decision</span><p>${esc(d.decision)}</p></div>`:''}
+        ${d.consequences?`<div class="adr-field"><span class="adr-label">Consequences</span><p>${esc(d.consequences)}</p></div>`:''}
+      </div>`).join('') : `<div class="mem-empty">No decisions logged yet.</div>`}`;
+  }
+  if (tab.type==='skills'){
+    const used=s.skillsUsed||[];
+    const lib=allSkills().filter(sk=>!used.includes(sk.name)&&!used.includes(sk.id));
+    return `<div class="skills-used">
+      <div class="tags" style="margin-bottom:14px">${used.length?used.map((nm,i)=>`<span class="tag">${esc(nm)} <button class="mi-del" data-skilldel="${i}" style="width:16px;height:16px;display:inline-grid;place-items:center">×</button></span>`).join(''):`<span class="mem-empty">No skills linked yet.</span>`}</div>
+      <div class="mem-addrow">
+        <select id="skill-pick"><option value="">+ Add from library…</option>${lib.map(sk=>`<option value="${esc(sk.name)}">${esc(sk.name)}</option>`).join('')}</select>
+      </div>
+      <div class="mem-addrow"><input id="skill-free" placeholder="…or type a skill not in the library" />
+        <button class="mem-add-btn" id="skill-free-add">Add</button></div>
+    </div>`;
+  }
+  if (tab.type==='repos'){
+    const rs=s.repositories||[];
+    return `${rs.map((r,i)=>`<div class="repo-row" data-i="${i}">
+        <input data-repofield="name" data-i="${i}" value="${esc(r.name||'')}" placeholder="Name" />
+        <input data-repofield="url" data-i="${i}" value="${esc(r.url||'')}" placeholder="https://…" />
+        <input data-repofield="note" data-i="${i}" value="${esc(r.note||'')}" placeholder="Note" />
+        <button class="mi-del" data-repodel="${i}" title="Remove">×</button>
+      </div>`).join('') || `<div class="mem-empty">No repositories linked.</div>`}
+      <div class="repo-row repo-add">
+        <input id="repo-name" placeholder="Name" /><input id="repo-url" placeholder="https://…" />
+        <input id="repo-note" placeholder="Note" /><button class="mem-add-btn" id="repo-add">Add</button>
+      </div>`;
+  }
+  if (tab.type==='sessions'){
+    const ss=(b.sessions||[]).slice().sort((a,c)=>(c.date||'').localeCompare(a.date||''));
+    return `<div class="mem-toolrow"><button class="btn-add sm" id="add-session">+ Add Session Summary</button>
+      <span class="meta-x" style="margin-left:auto">Immutable records — newest first</span></div>
+      ${ss.length ? ss.map(x=>`<div class="sess">
+        <div class="sess-head"><span class="sess-title">${esc(x.title)}</span>
+          <span class="sess-meta">${esc(x.date||'')}${x.tokensEstimate?` · ~${(+x.tokensEstimate).toLocaleString()} tokens`:''}</span></div>
+        <div class="sess-body">${x.summary?mdToHtml(x.summary):''}</div>
+      </div>`).join('') : `<div class="mem-empty">No sessions recorded yet.</div>`}`;
+  }
+  return '';
+}
+
+function wireMemBranch(projectId){
+  const b=()=>memBranchFor(projectId);
+  $('#mem-back').onclick=()=>{ memMode='list'; renderMemory(); };
+  $('#mem-export-branch').onclick=exportVault;
+  $$('#mem-branch-view [data-memtab]').forEach(t=>t.onclick=()=>{ memTab=t.dataset.memtab; renderMemory(); });
+  $$('#mem-branch-view [data-mdmode]').forEach(btn=>btn.onclick=()=>{ const [k,mode]=btn.dataset.mdmode.split('|'); memPreview[k]=(mode==='preview'); renderMemory(); });
+  const ta=$('#mem-branch-view [data-mdtext]');
+  if(ta) ta.addEventListener('blur', e=>{ saveSection(projectId, e.target.dataset.mdtext, e.target.value); });
+  // decisions
+  const ad=$('#add-decision'); if(ad) ad.onclick=()=>openDecisionModal(projectId);
+  $$('#mem-branch-view [data-decedit]').forEach(btn=>btn.onclick=()=>openDecisionModal(projectId, btn.dataset.decedit));
+  $$('#mem-branch-view [data-decdel]').forEach(btn=>btn.onclick=()=>{ const br=b(); br.sections.decisions=br.sections.decisions.filter(d=>d.id!==btn.dataset.decdel); saveBranch(br); renderMemory(); });
+  // skills
+  const sp=$('#skill-pick'); if(sp) sp.onchange=()=>{ if(!sp.value)return; const br=b(); if(!br.sections.skillsUsed.includes(sp.value)){ br.sections.skillsUsed.push(sp.value); saveBranch(br);} renderMemory(); };
+  const sfa=$('#skill-free-add'); if(sfa) sfa.onclick=()=>{ const v=$('#skill-free').value.trim(); if(!v)return; const br=b(); if(!br.sections.skillsUsed.includes(v)){ br.sections.skillsUsed.push(v); saveBranch(br);} renderMemory(); };
+  $$('#mem-branch-view [data-skilldel]').forEach(btn=>btn.onclick=()=>{ const br=b(); br.sections.skillsUsed.splice(+btn.dataset.skilldel,1); saveBranch(br); renderMemory(); });
+  // repos — inline edit on blur + add + delete
+  $$('#mem-branch-view [data-repofield]').forEach(inp=>inp.addEventListener('blur', e=>{ const br=b(); const i=+e.target.dataset.i; if(br.sections.repositories[i]){ br.sections.repositories[i][e.target.dataset.repofield]=e.target.value; saveBranch(br);} }));
+  $$('#mem-branch-view [data-repodel]').forEach(btn=>btn.onclick=()=>{ const br=b(); br.sections.repositories.splice(+btn.dataset.repodel,1); saveBranch(br); renderMemory(); });
+  const ra=$('#repo-add'); if(ra) ra.onclick=()=>{ const name=$('#repo-name').value.trim(), url=$('#repo-url').value.trim(), note=$('#repo-note').value.trim(); if(!name&&!url)return; const br=b(); br.sections.repositories.push({name,url,note}); saveBranch(br); renderMemory(); };
+  // sessions
+  const as=$('#add-session'); if(as) as.onclick=()=>openSessionModal(projectId);
+}
+
+/* ── decision + session modals ── */
+let decisionTarget = null;  // { projectId, editingId|null }
+let sessionTarget = null;
+function openDecisionModal(projectId, decId){
+  const b=memBranchFor(projectId);
+  const d = decId ? b.sections.decisions.find(x=>x.id===decId) : null;
+  decisionTarget = { projectId, editingId: decId||null };
+  $('#dec-heading').textContent = decId ? 'Edit Decision' : 'Add Decision';
+  $('#dec-date').value = d ? (d.date||today()) : today();
+  $('#dec-title').value = d ? d.title : '';
+  $('#dec-context').value = d ? (d.context||'') : '';
+  $('#dec-decision').value = d ? (d.decision||'') : '';
+  $('#dec-consequences').value = d ? (d.consequences||'') : '';
+  openModal('decision-modal');
+}
+function openSessionModal(projectId){
+  sessionTarget = projectId;
+  $('#ses-title').value=''; $('#ses-summary').value=''; $('#ses-tokens').value='';
+  openModal('session-modal');
+}
+
+/* ── Export Vault: dependency-free ZIP (store method) → Obsidian folder layout ── */
+function crc32(bytes){
+  let c = ~0 >>> 0;
+  for (let i=0;i<bytes.length;i++){ c ^= bytes[i]; for (let k=0;k<8;k++) c = (c>>>1) ^ (0xEDB88320 & -(c&1)); }
+  return (~c) >>> 0;
+}
+function makeZip(files){
+  const enc = new TextEncoder();
+  const u16 = n => [n&255,(n>>8)&255];
+  const u32 = n => [n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  const DATE = 0x21; // 1980-01-01, valid (month=1, day=1)
+  const local=[], central=[]; let offset=0;
+  files.forEach(f=>{
+    const name = enc.encode(f.path), data = enc.encode(f.text||''), crc = crc32(data);
+    const lh = [].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(DATE),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0));
+    local.push(new Uint8Array(lh), name, data);
+    const ch = [].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(DATE),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset));
+    central.push(new Uint8Array(ch), name);
+    offset += lh.length + name.length + data.length;
+  });
+  let cenSize=0; central.forEach(c=>cenSize+=c.length);
+  const end = new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cenSize),u32(offset),u16(0)));
+  return new Blob([...local, ...central, end], { type:'application/zip' });
+}
+function decisionsMd(ds){
+  if(!ds||!ds.length) return '# Decisions\n\n_No decisions logged yet._\n';
+  return '# Decisions\n\n'+ds.map(d=>`## ${d.title}\n\n- **Date:** ${d.date||''}\n\n### Context\n${d.context||''}\n\n### Decision\n${d.decision||''}\n\n### Consequences\n${d.consequences||''}\n`).join('\n---\n\n');
+}
+function exportVault(){
+  const files=[];
+  projects().forEach(p=>{
+    const b = HubStore.memory.getAll().find(x=>x.projectId===p.id) || emptyBranch(p.id);
+    const s = Object.assign(EMPTY_SECTIONS(), b.sections);
+    const base = 'memory/'+slugify(plainName(p.name))+'/';
+    files.push({ path:base+'summary.md',       text:s.summary||'' });
+    files.push({ path:base+'architecture.md',  text:s.architecture||'' });
+    files.push({ path:base+'decisions.md',     text:decisionsMd(s.decisions) });
+    files.push({ path:base+'skills-used.md',   text:(s.skillsUsed||[]).map(x=>'- '+x).join('\n')||'_No skills linked._' });
+    files.push({ path:base+'repositories.md',  text:(s.repositories||[]).map(r=>`- [${r.name||r.url||'repo'}](${r.url||''})${r.note?' — '+r.note:''}`).join('\n')||'_No repositories._' });
+    files.push({ path:base+'roadmap.md',       text:s.roadmap||'' });
+    files.push({ path:base+'open-issues.md',   text:s.openIssues||'' });
+    (b.sessions||[]).forEach(x=>{
+      files.push({ path:base+'sessions/'+(x.date||'undated')+'-'+slugify(x.title)+'.md',
+        text:`# ${x.title}\n\n_${x.date||''}${x.tokensEstimate?` · ~${x.tokensEstimate} tokens`:''}_\n\n${x.summary||''}\n` });
+    });
+  });
+  const a=document.createElement('a'); a.href=URL.createObjectURL(makeZip(files));
+  a.download='obsidian-vault-'+today()+'.zip'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('Vault exported');
 }
 
 /* ─────────── PROJECT DRAWER ─────────── */
@@ -1799,9 +1994,12 @@ function autoGrow(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'
 
 /* ─────────── EVENTS ─────────── */
 document.addEventListener('click', e=>{
-  // tab / view switches
+  // tab / view switches (clicking the Memory tab always returns to the list)
   const v = e.target.closest('[data-view]');
-  if (v){ e.preventDefault(); switchView(v.dataset.view); return; }
+  if (v){ e.preventDefault(); if(v.dataset.view==='memory') memMode='list'; switchView(v.dataset.view); return; }
+  // memory list card → open that project's branch
+  const mb = e.target.closest('[data-membranch]');
+  if (mb){ openMemBranch(mb.dataset.membranch); return; }
   // "Open" button on a project without a quick-launch URL → drawer
   const op = e.target.closest('[data-open]');
   if (op){ openDrawer(op.dataset.open); return; }
@@ -1863,7 +2061,9 @@ $('#pm-save').addEventListener('click', ()=>{
     logActivity('✎', `<b>${esc(plainName(name))}</b> details updated`);
     toast('Project updated');
   } else {
-    HubStore.projects.save({ id:'p-'+Date.now(), createdAt:now, ...fields });
+    const id='p-'+Date.now();
+    HubStore.projects.save({ id, createdAt:now, ...fields });
+    memBranchFor(id); // auto-create the 1:1 memory branch for the new project
     logActivity('➕', `Added project <b>${esc(plainName(name))}</b>`);
     toast('Project added');
   }
@@ -1919,16 +2119,34 @@ $('#tool-search').addEventListener('input', e=>{ toolQuery=e.target.value; rende
 $('#tool-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
   $$('#tool-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); toolFilter=b.dataset.tstatus; renderTools(); });
 
-// memory branch selection + add branch
-$('#mem-branches').addEventListener('click', e=>{ const b=e.target.closest('.mem-branch'); if(!b)return;
-  memCurrent=b.dataset.branch; LS.set('memCurrent',memCurrent); memToc='all'; renderMemory(); });
-$('#mem-add-branch').addEventListener('click', ()=>{
-  const name=prompt('Name this memory branch (e.g. Fulcrum, Outreach Engine):'); if(!name) return;
-  const id='b-'+Date.now();
-  memBranchesEx.push({ id, name:name.trim(), emoji:'📁' }); LS.set('memBranches',memBranchesEx);
-  memCurrent=id; LS.set('memCurrent',memCurrent); memToc='all';
-  logActivity('🌱', `Created memory branch <b>${esc(name.trim())}</b>`);
-  renderMemory();
+// memory — list search + export vault + decision/session modal saves
+$('#mem-search').addEventListener('input', e=>{ memListQuery=e.target.value; renderMemList(); });
+$('#mem-export-all').addEventListener('click', exportVault);
+$('#dec-save').addEventListener('click', ()=>{
+  if(!decisionTarget) return;
+  const title=$('#dec-title').value.trim();
+  if(title.length<3){ toast('Title needs at least 3 characters'); return; }
+  const b=memBranchFor(decisionTarget.projectId);
+  const fields={ date:$('#dec-date').value||today(), title,
+    context:$('#dec-context').value.trim(), decision:$('#dec-decision').value.trim(),
+    consequences:$('#dec-consequences').value.trim() };
+  if(decisionTarget.editingId){
+    const d=b.sections.decisions.find(x=>x.id===decisionTarget.editingId);
+    if(d) Object.assign(d, fields);
+  } else {
+    b.sections.decisions.unshift({ id:'d-'+Date.now(), ...fields });
+  }
+  saveBranch(b); decisionTarget=null; closeModals(); renderMemory(); toast('Decision saved');
+});
+$('#ses-save').addEventListener('click', ()=>{
+  if(!sessionTarget) return;
+  const title=$('#ses-title').value.trim();
+  if(title.length<3){ toast('Title needs at least 3 characters'); return; }
+  const b=memBranchFor(sessionTarget);
+  const sess={ id:'s-'+Date.now(), date:today(), title, summary:$('#ses-summary').value.trim() };
+  const tok=parseInt($('#ses-tokens').value,10); if(!isNaN(tok)&&tok>0) sess.tokensEstimate=tok;
+  b.sessions.unshift(sess);
+  saveBranch(b); sessionTarget=null; closeModals(); renderMemory(); toast('Session recorded');
 });
 $('#sk-save').addEventListener('click', ()=>{
   const name=$('#sk-name').value.trim();
