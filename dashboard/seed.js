@@ -354,14 +354,20 @@
             decision: 'Store one MemoryBranch per project in HubStore (1:1 via projectId, auto-created); roadmap/open-issues are markdown strings; sessions are immutable. Export Vault uses a hand-rolled dependency-free ZIP writer.',
             consequences: 'No third-party deps; valid zip verified with system unzip; schema is forward-compatible with future automated summarisation.',
           },
+          {
+            id: 'd-5', date: '2026-06-11', title: 'Phase 3 Part A — Supabase + Chairman proxy infra',
+            context: 'The hub needed shared/persistent storage and a server-side path to Anthropic without ever exposing the API key, while keeping the zero-build, no-runtime-dependency rules.',
+            decision: 'Add a SupabaseAdapter (PostgREST via fetch, no SDK) that implements the HubStore interface identically behind a config-selected factory; a localStorage→Supabase migration script; and Cloudflare Pages Functions (/api/chat streaming proxy + audit, /api/models) reading the Anthropic key only from a Cloudflare secret. Model map is single-source in model-config.js. Defaults stay on localStorage; Supabase is opt-in via config.js.',
+            consequences: 'Infra-only (Chairman chat UI deferred to Part B); no client-side key; no new deps or build step; idempotent upsert migration; opt-in and reversible (flip storeAdapter back to local).',
+          },
         ],
         skillsUsed: ['atelier', 'impeccable', 'ui-ux-pro-max', 'stop-slop'],
         repositories: [
           { name: 'Aaron-1411/CC (monorepo)', url: 'https://github.com/Aaron-1411/CC', note: 'Source of truth + CI/CD for the hub and all projects.' },
           { name: 'Live workspace', url: 'https://aaron-projects-hub.pages.dev/workspace', note: 'Deployed Command Centre.' },
         ],
-        roadmap: '## Roadmap\n\n- [x] Phase 0 — Tool Stack dashboard\n- [x] Phase 1 — Foundation: projects, dashboard, skills, prompts\n- [x] Phase 2 — Obsidian memory architecture (project branches)\n- [x] Phase A — Audit + HubStore data layer\n- [ ] Phase 3 — Chairman orchestration + Supabase\n- [ ] Phase 4 — Skills system (SKILL.md, arbitration)\n- [ ] Phase 5 — Council agents',
-        openIssues: '## Open issues\n\n- Memory is local-only — sync to the real Obsidian vault (or Supabase from Phase 3) before multi-device use. Export Vault is the manual bridge for now.\n- Tool connection status is manual — wire real health checks later (out of scope until scoped).\n- Focus banner + recent-activity event log still use legacy `ws:` keys (non-entity UI state); migrate to HubStore.state in a later pass.',
+        roadmap: '## Roadmap\n\n- [x] Phase 0 — Tool Stack dashboard\n- [x] Phase 1 — Foundation: projects, dashboard, skills, prompts\n- [x] Phase 2 — Obsidian memory architecture (project branches)\n- [x] Phase A — Audit + HubStore data layer\n- [x] Phase 3A — Supabase adapter + Chairman proxy infra\n- [ ] Phase 3B — Chairman chat UI (orchestration)\n- [ ] Phase 4 — Skills system (SKILL.md, arbitration)\n- [ ] Phase 5 — Council agents',
+        openIssues: '## Open issues\n\n- Supabase is opt-in (config.js `storeAdapter`); default is still localStorage. Run `supabase/migrations/0001_init.sql` + `migrateHubToSupabase()` to go multi-device (see SETUP.md).\n- Chairman proxy (/api/chat, /api/models) is live infra but has no chat UI yet — that is Phase 3 Part B.\n- Tool connection status is manual — wire real health checks later (out of scope until scoped).\n- Focus banner + recent-activity event log still use legacy `ws:` keys (non-entity UI state); migrate to HubStore.state in a later pass.',
       },
       sessions: [
         {
@@ -383,6 +389,11 @@
           id: 's-4', date: '2026-06-11', title: 'Phase 2 — Obsidian Memory Architecture',
           summary: '## Phase 2\n\nRebuilt Memory on HubStore: one MemoryBranch per project, an 8-tab branch view (markdown summary/architecture/roadmap/open-issues with preview, ADR decisions, skills multi-select, repository refs, immutable session summaries) and an **Export Vault** that writes an Obsidian-ready zip via a dependency-free ZIP writer — no JSZip. Validated the archive with system `unzip`.',
           tokensEstimate: 52000,
+        },
+        {
+          id: 's-5', date: '2026-06-11', title: 'Phase 3 Part A — Supabase + Chairman proxy infra',
+          summary: '## Phase 3 Part A (infrastructure)\n\nShipped the backend layer without touching the localStorage experience. Added: `supabase/migrations/0001_init.sql` (10 tables matching types.ts, updated_at triggers, indexes, permissive anon RLS); `model-config.js` single-source model/pricing map; `SupabaseAdapter.js` (PostgREST via fetch, cache-backed, full HubStore parity, init() hydration) chosen by `store-factory.js`; `migrate-to-supabase.js` (idempotent localStorage→Supabase upsert); Cloudflare Pages Functions `functions/api/chat.ts` (Anthropic streaming proxy, server-side token capture + audit_log write) and `functions/api/models.ts`; `config.js` (defaults to local) and `SETUP.md`. No client-side API key, no new runtime deps, no build step. Supabase + Chairman are opt-in and reversible. Chairman chat UI is deferred to Part B. Fresh-context subagent review passed (one fix: audit_log PK uuid→text for parity with the app text id).',
+          tokensEstimate: 60000,
         },
       ],
     },

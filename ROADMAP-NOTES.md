@@ -134,3 +134,42 @@ never rebuild" direction; logged here for the record.
 - **Forward-compatible for auto-summarisation:** the schema is unchanged from
   the types; `SessionSummary.tokensEstimate` is captured manually now and a
   future Phase 3 agent can write sessions/decisions back via the same store API.
+
+---
+
+## Phase 3 Part A — decisions & notes (Supabase + Chairman proxy infra)
+
+**Scope:** infrastructure only. The Chairman chat UI is Phase 3 **Part B** and was
+explicitly deferred. Nothing here changes the default localStorage experience —
+Supabase and the Chairman proxy are both opt-in and reversible.
+
+- **Storage stays behind HubStore.** `SupabaseAdapter.js` talks to Supabase via
+  PostgREST (`fetch`, no SDK — honours no-external-deps) and implements the exact
+  HubStore interface. It is cache-backed: `init()` hydrates once via 10 parallel
+  GETs, reads stay synchronous, writes are write-through (fire-and-forget
+  `persist().catch(onError)`). `store-factory.js` picks the adapter from
+  `config.js` `storeAdapter` ('local' default | 'supabase'). UI is untouched.
+- **Schema:** `supabase/migrations/0001_init.sql` — 10 tables field-for-field with
+  `types.ts`, shared `set_updated_at` BEFORE-UPDATE trigger, indexes, and a
+  permissive `anon_all` RLS policy (single-builder hub, no auth until Phase 8;
+  anon key is public-by-design). **All PKs are `text`** (incl. `audit_log`, fixed
+  from uuid during review) for parity with the app's string ids; server-side
+  writers omit `id` and rely on the `gen_random_uuid()::text` default.
+- **API key never on the client.** Anthropic calls go through Cloudflare Pages
+  Functions: `functions/api/chat.ts` streams `/v1/messages` (SSE), tees the stream
+  through a `TransformStream` to capture `input_tokens`/`output_tokens`, and writes
+  an `audit_log` row server-side via `context.waitUntil` (agent_id 'chairman',
+  authorisation_level 'advisory'). The key is read only from the `ANTHROPIC_API_KEY`
+  Cloudflare secret. `functions/api/models.ts` serves the single-source model map.
+- **Single-source model/pricing** in `model-config.js` (dual-mode: browser global +
+  `module.exports`, so `/api/models` imports it via esbuild). chairman opus / worker
+  sonnet / summariser haiku, GBP pricing.
+- **Migration:** `migrate-to-supabase.js` (`window.migrateHubToSupabase({url,anonKey})`)
+  reads raw `hub:` localStorage keys directly (adapter-independent), upserts every
+  table idempotently (`Prefer: resolution=merge-duplicates`). Loaded by workspace.html.
+- **Setup/rollback:** `SETUP.md` documents run-migration → flip config → optional
+  data migration → verify → Cloudflare secrets → curl test. Rollback = set
+  `storeAdapter` back to `'local'` and reload; localStorage data is untouched.
+- **Verified:** both Functions bundle cleanly under esbuild (no type-check, loose
+  `any`); localStorage path renders error-free (17 projects, backend 'localStorage',
+  `migrateHubToSupabase` present); fresh-context subagent review passed.
