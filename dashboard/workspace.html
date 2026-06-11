@@ -2044,9 +2044,9 @@ async function chairStream(body, onText){
   const reader = body.getReader(); const dec = new TextDecoder(); let buf = '';
   for(;;){
     const { value, done } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream:true });
-    const lines = buf.split('\n'); buf = lines.pop();
+    buf += dec.decode(value || new Uint8Array(), { stream: !done });
+    // On the final read, flush any trailing line that lacked a closing newline.
+    const lines = buf.split('\n'); buf = done ? '' : lines.pop();
     for (const line of lines){
       const t = line.trim();
       if (!t.startsWith('data:')) continue;
@@ -2057,6 +2057,7 @@ async function chairStream(body, onText){
         if (evt.type==='content_block_delta' && evt.delta && typeof evt.delta.text==='string') onText(evt.delta.text);
       } catch(_){ /* keepalive / non-JSON line */ }
     }
+    if (done) break;
   }
 }
 
