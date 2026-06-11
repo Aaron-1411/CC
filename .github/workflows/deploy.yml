@@ -207,14 +207,15 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"name":"ecommerce-deep-dive-app","production_branch":"main"}' || true
-      - name: Create KV namespace (idempotent)
+      - name: Resolve KV namespace (best effort)
         id: kv
         run: |
           TITLE=brand-command-centre-data
           ACCT=a1a1276a1a278339d95c187e0bf6de47
-          # Create the namespace. If it already exists CF returns an error that
-          # we deliberately ignore — the id is resolved from the list below, so
-          # the step is idempotent across re-runs.
+          # Create the namespace (idempotent); resolve its id by listing. If the
+          # token lacks Workers KV Storage permission CF returns code 10000 and
+          # we deploy WITHOUT the binding rather than failing the whole job — the
+          # binding auto-attaches on the next run once the token is fixed.
           CREATE=$(curl -s -X POST \
             "https://api.cloudflare.com/client/v4/accounts/$ACCT/storage/kv/namespaces" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
@@ -223,49 +224,32 @@ jobs:
           LIST=$(curl -s \
             "https://api.cloudflare.com/client/v4/accounts/$ACCT/storage/kv/namespaces?per_page=100" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}")
-          # Resolve the id from the list (covers just-created and already-exists).
-          # Defensive parse: result may be null/missing on an API error.
           KV_ID=$(printf '%s' "$LIST" | python3 -c "import sys,json; ns=(json.load(sys.stdin).get('result') or []); print(next((n.get('id','') for n in ns if n.get('title')=='$TITLE'),''))") || true
           if [ -z "$KV_ID" ]; then
             KV_ID=$(printf '%s' "$CREATE" | python3 -c "import sys,json; print((json.load(sys.stdin).get('result') or {}).get('id',''))") || true
           fi
           if [ -z "$KV_ID" ]; then
-            echo "ERROR: could not resolve KV namespace id for $TITLE"
+            echo "::warning::Could not resolve KV namespace '$TITLE' — token likely lacks Workers KV Storage permission. Deploying without the BCC_KV binding; data will not persist until the token is granted KV access and CI re-runs."
             echo "create response: $CREATE"
             echo "list response:   $LIST"
-            exit 1
+          else
+            echo "Resolved KV namespace $TITLE -> $KV_ID"
           fi
           echo "kv_id=$KV_ID" >> "$GITHUB_OUTPUT"
-          echo "Resolved KV namespace $TITLE -> $KV_ID"
       - name: Set CF Pages environment variables and KV binding
         run: |
-          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/ecommerce-deep-dive-app" \
+          KV_ID="${{ steps.kv.outputs.kv_id }}"
+          if [ -n "$KV_ID" ]; then
+            KVB="{\"BCC_KV\": {\"namespace_id\": \"$KV_ID\"}}"
+          else
+            KVB="{}"
+          fi
+          ENV="{\"ANTHROPIC_API_KEY\": {\"value\": \"${{ secrets.ANTHROPIC_API_KEY }}\", \"type\": \"secret_text\"}}"
+          CFG="{\"compatibility_flags\": [\"nodejs_compat\"], \"compatibility_date\": \"2024-09-23\", \"env_vars\": $ENV, \"kv_namespaces\": $KVB}"
+          curl -s -o /dev/null -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/ecommerce-deep-dive-app" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "deployment_configs": {
-                "production": {
-                  "compatibility_flags": ["nodejs_compat"],
-                  "compatibility_date": "2024-09-23",
-                  "env_vars": {
-                    "ANTHROPIC_API_KEY": {"value": "${{ secrets.ANTHROPIC_API_KEY }}", "type": "secret_text"}
-                  },
-                  "kv_namespaces": {
-                    "BCC_KV": {"namespace_id": "${{ steps.kv.outputs.kv_id }}"}
-                  }
-                },
-                "preview": {
-                  "compatibility_flags": ["nodejs_compat"],
-                  "compatibility_date": "2024-09-23",
-                  "env_vars": {
-                    "ANTHROPIC_API_KEY": {"value": "${{ secrets.ANTHROPIC_API_KEY }}", "type": "secret_text"}
-                  },
-                  "kv_namespaces": {
-                    "BCC_KV": {"namespace_id": "${{ steps.kv.outputs.kv_id }}"}
-                  }
-                }
-              }
-            }'
+            -d "{\"deployment_configs\": {\"production\": $CFG, \"preview\": $CFG}}" || true
       - run: cd brand-command-centre && bun install && bunx @cloudflare/next-on-pages
       - uses: cloudflare/wrangler-action@v3
         with:
