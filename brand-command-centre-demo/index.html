@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brand Command Centre — Visual Demo</title>
+<meta name="description" content="Visual-only preview of Brand Command Centre. The fully interactive app runs locally." />
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#141822; --panel-2:#1b2030; --line:#262d3d;
+    --ink:#eef1f7; --muted:#9aa4b8; --faint:#6b7488;
+    --accent:#6c8cff; --accent-2:#8a6cff;
+    --green:#3ecf8e; --amber:#f5b649; --red:#f56565;
+    --shadow:0 14px 40px rgba(0,0,0,.45);
+    --radius:16px;
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 700px at 80% -10%,rgba(108,140,255,.10),transparent 60%),
+               radial-gradient(900px 600px at -10% 10%,rgba(138,108,255,.08),transparent 55%),
+               var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  a{color:inherit}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+  /* Demo banner */
+  .demo-banner{
+    position:sticky;top:0;z-index:50;
+    background:linear-gradient(90deg,rgba(245,182,73,.16),rgba(245,182,73,.08));
+    border-bottom:1px solid rgba(245,182,73,.35);
+    backdrop-filter:blur(8px);
+  }
+  .demo-banner .wrap{display:flex;align-items:center;gap:14px;padding:10px 22px;flex-wrap:wrap}
+  .demo-pill{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:#1a1300;background:var(--amber);padding:5px 10px;border-radius:999px;white-space:nowrap;
+  }
+  .demo-banner p{margin:0;color:#f3d9a6;font-size:13.5px}
+  .demo-banner b{color:#fff}
+  .demo-banner .local{
+    margin-left:auto;display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;color:#0b0d12;background:#fff;
+    padding:7px 14px;border-radius:10px;text-decoration:none;white-space:nowrap;
+    box-shadow:0 4px 14px rgba(0,0,0,.3);
+  }
+  .demo-banner .local:hover{transform:translateY(-1px)}
+  .demo-banner .local .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(62,207,142,.25)}
+
+  /* Hero */
+  header.hero{padding:54px 0 30px}
+  .brandline{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+  .logo{
+    width:46px;height:46px;border-radius:13px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:grid;place-items:center;font-weight:800;font-size:20px;color:#fff;
+    box-shadow:0 8px 22px rgba(108,140,255,.4);
+  }
+  .brandline .name{font-weight:700;font-size:18px;letter-spacing:.02em}
+  .brandline .name span{color:var(--muted);font-weight:500}
+  h1{font-size:clamp(30px,5vw,50px);line-height:1.05;margin:6px 0 14px;letter-spacing:-.02em}
+  h1 .grad{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:clamp(16px,2vw,19px);color:var(--muted);max-width:680px;margin:0 0 26px}
+  .modes{display:flex;gap:12px;flex-wrap:wrap}
+  .mode-tab{
+    display:inline-flex;align-items:center;gap:9px;padding:11px 16px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--line);font-weight:600;font-size:14px;
+  }
+  .mode-tab .ic{width:9px;height:9px;border-radius:50%}
+  .mode-tab.audit .ic{background:var(--accent)}
+  .mode-tab.exec .ic{background:var(--green)}
+
+  section{padding:34px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .sec-head h2{font-size:23px;margin:0;letter-spacing:-.01em}
+  .sec-head .kicker{color:var(--accent);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;margin:0 0 5px}
+  .sec-head .meta{color:var(--faint);font-size:13px}
+
+  /* Audit grid */
+  .pillars{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
+  .pillar{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;
+    position:relative;overflow:hidden;
+  }
+  .pillar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .pillar.g::before{background:var(--green)} .pillar.a::before{background:var(--amber)} .pillar.r::before{background:var(--red)}
+  .pillar .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .pillar .pname{font-weight:650;font-size:14.5px}
+  .rag{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+  .rag.g{color:#063;background:rgba(62,207,142,.16)} .rag.a{color:#7a5400;background:rgba(245,182,73,.18)} .rag.r{color:#7a1e1e;background:rgba(245,101,101,.16)}
+  .pillar .score{font-size:26px;font-weight:750;letter-spacing:-.02em;line-height:1}
+  .pillar .score small{font-size:13px;color:var(--faint);font-weight:600}
+  .pillar .gap{color:var(--muted);font-size:12.5px;margin-top:9px}
+  .bar{height:6px;border-radius:99px;background:var(--panel-2);margin-top:11px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px}
+  .bar.g i{background:var(--green)} .bar.a i{background:var(--amber)} .bar.r i{background:var(--red)}
+
+  /* Agents */
+  .agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .agent{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .agent .row{display:flex;align-items:center;gap:11px}
+  .agent .av{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;background:var(--panel-2);border:1px solid var(--line)}
+  .agent .aname{font-weight:650;font-size:14.5px}
+  .agent .stat{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:2px}
+  .agent .stat .d{width:7px;height:7px;border-radius:50%}
+  .agent .stat.on .d{background:var(--green);box-shadow:0 0 0 3px rgba(62,207,142,.2)}
+  .agent .stat.idle .d{background:var(--faint)}
+  .agent .auto{margin-top:13px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--faint)}
+  .chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+  .chip.auto-on{color:var(--green);border-color:rgba(62,207,142,.3)}
+
+  /* Inbox */
+  .inbox{display:flex;flex-direction:column;gap:12px}
+  .item{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+    display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  }
+  .item .tag{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+  .item h3{margin:5px 0 6px;font-size:15.5px}
+  .item p{margin:0;color:var(--muted);font-size:13.5px}
+  .item .actions{display:flex;gap:9px}
+  .btn{padding:9px 16px;border-radius:10px;font-size:13px;font-weight:650;border:1px solid var(--line);cursor:default;white-space:nowrap}
+  .btn.approve{background:rgba(62,207,142,.14);color:var(--green);border-color:rgba(62,207,142,.3)}
+  .btn.reject{background:transparent;color:var(--muted)}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--faint);font-size:13px}
+  footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a.local{color:var(--ink);text-decoration:none;font-weight:600;border:1px solid var(--line);padding:8px 14px;border-radius:10px;background:var(--panel)}
+  @media(max-width:560px){.item{grid-template-columns:1fr}.item .actions{justify-content:flex-start}}
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <div class="wrap">
+    <span class="demo-pill">● Visual demo</span>
+    <p>This is a <b>visual-only preview</b>. The fully interactive app runs locally.</p>
+    <a class="local" href="http://localhost:3000" target="_blank" rel="noopener"><span class="dot"></span>Open live app · localhost:3000</a>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brandline">
+      <div class="logo">B</div>
+      <div class="name">Brand Command Centre <span>· AI brand operations</span></div>
+    </div>
+    <h1>Audit any brand, then <span class="grad">execute</span> the fixes.</h1>
+    <p class="lede">A 13-pillar RAG gap analysis turns a brand URL into a prioritised action plan — then seven specialist AI agents draft the work and route it to a single approval inbox.</p>
+    <div class="modes">
+      <span class="mode-tab audit"><span class="ic"></span>Audit mode — diagnose</span>
+      <span class="mode-tab exec"><span class="ic"></span>Execute mode — act</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="kicker">Audit mode</p>
+        <h2>13-Pillar Brand Audit</h2>
+      </div>
+      <div class="meta">Overall health <b style="color:var(--amber)">62 / 100</b> · 4 critical gaps · sample brand</div>
+    </div>
+    <div class="pillars">
+      <div class="pillar g"><div class="top"><span class="pname">Brand Strategy</span><span class="rag g">Green</span></div><div class="score">84<small>/100</small></div><div class="bar g"><i style="width:84%"></i></div><div class="gap">Clear positioning &amp; value prop.</div></div>
+      <div class="pillar a"><div class="top"><span class="pname">Visual Identity</span><span class="rag a">Amber</span></div><div class="score">66<small>/100</small></div><div class="bar a"><i style="width:66%"></i></div><div class="gap">Inconsistent logo usage across pages.</div></div>
+      <div class="pillar a"><div class="top"><span class="pname">Messaging &amp; Voice</span><span class="rag a">Amber</span></div><div class="score">71<small>/100</small></div><div class="bar a"><i style="width:71%"></i></div><div class="gap">Tone drifts between blog and product.</div></div>
+      <div class="pillar r"><div class="top"><span class="pname">Website &amp; UX</span><span class="rag r">Red</span></div><div class="score">41<small>/100</small></div><div class="bar r"><i style="width:41%"></i></div><div class="gap">Slow LCP; weak mobile nav.</div></div>
+      <div class="pillar r"><div class="top"><span class="pname">SEO</span><span class="rag r">Red</span></div><div class="score">38<small>/100</small></div><div class="bar r"><i style="width:38%"></i></div><div class="gap">Thin metadata, no schema markup.</div></div>
+      <div class="pillar a"><div class="top"><span class="pname">Content</span><span class="rag a">Amber</span></div><div class="score">59<small>/100</small></div><div class="bar a"><i style="width:59%"></i></div><div class="gap">Publishing cadence inconsistent.</div></div>
+      <div class="pillar g"><div class="top"><span class="pname">Social Presence</span><span class="rag g">Green</span></div><div class="score">78<small>/100</small></div><div class="bar g"><i style="width:78%"></i></div><div class="gap">Healthy engagement on core channels.</div></div>
+      <div class="pillar r"><div class="top"><span class="pname">Email &amp; CRM</span><span class="rag r">Red</span></div><div class="score">44<small>/100</small></div><div class="bar r"><i style="width:44%"></i></div><div class="gap">No lifecycle flows; flat list.</div></div>
+      <div class="pillar a"><div class="top"><span class="pname">Paid Media</span><span class="rag a">Amber</span></div><div class="score">63<small>/100</small></div><div class="bar a"><i style="width:63%"></i></div><div class="gap">ROAS ok; creative fatigue rising.</div></div>
+      <div class="pillar a"><div class="top"><span class="pname">Conversion (CRO)</span><span class="rag a">Amber</span></div><div class="score">57<small>/100</small></div><div class="bar a"><i style="width:57%"></i></div><div class="gap">Checkout drop-off at shipping step.</div></div>
+      <div class="pillar g"><div class="top"><span class="pname">Reviews &amp; Reputation</span><span class="rag g">Green</span></div><div class="score">81<small>/100</small></div><div class="bar g"><i style="width:81%"></i></div><div class="gap">Strong rating; quick responses.</div></div>
+      <div class="pillar a"><div class="top"><span class="pname">Analytics &amp; Data</span><span class="rag a">Amber</span></div><div class="score">64<small>/100</small></div><div class="bar a"><i style="width:64%"></i></div><div class="gap">Events firing; attribution gaps.</div></div>
+      <div class="pillar g"><div class="top"><span class="pname">Competitive Position</span><span class="rag g">Green</span></div><div class="score">76<small>/100</small></div><div class="bar g"><i style="width:76%"></i></div><div class="gap">Differentiated vs. top 3 rivals.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="kicker">Execute mode</p>
+        <h2>7 Specialist Agents</h2>
+      </div>
+      <div class="meta">5 enabled · 2 idle · autonomy per-agent</div>
+    </div>
+    <div class="agents">
+      <div class="agent"><div class="row"><div class="av">🔍</div><div><div class="aname">SEO Agent</div><div class="stat on"><span class="d"></span>Active</div></div></div><div class="auto"><span>Last run 2h ago</span><span class="chip auto-on">Auto-draft</span></div></div>
+      <div class="agent"><div class="row"><div class="av">✍️</div><div><div class="aname">Content Agent</div><div class="stat on"><span class="d"></span>Active</div></div></div><div class="auto"><span>Last run 5h ago</span><span class="chip auto-on">Auto-draft</span></div></div>
+      <div class="agent"><div class="row"><div class="av">📣</div><div><div class="aname">Social Agent</div><div class="stat on"><span class="d"></span>Active</div></div></div><div class="auto"><span>Last run 1h ago</span><span class="chip">Review-first</span></div></div>
+      <div class="agent"><div class="row"><div class="av">✉️</div><div><div class="aname">Email Agent</div><div class="stat on"><span class="d"></span>Active</div></div></div><div class="auto"><span>Last run 3h ago</span><span class="chip">Review-first</span></div></div>
+      <div class="agent"><div class="row"><div class="av">📊</div><div><div class="aname">Paid Media Agent</div><div class="stat on"><span class="d"></span>Active</div></div></div><div class="auto"><span>Last run 6h ago</span><span class="chip">Review-first</span></div></div>
+      <div class="agent"><div class="row"><div class="av">🎯</div><div><div class="aname">CRO Agent</div><div class="stat idle"><span class="d"></span>Idle</div></div></div><div class="auto"><span>Paused</span><span class="chip">Off</span></div></div>
+      <div class="agent"><div class="row"><div class="av">⭐</div><div><div class="aname">Reputation Agent</div><div class="stat idle"><span class="d"></span>Idle</div></div></div><div class="auto"><span>Paused</span><span class="chip">Off</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="kicker">Execute mode</p>
+        <h2>Approval Inbox</h2>
+      </div>
+      <div class="meta">3 items awaiting review</div>
+    </div>
+    <div class="inbox">
+      <div class="item">
+        <div>
+          <span class="tag">SEO Agent</span>
+          <h3>Rewrite 12 product meta descriptions for target keywords</h3>
+          <p>Adds missing keywords and a clear CTA; projected +8% organic CTR on category pages.</p>
+        </div>
+        <div class="actions"><span class="btn approve">Approve</span><span class="btn reject">Reject</span></div>
+      </div>
+      <div class="item">
+        <div>
+          <span class="tag">Email Agent</span>
+          <h3>Abandoned-cart 3-step lifecycle flow</h3>
+          <p>Drafted sequence with dynamic product blocks; recovers carts dropped at the shipping step.</p>
+        </div>
+        <div class="actions"><span class="btn approve">Approve</span><span class="btn reject">Reject</span></div>
+      </div>
+      <div class="item">
+        <div>
+          <span class="tag">Social Agent</span>
+          <h3>14-day content calendar — launch teaser series</h3>
+          <p>Platform-tailored captions and hooks aligned to the brand voice guide from the audit.</p>
+        </div>
+        <div class="actions"><span class="btn approve">Approve</span><span class="btn reject">Reject</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Brand Command Centre · <b style="color:var(--amber)">Visual demo</b> — content is illustrative. The fully interactive app runs locally.</span>
+    <a class="local" href="http://localhost:3000" target="_blank" rel="noopener">Open live app → localhost:3000</a>
+  </div>
+</footer>
+
+</body>
+</html>

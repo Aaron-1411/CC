@@ -402,9 +402,9 @@
       100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
     }
 
-    /* Self-hosted */
-    .card-self { color: var(--amber) !important; }
-    .card-self .live-dot {
+    /* Visual demo — UI preview on Cloudflare; full interactive app runs locally */
+    .card-visual { color: var(--amber) !important; }
+    .card-visual .live-dot {
       background: var(--amber);
       animation: pulse-dot-amber 2.4s ease-out infinite;
     }
@@ -413,6 +413,10 @@
       60%  { box-shadow: 0 0 0 5px rgba(245,158,11,0); }
       100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
     }
+
+    /* Self-hosted — nothing on Cloudflare; runs locally / on your own host */
+    .card-self { color: var(--t2) !important; }
+    .card-self .live-dot { background: var(--t2); animation: none; }
 
     .tag-py {
       background: rgba(245,158,11,0.08); color: var(--amber);
@@ -471,6 +475,21 @@
       background: rgba(59,130,246,0.25);
       box-shadow: 0 2px 12px rgba(59,130,246,0.2);
       color: #93c5fd;
+    }
+
+    /* Local launchpad button — opens the app running on your machine */
+    .btn-local {
+      display: flex; align-items: center; gap: 5px;
+      height: 27px; padding: 0 10px; border-radius: 6px;
+      background: rgba(16,185,129,0.13); font-size: 11px; font-weight: 600;
+      color: #34d399; border: 1px solid rgba(16,185,129,0.25);
+      transition: background 0.12s, box-shadow 0.12s;
+      letter-spacing: 0.1px; white-space: nowrap;
+    }
+    .btn-local:hover {
+      background: rgba(16,185,129,0.22);
+      box-shadow: 0 2px 12px rgba(16,185,129,0.18);
+      color: #6ee7b7;
     }
 
     /* ── CLIENT LIST ── */
@@ -612,7 +631,9 @@
   <h1>Products built<br>to <span class="hero-accent">ship.</span></h1>
   <p class="hero-sub">Full-stack SaaS across finance, property, data, and health. From idea to live in days.</p>
   <div class="hero-stats">
-    <span><strong data-count="15">15</strong>&nbsp;live on Cloudflare</span>
+    <span><strong data-count="13">13</strong>&nbsp;live on Cloudflare</span>
+    <span class="meta-dot">·</span>
+    <span><strong data-count="2">2</strong>&nbsp;visual demos</span>
     <span class="meta-dot">·</span>
     <span><strong data-count="19">19</strong>&nbsp;total projects</span>
     <span class="meta-dot">·</span>
@@ -627,7 +648,7 @@
     <div class="sec-head">
       <span class="sec-title">Live Apps</span>
       <span class="sec-line"></span>
-      <span class="sec-count"><span data-count="15">15</span> on Cloudflare</span>
+      <span class="sec-count"><span data-count="13">13</span> live · 2 demos</span>
     </div>
 
     <!-- Analysis & Data -->
@@ -647,7 +668,7 @@
       <div class="card" onclick="window.open('https://ecommerce-deep-dive-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
           <span class="card-name">🎯 Brand Command Centre</span>
-          <span class="card-live"><span class="live-dot"></span>Live</span>
+          <span class="card-visual"><span class="live-dot"></span>Visual demo</span>
         </div>
         <p class="card-desc">Brand audit + execution platform. A 13-pillar gap analysis feeds seven specialist AI agents (content, social, ads, email, reviews, promo, intel) that draft work into an approval inbox.</p>
         <div class="card-foot">
@@ -661,8 +682,11 @@
             <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/brand-command-centre" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
             </a>
-            <a class="btn-open" href="https://ecommerce-deep-dive-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
-              Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <a class="btn-local" href="http://localhost:3000" target="_blank" onclick="event.stopPropagation()" title="Open the full interactive app running on your machine">
+              Local <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <a class="btn-open" href="https://ecommerce-deep-dive-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Visual-only preview hosted on Cloudflare">
+              Preview <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
         </div>
@@ -831,7 +855,7 @@
       <div class="card" onclick="window.open('https://tastybot-app.pages.dev','_blank')" role="link" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
         <div class="card-head">
           <span class="card-name">🤖 Tastybot</span>
-          <span class="card-live"><span class="live-dot"></span>Live</span>
+          <span class="card-visual"><span class="live-dot"></span>Visual demo</span>
         </div>
         <p class="card-desc">Trading bot dashboard for TastyTrade. Backtests, position management, and strategy execution.</p>
         <div class="card-foot">
@@ -845,8 +869,11 @@
             <a class="btn-sq" href="https://github.com/Aaron-1411/CC/tree/master/tastybot" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
             </a>
-            <a class="btn-open" href="https://tastybot-app.pages.dev" target="_blank" onclick="event.stopPropagation()">
-              Open <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <a class="btn-local" href="http://localhost:5173" target="_blank" onclick="event.stopPropagation()" title="Open the live dashboard running on your machine (needs the Flask backend on :5050)">
+              Local <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <a class="btn-open" href="https://tastybot-app.pages.dev" target="_blank" onclick="event.stopPropagation()" title="Visual-only preview hosted on Cloudflare">
+              Preview <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
         </div>
@@ -869,8 +896,8 @@
             <a class="btn-sq" href="https://github.com/Aaron-1411/quant-desk" target="_blank" onclick="event.stopPropagation()" title="GitHub" aria-label="GitHub">
               <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
             </a>
-            <a class="btn-open" href="https://github.com/Aaron-1411/quant-desk" target="_blank" onclick="event.stopPropagation()">
-              Repo <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <a class="btn-local" href="http://localhost:5060" target="_blank" onclick="event.stopPropagation()" title="Open the FastAPI quant desk running on your machine">
+              Local <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>
         </div>
