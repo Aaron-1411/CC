@@ -74,3 +74,39 @@ never rebuild" direction; logged here for the record.
   strings); the zip export itself is later work.
 - **`tokensEstimate`** on `SessionSummary` is populated by hand for now; real
   estimates require the Phase 3 LLM proxy.
+
+---
+
+## Phase 1 — decisions & notes
+
+- **Full-catalog migration done.** The renderers now read **from HubStore**
+  (resolving the Phase A carry-forward above). seed.js holds the canonical
+  catalog: 17 projects (`personal-hub` + 16 real), 31 skills, 10 prompts; the
+  inline `SEED_PROJECTS/SEED_SKILLS/SEED_PROMPTS` were deleted. Only
+  `SEED_AGENTS` and `SEED_MEMORY` remain inline (agents are read-only; memory is
+  Phase 2).
+- **Compat getters.** `projects()/allSkills()/allPrompts()` enrich store records
+  with static catalog extras (project `domain/techTags/needs/repoFolder`; skill
+  `cat/invoke/icon`) and legacy aliases (`desc/live/tags`) so the existing
+  tiles/drawer render unchanged. Extras are presentational config, not user data.
+- **`personal-hub` is intentionally a project** (building/critical) so the
+  Workspace context panel and its memory branch line up.
+- **`HubStore.state` KV** added for non-entity app state. Workspace notes +
+  selected project persist there (`workspace:notes`, `workspace:project`); it is
+  included in export/import. This is the anchor the Phase 3 Chairman will load
+  project context from — keep `renderWorkspace`/`renderWsContext` extensible.
+- **`migrateHub()` is version-gated** (`SEED_VERSION`). Bump it when the catalog
+  grows so existing partial stores upsert missing items; it also one-time imports
+  legacy `ws:` data (project overrides with `med→medium`, custom skills/prompts,
+  prompt favourites). Never overwrites edits or deletions.
+- **Recent Activity is derived** from entity `updatedAt`. The `Skill` type has no
+  `updatedAt` field (by ROADMAP contract), so **seeded** skills don't surface in
+  the feed — projects, prompts, and user-added skills (which get timestamps) do.
+  Left type-pure deliberately; revisit if skills need activity tracking.
+- **Remaining `ws:` usage (out of Phase 1 scope):** focus text (`ws:focus`),
+  pins (`ws:focusPinned`), the `logActivity` event log (`ws:activity`, now
+  unsurfaced), and all memory keys (`ws:memory/memCurrent/memBranches` — Phase
+  2). These are not Phase 1 entities; migrate onto HubStore in their phases.
+- **Dashboard composition:** chosen with the user — the Dashboard shows all five
+  sections in order **and** Projects/Skills/Prompts remain 1-click nav tabs
+  (shared card builders + getters; independent filter/search state).

@@ -1090,6 +1090,7 @@ const SEED_MEMORY = {
     summary:'Personal AI Development Command Centre. Static single-file SPA (workspace.html) deployed on Cloudflare Pages. Evolving into the management layer for a virtual AI software company — projects, tool stack, skills, agents, prompts and project memory.',
     architecture:'Vanilla JS + localStorage, no build step. Dark theme design tokens shared with the public hub. Views: Dashboard, Projects, Memory, Tools, Skills, Agents, Prompts. Deployed via Aaron-1411/CC master → GitHub Actions → Cloudflare Pages (aaron-projects-hub).',
     decisions:[
+      { text:'Phase 1 — HubStore is the single source of truth: full catalog (17 projects, 31 skills, 10 prompts) lives in seed.js; inline SEED_* deleted; compat getters add presentational extras + aliases so tiles render unchanged. Added HubStore.state KV for workspace notes; Recent Activity derived from entity updatedAt; migrateHub() version-gated upsert + legacy ws: import.', date:'2026-06-11' },
       { text:'Phase 0 — Tool Stack renders from the static tool config in seed.js (HUB_SEED.tools), not the mutable store or an inline copy. Tools are static config with no toggle (not a health check); removed the duplicate inline SEED_TOOLS.', date:'2026-06-11' },
       { text:'Phase A — introduce a HubStore storage abstraction (hub: keys, localStorage adapter + export/import). UI never touches localStorage directly; backend swaps to Supabase from Phase 3 without UI changes.', date:'2026-06-11' },
       { text:'Keep everything in one static HTML file — zero build, instant deploy, easy to reason about.', date:'2026-06-11' },
@@ -1106,6 +1107,8 @@ const SEED_MEMORY = {
       { text:'Phase 1 — Foundation: projects, dashboard, skills, prompts', done:true },
       { text:'Phase 2 — Obsidian memory architecture (project branches)', done:true },
       { text:'Phase A — Audit + HubStore data layer (types, store, seed)', done:true },
+      { text:'Phase 0 — Tool Stack dashboard (capabilities, filters)', done:true },
+      { text:'Phase 1 — Foundation: HubStore-backed dashboard, projects/skills/prompts, workspace', done:true },
       { text:'Future — Chairman orchestration + council agents', done:false },
       { text:'Future — SKILL.md generation + repository intelligence', done:false },
     ],
@@ -1114,6 +1117,7 @@ const SEED_MEMORY = {
       { text:'Tool connection status is manual — wire real health checks later.' },
     ],
     sessions:[
+      { text:'Phase 1 — Foundation: migrated projects/skills/prompts onto HubStore (full catalog, single source), added project add/edit modal with validation, and rebuilt the Dashboard into 5 ordered sections (Active Projects, Current Priorities, Skills, Prompts, Workspace) plus a project-context panel, autosaved notes, derived Recent Activity and JSON export/import. Status/priority colours to spec; works at 380px; existing tabs preserved.', date:'2026-06-11' },
       { text:'Phase 0 — Tool Stack: added a capabilities field to ToolCard + all 8 tools, rebuilt the cards to render from config (binary connected badge, capability bullets, agent pills), and wired search (name/capability) + All/Connected/Local/Available filters. Works at 380px; existing views unchanged.', date:'2026-06-11' },
       { text:'Phase A — Audit + Foundation: wrote ARCHITECTURE.md, CLAUDE.md and types.ts, then introduced the HubStore data layer (localStorage adapter, export/import, seed) wired on load. App behaviour unchanged; 26 store/seed assertions + fallback pass.', date:'2026-06-11' },
       { text:'Built V2: added Tool Stack, extended project statuses/priorities, and the Obsidian-style Project Memory layer with per-project branches.', date:'2026-06-11' },
