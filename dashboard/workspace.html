@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workspace — Aaron's Command Centre</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07080f;
+      --surface:   #0d0f1a;
+      --raised:    #131724;
+      --border:    rgba(255,255,255,0.07);
+      --border-s:  rgba(255,255,255,0.04);
+      --border-h:  rgba(255,255,255,0.16);
+      --text:      #f0f2f7;
+      --t2:        #8892a4;
+      --t3:        #414d60;
+      --accent:    #3b82f6;
+      --green:     #10b981;
+      --amber:     #f59e0b;
+      --purple:    #a78bfa;
+      --pink:      #f472b6;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "cv11","ss01";
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 28px; height: 56px;
+      background: rgba(7,8,15,0.88);
+      backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid var(--border-s);
+    }
+    .nav-logo {
+      font-size: 14px; font-weight: 700; letter-spacing: -0.3px;
+      color: var(--text); white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .badge {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.6px;
+      color: var(--accent); border: 1px solid rgba(59,130,246,0.3);
+      padding: 2px 6px; border-radius: 5px; text-transform: uppercase;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .nav-tabs { display: flex; align-items: center; gap: 2px; margin-left: 8px; overflow-x: auto; }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      font-size: 13px; font-weight: 500; color: var(--t2);
+      padding: 6px 13px; border-radius: 7px; white-space: nowrap;
+      background: transparent; border: none;
+      transition: color 0.12s, background 0.12s;
+    }
+    .tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .tab.active { color: var(--text); background: var(--raised); }
+    .nav-ai { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .ai-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; color: var(--text);
+      padding: 6px 12px; border-radius: 7px;
+      border: 1px solid var(--border); background: var(--surface);
+      transition: all 0.12s; white-space: nowrap;
+    }
+    .ai-btn:hover { border-color: var(--border-h); background: var(--raised); transform: translateY(-1px); }
+    .ai-btn .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .ai-btn.claude .dot { background: var(--accent); }
+    .ai-btn.codex  .dot { background: var(--green); }
+    .ai-btn .lbl-full { display: inline; }
+
+    /* ── LAYOUT ── */
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 28px 96px; }
+    .view { display: none; animation: fade 0.3s ease; }
+    .view.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .page-head { margin-bottom: 28px; }
+    .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.8px; }
+    .page-sub { font-size: 14px; color: var(--t2); margin-top: 4px; }
+
+    .sec-head {
+      display: flex; align-items: center; gap: 14px; margin: 0 0 16px;
+    }
+    .sec-title {
+      font-size: 10px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--t3); white-space: nowrap;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .sec-line { flex: 1; height: 1px; background: var(--border-s); }
+    .sec-count {
+      font-size: 10px; color: var(--t3); white-space: nowrap;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .sec-link {
+      font-size: 11px; color: var(--t2); cursor: pointer;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .sec-link:hover { color: var(--accent); }
+    .section { margin-bottom: 40px; }
+
+    /* ── FOCUS BANNER ── */
+    .focus {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(167,139,250,0.06));
+      border: 1px solid rgba(59,130,246,0.18);
+      border-radius: 14px; padding: 22px 24px; margin-bottom: 32px;
+    }
+    .focus::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 22px 22px; pointer-events: none;
+      -webkit-mask-image: radial-gradient(ellipse 70% 100% at 100% 0%, #000, transparent 70%);
+      mask-image: radial-gradient(ellipse 70% 100% at 100% 0%, #000, transparent 70%);
+    }
+    .focus-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 10px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .focus-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+      animation: pulse 2.4s ease-out infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.7); }
+      60% { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+      100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+    }
+    #focus-input {
+      width: 100%; background: transparent; border: none; resize: none;
+      color: var(--text); font-size: 17px; font-weight: 500; line-height: 1.5;
+      font-family: inherit; outline: none; position: relative;
+    }
+    #focus-input::placeholder { color: var(--t3); }
+    .focus-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; position: relative; }
+    .focus-chip {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 500; color: var(--text);
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      padding: 5px 11px; border-radius: 20px; transition: all 0.12s;
+    }
+    .focus-chip:hover { border-color: var(--border-h); background: var(--raised); }
+    .focus-chip .emoji { font-size: 13px; }
+
+    /* ── QUICK AI TILES ── */
+    .ai-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ai-tile {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; transition: all 0.16s;
+    }
+    .ai-tile:hover { border-color: var(--border-h); transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.35); }
+    .ai-tile .ico {
+      width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .ai-tile.claude .ico { background: rgba(59,130,246,0.14); }
+    .ai-tile.codex .ico  { background: rgba(16,185,129,0.14); }
+    .ai-tile .tt { font-size: 15px; font-weight: 650; }
+    .ai-tile .ts { font-size: 12px; color: var(--t2); margin-top: 2px; }
+
+    /* ── GRID + CARDS ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 12px; }
+
+    .card {
+      position: relative; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.16s; cursor: pointer;
+      overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--accent); opacity: 0.18; transition: opacity 0.2s;
+    }
+    .card:hover {
+      border-color: rgba(59,130,246,0.3); transform: translateY(-2px);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.1), 0 8px 30px rgba(0,0,0,0.4);
+    }
+    .card:hover::before { opacity: 0.7; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
+    .card-name { font-size: 14.5px; font-weight: 650; letter-spacing: -0.2px; line-height: 1.25; }
+    .card-desc { font-size: 12.5px; color: var(--t2); line-height: 1.6; flex: 1; margin-bottom: 14px; }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding-top: 12px; border-top: 1px solid var(--border-s); }
+
+    /* status pill */
+    .status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .status .sd { width: 6px; height: 6px; border-radius: 50%; }
+    .status.idea     { background: rgba(167,139,250,0.1); color: var(--purple); }
+    .status.idea .sd { background: var(--purple); }
+    .status.building     { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .status.building .sd { background: var(--amber); }
+    .status.testing     { background: rgba(244,114,182,0.1); color: var(--pink); }
+    .status.testing .sd { background: var(--pink); }
+    .status.live     { background: rgba(16,185,129,0.1); color: var(--green); }
+    .status.live .sd { background: var(--green); }
+
+    .prio { font-size: 10px; font-weight: 600; font-family: 'JetBrains Mono', ui-monospace, monospace;
+      letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 4px; }
+    .prio.high { color: #f87171; }
+    .prio.med  { color: var(--t2); }
+    .prio.low  { color: var(--t3); }
+
+    .meta-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .meta-x { font-size: 10.5px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+    .tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tag {
+      font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--t2);
+    }
+    .tag.acc { background: rgba(59,130,246,0.1); color: #60a5fa; border-color: rgba(59,130,246,0.2); }
+
+    .launch {
+      display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+      height: 28px; padding: 0 11px; border-radius: 7px;
+      background: rgba(59,130,246,0.15); font-size: 11px; font-weight: 600;
+      color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); transition: all 0.12s;
+    }
+    .launch:hover { background: rgba(59,130,246,0.28); color: #93c5fd; box-shadow: 0 2px 12px rgba(59,130,246,0.2); }
+
+    /* ── TOOLBAR (search/filter) ── */
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search {
+      flex: 1; min-width: 200px; display: flex; align-items: center; gap: 9px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+      padding: 0 13px; height: 40px; transition: border-color 0.12s;
+    }
+    .search:focus-within { border-color: var(--border-h); }
+    .search input { flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-size: 14px; font-family: inherit; }
+    .search input::placeholder { color: var(--t3); }
+    .search svg { color: var(--t3); flex-shrink: 0; }
+    .filters { display: flex; gap: 5px; flex-wrap: wrap; }
+    .filter {
+      font-size: 12px; font-weight: 500; color: var(--t2); height: 40px; padding: 0 13px;
+      border-radius: 9px; border: 1px solid var(--border); background: var(--surface);
+      transition: all 0.12s; white-space: nowrap;
+    }
+    .filter:hover { color: var(--text); border-color: var(--border-h); }
+    .filter.active { color: var(--text); background: var(--raised); border-color: var(--border-h); }
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 15px;
+      border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--text);
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); transition: all 0.12s;
+    }
+    .btn-add:hover { background: rgba(59,130,246,0.25); }
+
+    /* ── SKILL CARD ── */
+    .skill { cursor: default; }
+    .skill::before { background: var(--purple); }
+    .skill:hover { border-color: rgba(167,139,250,0.3); box-shadow: 0 0 0 1px rgba(167,139,250,0.1), 0 8px 30px rgba(0,0,0,0.4); }
+    .skill-src {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600;
+      color: var(--purple); padding: 5px 10px; border-radius: 7px;
+      background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22); transition: all 0.12s;
+    }
+    .skill-src:hover { background: rgba(167,139,250,0.2); }
+
+    /* ── PROMPT CARD ── */
+    .prompt { cursor: default; }
+    .prompt::before { background: var(--green); }
+    .prompt:hover { border-color: rgba(16,185,129,0.3); box-shadow: 0 0 0 1px rgba(16,185,129,0.1), 0 8px 30px rgba(0,0,0,0.4); }
+    .prompt-cat {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+      color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .prompt-body {
+      font-size: 12px; color: var(--t2); line-height: 1.6; flex: 1; margin: 8px 0 14px;
+      white-space: pre-wrap; max-height: 110px; overflow: hidden; position: relative;
+    }
+    .prompt-body.clamp::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+      background: linear-gradient(transparent, var(--surface));
+    }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--t2); transition: all 0.12s;
+    }
+    .icon-btn:hover { color: var(--text); border-color: var(--border-h); background: var(--raised); }
+    .icon-btn.fav { color: var(--amber); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+    .copy-btn {
+      display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px;
+      border-radius: 7px; font-size: 11px; font-weight: 600; color: var(--green);
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); transition: all 0.12s;
+    }
+    .copy-btn:hover { background: rgba(16,185,129,0.22); }
+
+    /* ── DRAWER ── */
+    .scrim {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 200;
+    }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 480px; max-width: 92vw; z-index: 201;
+      background: var(--bg); border-left: 1px solid var(--border);
+      transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      overflow-y: auto; box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+    }
+    .drawer.open { transform: none; }
+    .drawer-head {
+      position: sticky; top: 0; z-index: 2; background: rgba(7,8,15,0.92); backdrop-filter: blur(12px);
+      padding: 20px 24px; border-bottom: 1px solid var(--border-s);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+    .drawer-title { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; }
+    .drawer-close {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: var(--surface); border: 1px solid var(--border); color: var(--t2);
+      display: flex; align-items: center; justify-content: center; transition: all 0.12s;
+    }
+    .drawer-close:hover { color: var(--text); border-color: var(--border-h); }
+    .drawer-body { padding: 24px; }
+    .dgroup { margin-bottom: 26px; }
+    .dgroup-t {
+      font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--t3); margin-bottom: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+    .seg-btn {
+      font-size: 12px; font-weight: 600; padding: 7px 13px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--t2); transition: all 0.12s;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .seg-btn:hover { color: var(--text); border-color: var(--border-h); }
+    .seg-btn.on.idea     { color: var(--purple); border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.1); }
+    .seg-btn.on.building { color: var(--amber);  border-color: rgba(245,158,11,0.4);  background: rgba(245,158,11,0.1); }
+    .seg-btn.on.testing  { color: var(--pink);   border-color: rgba(244,114,182,0.4); background: rgba(244,114,182,0.1); }
+    .seg-btn.on.live     { color: var(--green);  border-color: rgba(16,185,129,0.4);  background: rgba(16,185,129,0.1); }
+    .seg-btn.on.high     { color: #f87171; border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.1); }
+    .seg-btn.on.med      { color: var(--text); border-color: var(--border-h); background: var(--raised); }
+    .seg-btn.on.low      { color: var(--t2); border-color: var(--border-h); background: var(--raised); }
+
+    .dlinks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dlink {
+      display: flex; align-items: center; gap: 9px; padding: 12px 14px; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border); transition: all 0.12s;
+      color: var(--text); text-align: left; width: 100%;
+    }
+    .dlink:hover { border-color: var(--border-h); background: var(--raised); transform: translateY(-1px); }
+    .dlink .di { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center; font-size: 15px; }
+    .dlink .dl-t { font-size: 12.5px; font-weight: 600; }
+    .dlink .dl-s { font-size: 10.5px; color: var(--t3); margin-top: 1px; }
+    .dlink.claude .di { background: rgba(59,130,246,0.14); }
+    .dlink.codex .di { background: rgba(16,185,129,0.14); }
+    .dlink.live .di { background: rgba(16,185,129,0.14); }
+    .dlink.repo .di { background: rgba(255,255,255,0.06); }
+    .dlink.ctx .di  { background: rgba(167,139,250,0.14); }
+    .dlink.full { grid-column: 1 / -1; }
+
+    .sugg { display: flex; flex-direction: column; gap: 8px; }
+    .sugg-row {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border); transition: all 0.12s; cursor: pointer;
+    }
+    .sugg-row:hover { border-color: rgba(167,139,250,0.3); background: var(--raised); }
+    .sugg-ico { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; font-size: 16px;
+      display: flex; align-items: center; justify-content: center; background: rgba(167,139,250,0.12); }
+    .sugg-b { flex: 1; min-width: 0; }
+    .sugg-n { font-size: 13px; font-weight: 600; }
+    .sugg-d { font-size: 11.5px; color: var(--t2); margin-top: 1px; line-height: 1.4;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sugg-arrow { color: var(--t3); flex-shrink: 0; }
+
+    #drawer-note {
+      width: 100%; min-height: 90px; resize: vertical; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px;
+      color: var(--text); font-size: 13px; font-family: inherit; line-height: 1.6; outline: none;
+    }
+    #drawer-note:focus { border-color: var(--border-h); }
+    #drawer-note::placeholder { color: var(--t3); }
+
+    /* ── MODAL (add forms) ── */
+    .modal-card {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -48%) scale(0.98);
+      width: 520px; max-width: 92vw; max-height: 86vh; overflow-y: auto; z-index: 201;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 16px;
+      padding: 26px; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
+    }
+    .modal-card.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+    .modal-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 18px; letter-spacing: -0.3px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; color: var(--t2);
+      margin-bottom: 6px; font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.3px; }
+    .field input, .field textarea, .field select {
+      width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+      padding: 11px 13px; color: var(--text); font-size: 14px; font-family: inherit; outline: none;
+    }
+    .field textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--border-h); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+    .btn-ghost { padding: 10px 16px; border-radius: 9px; font-size: 13px; font-weight: 600;
+      color: var(--t2); background: transparent; border: 1px solid var(--border); transition: all 0.12s; }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-h); }
+    .btn-primary { padding: 10px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;
+      color: #fff; background: var(--accent); border: 1px solid var(--accent); transition: all 0.12s; }
+    .btn-primary:hover { background: #2f6fe0; }
+
+    .empty { text-align: center; padding: 48px 20px; color: var(--t3); font-size: 14px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--raised); border: 1px solid var(--border-h); border-radius: 10px;
+      padding: 11px 18px; font-size: 13px; font-weight: 500; color: var(--text); z-index: 300;
+      opacity: 0; pointer-events: none; transition: all 0.25s; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: flex; align-items: center; gap: 9px;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast .tk { color: var(--green); }
+
+    footer {
+      border-top: 1px solid var(--border-s); max-width: 1180px; margin: 0 auto;
+      padding: 22px 28px; display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; flex-wrap: wrap; gap: 8px;
+    }
+    footer a { color: var(--t2); } footer a:hover { color: var(--text); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      nav { padding: 0 16px; gap: 10px; }
+      .nav-logo .badge { display: none; }
+      .ai-btn .lbl-full { display: none; }
+      .ai-btn { padding: 7px 10px; }
+      main { padding: 24px 16px 80px; }
+      .ai-tiles { grid-template-columns: 1fr; }
+      .grid, .grid-3 { grid-template-columns: 1fr; }
+      .dlinks { grid-template-columns: 1fr; }
+      .page-title { font-size: 22px; }
+      footer { padding: 20px 16px; }
+    }
+    @media (max-width: 460px) {
+      nav { padding: 0 12px; gap: 6px; }
+      .nav-logo span.full { display: none; }
+      .nav-tabs { gap: 0; margin-left: 2px; }
+      .tab { padding: 6px 9px; font-size: 12.5px; }
+      .nav-ai { gap: 4px; }
+      .ai-btn { padding: 7px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" data-view="dashboard">
+    <span>⌘ <span class="full">Command Centre</span></span>
+    <span class="badge">Workspace</span>
+  </a>
+  <div class="nav-tabs" id="tabs">
+    <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="projects">Projects</button>
+    <button class="tab" data-view="skills">Skills</button>
+    <button class="tab" data-view="prompts">Prompts</button>
+  </div>
+  <div class="nav-ai">
+    <a class="ai-btn claude" href="https://claude.ai/new" target="_blank" rel="noopener">
+      <span class="dot"></span><span class="lbl-full">Claude</span>
+    </a>
+    <a class="ai-btn codex" href="https://chatgpt.com/codex" target="_blank" rel="noopener">
+      <span class="dot"></span><span class="lbl-full">Codex</span>
+    </a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ════ DASHBOARD ════ -->
+  <section class="view active" id="view-dashboard">
+    <div class="focus">
+      <div class="focus-label"><span class="focus-dot"></span>Working on now</div>
+      <textarea id="focus-input" rows="1" placeholder="What are you building right now? (saved automatically)"></textarea>
+      <div class="focus-chips" id="focus-chips"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Quick AI Actions</span><span class="sec-line"></span></div>
+      <div class="ai-tiles">
+        <a class="ai-tile claude" href="https://claude.ai/new" target="_blank" rel="noopener">
+          <span class="ico">✶</span>
+          <span><div class="tt">Launch Claude</div><div class="ts">Plan, build, refactor — opens claude.ai</div></span>
+        </a>
+        <a class="ai-tile codex" href="https://chatgpt.com/codex" target="_blank" rel="noopener">
+          <span class="ico">⌥</span>
+          <span><div class="tt">Launch Codex</div><div class="ts">Code tasks & agents — opens ChatGPT Codex</div></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Current Priorities</span><span class="sec-line"></span>
+        <span class="sec-count" id="prio-count"></span></div>
+      <div class="grid" id="prio-grid"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Active Projects</span><span class="sec-line"></span>
+        <span class="sec-link" data-view="projects">View all →</span></div>
+      <div class="grid" id="active-grid"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Recent Skills</span><span class="sec-line"></span>
+        <span class="sec-link" data-view="skills">Library →</span></div>
+      <div class="grid-3" id="recent-skills"></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Favourite Prompts</span><span class="sec-line"></span>
+        <span class="sec-link" data-view="prompts">All prompts →</span></div>
+      <div class="grid-3" id="fav-prompts"></div>
+    </div>
+  </section>
+
+  <!-- ════ PROJECTS ════ -->
+  <section class="view" id="view-projects">
+    <div class="page-head">
+      <div class="page-title">Projects</div>
+      <div class="page-sub">Click any project to set status, see suggested skills, and start with AI.</div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="proj-search" placeholder="Search projects…" />
+      </div>
+      <div class="filters" id="proj-filters">
+        <button class="filter active" data-status="all">All</button>
+        <button class="filter" data-status="idea">Idea</button>
+        <button class="filter" data-status="building">Building</button>
+        <button class="filter" data-status="testing">Testing</button>
+        <button class="filter" data-status="live">Live</button>
+      </div>
+    </div>
+    <div class="grid" id="proj-grid"></div>
+  </section>
+
+  <!-- ════ SKILLS ════ -->
+  <section class="view" id="view-skills">
+    <div class="page-head">
+      <div class="page-title">Skills Library</div>
+      <div class="page-sub">Reusable capabilities & repos. Pull them into any project.</div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="skill-search" placeholder="Search skills or tags…" />
+      </div>
+      <button class="btn-add" id="add-skill-btn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Add Skill
+      </button>
+    </div>
+    <div class="grid" id="skill-grid"></div>
+  </section>
+
+  <!-- ════ PROMPTS ════ -->
+  <section class="view" id="view-prompts">
+    <div class="page-head">
+      <div class="page-title">Prompt Library</div>
+      <div class="page-sub">Reusable prompts. Copy, favourite, search.</div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="prompt-search" placeholder="Search prompts…" />
+      </div>
+      <div class="filters" id="prompt-filters">
+        <button class="filter active" data-cat="all">All</button>
+        <button class="filter" data-cat="fav">★ Favourites</button>
+        <button class="filter" data-cat="Development">Development</button>
+        <button class="filter" data-cat="Research">Research</button>
+        <button class="filter" data-cat="Marketing">Marketing</button>
+        <button class="filter" data-cat="Content">Content</button>
+      </div>
+      <button class="btn-add" id="add-prompt-btn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Add Prompt
+      </button>
+    </div>
+    <div class="grid" id="prompt-grid"></div>
+  </section>
+
+</main>
+
+<footer>
+  <span>⌘ Personal command centre · localStorage only</span>
+  <span><a href="index.html">← Public hub</a> &nbsp;·&nbsp; <a href="https://github.com/Aaron-1411/CC" target="_blank" rel="noopener">Aaron-1411/CC</a></span>
+</footer>
+
+<!-- DRAWER -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="drawer-title" id="d-title"></div>
+    <button class="drawer-close" id="d-close" aria-label="Close">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="d-body"></div>
+</aside>
+
+<!-- ADD SKILL MODAL -->
+<div class="modal-card" id="skill-modal">
+  <h3>Add Skill</h3>
+  <div class="field"><label>Name</label><input id="sk-name" placeholder="e.g. Stripe Payments" /></div>
+  <div class="field"><label>Description</label><textarea id="sk-desc" placeholder="What it does and when to reuse it"></textarea></div>
+  <div class="field"><label>Tags (comma separated)</label><input id="sk-tags" placeholder="payments, stripe, billing" /></div>
+  <div class="field"><label>Source link</label><input id="sk-src" placeholder="https://github.com/…" /></div>
+  <div class="modal-actions">
+    <button class="btn-ghost" data-close-modal>Cancel</button>
+    <button class="btn-primary" id="sk-save">Save Skill</button>
+  </div>
+</div>
+
+<!-- ADD PROMPT MODAL -->
+<div class="modal-card" id="prompt-modal">
+  <h3>Add Prompt</h3>
+  <div class="field"><label>Title</label><input id="pr-title" placeholder="e.g. Landing page copy" /></div>
+  <div class="field"><label>Category</label>
+    <select id="pr-cat">
+      <option>Development</option><option>Research</option><option>Marketing</option><option>Content</option>
+    </select>
+  </div>
+  <div class="field"><label>Prompt</label><textarea id="pr-body" placeholder="The reusable prompt text…"></textarea></div>
+  <div class="modal-actions">
+    <button class="btn-ghost" data-close-modal>Cancel</button>
+    <button class="btn-primary" id="pr-save">Save Prompt</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ─────────── SEED DATA ─────────── */
+const REPO_BASE = 'https://github.com/Aaron-1411/CC/tree/master/';
+
+const SEED_PROJECTS = [
+  { id:'ecommerce', name:'🛒 E-Commerce Deep Dive', domain:'Analysis & Data',
+    desc:'13-pillar ecommerce brand audit. Paste any URL, get an AI gap analysis → Word report, PowerPoint deck, RAG dashboard.',
+    live:'https://ecommerce-deep-dive-app.pages.dev', folder:'ecommerce-deep-dive',
+    tags:['Next.js','Gemini','CF Pages'], status:'live', priority:'med',
+    needs:['scraper','ai','images','content','data'] },
+  { id:'digital-depth', name:'🔍 Digital Depth Dive', domain:'Analysis & Data',
+    desc:'Website analysis toolkit. AI visibility, keyword gaps, lead finder, content remix and landing-page AI.',
+    live:'https://digital-depth-dive-app.pages.dev', folder:'digital-depth-dive',
+    tags:['React','TS','CF Pages'], status:'live', priority:'low',
+    needs:['scraper','ai','content','leads','dashboard'] },
+  { id:'open-eyes', name:'👁️ Open Eyes Data', domain:'Analysis & Data',
+    desc:'Public data transparency dashboard. Surfaces government datasets, contracts and records in one searchable UI.',
+    live:'https://open-eyes-data-app.mraaronmanu.workers.dev', folder:'open-eyes-data',
+    tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
+    needs:['data','dashboard','scraper'] },
+  { id:'wealth', name:'💰 Wealth Companion', domain:'Finance',
+    desc:'Personal finance & wealth management. Track goals, assets and financial milestones in one place.',
+    live:'https://wealth-companion-app.mraaronmanu.workers.dev', folder:'wealth-companion',
+    tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
+    needs:['dashboard','charts','auth','data'] },
+  { id:'isa', name:'📈 ISA Platform', domain:'Finance',
+    desc:'UK ISA investment tracker. Live prices, portfolio analytics, risk metrics, seasonality and fundamentals.',
+    live:'https://isa-platform.mraaronmanu.workers.dev', folder:'isa-investment-platform',
+    tags:['Next.js 16','Turso','CF Pages'], status:'live', priority:'med',
+    needs:['dashboard','charts','analytics','data'] },
+  { id:'pension', name:'💷 Pension Finder UK', domain:'Finance',
+    desc:'Find lost workplace pensions, track all pots in one dashboard, get plain-English retirement projections.',
+    live:'https://pension-finder-app.pages.dev', folder:'pension-finder-uk',
+    tags:['Next.js','Recharts','CF Pages'], status:'live', priority:'low',
+    needs:['dashboard','charts','data'] },
+  { id:'moneymind', name:'🧠 MoneyMind UK', domain:'Finance',
+    desc:'Free UK money & rights course — 23 modules, 4 tiers. Lessons, quizzes, calculators, quests and an AI tutor.',
+    live:'https://moneymind-uk-app.pages.dev', folder:'moneymind-uk',
+    tags:['React','Vite','CF Pages'], status:'live', priority:'med',
+    needs:['ai','chat','analytics','state','proxy'] },
+  { id:'tastybot', name:'🤖 Tastybot', domain:'Finance',
+    desc:'Trading bot dashboard for TastyTrade. Backtests, position management and strategy execution.',
+    live:'https://tastybot-app.pages.dev', folder:'tastybot',
+    tags:['React','Vite','CF Pages'], status:'live', priority:'low',
+    needs:['dashboard','charts','data','analytics'] },
+  { id:'quant', name:'📊 Tr4d3 · Quant Desk', domain:'Finance',
+    desc:'12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro. Analysis-only.',
+    live:'https://github.com/Aaron-1411/quant-desk', folder:'', localPath:'~/Desktop/quant-desk',
+    repoOverride:'https://github.com/Aaron-1411/quant-desk',
+    tags:['Python','FastAPI','React'], status:'testing', priority:'high',
+    needs:['dashboard','charts','analytics','data','ai'] },
+  { id:'get-settld', name:'🏡 Get Settld', domain:'Property',
+    desc:'Free first-time-buyer toolkit. Affordability checks, area research, property valuation and viewing tools.',
+    live:'https://get-settld-app.pages.dev', folder:'get-settld',
+    tags:['React','TS','CF Pages'], status:'live', priority:'low',
+    needs:['dashboard','data','auth'] },
+  { id:'lease-guard', name:'🏠 Lease Guard', domain:'Property',
+    desc:'Lease management & tenant protection. Understand your rights, review clauses and track key dates.',
+    live:'https://lease-guard-app.mraaronmanu.workers.dev', folder:'lease-guard',
+    tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
+    needs:['auth','dashboard','email','data'] },
+  { id:'whole-health', name:'🧭 Whole Health Compass', domain:'Health',
+    desc:'White-label patient-education tool. Plain-English concern → practitioner-ready summary across Western/TCM/Ayurveda.',
+    live:'https://whole-health-compass-app.pages.dev', folder:'whole-health-compass',
+    tags:['React','Vite','CF Pages'], status:'live', priority:'med',
+    needs:['ai','email','analytics','d1','proxy'] },
+  { id:'lifedash', name:'⚡ LifeDash', domain:'Health',
+    desc:'Gamified personal life tracker — Body, Learn, Mind, Experience. XP, streaks, sleep, mood and habits.',
+    live:'https://lifedash-app.pages.dev', folder:'lifedash',
+    tags:['React','CF Pages'], status:'live', priority:'low',
+    needs:['dashboard','charts','state'] },
+  { id:'gymseek', name:'🏋️ GymSeek', domain:'Health',
+    desc:'AI gym finder. Enter location, budget and preferences → ranked results with pricing and facilities.',
+    live:'https://gymseek-app.pages.dev', folder:'gymseek',
+    tags:['Static','CF Functions'], status:'live', priority:'low',
+    needs:['scraper','location','proxy','data'] },
+  { id:'platespin', name:'🍽️ PlateSpin', domain:'Food & Lifestyle',
+    desc:'Spin a wheel of your cuisines, set location + dietary needs, get matched to nearby spots. Free, no login.',
+    live:'https://platespin-app.pages.dev', folder:'platespin',
+    tags:['React','Vite','CF Pages'], status:'building', priority:'high',
+    needs:['maps','location','scraper','proxy','state'] },
+  { id:'inkspector', name:'🖋 Inkspector', domain:'Food & Lifestyle',
+    desc:'Tattoo artist site for Jordan Mitchell, London. Portfolio gallery, booking form with admin dashboard, aftercare guides.',
+    live:'https://inkspector-app.pages.dev', folder:'inkspector',
+    tags:['Next.js','Supabase','CF Pages'], status:'testing', priority:'high',
+    needs:['auth','email','images','dashboard','supabase'] },
+];
+
+const SEED_SKILLS = [
+  { id:'auth', name:'Authentication', icon:'🔐',
+    desc:'Email/password + admin auth with protected routes. Supabase Auth pattern from Inkspector.',
+    tags:['auth','security','supabase'], source:REPO_BASE+'inkspector' },
+  { id:'stripe', name:'Stripe Payments', icon:'💳',
+    desc:'Checkout sessions, subscriptions and webhooks for taking payments.',
+    tags:['payments','stripe','billing'], source:'https://docs.stripe.com/payments/checkout' },
+  { id:'reporting', name:'Reporting Dashboard', icon:'📊',
+    desc:'Recharts / hand-built SVG analytics dashboards with KPI strips and charts.',
+    tags:['dashboard','charts','analytics','react'], source:REPO_BASE+'isa-investment-platform' },
+  { id:'canva', name:'Canva Integration', icon:'🎨',
+    desc:'Canva Connect API for automated design + branded asset generation.',
+    tags:['design','canva','content','integration'], source:'https://www.canva.dev/docs/connect/' },
+  { id:'scraper', name:'Lead Scraper', icon:'🕸️',
+    desc:'Overpass/OSM + web data extraction to pull places, leads and structured records.',
+    tags:['scraper','data','leads','research'], source:REPO_BASE+'platespin/functions/api' },
+  { id:'proxy', name:'CF Pages Function Proxy', icon:'🛡️',
+    desc:'Keyless API proxy — secrets stay server-side, never ship to the client. The MoneyMind pattern.',
+    tags:['cloudflare','proxy','api','security'], source:REPO_BASE+'moneymind-uk/functions' },
+  { id:'resend', name:'Resend Email', icon:'✉️',
+    desc:'Transactional + lead-notification email via Resend, graceful no-op when unset.',
+    tags:['email','resend','notifications'], source:REPO_BASE+'whole-health-compass/functions' },
+  { id:'ai-chat', name:'AI Chat / Tutor', icon:'✶',
+    desc:'Claude-backed chat as a Cloudflare Function — system prompt, streaming, friendly error fallback.',
+    tags:['ai','claude','chat','llm'], source:REPO_BASE+'moneymind-uk/functions/api' },
+  { id:'d1', name:'D1 Analytics', icon:'📈',
+    desc:'Cookieless funnel analytics + append-only audit on Cloudflare D1, schema ensured at runtime.',
+    tags:['analytics','d1','cloudflare','data'], source:REPO_BASE+'whole-health-compass/functions' },
+  { id:'maps', name:'Leaflet Maps', icon:'🗺️',
+    desc:'Leaflet + OSM map view with Photon/Nominatim geocoding and clustered results.',
+    tags:['maps','leaflet','location','react'], source:REPO_BASE+'platespin' },
+  { id:'shadcn', name:'shadcn/ui Kit', icon:'🧩',
+    desc:'Radix + Tailwind component system — accessible primitives, fast to theme.',
+    tags:['ui','react','components','tailwind'], source:'https://ui.shadcn.com' },
+  { id:'imagegen', name:'Image Generator', icon:'🖼️',
+    desc:'Gemini / AI image generation integration for content and thumbnails.',
+    tags:['ai','images','content','gemini'], source:REPO_BASE+'ecommerce-deep-dive' },
+  { id:'social', name:'Social Scheduler', icon:'📅',
+    desc:'Queue and schedule posts across social platforms from one composer.',
+    tags:['social','marketing','content','scheduler'], source:'https://developers.facebook.com/docs/' },
+  { id:'lstate', name:'localStorage State', icon:'💾',
+    desc:'Versioned, typed local persistence with pure reducers — no account needed.',
+    tags:['state','storage','frontend'], source:REPO_BASE+'platespin/src/state' },
+];
+
+const SEED_PROMPTS = [
+  { id:'p-rules', title:'Ship a feature the Aaron way', cat:'Development', fav:true,
+    body:'Build & deploy this following the rules: add it to the CC monorepo, wire a Cloudflare deploy job in .github/workflows/deploy.yml, add a hub card, ensure full mobile responsiveness, then push to master so CI deploys. Surface blockers only — do the work, don\'t narrate.' },
+  { id:'p-mobile', title:'Mobile responsive audit', cat:'Development', fav:true,
+    body:'Audit this page for mobile at 320px, 375px, 414px and 768px. Check: no horizontal overflow, touch targets ≥44px, inputs ≥16px font, nav collapses, images max-width 100%, grids reflow to one column. Fix every issue you find and report what changed.' },
+  { id:'p-proxy', title:'Add a keyless API proxy', cat:'Development', fav:false,
+    body:'Add a Cloudflare Pages Function that proxies <UPSTREAM API> so the API key never ships to the client. Include edge caching with a sensible TTL, a fallback mirror, and graceful degradation (return empty + degraded:true, never a 5xx) on upstream failure.' },
+  { id:'p-debug', title:'Debug a failing build', cat:'Development', fav:false,
+    body:'The build is failing. Read the full error, find the root cause (don\'t bypass with --no-verify or by disabling checks), fix it properly, re-run the build to confirm green, and explain in one line what was wrong.' },
+  { id:'p-teardown', title:'Competitor teardown', cat:'Research', fav:false,
+    body:'Do a teardown of <COMPETITOR>. Cover: positioning, pricing, core features, what they do well, where the gaps are, and 3 concrete openings I could exploit. Be specific and cite what you actually saw.' },
+  { id:'p-validate', title:'Validate a product idea', cat:'Research', fav:false,
+    body:'Pressure-test this idea: <IDEA>. Who is it for, what painful problem does it solve, why now, what\'s the cheapest way to test demand this week, and what would make me kill it? Be blunt.' },
+  { id:'p-landing', title:'Landing page copy', cat:'Marketing', fav:true,
+    body:'Write landing page copy for <PRODUCT>. Audience: <AUDIENCE>. Give me: a hero headline + subhead, 3 benefit blocks (outcome-led, not feature-led), social-proof framing, and one strong CTA. Confident, casual-expert tone — no corporate filler.' },
+  { id:'p-launch', title:'Launch thread', cat:'Marketing', fav:false,
+    body:'Write a launch thread (6–8 posts) for <PRODUCT>. Hook hard on post 1, show the problem, the build, a demo moment, and end with a clear CTA. Punchy, no emojis unless they earn their place.' },
+  { id:'p-blog', title:'Blog post from notes', cat:'Content', fav:false,
+    body:'Turn these rough notes into a tight blog post: <NOTES>. Keep my voice — direct, practical, builder-to-builder. Strong opening line, clear sections, a takeaway readers can act on today. No AI throat-clearing.' },
+  { id:'p-repurpose', title:'Repurpose to social', cat:'Content', fav:false,
+    body:'Repurpose this <ARTICLE/VIDEO> into: 1 LinkedIn post, 1 X thread, and 3 short hooks. Keep each native to its platform. Lead with the most counterintuitive insight.' },
+];
+
+/* ─────────── STATE ─────────── */
+const LS = {
+  get(k, d){ try { return JSON.parse(localStorage.getItem('ws:'+k)) ?? d; } catch { return d; } },
+  set(k, v){ localStorage.setItem('ws:'+k, JSON.stringify(v)); },
+};
+let projOverrides = LS.get('projects', {});   // id -> {status, priority, note, updated}
+let focusText     = LS.get('focus', '');
+let focusPinned   = LS.get('focusPinned', ['platespin','inkspector','quant']);
+let customSkills  = LS.get('customSkills', []);
+let customPrompts = LS.get('customPrompts', []);
+let promptState   = LS.get('promptState', {}); // id -> {fav}
+const today = () => new Date().toISOString().slice(0,10);
+
+function projects(){
+  return SEED_PROJECTS.map(p => {
+    const o = projOverrides[p.id] || {};
+    return { ...p,
+      status: o.status || p.status,
+      priority: o.priority || p.priority,
+      note: o.note || '',
+      updated: o.updated || null,
+      repo: p.repoOverride || (p.folder ? REPO_BASE + p.folder : null),
+    };
+  });
+}
+function allSkills(){ return [...customSkills, ...SEED_SKILLS]; }
+function allPrompts(){
+  return [...customPrompts, ...SEED_PROMPTS].map(p => {
+    const st = promptState[p.id] || {};
+    return { ...p, fav: ('fav' in st) ? st.fav : p.fav };
+  });
+}
+
+/* ─────────── HELPERS ─────────── */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STATUS_LABEL = { idea:'Idea', building:'Building', testing:'Testing', live:'Live' };
+const PRIO_LABEL   = { high:'High', med:'Medium', low:'Low' };
+
+function toast(msg){
+  const t = $('#toast');
+  t.innerHTML = '<span class="tk">✓</span>' + esc(msg);
+  t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 1900);
+}
+function copy(text, msg){
+  navigator.clipboard.writeText(text).then(()=>toast(msg||'Copied')).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove(); toast(msg||'Copied');
+  });
+}
+
+function statusPill(s){ return `<span class="status ${s}"><span class="sd"></span>${STATUS_LABEL[s]}</span>`; }
+function prioBadge(p){ return `<span class="prio ${p}">▲ ${PRIO_LABEL[p]}</span>`; }
+
+/* ─────────── RENDER: PROJECT CARD ─────────── */
+function projectCard(p){
+  const updated = p.updated ? p.updated : '—';
+  return `<div class="card" data-proj="${p.id}">
+    <div class="card-head">
+      <span class="card-name">${esc(p.name)}</span>
+      ${statusPill(p.status)}
+    </div>
+    <p class="card-desc">${esc(p.desc)}</p>
+    <div class="meta-row">
+      ${prioBadge(p.priority)}
+      <span class="meta-x">· ${p.domain}</span>
+      <span class="meta-x">· upd ${updated}</span>
+    </div>
+    <div class="card-foot">
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <a class="launch" href="${p.live}" target="_blank" rel="noopener" data-stop>
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>Launch
+      </a>
+    </div>
+  </div>`;
+}
+
+/* ─────────── RENDER: SKILL CARD ─────────── */
+function skillCard(s){
+  const isHttp = /^https?:/.test(s.source);
+  return `<div class="card skill">
+    <div class="card-head"><span class="card-name">${esc(s.icon||'🧰')} ${esc(s.name)}</span></div>
+    <p class="card-desc">${esc(s.desc)}</p>
+    <div class="card-foot">
+      <div class="tags">${s.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      ${isHttp ? `<a class="skill-src" href="${esc(s.source)}" target="_blank" rel="noopener">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>Source</a>` : ''}
+    </div>
+  </div>`;
+}
+
+/* ─────────── RENDER: PROMPT CARD ─────────── */
+function promptCard(p){
+  return `<div class="card prompt" data-prompt="${p.id}">
+    <div class="card-head">
+      <span class="card-name">${esc(p.title)}</span>
+      <button class="icon-btn ${p.fav?'fav':''}" data-fav="${p.id}" title="Favourite" data-stop>
+        <svg width="14" height="14" fill="${p.fav?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+      </button>
+    </div>
+    <div class="prompt-cat">${esc(p.cat)}</div>
+    <p class="prompt-body clamp">${esc(p.body)}</p>
+    <div class="card-foot">
+      <button class="copy-btn" data-copy="${p.id}" data-stop>
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+  </div>`;
+}
+
+/* ─────────── DASHBOARD ─────────── */
+function renderDashboard(){
+  const ps = projects();
+  // focus
+  $('#focus-input').value = focusText;
+  autoGrow($('#focus-input'));
+  const chips = focusPinned.map(id => ps.find(p=>p.id===id)).filter(Boolean);
+  $('#focus-chips').innerHTML = chips.length
+    ? chips.map(p=>`<a class="focus-chip" data-proj="${p.id}">${pinEmoji(p.name)}<span>${esc(plainName(p.name))}</span></a>`).join('')
+    : `<span class="meta-x">Pin projects from their panel to track them here.</span>`;
+
+  // priorities = high priority OR building/testing
+  const prio = ps.filter(p => p.priority==='high' || p.status==='building' || p.status==='testing')
+                 .sort((a,b)=> (a.priority==='high'?-1:1) - (b.priority==='high'?-1:1));
+  $('#prio-count').textContent = prio.length + ' need attention';
+  $('#prio-grid').innerHTML = prio.length ? prio.map(projectCard).join('') : `<div class="empty">Nothing urgent — all clear.</div>`;
+
+  // active = not idea
+  const active = ps.filter(p=>p.status!=='idea').slice(0,6);
+  $('#active-grid').innerHTML = active.map(projectCard).join('');
+
+  // recent skills (first few of library)
+  $('#recent-skills').innerHTML = allSkills().slice(0,3).map(skillCard).join('');
+
+  // favourite prompts
+  const favs = allPrompts().filter(p=>p.fav).slice(0,3);
+  $('#fav-prompts').innerHTML = favs.length ? favs.map(promptCard).join('') : `<div class="empty">Star a prompt to pin it here.</div>`;
+}
+function plainName(n){ return n.replace(/^\S+\s/, ''); }
+function pinEmoji(n){ const m=n.match(/^(\S+)\s/); return `<span class="emoji">${m?m[1]:'•'}</span>`; }
+
+/* ─────────── PROJECTS VIEW ─────────── */
+let projFilter = 'all', projQuery = '';
+function renderProjects(){
+  let ps = projects();
+  if (projFilter !== 'all') ps = ps.filter(p=>p.status===projFilter);
+  if (projQuery) {
+    const q = projQuery.toLowerCase();
+    ps = ps.filter(p => (p.name+p.desc+p.domain+p.tags.join(' ')).toLowerCase().includes(q));
+  }
+  $('#proj-grid').innerHTML = ps.length ? ps.map(projectCard).join('') : `<div class="empty">No projects match.</div>`;
+}
+
+/* ─────────── SKILLS VIEW ─────────── */
+let skillQuery = '';
+function renderSkills(){
+  let ss = allSkills();
+  if (skillQuery){ const q=skillQuery.toLowerCase();
+    ss = ss.filter(s => (s.name+s.desc+s.tags.join(' ')).toLowerCase().includes(q)); }
+  $('#skill-grid').innerHTML = ss.length ? ss.map(skillCard).join('') : `<div class="empty">No skills match.</div>`;
+}
+
+/* ─────────── PROMPTS VIEW ─────────── */
+let promptFilter = 'all', promptQuery = '';
+function renderPrompts(){
+  let ps = allPrompts();
+  if (promptFilter==='fav') ps = ps.filter(p=>p.fav);
+  else if (promptFilter!=='all') ps = ps.filter(p=>p.cat===promptFilter);
+  if (promptQuery){ const q=promptQuery.toLowerCase();
+    ps = ps.filter(p => (p.title+p.body+p.cat).toLowerCase().includes(q)); }
+  $('#prompt-grid').innerHTML = ps.length ? ps.map(promptCard).join('') : `<div class="empty">No prompts match.</div>`;
+}
+
+/* ─────────── PROJECT DRAWER ─────────── */
+let drawerProj = null;
+function suggestSkills(p){
+  const need = new Set(p.needs||[]);
+  return allSkills().map(s => ({ s, score: s.tags.filter(t=>need.has(t)).length }))
+    .filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,4).map(x=>x.s);
+}
+function openDrawer(id){
+  const p = projects().find(x=>x.id===id); if(!p) return;
+  drawerProj = id;
+  $('#d-title').textContent = p.name;
+  const pinned = focusPinned.includes(id);
+  const sugg = suggestSkills(p);
+  const ctxText = projectContext(p);
+  $('#d-body').innerHTML = `
+    <div class="dgroup">
+      <div class="dgroup-t">Status</div>
+      <div class="seg" id="seg-status">
+        ${['idea','building','testing','live'].map(s=>`<button class="seg-btn ${s} ${p.status===s?'on '+s:''}" data-status="${s}">${STATUS_LABEL[s]}</button>`).join('')}
+      </div>
+    </div>
+    <div class="dgroup">
+      <div class="dgroup-t">Priority</div>
+      <div class="seg" id="seg-prio">
+        ${['high','med','low'].map(s=>`<button class="seg-btn ${s} ${p.priority===s?'on '+s:''}" data-prio="${s}">${PRIO_LABEL[s]}</button>`).join('')}
+      </div>
+    </div>
+    <div class="dgroup">
+      <div class="dgroup-t">Start working</div>
+      <div class="dlinks">
+        <a class="dlink claude" href="https://claude.ai/new" target="_blank" rel="noopener">
+          <span class="di">✶</span><span><div class="dl-t">Open Claude</div><div class="dl-s">claude.ai</div></span></a>
+        <a class="dlink codex" href="https://chatgpt.com/codex" target="_blank" rel="noopener">
+          <span class="di">⌥</span><span><div class="dl-t">Open Codex</div><div class="dl-s">ChatGPT</div></span></a>
+        <a class="dlink live" href="${p.live}" target="_blank" rel="noopener">
+          <span class="di">↗</span><span><div class="dl-t">${p.folder?'Live site':'Repo'}</div><div class="dl-s">${esc(shortUrl(p.live))}</div></span></a>
+        ${p.repo ? `<a class="dlink repo" href="${p.repo}" target="_blank" rel="noopener">
+          <span class="di">⌥</span><span><div class="dl-t">Source</div><div class="dl-s">${p.localPath?esc(p.localPath):'GitHub'}</div></span></a>` : ''}
+        <button class="dlink ctx full" id="copy-ctx">
+          <span class="di">⧉</span><span><div class="dl-t">Copy project context</div><div class="dl-s">Paste into Claude or Codex to start</div></span></button>
+      </div>
+    </div>
+    <div class="dgroup">
+      <div class="dgroup-t">Suggested skills · tag match</div>
+      <div class="sugg">
+        ${sugg.length ? sugg.map(s=>`<div class="sugg-row" data-gotoskill="${esc(s.name)}">
+          <span class="sugg-ico">${esc(s.icon||'🧰')}</span>
+          <span class="sugg-b"><div class="sugg-n">${esc(s.name)}</div><div class="sugg-d">${esc(s.desc)}</div></span>
+          <svg class="sugg-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </div>`).join('') : `<div class="meta-x">No tag matches yet — add skills with matching tags.</div>`}
+      </div>
+    </div>
+    <div class="dgroup">
+      <div class="dgroup-t">Notes</div>
+      <textarea id="drawer-note" placeholder="Where you left off, next steps…">${esc(p.note)}</textarea>
+    </div>
+    <div class="dgroup">
+      <button class="btn-ghost" id="pin-toggle" style="width:100%;${pinned?'color:var(--accent);border-color:rgba(59,130,246,0.4)':''}">
+        ${pinned ? '★ Pinned to “Working on now”' : '☆ Pin to “Working on now”'}
+      </button>
+    </div>`;
+  $('#scrim').classList.add('open');
+  $('#drawer').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  // wire drawer controls
+  $$('#seg-status .seg-btn').forEach(b=>b.onclick=()=>setOverride(id,'status',b.dataset.status));
+  $$('#seg-prio .seg-btn').forEach(b=>b.onclick=()=>setOverride(id,'priority',b.dataset.prio));
+  $('#drawer-note').addEventListener('input', e=>setOverride(id,'note',e.target.value,true));
+  $('#copy-ctx').onclick = ()=>copy(ctxText,'Project context copied');
+  $('#pin-toggle').onclick = ()=>{ togglePin(id); openDrawer(id); };
+  $$('#d-body .sugg-row').forEach(r=>r.onclick=()=>{ closeDrawer(); switchView('skills'); $('#skill-search').value=r.dataset.gotoskill; skillQuery=r.dataset.gotoskill; renderSkills(); });
+}
+function shortUrl(u){ return u.replace(/^https?:\/\//,'').replace(/\/$/,''); }
+function projectContext(p){
+  const lines = [
+    `Project: ${plainName(p.name)}`,
+    `Status: ${STATUS_LABEL[p.status]} · Priority: ${PRIO_LABEL[p.priority]} · Domain: ${p.domain}`,
+    `Stack: ${p.tags.join(', ')}`,
+    `Live: ${p.live}`,
+  ];
+  if (p.repo) lines.push(`Source: ${p.repo}`);
+  if (p.folder) lines.push(`Monorepo folder: ${p.folder}/ (in Aaron-1411/CC)`);
+  if (p.localPath) lines.push(`Local path: ${p.localPath}`);
+  if (p.note) lines.push(`Where I left off: ${p.note}`);
+  if (focusText && focusPinned.includes(p.id)) lines.push(`Current focus: ${focusText}`);
+  return lines.join('\n');
+}
+function setOverride(id, key, val, silent){
+  projOverrides[id] = { ...(projOverrides[id]||{}), [key]: val, updated: today() };
+  LS.set('projects', projOverrides);
+  if (!silent){
+    // refresh the relevant seg highlight without full re-render
+    if (key==='status'){ $$('#seg-status .seg-btn').forEach(b=>{ b.className='seg-btn '+b.dataset.status+(b.dataset.status===val?' on '+val:''); }); }
+    if (key==='priority'){ $$('#seg-prio .seg-btn').forEach(b=>{ b.className='seg-btn '+b.dataset.prio+(b.dataset.prio===val?' on '+val:''); }); }
+    renderProjects(); renderDashboard();
+    toast(key==='status'?('Status → '+STATUS_LABEL[val]):('Priority → '+PRIO_LABEL[val]));
+  } else { renderProjects(); }
+}
+function togglePin(id){
+  if (focusPinned.includes(id)) focusPinned = focusPinned.filter(x=>x!==id);
+  else focusPinned = [...focusPinned, id];
+  LS.set('focusPinned', focusPinned); renderDashboard();
+}
+function closeDrawer(){
+  $('#scrim').classList.remove('open'); $('#drawer').classList.remove('open');
+  document.body.style.overflow=''; drawerProj=null;
+}
+
+/* ─────────── VIEW ROUTER ─────────── */
+function switchView(v){
+  $$('.view').forEach(s=>s.classList.toggle('active', s.id==='view-'+v));
+  $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
+  window.scrollTo({top:0});
+  if (v==='dashboard') renderDashboard();
+  if (v==='projects') renderProjects();
+  if (v==='skills') renderSkills();
+  if (v==='prompts') renderPrompts();
+}
+
+/* ─────────── MODALS ─────────── */
+function openModal(id){ $('#'+id).classList.add('open'); $('#scrim').classList.add('open'); }
+function closeModals(){ $$('.modal-card').forEach(m=>m.classList.remove('open')); if(!$('#drawer').classList.contains('open')) $('#scrim').classList.remove('open'); }
+
+function autoGrow(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+
+/* ─────────── EVENTS ─────────── */
+document.addEventListener('click', e=>{
+  // tab / view switches
+  const v = e.target.closest('[data-view]');
+  if (v){ e.preventDefault(); switchView(v.dataset.view); return; }
+  // launch / source links inside cards shouldn't open drawer
+  if (e.target.closest('[data-stop]')) { e.stopPropagation(); }
+  // project card → drawer
+  const pc = e.target.closest('.card[data-proj]');
+  if (pc && !e.target.closest('[data-stop]')){ openDrawer(pc.dataset.proj); return; }
+  // prompt fav
+  const fav = e.target.closest('[data-fav]');
+  if (fav){ const id=fav.dataset.fav; const cur=allPrompts().find(p=>p.id===id).fav;
+    promptState[id]={...(promptState[id]||{}), fav:!cur}; LS.set('promptState',promptState);
+    renderPrompts(); renderDashboard(); return; }
+  // prompt copy
+  const cp = e.target.closest('[data-copy]');
+  if (cp){ const p=allPrompts().find(x=>x.id===cp.dataset.copy); copy(p.body,'Prompt copied'); return; }
+});
+
+$('#scrim').addEventListener('click', ()=>{ closeDrawer(); closeModals(); });
+$('#d-close').addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeDrawer(); closeModals(); } });
+
+// focus banner
+$('#focus-input').addEventListener('input', e=>{ focusText=e.target.value; LS.set('focus',focusText); autoGrow(e.target); });
+
+// project filters/search
+$('#proj-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#proj-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); projFilter=b.dataset.status; renderProjects(); });
+$('#proj-search').addEventListener('input', e=>{ projQuery=e.target.value; renderProjects(); });
+
+// skills search + add
+$('#skill-search').addEventListener('input', e=>{ skillQuery=e.target.value; renderSkills(); });
+$('#add-skill-btn').addEventListener('click', ()=>openModal('skill-modal'));
+$('#sk-save').addEventListener('click', ()=>{
+  const name=$('#sk-name').value.trim(); if(!name){ toast('Name required'); return; }
+  const sk={ id:'c-'+Date.now(), name, icon:'🧰', desc:$('#sk-desc').value.trim(),
+    tags:$('#sk-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    source:$('#sk-src').value.trim()||'#' };
+  customSkills.unshift(sk); LS.set('customSkills',customSkills);
+  ['sk-name','sk-desc','sk-tags','sk-src'].forEach(i=>$('#'+i).value='');
+  closeModals(); renderSkills(); renderDashboard(); toast('Skill added');
+});
+
+// prompts filter/search + add
+$('#prompt-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#prompt-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); promptFilter=b.dataset.cat; renderPrompts(); });
+$('#prompt-search').addEventListener('input', e=>{ promptQuery=e.target.value; renderPrompts(); });
+$('#add-prompt-btn').addEventListener('click', ()=>openModal('prompt-modal'));
+$('#pr-save').addEventListener('click', ()=>{
+  const title=$('#pr-title').value.trim(); if(!title){ toast('Title required'); return; }
+  const pr={ id:'c-'+Date.now(), title, cat:$('#pr-cat').value, body:$('#pr-body').value.trim(), fav:false };
+  customPrompts.unshift(pr); LS.set('customPrompts',customPrompts);
+  ['pr-title','pr-body'].forEach(i=>$('#'+i).value='');
+  closeModals(); renderPrompts(); toast('Prompt added');
+});
+$$('[data-close-modal]').forEach(b=>b.addEventListener('click', closeModals));
+
+/* ─────────── INIT ─────────── */
+renderDashboard();
+</script>
+</body>
+</html>
