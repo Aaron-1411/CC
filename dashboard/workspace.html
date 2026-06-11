@@ -503,12 +503,10 @@
       font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.3px; white-space: nowrap;
     }
     .tool-status .sd { width: 6px; height: 6px; border-radius: 50%; }
-    .tool-status.connected { background: rgba(16,185,129,0.1); color: var(--green); }
-    .tool-status.connected .sd { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,0.6); }
-    .tool-status.local { background: rgba(245,158,11,0.1); color: var(--amber); }
-    .tool-status.local .sd { background: var(--amber); }
-    .tool-status.available { background: rgba(255,255,255,0.05); color: var(--t3); }
-    .tool-status.available .sd { background: var(--t3); }
+    .tool-status.on { background: rgba(16,185,129,0.1); color: var(--green); }
+    .tool-status.on .sd { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,0.6); }
+    .tool-status.off { background: rgba(255,255,255,0.05); color: var(--t3); }
+    .tool-status.off .sd { background: var(--t3); }
     .tool-purpose { font-size: 12px; color: var(--t2); line-height: 1.55; margin: 2px 0 12px; }
     .tool-field-label {
       font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
@@ -518,6 +516,14 @@
     .agent-pill {
       font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
       color: var(--purple); background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22);
+    }
+    .tool-caps { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+    .tool-caps li {
+      position: relative; padding-left: 16px; font-size: 12px; color: var(--t2); line-height: 1.5;
+    }
+    .tool-caps li::before {
+      content: ''; position: absolute; left: 3px; top: 7px; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); opacity: 0.7;
     }
 
     /* ── MEMORY ── */
@@ -1121,41 +1127,8 @@ const SEED_AGENTS = [
     desc:'Produces clean reusable raster assets from approved Impeccable mock references — without redesigning the direction.' },
 ];
 
-// Tool Stack — capabilities available to Aaron and future agents.
-const SEED_TOOLS = [
-  { id:'claude-code', name:'Claude Code', icon:'✶', status:'connected',
-    desc:'Agentic CLI coding environment — reads, edits and ships across the whole repo.',
-    purpose:'Primary development and implementation environment.',
-    agents:['CTO','Developer','Chairman'] },
-  { id:'codex', name:'Codex', icon:'⌥', status:'connected',
-    desc:'OpenAI Codex agent for code tasks, parallel jobs and image-to-code work.',
-    purpose:'Secondary build agent for scoped coding tasks and design-to-code.',
-    agents:['Developer','Designer'] },
-  { id:'github', name:'GitHub', icon:'⎇', status:'connected',
-    desc:'Source of truth + CI/CD. Push to Aaron-1411/CC master → Actions deploy to Cloudflare Pages.',
-    purpose:'Version control, monorepo and automated deployment pipeline.',
-    agents:['CTO','Developer','Release Manager'] },
-  { id:'obsidian', name:'Obsidian', icon:'🪨', status:'local',
-    desc:'Markdown knowledge vault. Project-branch memory, decisions, roadmaps and session summaries.',
-    purpose:'Long-term project memory and compressed context store.',
-    agents:['Chairman','Archivist','Council'] },
-  { id:'supabase', name:'Supabase', icon:'🗄️', status:'available',
-    desc:'Postgres + Auth + storage backend. Powers Inkspector and future authed apps.',
-    purpose:'Database, auth and storage for projects that need a backend.',
-    agents:['Backend','Developer'] },
-  { id:'n8n', name:'n8n', icon:'🔗', status:'available',
-    desc:'Self-hostable workflow automation — wire APIs, triggers and scheduled jobs.',
-    purpose:'Automation and orchestration glue for future agent workflows.',
-    agents:['Operations','Chairman'] },
-  { id:'lm-studio', name:'LM Studio', icon:'🧬', status:'local',
-    desc:'Local LLM runtime. Run open models on-device for private, zero-cost inference.',
-    purpose:'Local model inference for cheap, private agent reasoning.',
-    agents:['Council','Researcher'] },
-  { id:'wispr-flow', name:'Wispr Flow', icon:'🎙️', status:'local',
-    desc:'Voice-to-text dictation. Capture ideas and briefs hands-free, anywhere.',
-    purpose:'Fast voice capture for briefs, notes and prompts.',
-    agents:['Assistant'] },
-];
+// Tool Stack data lives in seed.js (HUB_SEED.tools) — static config, rendered
+// by renderTools() via toolConfig(). No inline copy here (avoids duplication).
 
 const SEED_PROMPTS = [
   { id:'p-rules', title:'Ship a feature the Aaron way', cat:'Development', fav:true,
@@ -1238,7 +1211,6 @@ let focusPinned   = LS.get('focusPinned', ['platespin','inkspector','quant']);
 let customSkills  = LS.get('customSkills', []);
 let customPrompts = LS.get('customPrompts', []);
 let promptState   = LS.get('promptState', {}); // id -> {fav}
-let toolOverrides = LS.get('tools', {});       // id -> {status}
 let memStore      = LS.get('memory', {});      // branchId -> partial memory object
 let memBranchesEx = LS.get('memBranches', []); // custom branches [{id,name,emoji}]
 let activity      = LS.get('activity', []);    // [{icon, text, ts}]
@@ -1272,9 +1244,6 @@ function projects(){
 }
 function allSkills(){ return [...customSkills, ...SEED_SKILLS]; }
 function allAgents(){ return SEED_AGENTS; }
-function tools(){
-  return SEED_TOOLS.map(t => ({ ...t, status: (toolOverrides[t.id]||{}).status || t.status }));
-}
 
 /* ── memory branches & data ── */
 const EMPTY_MEM = () => ({ summary:'', architecture:'', decisions:[], skillsUsed:[], repoRefs:[], roadmap:[], openIssues:[], sessions:[] });
@@ -1507,27 +1476,38 @@ function renderPrompts(){
 }
 
 /* ─────────── TOOL STACK VIEW ─────────── */
-const TOOL_STATUS_LABEL = { connected:'Connected', local:'Local', available:'Available' };
+// Presentational icon per tool id (kept out of the ToolCard config type).
+const TOOL_ICONS = { 'claude-code':'✶', 'codex':'⌥', 'github':'⎇', 'obsidian':'🪨',
+  'supabase':'🗄️', 'n8n':'🔗', 'lm-studio':'🧬', 'wispr-flow':'🎙️' };
+// Canonical tool config lives in seed.js (HUB_SEED.tools); static, not user-editable.
+function toolConfig(){ return (window.HUB_SEED && Array.isArray(window.HUB_SEED.tools)) ? window.HUB_SEED.tools : []; }
+
 function toolCard(t){
+  const on = t.connected === true;
+  const caps = (t.capabilities||[]).map(c=>`<li>${esc(c)}</li>`).join('');
   return `<div class="card tool">
     <div class="card-head">
-      <span class="card-name">${esc(t.icon||'🧰')} ${esc(t.name)}</span>
-      <span class="tool-status ${t.status}"><span class="sd"></span>${TOOL_STATUS_LABEL[t.status]||t.status}</span>
+      <span class="card-name">${esc(TOOL_ICONS[t.id]||'🧰')} ${esc(t.name)}</span>
+      <span class="tool-status ${on?'on':'off'}"><span class="sd"></span>${on?'Connected':'Not Connected'}</span>
     </div>
-    <p class="card-desc">${esc(t.desc)}</p>
+    <p class="card-desc">${esc(t.description)}</p>
     <div class="tool-field-label">Purpose</div>
     <p class="tool-purpose">${esc(t.purpose)}</p>
     <div class="tool-field-label">Future agent access</div>
-    <div class="agent-pills">${t.agents.map(a=>`<span class="agent-pill">${esc(a)}</span>`).join('')}</div>
+    <div class="agent-pills">${(t.futureAgents||[]).map(a=>`<span class="agent-pill">${esc(a)}</span>`).join('')}</div>
+    <div class="tool-field-label" style="margin-top:12px">Capabilities</div>
+    <ul class="tool-caps">${caps}</ul>
   </div>`;
 }
 let toolQuery = '', toolFilter = 'all';
 function renderTools(){
-  let tt = tools();
-  if (toolFilter !== 'all') tt = tt.filter(t => t.status === toolFilter);
+  let tt = toolConfig();
+  if (toolFilter === 'connected') tt = tt.filter(t => t.connected === true);
+  else if (toolFilter === 'available') tt = tt.filter(t => t.connected === false);
   if (toolQuery){ const q=toolQuery.toLowerCase();
-    tt = tt.filter(t => (t.name+t.desc+t.purpose+t.agents.join(' ')).toLowerCase().includes(q)); }
-  $('#tool-grid').innerHTML = tt.length ? tt.map(toolCard).join('') : `<div class="empty">No tools match.</div>`;
+    tt = tt.filter(t => (t.name + ' ' + (t.capabilities||[]).join(' ') + ' ' + t.purpose + ' ' + (t.futureAgents||[]).join(' ')).toLowerCase().includes(q)); }
+  $('#tool-grid').innerHTML = tt.length ? tt.map(toolCard).join('')
+    : `<div class="empty">${toolConfig().length ? 'No tools match.' : 'No tools configured yet.'}</div>`;
 }
 
 /* ─────────── MEMORY VIEW ─────────── */
