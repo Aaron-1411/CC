@@ -212,15 +212,20 @@
     .status .sd { width: 6px; height: 6px; border-radius: 50%; }
     .status.idea     { background: rgba(167,139,250,0.1); color: var(--purple); }
     .status.idea .sd { background: var(--purple); }
+    .status.planning     { background: rgba(59,130,246,0.1); color: #60a5fa; }
+    .status.planning .sd { background: #60a5fa; }
     .status.building     { background: rgba(245,158,11,0.1); color: var(--amber); }
     .status.building .sd { background: var(--amber); }
     .status.testing     { background: rgba(244,114,182,0.1); color: var(--pink); }
     .status.testing .sd { background: var(--pink); }
     .status.live     { background: rgba(16,185,129,0.1); color: var(--green); }
     .status.live .sd { background: var(--green); }
+    .status.archived     { background: rgba(255,255,255,0.05); color: var(--t3); }
+    .status.archived .sd { background: var(--t3); }
 
     .prio { font-size: 10px; font-weight: 600; font-family: 'JetBrains Mono', ui-monospace, monospace;
       letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 4px; }
+    .prio.critical { color: #ef4444; }
     .prio.high { color: #f87171; }
     .prio.med  { color: var(--t2); }
     .prio.low  { color: var(--t3); }
@@ -280,6 +285,31 @@
       background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22); transition: all 0.12s;
     }
     .skill-src:hover { background: rgba(167,139,250,0.2); }
+    .invoke {
+      font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      color: var(--purple); background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.22); white-space: nowrap;
+    }
+    .skill-cat {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+      color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: auto;
+    }
+
+    /* ── AGENT CARD ── */
+    .agent { cursor: default; }
+    .agent::before { background: var(--amber); }
+    .agent:hover { border-color: rgba(245,158,11,0.3); box-shadow: 0 0 0 1px rgba(245,158,11,0.1), 0 8px 30px rgba(0,0,0,0.4); }
+    .plugin-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+      color: var(--amber); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+      white-space: nowrap;
+    }
+    .model-chip {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; margin-left: auto;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      color: var(--t2); background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    }
 
     /* ── PROMPT CARD ── */
     .prompt { cursor: default; }
@@ -351,9 +381,12 @@
     }
     .seg-btn:hover { color: var(--text); border-color: var(--border-h); }
     .seg-btn.on.idea     { color: var(--purple); border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.1); }
+    .seg-btn.on.planning { color: #60a5fa;     border-color: rgba(59,130,246,0.4);  background: rgba(59,130,246,0.1); }
     .seg-btn.on.building { color: var(--amber);  border-color: rgba(245,158,11,0.4);  background: rgba(245,158,11,0.1); }
     .seg-btn.on.testing  { color: var(--pink);   border-color: rgba(244,114,182,0.4); background: rgba(244,114,182,0.1); }
     .seg-btn.on.live     { color: var(--green);  border-color: rgba(16,185,129,0.4);  background: rgba(16,185,129,0.1); }
+    .seg-btn.on.archived { color: var(--t2);     border-color: var(--border-h);       background: var(--raised); }
+    .seg-btn.on.critical { color: #ef4444; border-color: rgba(239,68,68,0.45); background: rgba(239,68,68,0.12); }
     .seg-btn.on.high     { color: #f87171; border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.1); }
     .seg-btn.on.med      { color: var(--text); border-color: var(--border-h); background: var(--raised); }
     .seg-btn.on.low      { color: var(--t2); border-color: var(--border-h); background: var(--raised); }
@@ -444,6 +477,137 @@
     }
     footer a { color: var(--t2); } footer a:hover { color: var(--text); }
 
+    /* ── RECENT ACTIVITY ── */
+    .activity { display: flex; flex-direction: column; gap: 2px; }
+    .act-row {
+      display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 9px;
+      border: 1px solid transparent; transition: background 0.12s, border-color 0.12s;
+    }
+    .act-row:hover { background: var(--surface); border-color: var(--border); }
+    .act-ico {
+      width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; display: grid; place-items: center;
+      font-size: 13px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    }
+    .act-b { flex: 1; min-width: 0; }
+    .act-t { font-size: 13px; color: var(--text); line-height: 1.35; }
+    .act-t b { font-weight: 650; }
+    .act-time { font-size: 10.5px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; flex-shrink: 0; }
+
+    /* ── TOOL CARD ── */
+    .tool { cursor: default; }
+    .tool::before { background: var(--accent); }
+    .tool:hover { border-color: rgba(59,130,246,0.3); box-shadow: 0 0 0 1px rgba(59,130,246,0.1), 0 8px 30px rgba(0,0,0,0.4); }
+    .tool-status {
+      display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+      font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.3px; white-space: nowrap;
+    }
+    .tool-status .sd { width: 6px; height: 6px; border-radius: 50%; }
+    .tool-status.connected { background: rgba(16,185,129,0.1); color: var(--green); }
+    .tool-status.connected .sd { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,0.6); }
+    .tool-status.local { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .tool-status.local .sd { background: var(--amber); }
+    .tool-status.available { background: rgba(255,255,255,0.05); color: var(--t3); }
+    .tool-status.available .sd { background: var(--t3); }
+    .tool-purpose { font-size: 12px; color: var(--t2); line-height: 1.55; margin: 2px 0 12px; }
+    .tool-field-label {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+      color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; margin-bottom: 5px;
+    }
+    .agent-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+    .agent-pill {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+      color: var(--purple); background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22);
+    }
+
+    /* ── MEMORY ── */
+    .mem-layout { display: grid; grid-template-columns: 232px 1fr; gap: 18px; align-items: start; }
+    .mem-rail {
+      position: sticky; top: 78px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px; max-height: calc(100vh - 100px); overflow-y: auto;
+    }
+    .mem-rail-head {
+      display: flex; align-items: center; justify-content: space-between; padding: 2px 6px 10px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--t3);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .mem-add-branch {
+      width: 22px; height: 22px; border-radius: 6px; font-size: 15px; line-height: 1; color: var(--t2);
+      background: var(--raised); border: 1px solid var(--border); transition: all 0.12s;
+    }
+    .mem-add-branch:hover { color: var(--text); border-color: var(--border-h); }
+    .mem-branches { display: flex; flex-direction: column; gap: 2px; }
+    .mem-branch {
+      display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px;
+      font-size: 13px; color: var(--t2); text-align: left; width: 100%; transition: all 0.12s; cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .mem-branch:hover { background: var(--raised); color: var(--text); }
+    .mem-branch.active { background: rgba(59,130,246,0.12); color: var(--text); border-color: rgba(59,130,246,0.25); }
+    .mem-branch .mb-emoji { flex-shrink: 0; }
+    .mem-branch .mb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mem-branch .mb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--t3); }
+
+    .mem-toc { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+    .mem-toc .filter { height: 34px; }
+    .mem-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .mem-head .mem-title { font-size: 21px; font-weight: 700; letter-spacing: -0.4px; }
+    .mem-sub { font-size: 12.5px; color: var(--t3); margin-bottom: 20px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .mem-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px; margin-bottom: 14px;
+    }
+    .mem-card-head {
+      display: flex; align-items: center; gap: 9px; margin-bottom: 12px;
+      font-size: 13px; font-weight: 650; color: var(--text);
+    }
+    .mem-card-head .mch-ico { font-size: 15px; }
+    .mem-card-head .mch-count {
+      margin-left: auto; font-size: 10px; color: var(--t3);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .mem-text {
+      width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+      padding: 11px 13px; color: var(--text); font-family: inherit; font-size: 13px; line-height: 1.6;
+      resize: vertical; min-height: 60px; transition: border-color 0.12s;
+    }
+    .mem-text:focus { outline: none; border-color: var(--border-h); }
+    .mem-text::placeholder { color: var(--t3); }
+    .mem-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .mem-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 9px;
+      background: var(--bg); border: 1px solid var(--border);
+    }
+    .mem-item .mi-body { flex: 1; min-width: 0; }
+    .mem-item .mi-text { font-size: 13px; color: var(--text); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+    .mem-item .mi-meta { font-size: 10.5px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; margin-top: 4px; }
+    .mem-item .mi-del {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px; color: var(--t3);
+      background: transparent; border: 1px solid transparent; font-size: 14px; line-height: 1; transition: all 0.12s;
+    }
+    .mem-item .mi-del:hover { color: #f87171; border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+    .mem-roadmap .mi-text.done { color: var(--t3); text-decoration: line-through; }
+    .mem-check {
+      flex-shrink: 0; width: 18px; height: 18px; border-radius: 5px; margin-top: 1px; cursor: pointer;
+      border: 1.5px solid var(--border-h); background: var(--bg); display: grid; place-items: center;
+      color: var(--green); font-size: 11px; transition: all 0.12s;
+    }
+    .mem-check.on { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.5); }
+    .mem-addrow { display: flex; gap: 8px; }
+    .mem-addrow input {
+      flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+      padding: 9px 12px; color: var(--text); font-family: inherit; font-size: 13px;
+    }
+    .mem-addrow input:focus { outline: none; border-color: var(--border-h); }
+    .mem-addrow input::placeholder { color: var(--t3); }
+    .mem-addrow .mem-add-btn {
+      flex-shrink: 0; padding: 0 14px; border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--text);
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); transition: all 0.12s;
+    }
+    .mem-addrow .mem-add-btn:hover { background: rgba(59,130,246,0.25); }
+    .mem-empty { font-size: 12.5px; color: var(--t3); padding: 4px 2px 12px; }
+    .mem-pick { font-size: 14px; color: var(--t3); text-align: center; padding: 60px 20px; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 720px) {
       nav { padding: 0 16px; gap: 10px; }
@@ -456,14 +620,21 @@
       .dlinks { grid-template-columns: 1fr; }
       .page-title { font-size: 22px; }
       footer { padding: 20px 16px; }
+      .mem-layout { grid-template-columns: 1fr; }
+      .mem-rail { position: static; max-height: none; }
+      .mem-branches { flex-direction: row; flex-wrap: wrap; }
+      .mem-branch { width: auto; }
     }
     @media (max-width: 460px) {
-      nav { padding: 0 12px; gap: 6px; }
+      nav { padding: 0 10px; gap: 4px; }
       .nav-logo span.full { display: none; }
-      .nav-tabs { gap: 0; margin-left: 2px; }
-      .tab { padding: 6px 9px; font-size: 12.5px; }
+      .nav-tabs { gap: 0; margin-left: 0; }
+      .tab { padding: 6px 6px; font-size: 12px; }
       .nav-ai { gap: 4px; }
-      .ai-btn { padding: 7px 8px; }
+      .ai-btn { padding: 7px 7px; }
+    }
+    @media (max-width: 380px) {
+      .tab { padding: 6px 5px; font-size: 11.5px; letter-spacing: -0.2px; }
     }
   </style>
 </head>
@@ -477,7 +648,10 @@
   <div class="nav-tabs" id="tabs">
     <button class="tab active" data-view="dashboard">Dashboard</button>
     <button class="tab" data-view="projects">Projects</button>
+    <button class="tab" data-view="memory">Memory</button>
+    <button class="tab" data-view="tools">Tools</button>
     <button class="tab" data-view="skills">Skills</button>
+    <button class="tab" data-view="agents">Agents</button>
     <button class="tab" data-view="prompts">Prompts</button>
   </div>
   <div class="nav-ai">
@@ -537,6 +711,12 @@
         <span class="sec-link" data-view="prompts">All prompts →</span></div>
       <div class="grid-3" id="fav-prompts"></div>
     </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Recent Activity</span><span class="sec-line"></span>
+        <span class="sec-count" id="activity-count"></span></div>
+      <div class="activity" id="activity-list"></div>
+    </div>
   </section>
 
   <!-- ════ PROJECTS ════ -->
@@ -553,24 +733,74 @@
       <div class="filters" id="proj-filters">
         <button class="filter active" data-status="all">All</button>
         <button class="filter" data-status="idea">Idea</button>
+        <button class="filter" data-status="planning">Planning</button>
         <button class="filter" data-status="building">Building</button>
         <button class="filter" data-status="testing">Testing</button>
         <button class="filter" data-status="live">Live</button>
+        <button class="filter" data-status="archived">Archived</button>
       </div>
     </div>
     <div class="grid" id="proj-grid"></div>
+  </section>
+
+  <!-- ════ MEMORY ════ -->
+  <section class="view" id="view-memory">
+    <div class="page-head">
+      <div class="page-title">Project Memory</div>
+      <div class="page-sub">Obsidian-style knowledge branches — one per project. Compressed context that future agents can retrieve.</div>
+    </div>
+    <div class="mem-layout">
+      <aside class="mem-rail">
+        <div class="mem-rail-head">
+          <span>Branches</span>
+          <button class="mem-add-branch" id="mem-add-branch" title="Add a memory branch">+</button>
+        </div>
+        <div class="mem-branches" id="mem-branches"></div>
+      </aside>
+      <div class="mem-main" id="mem-main"></div>
+    </div>
+  </section>
+
+  <!-- ════ TOOL STACK ════ -->
+  <section class="view" id="view-tools">
+    <div class="page-head">
+      <div class="page-title">Tool Stack</div>
+      <div class="page-sub">Capabilities available to you and to future agents. The substrate the command centre orchestrates.</div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="tool-search" placeholder="Search tools, purpose or agents…" />
+      </div>
+      <div class="filters" id="tool-filters">
+        <button class="filter active" data-tstatus="all">All</button>
+        <button class="filter" data-tstatus="connected">Connected</button>
+        <button class="filter" data-tstatus="local">Local</button>
+        <button class="filter" data-tstatus="available">Available</button>
+      </div>
+    </div>
+    <div class="grid" id="tool-grid"></div>
   </section>
 
   <!-- ════ SKILLS ════ -->
   <section class="view" id="view-skills">
     <div class="page-head">
       <div class="page-title">Skills Library</div>
-      <div class="page-sub">Reusable capabilities & repos. Pull them into any project.</div>
+      <div class="page-sub">Your downloaded Claude Code skills, live in <code>~/.claude/skills</code>. Name one in a prompt to invoke it.</div>
     </div>
     <div class="toolbar">
       <div class="search">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input id="skill-search" placeholder="Search skills or tags…" />
+        <input id="skill-search" placeholder="Search skills, tags or invoke name…" />
+      </div>
+      <div class="filters" id="skill-filters">
+        <button class="filter active" data-cat="all">All</button>
+        <button class="filter" data-cat="build">Build</button>
+        <button class="filter" data-cat="style">Style</button>
+        <button class="filter" data-cat="image">Image</button>
+        <button class="filter" data-cat="brand">Brand</button>
+        <button class="filter" data-cat="writing">Writing</button>
+        <button class="filter" data-cat="tokens">Tokens</button>
       </div>
       <button class="btn-add" id="add-skill-btn">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -578,6 +808,26 @@
       </button>
     </div>
     <div class="grid" id="skill-grid"></div>
+  </section>
+
+  <!-- ════ AGENTS ════ -->
+  <section class="view" id="view-agents">
+    <div class="page-head">
+      <div class="page-title">Agents</div>
+      <div class="page-sub">Subagents bundled with your installed plugins. Delegate scoped work to keep main context lean.</div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="agent-search" placeholder="Search agents, plugins or tools…" />
+      </div>
+      <div class="filters" id="agent-filters">
+        <button class="filter active" data-plugin="all">All</button>
+        <button class="filter" data-plugin="caveman">caveman</button>
+        <button class="filter" data-plugin="impeccable">impeccable</button>
+      </div>
+    </div>
+    <div class="grid" id="agent-grid"></div>
   </section>
 
   <!-- ════ PROMPTS ════ -->
@@ -666,128 +916,241 @@ const SEED_PROJECTS = [
     desc:'13-pillar ecommerce brand audit. Paste any URL, get an AI gap analysis → Word report, PowerPoint deck, RAG dashboard.',
     live:'https://ecommerce-deep-dive-app.pages.dev', folder:'ecommerce-deep-dive',
     tags:['Next.js','Gemini','CF Pages'], status:'live', priority:'med',
-    needs:['scraper','ai','images','content','data'] },
+    needs:['slides','writing','branding','redesign'] },
   { id:'digital-depth', name:'🔍 Digital Depth Dive', domain:'Analysis & Data',
     desc:'Website analysis toolkit. AI visibility, keyword gaps, lead finder, content remix and landing-page AI.',
     live:'https://digital-depth-dive-app.pages.dev', folder:'digital-depth-dive',
     tags:['React','TS','CF Pages'], status:'live', priority:'low',
-    needs:['scraper','ai','content','leads','dashboard'] },
+    needs:['writing','marketing','redesign','ui'] },
   { id:'open-eyes', name:'👁️ Open Eyes Data', domain:'Analysis & Data',
     desc:'Public data transparency dashboard. Surfaces government datasets, contracts and records in one searchable UI.',
     live:'https://open-eyes-data-app.mraaronmanu.workers.dev', folder:'open-eyes-data',
     tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
-    needs:['data','dashboard','scraper'] },
+    needs:['ui','redesign','design','dashboard'] },
   { id:'wealth', name:'💰 Wealth Companion', domain:'Finance',
     desc:'Personal finance & wealth management. Track goals, assets and financial milestones in one place.',
     live:'https://wealth-companion-app.mraaronmanu.workers.dev', folder:'wealth-companion',
     tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
-    needs:['dashboard','charts','auth','data'] },
+    needs:['ui','redesign','design','dashboard'] },
   { id:'isa', name:'📈 ISA Platform', domain:'Finance',
     desc:'UK ISA investment tracker. Live prices, portfolio analytics, risk metrics, seasonality and fundamentals.',
     live:'https://isa-platform.mraaronmanu.workers.dev', folder:'isa-investment-platform',
     tags:['Next.js 16','Turso','CF Pages'], status:'live', priority:'med',
-    needs:['dashboard','charts','analytics','data'] },
+    needs:['ui','redesign','design','mobile'] },
   { id:'pension', name:'💷 Pension Finder UK', domain:'Finance',
     desc:'Find lost workplace pensions, track all pots in one dashboard, get plain-English retirement projections.',
     live:'https://pension-finder-app.pages.dev', folder:'pension-finder-uk',
     tags:['Next.js','Recharts','CF Pages'], status:'live', priority:'low',
-    needs:['dashboard','charts','data'] },
+    needs:['ui','redesign','design','dashboard'] },
   { id:'moneymind', name:'🧠 MoneyMind UK', domain:'Finance',
     desc:'Free UK money & rights course — 23 modules, 4 tiers. Lessons, quizzes, calculators, quests and an AI tutor.',
     live:'https://moneymind-uk-app.pages.dev', folder:'moneymind-uk',
     tags:['React','Vite','CF Pages'], status:'live', priority:'med',
-    needs:['ai','chat','analytics','state','proxy'] },
+    needs:['ui','redesign','branding','writing','mobile'] },
   { id:'tastybot', name:'🤖 Tastybot', domain:'Finance',
     desc:'Trading bot dashboard for TastyTrade. Backtests, position management and strategy execution.',
     live:'https://tastybot-app.pages.dev', folder:'tastybot',
     tags:['React','Vite','CF Pages'], status:'live', priority:'low',
-    needs:['dashboard','charts','data','analytics'] },
+    needs:['ui','redesign','design','dashboard'] },
   { id:'quant', name:'📊 Tr4d3 · Quant Desk', domain:'Finance',
     desc:'12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro. Analysis-only.',
     live:'https://github.com/Aaron-1411/quant-desk', folder:'', localPath:'~/Desktop/quant-desk',
     repoOverride:'https://github.com/Aaron-1411/quant-desk',
     tags:['Python','FastAPI','React'], status:'testing', priority:'high',
-    needs:['dashboard','charts','analytics','data','ai'] },
+    needs:['ui','design','redesign','dashboard'] },
   { id:'get-settld', name:'🏡 Get Settld', domain:'Property',
     desc:'Free first-time-buyer toolkit. Affordability checks, area research, property valuation and viewing tools.',
     live:'https://get-settld-app.pages.dev', folder:'get-settld',
     tags:['React','TS','CF Pages'], status:'live', priority:'low',
-    needs:['dashboard','data','auth'] },
+    needs:['ui','redesign','branding','mobile'] },
   { id:'lease-guard', name:'🏠 Lease Guard', domain:'Property',
     desc:'Lease management & tenant protection. Understand your rights, review clauses and track key dates.',
     live:'https://lease-guard-app.mraaronmanu.workers.dev', folder:'lease-guard',
     tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
-    needs:['auth','dashboard','email','data'] },
+    needs:['ui','redesign','writing'] },
   { id:'whole-health', name:'🧭 Whole Health Compass', domain:'Health',
     desc:'White-label patient-education tool. Plain-English concern → practitioner-ready summary across Western/TCM/Ayurveda.',
     live:'https://whole-health-compass-app.pages.dev', folder:'whole-health-compass',
     tags:['React','Vite','CF Pages'], status:'live', priority:'med',
-    needs:['ai','email','analytics','d1','proxy'] },
+    needs:['ui','redesign','branding','design'] },
   { id:'lifedash', name:'⚡ LifeDash', domain:'Health',
     desc:'Gamified personal life tracker — Body, Learn, Mind, Experience. XP, streaks, sleep, mood and habits.',
     live:'https://lifedash-app.pages.dev', folder:'lifedash',
     tags:['React','CF Pages'], status:'live', priority:'low',
-    needs:['dashboard','charts','state'] },
+    needs:['ui','redesign','mobile','motion','design'] },
   { id:'gymseek', name:'🏋️ GymSeek', domain:'Health',
     desc:'AI gym finder. Enter location, budget and preferences → ranked results with pricing and facilities.',
     live:'https://gymseek-app.pages.dev', folder:'gymseek',
     tags:['Static','CF Functions'], status:'live', priority:'low',
-    needs:['scraper','location','proxy','data'] },
+    needs:['ui','redesign','branding','mobile'] },
   { id:'platespin', name:'🍽️ PlateSpin', domain:'Food & Lifestyle',
     desc:'Spin a wheel of your cuisines, set location + dietary needs, get matched to nearby spots. Free, no login.',
     live:'https://platespin-app.pages.dev', folder:'platespin',
     tags:['React','Vite','CF Pages'], status:'building', priority:'high',
-    needs:['maps','location','scraper','proxy','state'] },
+    needs:['design','ui','redesign','mobile','motion','branding'] },
   { id:'inkspector', name:'🖋 Inkspector', domain:'Food & Lifestyle',
     desc:'Tattoo artist site for Jordan Mitchell, London. Portfolio gallery, booking form with admin dashboard, aftercare guides.',
     live:'https://inkspector-app.pages.dev', folder:'inkspector',
     tags:['Next.js','Supabase','CF Pages'], status:'testing', priority:'high',
-    needs:['auth','email','images','dashboard','supabase'] },
+    needs:['design','ui','redesign','images','branding','motion'] },
 ];
 
+// Real skills downloaded & active in ~/.claude/skills (catalogued in ~/skills-library/README.md).
 const SEED_SKILLS = [
-  { id:'auth', name:'Authentication', icon:'🔐',
-    desc:'Email/password + admin auth with protected routes. Supabase Auth pattern from Inkspector.',
-    tags:['auth','security','supabase'], source:REPO_BASE+'inkspector' },
-  { id:'stripe', name:'Stripe Payments', icon:'💳',
-    desc:'Checkout sessions, subscriptions and webhooks for taking payments.',
-    tags:['payments','stripe','billing'], source:'https://docs.stripe.com/payments/checkout' },
-  { id:'reporting', name:'Reporting Dashboard', icon:'📊',
-    desc:'Recharts / hand-built SVG analytics dashboards with KPI strips and charts.',
-    tags:['dashboard','charts','analytics','react'], source:REPO_BASE+'isa-investment-platform' },
-  { id:'canva', name:'Canva Integration', icon:'🎨',
-    desc:'Canva Connect API for automated design + branded asset generation.',
-    tags:['design','canva','content','integration'], source:'https://www.canva.dev/docs/connect/' },
-  { id:'scraper', name:'Lead Scraper', icon:'🕸️',
-    desc:'Overpass/OSM + web data extraction to pull places, leads and structured records.',
-    tags:['scraper','data','leads','research'], source:REPO_BASE+'platespin/functions/api' },
-  { id:'proxy', name:'CF Pages Function Proxy', icon:'🛡️',
-    desc:'Keyless API proxy — secrets stay server-side, never ship to the client. The MoneyMind pattern.',
-    tags:['cloudflare','proxy','api','security'], source:REPO_BASE+'moneymind-uk/functions' },
-  { id:'resend', name:'Resend Email', icon:'✉️',
-    desc:'Transactional + lead-notification email via Resend, graceful no-op when unset.',
-    tags:['email','resend','notifications'], source:REPO_BASE+'whole-health-compass/functions' },
-  { id:'ai-chat', name:'AI Chat / Tutor', icon:'✶',
-    desc:'Claude-backed chat as a Cloudflare Function — system prompt, streaming, friendly error fallback.',
-    tags:['ai','claude','chat','llm'], source:REPO_BASE+'moneymind-uk/functions/api' },
-  { id:'d1', name:'D1 Analytics', icon:'📈',
-    desc:'Cookieless funnel analytics + append-only audit on Cloudflare D1, schema ensured at runtime.',
-    tags:['analytics','d1','cloudflare','data'], source:REPO_BASE+'whole-health-compass/functions' },
-  { id:'maps', name:'Leaflet Maps', icon:'🗺️',
-    desc:'Leaflet + OSM map view with Photon/Nominatim geocoding and clustered results.',
-    tags:['maps','leaflet','location','react'], source:REPO_BASE+'platespin' },
-  { id:'shadcn', name:'shadcn/ui Kit', icon:'🧩',
-    desc:'Radix + Tailwind component system — accessible primitives, fast to theme.',
-    tags:['ui','react','components','tailwind'], source:'https://ui.shadcn.com' },
-  { id:'imagegen', name:'Image Generator', icon:'🖼️',
-    desc:'Gemini / AI image generation integration for content and thumbnails.',
-    tags:['ai','images','content','gemini'], source:REPO_BASE+'ecommerce-deep-dive' },
-  { id:'social', name:'Social Scheduler', icon:'📅',
-    desc:'Queue and schedule posts across social platforms from one composer.',
-    tags:['social','marketing','content','scheduler'], source:'https://developers.facebook.com/docs/' },
-  { id:'lstate', name:'localStorage State', icon:'💾',
-    desc:'Versioned, typed local persistence with pure reducers — no account needed.',
-    tags:['state','storage','frontend'], source:REPO_BASE+'platespin/src/state' },
+  // ── Design — full frontend build ──
+  { id:'atelier', name:'Atelier', invoke:'atelier', icon:'🎨', cat:'build',
+    desc:'Your signature design skill — sleek, high-tech, casual-expert. Ships polished public sites/apps with an outreach-tracking backend.',
+    tags:['design','ui','frontend','redesign','web','dashboard','motion'] },
+  { id:'impeccable', name:'Impeccable', invoke:'impeccable', icon:'✨', cat:'build',
+    desc:'Design + 23 commands (polish, audit, critique, animate, bolder, quieter…) with 41 deterministic anti-slop detectors and live browser iteration.',
+    tags:['design','ui','redesign','frontend','motion','components'] },
+  { id:'ui-ux-pro-max', name:'UI/UX Pro Max', invoke:'ui-ux-pro-max', icon:'🧠', cat:'build',
+    desc:'Design-intelligence DB: 50+ styles, 161 palettes, 57 font pairings, 25 chart types across 10 stacks. Plan, build, review and fix UI/UX.',
+    tags:['ui','design','components','mobile','web','frontend'] },
+  { id:'taste-skill', name:'Design Taste (Frontend)', invoke:'taste-skill', icon:'🎯', cat:'build',
+    desc:'Anti-slop frontend for landing pages, portfolios and redesigns. Reads the brief, infers direction, audit-first, strict pre-flight check.',
+    tags:['design','frontend','redesign','web','ui'] },
+  { id:'emil-design-eng', name:'Emil Design Eng', invoke:'emil-design-eng', icon:'🪄', cat:'build',
+    desc:"Emil Kowalski's philosophy on UI polish, component design, animation decisions and the invisible details that make software feel great.",
+    tags:['ui','design','motion','components','frontend'] },
+  { id:'soft-skill', name:'High-End Visual Design', invoke:'soft-skill', icon:'💎', cat:'build',
+    desc:'Design like a high-end agency — exact fonts, spacing, shadows, cards and animations that feel expensive. Blocks the cheap AI defaults.',
+    tags:['design','ui','web','motion'] },
+  { id:'redesign-skill', name:'Redesign Existing Projects', invoke:'redesign-skill', icon:'♻️', cat:'build',
+    desc:'Upgrade existing sites and apps to premium quality. Audits current design, kills generic AI patterns, never breaks functionality.',
+    tags:['redesign','design','ui','web'] },
+  // ── Design — style-specific looks ──
+  { id:'minimalist-skill', name:'Minimalist UI', invoke:'minimalist-skill', icon:'⬜', cat:'style',
+    desc:'Clean editorial interfaces — warm monochrome, typographic contrast, flat bento grids. No gradients, no heavy shadows.',
+    tags:['design','ui','web','redesign'] },
+  { id:'brutalist-skill', name:'Industrial Brutalist UI', invoke:'brutalist-skill', icon:'🏗️', cat:'style',
+    desc:'Swiss print × military terminal. Rigid grids, extreme type contrast, analog degradation — for data-heavy dashboards that feel declassified.',
+    tags:['design','ui','web','dashboard'] },
+  { id:'gpt-tasteskill', name:'GPT Taste (GSAP Motion)', invoke:'gpt-tasteskill', icon:'🌀', cat:'style',
+    desc:'Elite UX/UI & GSAP motion engineer — randomized layouts, AIDA structure, editorial type, scroll pinning/stacking/scrubbing.',
+    tags:['design','ui','web','motion','frontend'] },
+  { id:'stitch-skill', name:'Stitch Design Taste', invoke:'stitch-skill', icon:'🧵', cat:'style',
+    desc:'Semantic design-system skill for Google Stitch. Generates DESIGN.md files enforcing premium, anti-generic UI standards.',
+    tags:['design','ui','mobile','motion'] },
+  { id:'taste-skill-v1', name:'Design Taste v1 (Legacy)', invoke:'taste-skill-v1', icon:'🗂️', cat:'style',
+    desc:'The original v1 taste-skill, preserved for projects that depend on its exact behaviour. Use only for backward compatibility.',
+    tags:['design','frontend','redesign','web','ui'] },
+  // ── Design — image generation ──
+  { id:'imagegen-frontend-web', name:'Imagegen — Web', invoke:'imagegen-frontend-web', icon:'🖼️', cat:'image',
+    desc:'Premium website design references — ONE horizontal image per section (8 sections → 8 images), varied heroes, one consistent palette.',
+    tags:['images','design','web','marketing'] },
+  { id:'imagegen-frontend-mobile', name:'Imagegen — Mobile', invoke:'imagegen-frontend-mobile', icon:'📱', cat:'image',
+    desc:'Premium app-native screen concepts inside clean phone mockups (iOS/Android). Generates images only — does not write code.',
+    tags:['images','design','mobile'] },
+  { id:'image-to-code-skill', name:'Image to Code', invoke:'image-to-code-skill', icon:'🎛️', cat:'image',
+    desc:'Generates the design image first, deeply analyses it, then codes the site to match. Codex-tuned, large readable section images.',
+    tags:['design','frontend','web','images'] },
+  { id:'brandkit', name:'Brand Kit', invoke:'brandkit', icon:'📦', cat:'image',
+    desc:'Premium brand-guideline boards, logo systems, identity decks and visual-world presentations. Minimalist, cinematic, editorial.',
+    tags:['branding','images','design'] },
+  // ── Brand & marketing (ckm: plugin) ──
+  { id:'design', name:'CKM · Design', invoke:'design', icon:'🖌️', cat:'brand',
+    desc:'Logos (55 styles), corporate identity program (50 deliverables), HTML presentations, banners, icons and social photos.',
+    tags:['design','branding','images','slides','ui'] },
+  { id:'brand', name:'CKM · Brand', invoke:'brand', icon:'🏷️', cat:'brand',
+    desc:'Brand voice, visual identity, messaging frameworks, asset management and brand consistency. For branded content and style guides.',
+    tags:['branding','marketing','writing'] },
+  { id:'banner-design', name:'CKM · Banner Design', invoke:'banner-design', icon:'🪧', cat:'brand',
+    desc:'Banners for social, ads, web heroes and print. Multiple art directions with AI-generated visuals across 13+ styles.',
+    tags:['images','branding','marketing'] },
+  { id:'design-system', name:'CKM · Design System', invoke:'design-system', icon:'🧱', cat:'brand',
+    desc:'Three-layer design tokens (primitive→semantic→component), component specs and strategic slide generation.',
+    tags:['tokens','components','slides','design'] },
+  { id:'slides', name:'CKM · Slides', invoke:'slides', icon:'📊', cat:'brand',
+    desc:'Strategic HTML presentations with Chart.js, design tokens, responsive layouts and copywriting formulas.',
+    tags:['slides','design','writing'] },
+  { id:'ui-styling', name:'CKM · UI Styling', invoke:'ui-styling', icon:'🧩', cat:'brand',
+    desc:'Beautiful, accessible UIs with shadcn/ui (Radix + Tailwind), utility-first styling, dark mode and canvas-based visual designs.',
+    tags:['ui','components','frontend','web'] },
+  // ── Writing / output ──
+  { id:'stop-slop', name:'Stop Slop', invoke:'stop-slop', icon:'🧹', cat:'writing',
+    desc:'Removes AI writing patterns from prose. Use when drafting, editing or reviewing text to eliminate predictable AI tells.',
+    tags:['writing'] },
+  { id:'output-skill', name:'Full Output Enforcement', invoke:'output-skill', icon:'📜', cat:'writing',
+    desc:'Overrides default LLM truncation. Bans placeholders, forces complete code generation and handles token-limit splits cleanly.',
+    tags:['writing'] },
+  // ── Token efficiency & delegation (caveman plugin) ──
+  { id:'caveman', name:'Caveman', invoke:'/caveman', icon:'🪨', cat:'tokens',
+    desc:'Ultra-compressed mode — ~75% fewer tokens with full technical accuracy. Levels: lite, full, ultra, wenyan.',
+    tags:['efficiency'] },
+  { id:'cavecrew', name:'Cavecrew', invoke:'cavecrew', icon:'🦴', cat:'tokens',
+    desc:'Decision guide for delegating to compressed subagents (investigator/builder/reviewer) so the main thread eats ~60% fewer tokens.',
+    tags:['delegation','efficiency'] },
+  { id:'caveman-commit', name:'Caveman Commit', invoke:'/caveman-commit', icon:'✅', cat:'tokens',
+    desc:'Ultra-compressed Conventional Commits messages. Subject ≤50 chars, body only when the why is not obvious.',
+    tags:['commit','efficiency'] },
+  { id:'caveman-review', name:'Caveman Review', invoke:'/caveman-review', icon:'🔎', cat:'tokens',
+    desc:'One-line PR review comments — location, problem, fix. Severity-tagged, no throat-clearing.',
+    tags:['review','efficiency'] },
+  { id:'caveman-compress', name:'Caveman Compress', invoke:'/caveman-compress', icon:'🗜️', cat:'tokens',
+    desc:'Compress CLAUDE.md / memory files to caveman format to save input tokens. Keeps a human-readable .original.md backup.',
+    tags:['efficiency'] },
+  { id:'caveman-stats', name:'Caveman Stats', invoke:'/caveman-stats', icon:'📈', cat:'tokens',
+    desc:'Real token usage + estimated savings for the session, read straight from the Claude Code session log.',
+    tags:['efficiency'] },
+  { id:'caveman-help', name:'Caveman Help', invoke:'/caveman-help', icon:'❓', cat:'tokens',
+    desc:'Quick-reference card for all caveman modes, skills and commands. One-shot display, not a persistent mode.',
+    tags:['efficiency'] },
+];
+
+// Real subagents bundled with installed plugins (caveman, impeccable).
+const SEED_AGENTS = [
+  { id:'cavecrew-investigator', name:'Cavecrew Investigator', plugin:'caveman', icon:'🔦', model:'haiku',
+    tools:['Read','Grep','Glob','Bash'],
+    desc:"Read-only code locator. Returns a file:line table for 'where is X / what calls Y / list uses of Z'. Output is caveman-compressed (~60% fewer tokens than Explore). Refuses to suggest fixes." },
+  { id:'cavecrew-builder', name:'Cavecrew Builder', plugin:'caveman', icon:'🔨', model:'inherit',
+    tools:['Read','Edit','Write','Grep','Glob'],
+    desc:'Surgical 1–2 file edit — typo fixes, single-function rewrites, mechanical renames, comment removal. Hard-refuses 3+ file scope. Returns a caveman diff receipt.' },
+  { id:'cavecrew-reviewer', name:'Cavecrew Reviewer', plugin:'caveman', icon:'🔍', model:'haiku',
+    tools:['Read','Grep','Bash'],
+    desc:'Diff/branch/file reviewer. One line per finding, severity-tagged, no praise, no scope creep. Skips formatting nits unless they change meaning.' },
+  { id:'impeccable-manual-edit-applier', name:'Impeccable Edit Applier', plugin:'impeccable', icon:'✍️', model:'inherit',
+    tools:['Read','Write','Edit','Bash','Glob','Grep'],
+    desc:'Applies leased Impeccable live manual copy-edit batches to source and returns canonical Apply results.' },
+  { id:'impeccable-asset-producer', name:'Impeccable Asset Producer', plugin:'impeccable', icon:'🖼️', model:'inherit',
+    tools:['Read','Write','Edit','Bash','Glob','Grep'],
+    desc:'Produces clean reusable raster assets from approved Impeccable mock references — without redesigning the direction.' },
+];
+
+// Tool Stack — capabilities available to Aaron and future agents.
+const SEED_TOOLS = [
+  { id:'claude-code', name:'Claude Code', icon:'✶', status:'connected',
+    desc:'Agentic CLI coding environment — reads, edits and ships across the whole repo.',
+    purpose:'Primary development and implementation environment.',
+    agents:['CTO','Developer','Chairman'] },
+  { id:'codex', name:'Codex', icon:'⌥', status:'connected',
+    desc:'OpenAI Codex agent for code tasks, parallel jobs and image-to-code work.',
+    purpose:'Secondary build agent for scoped coding tasks and design-to-code.',
+    agents:['Developer','Designer'] },
+  { id:'github', name:'GitHub', icon:'⎇', status:'connected',
+    desc:'Source of truth + CI/CD. Push to Aaron-1411/CC master → Actions deploy to Cloudflare Pages.',
+    purpose:'Version control, monorepo and automated deployment pipeline.',
+    agents:['CTO','Developer','Release Manager'] },
+  { id:'obsidian', name:'Obsidian', icon:'🪨', status:'local',
+    desc:'Markdown knowledge vault. Project-branch memory, decisions, roadmaps and session summaries.',
+    purpose:'Long-term project memory and compressed context store.',
+    agents:['Chairman','Archivist','Council'] },
+  { id:'supabase', name:'Supabase', icon:'🗄️', status:'available',
+    desc:'Postgres + Auth + storage backend. Powers Inkspector and future authed apps.',
+    purpose:'Database, auth and storage for projects that need a backend.',
+    agents:['Backend','Developer'] },
+  { id:'n8n', name:'n8n', icon:'🔗', status:'available',
+    desc:'Self-hostable workflow automation — wire APIs, triggers and scheduled jobs.',
+    purpose:'Automation and orchestration glue for future agent workflows.',
+    agents:['Operations','Chairman'] },
+  { id:'lm-studio', name:'LM Studio', icon:'🧬', status:'local',
+    desc:'Local LLM runtime. Run open models on-device for private, zero-cost inference.',
+    purpose:'Local model inference for cheap, private agent reasoning.',
+    agents:['Council','Researcher'] },
+  { id:'wispr-flow', name:'Wispr Flow', icon:'🎙️', status:'local',
+    desc:'Voice-to-text dictation. Capture ideas and briefs hands-free, anywhere.',
+    purpose:'Fast voice capture for briefs, notes and prompts.',
+    agents:['Assistant'] },
 ];
 
 const SEED_PROMPTS = [
@@ -813,6 +1176,50 @@ const SEED_PROMPTS = [
     body:'Repurpose this <ARTICLE/VIDEO> into: 1 LinkedIn post, 1 X thread, and 3 short hooks. Keep each native to its platform. Lead with the most counterintuitive insight.' },
 ];
 
+/* Project Memory — Obsidian-style branches. Empty sections scaffold on demand;
+   `personal-hub` is seeded as a worked example. Edits persist to localStorage. */
+const MEM_SECTIONS = [
+  { key:'summary',      type:'text', icon:'📄', title:'Summary',        placeholder:'High-level overview of this project…' },
+  { key:'architecture', type:'text', icon:'🏛️', title:'Architecture',   placeholder:'Stack, structure and technical decisions…' },
+  { key:'decisions',    type:'log',  icon:'⚖️', title:'Decisions',      placeholder:'Log a key decision…' },
+  { key:'skillsUsed',   type:'tags', icon:'🧰', title:'Skills Used',    placeholder:'Add a skill (e.g. atelier)…' },
+  { key:'repoRefs',     type:'links',icon:'🔗', title:'Repository References', placeholder:'Add a repo/URL reference…' },
+  { key:'roadmap',      type:'todo', icon:'🗺️', title:'Roadmap',        placeholder:'Add a roadmap item…' },
+  { key:'openIssues',   type:'list', icon:'⚠️', title:'Open Issues',    placeholder:'Add an open issue…' },
+  { key:'sessions',     type:'log',  icon:'🧠', title:'Session Summaries', placeholder:'Paste a compressed session summary…' },
+];
+const SEED_MEMORY = {
+  'personal-hub': {
+    name:'Personal Hub', emoji:'⌘', status:'building',
+    summary:'Personal AI Development Command Centre. Static single-file SPA (workspace.html) deployed on Cloudflare Pages. Evolving into the management layer for a virtual AI software company — projects, tool stack, skills, agents, prompts and project memory.',
+    architecture:'Vanilla JS + localStorage, no build step. Dark theme design tokens shared with the public hub. Views: Dashboard, Projects, Memory, Tools, Skills, Agents, Prompts. Deployed via Aaron-1411/CC master → GitHub Actions → Cloudflare Pages (aaron-projects-hub).',
+    decisions:[
+      { text:'Keep everything in one static HTML file — zero build, instant deploy, easy to reason about.', date:'2026-06-11' },
+      { text:'Persist all user state to localStorage (ws: prefix) — no backend until auth is actually needed.', date:'2026-06-11' },
+      { text:'Agents tab is a read-only catalog of installed plugin subagents — no autonomous execution yet.', date:'2026-06-11' },
+    ],
+    skillsUsed:['atelier','impeccable','taste-skill','stop-slop'],
+    repoRefs:[
+      { label:'Aaron-1411/CC (monorepo)', url:'https://github.com/Aaron-1411/CC' },
+      { label:'Live workspace', url:'https://aaron-projects-hub.pages.dev/workspace' },
+    ],
+    roadmap:[
+      { text:'Phase 0 — Tool Stack dashboard', done:true },
+      { text:'Phase 1 — Foundation: projects, dashboard, skills, prompts', done:true },
+      { text:'Phase 2 — Obsidian memory architecture (project branches)', done:true },
+      { text:'Future — Chairman orchestration + council agents', done:false },
+      { text:'Future — SKILL.md generation + repository intelligence', done:false },
+    ],
+    openIssues:[
+      { text:'Memory is local-only — needs sync to the real Obsidian vault before multi-device use.' },
+      { text:'Tool connection status is manual — wire real health checks later.' },
+    ],
+    sessions:[
+      { text:'Built V2: added Tool Stack, extended project statuses/priorities, and the Obsidian-style Project Memory layer with per-project branches.', date:'2026-06-11' },
+    ],
+  },
+};
+
 /* ─────────── STATE ─────────── */
 const LS = {
   get(k, d){ try { return JSON.parse(localStorage.getItem('ws:'+k)) ?? d; } catch { return d; } },
@@ -824,7 +1231,25 @@ let focusPinned   = LS.get('focusPinned', ['platespin','inkspector','quant']);
 let customSkills  = LS.get('customSkills', []);
 let customPrompts = LS.get('customPrompts', []);
 let promptState   = LS.get('promptState', {}); // id -> {fav}
+let toolOverrides = LS.get('tools', {});       // id -> {status}
+let memStore      = LS.get('memory', {});      // branchId -> partial memory object
+let memBranchesEx = LS.get('memBranches', []); // custom branches [{id,name,emoji}]
+let activity      = LS.get('activity', []);    // [{icon, text, ts}]
 const today = () => new Date().toISOString().slice(0,10);
+
+/* ── activity log ── */
+function logActivity(icon, text){
+  activity.unshift({ icon, text, ts: Date.now() });
+  activity = activity.slice(0, 30);
+  LS.set('activity', activity);
+}
+function timeAgo(ts){
+  const s = Math.floor((Date.now()-ts)/1000);
+  if (s<60) return 'just now';
+  const m = Math.floor(s/60); if (m<60) return m+'m ago';
+  const h = Math.floor(m/60); if (h<24) return h+'h ago';
+  const d = Math.floor(h/24); return d+'d ago';
+}
 
 function projects(){
   return SEED_PROJECTS.map(p => {
@@ -839,6 +1264,40 @@ function projects(){
   });
 }
 function allSkills(){ return [...customSkills, ...SEED_SKILLS]; }
+function allAgents(){ return SEED_AGENTS; }
+function tools(){
+  return SEED_TOOLS.map(t => ({ ...t, status: (toolOverrides[t.id]||{}).status || t.status }));
+}
+
+/* ── memory branches & data ── */
+const EMPTY_MEM = () => ({ summary:'', architecture:'', decisions:[], skillsUsed:[], repoRefs:[], roadmap:[], openIssues:[], sessions:[] });
+function memBranches(){
+  const list = [];
+  // seeded special branches (e.g. personal-hub)
+  Object.keys(SEED_MEMORY).forEach(id => {
+    const s = SEED_MEMORY[id];
+    list.push({ id, name:s.name, emoji:s.emoji, status:s.status });
+  });
+  // every real project is a branch
+  SEED_PROJECTS.forEach(p => {
+    const o = projOverrides[p.id] || {};
+    list.push({ id:p.id, name:plainName(p.name), emoji:pinEmojiRaw(p.name), status:o.status||p.status });
+  });
+  // custom user branches
+  memBranchesEx.forEach(b => list.push({ id:b.id, name:b.name, emoji:b.emoji||'📁', status:'idea' }));
+  return list;
+}
+function memData(id){
+  const seed = SEED_MEMORY[id] ? { ...EMPTY_MEM(), ...SEED_MEMORY[id] } : EMPTY_MEM();
+  const ov = memStore[id] || {};
+  return { ...seed, ...ov };
+}
+function saveMem(id, patch){
+  memStore[id] = { ...memData(id), ...patch };
+  // strip seed-only meta fields we never edit
+  delete memStore[id].name; delete memStore[id].emoji; delete memStore[id].status;
+  LS.set('memory', memStore);
+}
 function allPrompts(){
   return [...customPrompts, ...SEED_PROMPTS].map(p => {
     const st = promptState[p.id] || {};
@@ -850,8 +1309,10 @@ function allPrompts(){
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const esc = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const STATUS_LABEL = { idea:'Idea', building:'Building', testing:'Testing', live:'Live' };
-const PRIO_LABEL   = { high:'High', med:'Medium', low:'Low' };
+const STATUS_LABEL = { idea:'Idea', planning:'Planning', building:'Building', testing:'Testing', live:'Live', archived:'Archived' };
+const STATUS_ORDER = ['idea','planning','building','testing','live','archived'];
+const PRIO_LABEL   = { critical:'Critical', high:'High', med:'Medium', low:'Low' };
+const PRIO_ORDER   = ['critical','high','med','low'];
 
 function toast(msg){
   const t = $('#toast');
@@ -893,15 +1354,35 @@ function projectCard(p){
 }
 
 /* ─────────── RENDER: SKILL CARD ─────────── */
+const SKILL_CAT_LABEL = { build:'Build', style:'Style', image:'Image', brand:'Brand', writing:'Writing', tokens:'Tokens' };
 function skillCard(s){
-  const isHttp = /^https?:/.test(s.source);
+  const isHttp = /^https?:/.test(s.source||'');
   return `<div class="card skill">
-    <div class="card-head"><span class="card-name">${esc(s.icon||'🧰')} ${esc(s.name)}</span></div>
+    <div class="card-head">
+      <span class="card-name">${esc(s.icon||'🧰')} ${esc(s.name)}</span>
+      ${s.cat ? `<span class="skill-cat">${esc(SKILL_CAT_LABEL[s.cat]||s.cat)}</span>` : ''}
+    </div>
     <p class="card-desc">${esc(s.desc)}</p>
     <div class="card-foot">
       <div class="tags">${s.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
-      ${isHttp ? `<a class="skill-src" href="${esc(s.source)}" target="_blank" rel="noopener">
-        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>Source</a>` : ''}
+      ${s.invoke ? `<span class="invoke" title="Invoke name — name it in your prompt">${esc(s.invoke)}</span>`
+        : (isHttp ? `<a class="skill-src" href="${esc(s.source)}" target="_blank" rel="noopener">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>Source</a>` : '')}
+    </div>
+  </div>`;
+}
+
+/* ─────────── RENDER: AGENT CARD ─────────── */
+function agentCard(a){
+  return `<div class="card agent">
+    <div class="card-head">
+      <span class="card-name">${esc(a.icon||'🤖')} ${esc(a.name)}</span>
+      <span class="plugin-badge">${esc(a.plugin)}</span>
+    </div>
+    <p class="card-desc">${esc(a.desc)}</p>
+    <div class="card-foot">
+      <div class="tags">${a.tools.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <span class="model-chip" title="Model">${esc(a.model)}</span>
     </div>
   </div>`;
 }
@@ -937,14 +1418,16 @@ function renderDashboard(){
     ? chips.map(p=>`<a class="focus-chip" data-proj="${p.id}">${pinEmoji(p.name)}<span>${esc(plainName(p.name))}</span></a>`).join('')
     : `<span class="meta-x">Pin projects from their panel to track them here.</span>`;
 
-  // priorities = high priority OR building/testing
-  const prio = ps.filter(p => p.priority==='high' || p.status==='building' || p.status==='testing')
-                 .sort((a,b)=> (a.priority==='high'?-1:1) - (b.priority==='high'?-1:1));
+  // priorities = critical/high priority OR building/testing, never archived
+  const prioRank = { critical:0, high:1, med:2, low:3 };
+  const prio = ps.filter(p => p.status!=='archived' &&
+                 (p.priority==='critical' || p.priority==='high' || p.status==='building' || p.status==='testing'))
+                 .sort((a,b)=> (prioRank[a.priority]??9) - (prioRank[b.priority]??9));
   $('#prio-count').textContent = prio.length + ' need attention';
   $('#prio-grid').innerHTML = prio.length ? prio.map(projectCard).join('') : `<div class="empty">Nothing urgent — all clear.</div>`;
 
-  // active = not idea
-  const active = ps.filter(p=>p.status!=='idea').slice(0,6);
+  // active = not idea, not archived
+  const active = ps.filter(p=>p.status!=='idea' && p.status!=='archived').slice(0,6);
   $('#active-grid').innerHTML = active.map(projectCard).join('');
 
   // recent skills (first few of library)
@@ -953,9 +1436,25 @@ function renderDashboard(){
   // favourite prompts
   const favs = allPrompts().filter(p=>p.fav).slice(0,3);
   $('#fav-prompts').innerHTML = favs.length ? favs.map(promptCard).join('') : `<div class="empty">Star a prompt to pin it here.</div>`;
+
+  // recent activity
+  renderActivity();
+}
+function renderActivity(){
+  const list = $('#activity-list'); if(!list) return;
+  const items = activity.slice(0, 8);
+  $('#activity-count').textContent = activity.length ? activity.length + ' events' : '';
+  list.innerHTML = items.length
+    ? items.map(a=>`<div class="act-row">
+        <span class="act-ico">${esc(a.icon||'•')}</span>
+        <span class="act-b"><div class="act-t">${a.text}</div></span>
+        <span class="act-time">${timeAgo(a.ts)}</span>
+      </div>`).join('')
+    : `<div class="empty">Your status changes, notes and memory edits show up here.</div>`;
 }
 function plainName(n){ return n.replace(/^\S+\s/, ''); }
 function pinEmoji(n){ const m=n.match(/^(\S+)\s/); return `<span class="emoji">${m?m[1]:'•'}</span>`; }
+function pinEmojiRaw(n){ const m=n.match(/^(\S+)\s/); return m?m[1]:'📁'; }
 
 /* ─────────── PROJECTS VIEW ─────────── */
 let projFilter = 'all', projQuery = '';
@@ -970,12 +1469,23 @@ function renderProjects(){
 }
 
 /* ─────────── SKILLS VIEW ─────────── */
-let skillQuery = '';
+let skillQuery = '', skillFilter = 'all';
 function renderSkills(){
   let ss = allSkills();
+  if (skillFilter !== 'all') ss = ss.filter(s => s.cat === skillFilter);
   if (skillQuery){ const q=skillQuery.toLowerCase();
-    ss = ss.filter(s => (s.name+s.desc+s.tags.join(' ')).toLowerCase().includes(q)); }
+    ss = ss.filter(s => (s.name+s.desc+s.tags.join(' ')+(s.invoke||'')).toLowerCase().includes(q)); }
   $('#skill-grid').innerHTML = ss.length ? ss.map(skillCard).join('') : `<div class="empty">No skills match.</div>`;
+}
+
+/* ─────────── AGENTS VIEW ─────────── */
+let agentQuery = '', agentFilter = 'all';
+function renderAgents(){
+  let aa = allAgents();
+  if (agentFilter !== 'all') aa = aa.filter(a => a.plugin === agentFilter);
+  if (agentQuery){ const q=agentQuery.toLowerCase();
+    aa = aa.filter(a => (a.name+a.desc+a.plugin+a.tools.join(' ')).toLowerCase().includes(q)); }
+  $('#agent-grid').innerHTML = aa.length ? aa.map(agentCard).join('') : `<div class="empty">No agents match.</div>`;
 }
 
 /* ─────────── PROMPTS VIEW ─────────── */
@@ -987,6 +1497,165 @@ function renderPrompts(){
   if (promptQuery){ const q=promptQuery.toLowerCase();
     ps = ps.filter(p => (p.title+p.body+p.cat).toLowerCase().includes(q)); }
   $('#prompt-grid').innerHTML = ps.length ? ps.map(promptCard).join('') : `<div class="empty">No prompts match.</div>`;
+}
+
+/* ─────────── TOOL STACK VIEW ─────────── */
+const TOOL_STATUS_LABEL = { connected:'Connected', local:'Local', available:'Available' };
+function toolCard(t){
+  return `<div class="card tool">
+    <div class="card-head">
+      <span class="card-name">${esc(t.icon||'🧰')} ${esc(t.name)}</span>
+      <span class="tool-status ${t.status}"><span class="sd"></span>${TOOL_STATUS_LABEL[t.status]||t.status}</span>
+    </div>
+    <p class="card-desc">${esc(t.desc)}</p>
+    <div class="tool-field-label">Purpose</div>
+    <p class="tool-purpose">${esc(t.purpose)}</p>
+    <div class="tool-field-label">Future agent access</div>
+    <div class="agent-pills">${t.agents.map(a=>`<span class="agent-pill">${esc(a)}</span>`).join('')}</div>
+  </div>`;
+}
+let toolQuery = '', toolFilter = 'all';
+function renderTools(){
+  let tt = tools();
+  if (toolFilter !== 'all') tt = tt.filter(t => t.status === toolFilter);
+  if (toolQuery){ const q=toolQuery.toLowerCase();
+    tt = tt.filter(t => (t.name+t.desc+t.purpose+t.agents.join(' ')).toLowerCase().includes(q)); }
+  $('#tool-grid').innerHTML = tt.length ? tt.map(toolCard).join('') : `<div class="empty">No tools match.</div>`;
+}
+
+/* ─────────── MEMORY VIEW ─────────── */
+let memCurrent = LS.get('memCurrent', 'personal-hub');
+let memToc = 'all'; // all | summary | sessions | decisions | roadmap
+function renderMemBranches(){
+  const rail = $('#mem-branches');
+  rail.innerHTML = memBranches().map(b=>`<button class="mem-branch ${b.id===memCurrent?'active':''}" data-branch="${esc(b.id)}">
+    <span class="mb-emoji">${esc(b.emoji||'📁')}</span>
+    <span class="mb-name">${esc(b.name)}</span>
+    <span class="mb-dot status-dot-${esc(b.status)}" style="background:${statusColor(b.status)}"></span>
+  </button>`).join('');
+}
+function statusColor(s){
+  return ({idea:'#a78bfa',planning:'#60a5fa',building:'#f59e0b',testing:'#f472b6',live:'#10b981',archived:'#414d60'})[s] || '#414d60';
+}
+function renderMemory(){
+  renderMemBranches();
+  const main = $('#mem-main');
+  const b = memBranches().find(x=>x.id===memCurrent);
+  if(!b){ main.innerHTML = `<div class="mem-pick">Select a branch to view its memory.</div>`; return; }
+  const m = memData(memCurrent);
+  const tocBtn = (k,label)=>`<button class="filter ${memToc===k?'active':''}" data-toc="${k}">${label}</button>`;
+  const visible = MEM_SECTIONS.filter(s => {
+    if (memToc==='all') return true;
+    if (memToc==='summary') return s.key==='summary' || s.key==='architecture';
+    if (memToc==='sessions') return s.key==='sessions';
+    if (memToc==='decisions') return s.key==='decisions';
+    if (memToc==='roadmap') return s.key==='roadmap';
+    return true;
+  });
+  main.innerHTML = `
+    <div class="mem-head">
+      <span style="font-size:24px">${esc(b.emoji||'📁')}</span>
+      <span class="mem-title">${esc(b.name)}</span>
+      ${statusPill(b.status)}
+    </div>
+    <div class="mem-sub">Project memory branch · ${esc(memCurrent)}</div>
+    <div class="mem-toc">
+      ${tocBtn('all','Project Memory')}
+      ${tocBtn('summary','Summary')}
+      ${tocBtn('sessions','Session Summaries')}
+      ${tocBtn('decisions','Decision Log')}
+      ${tocBtn('roadmap','Roadmap')}
+    </div>
+    ${visible.map(s=>memSection(s, m)).join('')}
+  `;
+  wireMemory();
+}
+function memSection(s, m){
+  const val = m[s.key];
+  let body = '';
+  if (s.type==='text'){
+    body = `<textarea class="mem-text" data-mtext="${s.key}" placeholder="${esc(s.placeholder)}">${esc(val||'')}</textarea>`;
+  } else if (s.type==='log'){
+    const items = (val||[]);
+    body = `<div class="mem-items">${items.length ? items.map((it,i)=>`<div class="mem-item">
+        <div class="mi-body"><div class="mi-text">${esc(it.text)}</div>${it.date?`<div class="mi-meta">${esc(it.date)}</div>`:''}</div>
+        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
+      </div>`).join('') : `<div class="mem-empty">Nothing logged yet.</div>`}</div>
+      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
+        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
+  } else if (s.type==='list'){
+    const items = (val||[]);
+    body = `<div class="mem-items">${items.length ? items.map((it,i)=>`<div class="mem-item">
+        <div class="mi-body"><div class="mi-text">${esc(it.text)}</div></div>
+        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
+      </div>`).join('') : `<div class="mem-empty">None.</div>`}</div>
+      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
+        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
+  } else if (s.type==='todo'){
+    const items = (val||[]);
+    body = `<div class="mem-items mem-roadmap">${items.length ? items.map((it,i)=>`<div class="mem-item">
+        <span class="mem-check ${it.done?'on':''}" data-mtoggle="${s.key}" data-i="${i}">${it.done?'✓':''}</span>
+        <div class="mi-body"><div class="mi-text ${it.done?'done':''}">${esc(it.text)}</div></div>
+        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
+      </div>`).join('') : `<div class="mem-empty">No roadmap items yet.</div>`}</div>
+      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
+        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
+  } else if (s.type==='tags'){
+    const items = (val||[]);
+    body = `<div class="tags" style="margin-bottom:12px">${items.length ? items.map((t,i)=>`<span class="tag">${esc(t)} <button class="mi-del" data-mdel="${s.key}" data-i="${i}" style="width:16px;height:16px;display:inline-grid">×</button></span>`).join('') : `<span class="mem-empty">No skills linked.</span>`}</div>
+      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
+        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
+  } else if (s.type==='links'){
+    const items = (val||[]);
+    body = `<div class="mem-items">${items.length ? items.map((it,i)=>`<div class="mem-item">
+        <div class="mi-body"><div class="mi-text">${esc(it.label||it.url)}</div>${it.url?`<div class="mi-meta"><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.url)}</a></div>`:''}</div>
+        <button class="mi-del" data-mdel="${s.key}" data-i="${i}" title="Remove">×</button>
+      </div>`).join('') : `<div class="mem-empty">No references.</div>`}</div>
+      <div class="mem-addrow"><input data-madd="${s.key}" placeholder="${esc(s.placeholder)}" />
+        <button class="mem-add-btn" data-maddbtn="${s.key}">Add</button></div>`;
+  }
+  const count = Array.isArray(val) ? val.length : (val ? '' : 0);
+  return `<div class="mem-card">
+    <div class="mem-card-head"><span class="mch-ico">${s.icon}</span>${esc(s.title)}
+      ${Array.isArray(val)?`<span class="mch-count">${val.length}</span>`:''}</div>
+    ${body}
+  </div>`;
+}
+function memAdd(key, raw){
+  const v = raw.trim(); if(!v) return;
+  const m = memData(memCurrent);
+  const arr = [...(m[key]||[])];
+  if (key==='decisions' || key==='sessions') arr.unshift({ text:v, date:today() });
+  else if (key==='roadmap') arr.push({ text:v, done:false });
+  else if (key==='openIssues') arr.push({ text:v });
+  else if (key==='skillsUsed') arr.push(v);
+  else if (key==='repoRefs') arr.push(/^https?:/.test(v) ? { label:v, url:v } : { label:v, url:'' });
+  saveMem(memCurrent, { [key]: arr });
+  const branchName = (memBranches().find(x=>x.id===memCurrent)||{}).name || memCurrent;
+  logActivity('🧠', `Updated <b>${esc(branchName)}</b> memory · ${esc(MEM_SECTIONS.find(s=>s.key===key).title)}`);
+  renderMemory();
+}
+function memDel(key, i){
+  const m = memData(memCurrent);
+  const arr = [...(m[key]||[])]; arr.splice(i,1);
+  saveMem(memCurrent, { [key]: arr }); renderMemory();
+}
+function memToggle(key, i){
+  const m = memData(memCurrent);
+  const arr = (m[key]||[]).map((it,idx)=> idx===i ? { ...it, done:!it.done } : it);
+  saveMem(memCurrent, { [key]: arr }); renderMemory();
+}
+function wireMemory(){
+  $$('#mem-main [data-mtext]').forEach(t=>t.addEventListener('input', e=>{
+    saveMem(memCurrent, { [e.target.dataset.mtext]: e.target.value });
+  }));
+  $$('#mem-main [data-maddbtn]').forEach(b=>b.onclick=()=>{
+    const key=b.dataset.maddbtn; const inp=$(`#mem-main [data-madd="${key}"]`); memAdd(key, inp.value); });
+  $$('#mem-main [data-madd]').forEach(inp=>inp.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); memAdd(inp.dataset.madd, inp.value); } }));
+  $$('#mem-main [data-mdel]').forEach(b=>b.onclick=()=>memDel(b.dataset.mdel, +b.dataset.i));
+  $$('#mem-main [data-mtoggle]').forEach(b=>b.onclick=()=>memToggle(b.dataset.mtoggle, +b.dataset.i));
+  $$('#mem-main [data-toc]').forEach(b=>b.onclick=()=>{ memToc=b.dataset.toc; renderMemory(); });
 }
 
 /* ─────────── PROJECT DRAWER ─────────── */
@@ -1007,13 +1676,13 @@ function openDrawer(id){
     <div class="dgroup">
       <div class="dgroup-t">Status</div>
       <div class="seg" id="seg-status">
-        ${['idea','building','testing','live'].map(s=>`<button class="seg-btn ${s} ${p.status===s?'on '+s:''}" data-status="${s}">${STATUS_LABEL[s]}</button>`).join('')}
+        ${STATUS_ORDER.map(s=>`<button class="seg-btn ${s} ${p.status===s?'on '+s:''}" data-status="${s}">${STATUS_LABEL[s]}</button>`).join('')}
       </div>
     </div>
     <div class="dgroup">
       <div class="dgroup-t">Priority</div>
       <div class="seg" id="seg-prio">
-        ${['high','med','low'].map(s=>`<button class="seg-btn ${s} ${p.priority===s?'on '+s:''}" data-prio="${s}">${PRIO_LABEL[s]}</button>`).join('')}
+        ${PRIO_ORDER.map(s=>`<button class="seg-btn ${s} ${p.priority===s?'on '+s:''}" data-prio="${s}">${PRIO_LABEL[s]}</button>`).join('')}
       </div>
     </div>
     <div class="dgroup">
@@ -1060,7 +1729,9 @@ function openDrawer(id){
   $('#drawer-note').addEventListener('input', e=>setOverride(id,'note',e.target.value,true));
   $('#copy-ctx').onclick = ()=>copy(ctxText,'Project context copied');
   $('#pin-toggle').onclick = ()=>{ togglePin(id); openDrawer(id); };
-  $$('#d-body .sugg-row').forEach(r=>r.onclick=()=>{ closeDrawer(); switchView('skills'); $('#skill-search').value=r.dataset.gotoskill; skillQuery=r.dataset.gotoskill; renderSkills(); });
+  $$('#d-body .sugg-row').forEach(r=>r.onclick=()=>{ closeDrawer(); switchView('skills');
+    skillFilter='all'; $$('#skill-filters .filter').forEach(x=>x.classList.toggle('active',x.dataset.cat==='all'));
+    $('#skill-search').value=r.dataset.gotoskill; skillQuery=r.dataset.gotoskill; renderSkills(); });
 }
 function shortUrl(u){ return u.replace(/^https?:\/\//,'').replace(/\/$/,''); }
 function projectContext(p){
@@ -1084,6 +1755,9 @@ function setOverride(id, key, val, silent){
     // refresh the relevant seg highlight without full re-render
     if (key==='status'){ $$('#seg-status .seg-btn').forEach(b=>{ b.className='seg-btn '+b.dataset.status+(b.dataset.status===val?' on '+val:''); }); }
     if (key==='priority'){ $$('#seg-prio .seg-btn').forEach(b=>{ b.className='seg-btn '+b.dataset.prio+(b.dataset.prio===val?' on '+val:''); }); }
+    const pname = esc(plainName((projects().find(p=>p.id===id)||{}).name||id));
+    if (key==='status') logActivity('🔄', `<b>${pname}</b> → ${STATUS_LABEL[val]}`);
+    if (key==='priority') logActivity('▲', `<b>${pname}</b> priority → ${PRIO_LABEL[val]}`);
     renderProjects(); renderDashboard();
     toast(key==='status'?('Status → '+STATUS_LABEL[val]):('Priority → '+PRIO_LABEL[val]));
   } else { renderProjects(); }
@@ -1105,7 +1779,10 @@ function switchView(v){
   window.scrollTo({top:0});
   if (v==='dashboard') renderDashboard();
   if (v==='projects') renderProjects();
+  if (v==='memory') renderMemory();
+  if (v==='tools') renderTools();
   if (v==='skills') renderSkills();
+  if (v==='agents') renderAgents();
   if (v==='prompts') renderPrompts();
 }
 
@@ -1147,9 +1824,33 @@ $('#proj-filters').addEventListener('click', e=>{ const b=e.target.closest('.fil
   $$('#proj-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); projFilter=b.dataset.status; renderProjects(); });
 $('#proj-search').addEventListener('input', e=>{ projQuery=e.target.value; renderProjects(); });
 
-// skills search + add
+// skills search + filter + add
 $('#skill-search').addEventListener('input', e=>{ skillQuery=e.target.value; renderSkills(); });
+$('#skill-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#skill-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); skillFilter=b.dataset.cat; renderSkills(); });
 $('#add-skill-btn').addEventListener('click', ()=>openModal('skill-modal'));
+
+// agents search + filter
+$('#agent-search').addEventListener('input', e=>{ agentQuery=e.target.value; renderAgents(); });
+$('#agent-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#agent-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); agentFilter=b.dataset.plugin; renderAgents(); });
+
+// tools search + filter
+$('#tool-search').addEventListener('input', e=>{ toolQuery=e.target.value; renderTools(); });
+$('#tool-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#tool-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); toolFilter=b.dataset.tstatus; renderTools(); });
+
+// memory branch selection + add branch
+$('#mem-branches').addEventListener('click', e=>{ const b=e.target.closest('.mem-branch'); if(!b)return;
+  memCurrent=b.dataset.branch; LS.set('memCurrent',memCurrent); memToc='all'; renderMemory(); });
+$('#mem-add-branch').addEventListener('click', ()=>{
+  const name=prompt('Name this memory branch (e.g. Fulcrum, Outreach Engine):'); if(!name) return;
+  const id='b-'+Date.now();
+  memBranchesEx.push({ id, name:name.trim(), emoji:'📁' }); LS.set('memBranches',memBranchesEx);
+  memCurrent=id; LS.set('memCurrent',memCurrent); memToc='all';
+  logActivity('🌱', `Created memory branch <b>${esc(name.trim())}</b>`);
+  renderMemory();
+});
 $('#sk-save').addEventListener('click', ()=>{
   const name=$('#sk-name').value.trim(); if(!name){ toast('Name required'); return; }
   const sk={ id:'c-'+Date.now(), name, icon:'🧰', desc:$('#sk-desc').value.trim(),
