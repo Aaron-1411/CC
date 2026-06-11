@@ -81,6 +81,9 @@
     { id:'inkspector', name:'🖋 Inkspector', description:'Tattoo artist site for Jordan Mitchell, London. Portfolio gallery, booking form with admin dashboard, aftercare guides.',
       status:'testing', priority:'high', quickLaunchUrl:'https://inkspector-app.pages.dev', createdAt:TS, updatedAt:TS,
       domain:'Food & Lifestyle', techTags:['Next.js','Supabase','CF Pages'], needs:['design','ui','redesign','images','branding','motion'], repoFolder:'inkspector' },
+    { id:'brand-command-centre', name:'🎯 Brand Command Centre', description:'B2B growth co-pilot. Audits a brand across 13 growth pillars (RAG gap analysis), then runs 7 specialist AI agents that draft ready-to-approve content, ads, email, social, promos, review replies and competitor intel into an inbox.',
+      status:'testing', priority:'high', quickLaunchUrl:'https://github.com/Aaron-1411/brand-command-centre', createdAt:TS, updatedAt:TS,
+      domain:'Marketing', techTags:['Next.js','TS','Claude API'], needs:['ui','design','branding'], repoFolder:'', repoOverride:'https://github.com/Aaron-1411/brand-command-centre', localPath:'~/Desktop/brand-command-centre' },
   ];
 
   /** @type {Prompt[]} — real prompts covering all four categories. */
