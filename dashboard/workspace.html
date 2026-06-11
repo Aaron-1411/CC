@@ -383,6 +383,7 @@
       background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); transition: all 0.12s;
     }
     .copy-btn:hover { background: rgba(16,185,129,0.22); }
+    .copy-btn.copied { background: rgba(16,185,129,0.28); border-color: var(--green); }
 
     /* ── DRAWER ── */
     .scrim {
@@ -1808,9 +1809,13 @@ document.addEventListener('click', e=>{
   if (fav){ const id=fav.dataset.fav; const sp=HubStore.prompts.get(id);
     if (sp){ sp.favourite=!sp.favourite; sp.updatedAt=new Date().toISOString(); HubStore.prompts.save(sp); }
     renderPrompts(); renderDashboard(); return; }
-  // prompt copy
+  // prompt copy — copies full body, button shows "Copied!" for 2s
   const cp = e.target.closest('[data-copy]');
-  if (cp){ const p=allPrompts().find(x=>x.id===cp.dataset.copy); copy(p.body,'Prompt copied'); return; }
+  if (cp){ const p=allPrompts().find(x=>x.id===cp.dataset.copy); if(!p) return;
+    copy(p.body); if (cp.dataset.busy) return;
+    const original = cp.innerHTML; cp.dataset.busy='1'; cp.classList.add('copied'); cp.innerHTML='✓ Copied!';
+    setTimeout(()=>{ cp.innerHTML=original; cp.classList.remove('copied'); delete cp.dataset.busy; }, 2000);
+    return; }
 });
 
 $('#scrim').addEventListener('click', ()=>{ closeDrawer(); closeModals(); });
