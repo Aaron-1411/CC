@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skills Library — Aaron's catalogue</title>
+<style>
+  :root{
+    --bg:#0a0a0b; --bg-2:#111113; --panel:#141417; --panel-2:#1a1a1e;
+    --line:#26262c; --line-2:#33333b;
+    --ink:#ecebe6; --ink-dim:#a3a09a; --ink-faint:#6f6c66;
+    --gold:#d4a857; --teal:#5fb3a3; --violet:#9d8cd6; --rose:#d68c9d; --sky:#7aa7d6;
+    --auto:#5fb3a3; --skill:#d4a857; --slash:#9d8cd6; --fetch:#7aa7d6; --cli:#d68c9d;
+    --r:14px; --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1200px 600px at 80% -10%, rgba(212,168,87,.06), transparent 60%),
+                     radial-gradient(900px 500px at -10% 10%, rgba(95,179,163,.05), transparent 55%);
+    background-attachment:fixed;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
+  a{color:inherit}
+
+  /* ── top bar ── */
+  header.bar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,10,11,.82); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar-inner{display:flex; align-items:center; gap:18px; padding:14px 28px; max-width:var(--maxw); margin:0 auto}
+  .brand{display:flex; align-items:center; gap:11px; font-weight:600; letter-spacing:.2px; white-space:nowrap}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
+  .search{flex:1; position:relative; max-width:420px; margin-left:auto}
+  .search input{
+    width:100%; background:var(--panel); border:1px solid var(--line);
+    color:var(--ink); padding:9px 14px 9px 36px; border-radius:10px; font-size:14px; outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  .search input:focus{border-color:var(--gold); background:var(--panel-2)}
+  .search svg{position:absolute; left:11px; top:50%; transform:translateY(-50%); opacity:.5}
+  .counts{display:flex; gap:14px; font-size:12.5px; color:var(--ink-faint)}
+  .counts b{color:var(--ink-dim); font-weight:600}
+  @media(max-width:780px){ .counts{display:none} .search{margin-left:0} }
+
+  /* ── hero ── */
+  .hero{padding:74px 0 38px; border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:18px}
+  .hero h1{
+    font-family:Georgia,"Times New Roman",serif; font-weight:500;
+    font-size:clamp(34px,6vw,62px); line-height:1.04; letter-spacing:-.5px; max-width:18ch;
+  }
+  .hero h1 em{font-style:italic; color:var(--gold)}
+  .hero p.lede{margin-top:22px; max-width:60ch; color:var(--ink-dim); font-size:17px}
+  .stat-row{display:flex; flex-wrap:wrap; gap:34px; margin-top:38px}
+  .stat .n{font-family:Georgia,serif; font-size:34px; color:var(--ink)}
+  .stat .l{font-size:12.5px; letter-spacing:.5px; color:var(--ink-faint); text-transform:uppercase}
+
+  /* ── invocation legend ── */
+  .legend{padding:48px 0; border-bottom:1px solid var(--line)}
+  .legend h2, .section h2{font-family:Georgia,serif; font-weight:500; font-size:27px; letter-spacing:-.3px}
+  .legend .sub{color:var(--ink-dim); margin-top:10px; max-width:74ch; font-size:15.5px}
+  .legend-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:28px}
+  .lcard{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:18px}
+  .lcard .badge{margin-bottom:10px}
+  .lcard p{font-size:13.5px; color:var(--ink-dim)}
+  .lcard p b{color:var(--ink)}
+  .answer{
+    margin-top:26px; background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line-2); border-left:3px solid var(--gold);
+    border-radius:12px; padding:22px 24px;
+  }
+  .answer .q{font-family:Georgia,serif; font-style:italic; font-size:17px; color:var(--ink); margin-bottom:12px}
+  .answer p{font-size:14.5px; color:var(--ink-dim); margin-top:9px}
+  .answer p b{color:var(--ink)}
+  .answer code{font-family:ui-monospace,monospace; background:#000; padding:1px 6px; border-radius:5px; font-size:13px; color:var(--gold)}
+
+  /* ── badges ── */
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,monospace;
+    font-size:10.5px; letter-spacing:.6px; text-transform:uppercase; font-weight:600;
+    padding:3px 8px; border-radius:6px; border:1px solid; white-space:nowrap;
+  }
+  .badge::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor}
+  .b-auto{color:var(--auto); border-color:color-mix(in srgb,var(--auto) 40%, transparent); background:color-mix(in srgb,var(--auto) 9%, transparent)}
+  .b-skill{color:var(--skill); border-color:color-mix(in srgb,var(--skill) 40%, transparent); background:color-mix(in srgb,var(--skill) 9%, transparent)}
+  .b-slash{color:var(--slash); border-color:color-mix(in srgb,var(--slash) 40%, transparent); background:color-mix(in srgb,var(--slash) 9%, transparent)}
+  .b-fetch{color:var(--fetch); border-color:color-mix(in srgb,var(--fetch) 40%, transparent); background:color-mix(in srgb,var(--fetch) 9%, transparent)}
+  .b-cli{color:var(--cli); border-color:color-mix(in srgb,var(--cli) 40%, transparent); background:color-mix(in srgb,var(--cli) 9%, transparent)}
+
+  /* ── filter chips ── */
+  .filters{position:sticky; top:62px; z-index:40; background:rgba(10,10,11,.82); backdrop-filter:blur(14px);
+           border-bottom:1px solid var(--line); padding:12px 0}
+  .chips{display:flex; flex-wrap:wrap; gap:9px}
+  .chip{
+    font-size:13px; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
+    background:var(--panel); color:var(--ink-dim); cursor:pointer; transition:all .14s; user-select:none;
+  }
+  .chip:hover{border-color:var(--line-2); color:var(--ink)}
+  .chip.active{background:var(--gold); color:#1a1407; border-color:var(--gold); font-weight:600}
+
+  /* ── sections ── */
+  .section{padding:50px 0; border-bottom:1px solid var(--line)}
+  .section.hidden{display:none}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px}
+  .sec-head .cnt{font-family:ui-monospace,monospace; font-size:13px; color:var(--ink-faint)}
+  .section > .wrap > p.intro{color:var(--ink-dim); margin-top:6px; margin-bottom:26px; max-width:72ch; font-size:15px}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px}
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+    padding:18px 18px 16px; transition:border-color .15s, transform .15s, background .15s;
+    display:flex; flex-direction:column; gap:9px;
+  }
+  .card:hover{border-color:var(--line-2); background:var(--panel-2); transform:translateY(-2px)}
+  .card.hidden{display:none}
+  .card .top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+  .card .nm{font-family:ui-monospace,monospace; font-size:14.5px; font-weight:600; color:var(--ink); letter-spacing:-.2px}
+  .card .desc{font-size:13.5px; color:var(--ink-dim); flex:1}
+  .card .meta{font-size:11.5px; color:var(--ink-faint); display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .card .badges{display:flex; gap:6px; flex-wrap:wrap}
+
+  .subgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px}
+  .divcard{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px;
+    display:flex; flex-direction:column; gap:6px; transition:border-color .15s, background .15s;
+  }
+  .divcard:hover{border-color:var(--fetch); background:var(--panel-2)}
+  .divcard .dn{font-family:ui-monospace,monospace; font-size:13.5px; color:var(--ink); text-transform:capitalize}
+  .divcard .dc{font-family:Georgia,serif; font-size:26px; color:var(--fetch)}
+  .divcard .dl{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.5px}
+
+  .repo-note{
+    margin-top:22px; background:var(--panel); border:1px dashed var(--line-2);
+    border-radius:12px; padding:18px 20px; font-size:14px; color:var(--ink-dim);
+  }
+  .repo-note b{color:var(--ink)} .repo-note .mono{color:var(--fetch)}
+
+  footer{padding:46px 0 70px; color:var(--ink-faint); font-size:13px}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px}
+
+  .empty{display:none; text-align:center; padding:70px 0; color:var(--ink-faint)}
+  .empty.show{display:block}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-inner">
+    <div class="brand"><span class="dot"></span> Skills Library</div>
+    <div class="counts">
+      <span><b id="c-skills">31</b> skills</span>
+      <span><b>2</b> MCP</span>
+      <span><b>3</b> plugins</span>
+      <span><b>248</b> subagents</span>
+    </div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Search everything…" autocomplete="off">
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Capability Catalogue · ~/skills-library</div>
+    <h1>Everything Claude can <em>reach for</em>, in one place.</h1>
+    <p class="lede">A single home for collected skills, MCP servers, plugins, CLI tools, references and specialised subagents — grouped by what they do and tagged by how they're invoked. So you always know what's available and whether you need to ask for it.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="n">31</div><div class="l">Active skills</div></div>
+      <div class="stat"><div class="n">2</div><div class="l">MCP servers</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">Plugins</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">CLI tools</div></div>
+      <div class="stat"><div class="n">248</div><div class="l">Subagents · 17 divisions</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW INVOCATION WORKS ── -->
+<section class="legend">
+  <div class="wrap">
+    <h2>How invocation works</h2>
+    <p class="sub">Every resource is tagged with one of five invocation types. The short version: the green and gold ones I reach for on my own — you don't have to ask. The others you trigger explicitly.</p>
+
+    <div class="legend-grid">
+      <div class="lcard"><span class="badge b-auto">Auto</span><p><b>I just use it.</b> Always-connected MCP servers. I reach for them automatically when a task needs them — no need to name them.</p></div>
+      <div class="lcard"><span class="badge b-skill">Skill</span><p><b>Auto-triggers, nameable.</b> Fires on its own when your task matches its description. Name it to force or disambiguate when several could apply.</p></div>
+      <div class="lcard"><span class="badge b-slash">Slash</span><p><b>You type it.</b> A command like <code class="mono">/caveman</code>. Nothing happens until you invoke it.</p></div>
+      <div class="lcard"><span class="badge b-fetch">Fetch</span><p><b>Pulled on demand.</b> Subagents I fetch from GitHub when a task needs a specialist. Not installed locally — kept lean.</p></div>
+      <div class="lcard"><span class="badge b-cli">CLI</span><p><b>Run manually.</b> Command-line tools run via the shell — usually to build or mint new assets.</p></div>
+    </div>
+
+    <div class="answer">
+      <div class="q">"Do I need to tell you to use Firecrawl, or do you just know?"</div>
+      <p>You just <b>don't need to ask.</b> Firecrawl and Magic are <span class="badge b-auto">Auto</span> MCP servers — always connected. The moment you ask me to search the web, scrape a page, or pull live data, I use Firecrawl on my own.</p>
+      <p>The same is mostly true for <span class="badge b-skill">Skill</span> resources: they auto-fire when your request matches what they do. You only need to <b>name</b> one when several overlapping design skills could apply and you want a specific look — e.g. <code>use brutalist-skill</code> or <code>make it minimalist</code>.</p>
+      <p>You <b>do</b> have to be explicit for two kinds only: <span class="badge b-slash">Slash</span> commands (you type <code>/caveman</code>) and <span class="badge b-cli">CLI</span> tools (run from the terminal). Everything else, assume I'll pick it up when it's relevant — and just tell me if you want a different one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FILTERS ── -->
+<div class="filters">
+  <div class="wrap">
+    <div class="chips" id="chips">
+      <span class="chip active" data-f="all">All</span>
+      <span class="chip" data-f="design">Design &amp; visual</span>
+      <span class="chip" data-f="writing">Writing &amp; output</span>
+      <span class="chip" data-f="caveman">Token efficiency</span>
+      <span class="chip" data-f="mcp">MCP servers</span>
+      <span class="chip" data-f="plugin">Plugins</span>
+      <span class="chip" data-f="cli">CLI tools</span>
+      <span class="chip" data-f="ref">References</span>
+      <span class="chip" data-f="agents">Subagents</span>
+    </div>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<div class="empty" id="empty"><div class="wrap">No matches. Try another search.</div></div>
+
+<footer>
+  <div class="wrap">
+    <span>~/skills-library — single home &amp; catalogue. Master notes in <span class="mono">README.md</span>.</span>
+    <span>Subagents → <span class="mono">github.com/Aaron-1411/resource</span> · fetched on demand</span>
+  </div>
+</footer>
+
+<script>
+const DATA = {
+  design: {
+    title:"Skills · Design & visual", filter:"design", count:22, badge:"b-skill",
+    intro:"Frontend, brand, and visual-design skills. They auto-fire when your task matches — name a specific one when you want a particular look or several could apply.",
+    items:[
+      ["atelier","Signature design skill. Dashboards, decks, sites and app UI with strong hierarchy, considered UX and real data-viz. The default for serious design work.","skill"],
+      ["ui-ux-pro-max","Design encyclopedia: 50+ styles, 161 palettes, 57 font pairings, 99 UX guidelines, 25 chart types, 10 stacks.","skill"],
+      ["design","Brand & UI styling — design tokens, logo generation (55 styles), corporate identity, HTML decks.","skill"],
+      ["design-system","Builds 3-layer token systems (primitive → semantic → component) as CSS variables with specs.","skill"],
+      ["ui-styling","Component-level styling for shadcn, Radix, Tailwind and canvas work.","skill"],
+      ["brand","Brand voice, identity, messaging and style guides.","skill"],
+      ["brandkit","Premium brand-guideline boards and logo systems — minimalist, cinematic, editorial.","skill"],
+      ["banner-design","Social, ad, hero and print banners with AI-generated visuals.","skill"],
+      ["slides","HTML presentations with Chart.js and proven copywriting formulas.","skill"],
+      ["stitch-skill","Generates an agent-friendly DESIGN.md for Google Stitch.","skill"],
+      ["soft-skill","High-end agency polish — refined fonts, spacing, shadows, animations.","skill"],
+      ["redesign-skill","Upgrades existing sites/apps and strips generic AI patterns.","skill"],
+      ["taste-skill","Anti-slop frontend — non-templated, tasteful interfaces.","skill"],
+      ["taste-skill-v1","Preserved original v1 of the taste skill.","skill"],
+      ["gpt-tasteskill","UX/UI with GSAP motion, Python randomization, AIDA structure, bento grids.","skill"],
+      ["minimalist-skill","Clean editorial layouts, warm monochrome, no gradients or heavy shadows.","skill"],
+      ["brutalist-skill","Swiss print × military terminal — rigid grids, analog grain.","skill"],
+      ["emil-design-eng","Emil Kowalski's UI-polish philosophy applied to interfaces.","skill"],
+      ["image-to-code-skill","Generates a design image first, then builds code to match it.","skill"],
+      ["imagegen-frontend-web","Premium, conversion-aware web design references — one horizontal image per section.","skill"],
+      ["imagegen-frontend-mobile","App-native mobile screens for iOS and Android.","skill"],
+      ["impeccable","Design, redesign, critique, audit, polish, harden and animate frontend.","skill"]
+    ]
+  },
+  writing: {
+    title:"Skills · Writing & output", filter:"writing", count:2, badge:"b-skill",
+    intro:"Quality-control skills for prose and code output.",
+    items:[
+      ["stop-slop","Removes AI writing tells from prose — flattens the generic LLM voice.","skill"],
+      ["output-skill","Overrides truncation, bans placeholders, forces complete code in responses.","skill"]
+    ]
+  },
+  caveman: {
+    title:"Skills · Token efficiency (Caveman)", filter:"caveman", count:7, badge:"b-slash",
+    intro:"The Caveman suite. The compression engine and most commands are typed as slash commands; cavecrew is a delegation reference that auto-applies.",
+    items:[
+      ["/caveman","Cuts token usage ~75% with lite / full / ultra compression levels.","slash"],
+      ["/caveman-commit","Compressed Conventional Commits.","slash"],
+      ["/caveman-compress","Compresses CLAUDE.md and todos into caveman format.","slash"],
+      ["/caveman-review","One-line-per-issue PR review.","slash"],
+      ["/caveman-stats","Real token usage pulled from the session log.","slash"],
+      ["/caveman-help","Caveman reference card.","slash"],
+      ["cavecrew","Delegation guide for caveman subagents — investigator, builder, reviewer.","skill"]
+    ]
+  },
+  mcp: {
+    title:"MCP servers", filter:"mcp", count:2, badge:"b-auto",
+    intro:"Always-connected, registered in ~/.claude.json. I use these automatically — you never have to name them.",
+    items:[
+      ["firecrawl","Web search, scrape, crawl and extract. My primary web-search tool (~201k credits). Used automatically whenever you need live data.","auto"],
+      ["magic","21st.dev component builder + logo search. Generates UI components and finds brand logos on demand.","auto"]
+    ]
+  },
+  plugin: {
+    title:"Plugins", filter:"plugin", count:3, badge:"b-cli",
+    intro:"Installed plugins. Each adds hooks, commands or detectors beyond the symlinked skill — full power needs the plugin/CLI install noted in the README.",
+    items:[
+      ["caveman","Token-efficiency hooks plus the /caveman slash-command family.","slash"],
+      ["impeccable","npx CLI design detectors and audits for frontend.","cli"],
+      ["ui-ux-pro-max","The design marketplace powering the ui-ux-pro-max skill.","skill"]
+    ]
+  },
+  cli: {
+    title:"CLI tools", filter:"cli", count:3, badge:"b-cli",
+    intro:"Command-line tools run from the shell — mostly to build or mint new assets. These never fire on their own.",
+    items:[
+      ["skill-seekers","Skill factory — mints new skills into the library (42M).","cli"],
+      ["skillui","Skill-UI tooling (780K).","cli"],
+      ["playwright","Browser automation, local clone (105M).","cli"]
+    ]
+  },
+  ref: {
+    title:"References", filter:"ref", count:2, badge:"b-fetch",
+    intro:"Reference data and pointers — consulted on demand, not executed.",
+    items:[
+      ["API-mega-list","~10,500 public APIs, searchable (26M).","fetch"],
+      ["resource","248 specialised subagents → github.com/Aaron-1411/resource (private). Fetched when a task needs a specialist.","fetch"]
+    ]
+  }
+};
+
+const DIVISIONS = [
+  ["specialized",53],["marketing",36],["engineering",33],["game-development",20],
+  ["strategy",16],["gis",13],["security",10],["design",9],["sales",9],["testing",8],
+  ["paid-media",7],["project-management",7],["support",6],["spatial-computing",6],
+  ["academic",5],["finance",5],["product",5]
+];
+
+const badgeLabel = {auto:["b-auto","Auto"], skill:["b-skill","Skill"], slash:["b-slash","Slash"], fetch:["b-fetch","Fetch"], cli:["b-cli","CLI"]};
+
+function cardHTML(name, desc, type){
+  const [cls,lbl] = badgeLabel[type];
+  return `<div class="card" data-name="${name.toLowerCase()}" data-desc="${desc.toLowerCase()}">
+    <div class="top"><span class="nm">${name}</span><span class="badge ${cls}">${lbl}</span></div>
+    <div class="desc">${desc}</div>
+  </div>`;
+}
+
+function sectionHTML(key){
+  const s = DATA[key];
+  const cards = s.items.map(i=>cardHTML(i[0],i[1],i[2])).join("");
+  return `<section class="section" data-filter="${s.filter}">
+    <div class="wrap">
+      <div class="sec-head"><h2>${s.title}</h2><span class="cnt">${s.count}</span></div>
+      <p class="intro">${s.intro}</p>
+      <div class="grid">${cards}</div>
+    </div>
+  </section>`;
+}
+
+function agentsSectionHTML(){
+  const total = DIVISIONS.reduce((a,d)=>a+d[1],0);
+  const cards = DIVISIONS.map(d=>`<div class="divcard" data-name="${d[0]}" data-desc="subagents ${d[0]}">
+      <span class="dc">${d[1]}</span>
+      <span class="dn">${d[0].replace(/-/g,' ')}</span>
+      <span class="dl">agents</span>
+    </div>`).join("");
+  return `<section class="section" data-filter="agents">
+    <div class="wrap">
+      <div class="sec-head"><h2>Specialised subagents</h2><span class="cnt">${total} · 17 divisions</span></div>
+      <p class="intro">Niche specialist agents — kept in GitHub, <b>not installed</b> into Claude so they don't dilute triggers or bloat context. I fetch the right one on demand when a task calls for it. <span class="badge b-fetch" style="vertical-align:middle">Fetch</span></p>
+      <div class="subgrid">${cards}</div>
+      <div class="repo-note">
+        <b>Where they live:</b> <span class="mono">github.com/Aaron-1411/resource</span> (private) with a local mirror at <span class="mono">~/skills-library/resource/</span>.
+        Plus an <b>integrations</b> folder — setup guides for 14 other AI tools (Cursor, Windsurf, Codex, Gemini CLI, Aider, Copilot and more). Browse the repo to see and customise any agent; just ask and I'll pull the one you need.
+      </div>
+    </div>
+  </section>`;
+}
+
+const main = document.getElementById("main");
+main.innerHTML =
+  sectionHTML("design") + sectionHTML("writing") + sectionHTML("caveman") +
+  sectionHTML("mcp") + sectionHTML("plugin") + sectionHTML("cli") +
+  sectionHTML("ref") + agentsSectionHTML();
+
+// ── filters ──
+const chips = document.querySelectorAll(".chip");
+const sections = document.querySelectorAll(".section");
+let active = "all";
+chips.forEach(c=>c.addEventListener("click",()=>{
+  chips.forEach(x=>x.classList.remove("active"));
+  c.classList.add("active");
+  active = c.dataset.f;
+  applyFilters();
+}));
+
+// ── search ──
+const q = document.getElementById("q");
+const empty = document.getElementById("empty");
+q.addEventListener("input", applyFilters);
+
+function applyFilters(){
+  const term = q.value.trim().toLowerCase();
+  let anyVisible = false;
+  sections.forEach(sec=>{
+    const matchFilter = (active==="all" || sec.dataset.filter===active);
+    let secHasVisible = false;
+    sec.querySelectorAll(".card, .divcard").forEach(card=>{
+      const hay = (card.dataset.name||"") + " " + (card.dataset.desc||"");
+      const matchTerm = !term || hay.includes(term);
+      const show = matchFilter && matchTerm;
+      card.classList.toggle("hidden", !show);
+      if(show) secHasVisible = true;
+    });
+    sec.classList.toggle("hidden", !secHasVisible);
+    if(secHasVisible) anyVisible = true;
+  });
+  empty.classList.toggle("show", !anyVisible);
+}
+</script>
+</body>
+</html>
