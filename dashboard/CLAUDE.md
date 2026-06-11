@@ -12,7 +12,9 @@ phases, types, scope) and `ARCHITECTURE.md` before writing code.
 - **Entry / target:** `dashboard/workspace.html` — single file, inline
   `<style>` + `<script>`. Sibling files: `index.html`, `setup.html`.
 - **Data layer:** `dashboard/HubStore.js` + `dashboard/seed.js` (Phase A).
-  All persistence goes through HubStore; localStorage keys are `ws:`-prefixed.
+  All persistence goes through HubStore, which uses `hub:`-prefixed localStorage
+  keys. (The legacy inline UI still reads `ws:`-prefixed keys; those migrate
+  onto HubStore in a later step — see ROADMAP-NOTES.md.)
 - **Build command:** none — there is no bundler/transpiler. Files in
   `dashboard/` are deployed verbatim, so anything added must run un-bundled
   (plain `<script>`, load-order matters: define HubStore/seed before the main
