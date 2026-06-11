@@ -44,8 +44,15 @@ const jsonInit = (method: string, body: unknown): RequestInit => ({
 // ── Auth ─────────────────────────────────────────────────────────────────────
 export const getMe = () => req<MeResponse>("/api/auth/me");
 
-export const devLogin = (handle: string, displayName: string) =>
-  req<{ user: PublicUser }>("/api/auth/dev-login", jsonInit("POST", { handle, displayName }));
+export const login = (email: string, password: string) =>
+  req<{ user: PublicUser }>("/api/auth/login", jsonInit("POST", { email, password }));
+
+export const signup = (input: {
+  email: string;
+  password: string;
+  displayName: string;
+  handle: string;
+}) => req<{ user: PublicUser }>("/api/auth/signup", jsonInit("POST", input));
 
 export const logout = () => req<{ ok: true }>("/api/auth/logout", { method: "POST" });
 

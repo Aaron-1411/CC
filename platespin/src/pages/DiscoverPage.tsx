@@ -12,6 +12,7 @@ import {
   toggleDiet,
   toggleLiked,
 } from "@/state/userState";
+import { useAuth } from "@/auth/AuthContext";
 import { getVenueStats } from "@/data/social";
 import { CuisinePicker } from "@/features/wheel/CuisinePicker";
 import { Wheel } from "@/features/wheel/Wheel";
@@ -94,6 +95,7 @@ function FriendPicksStrip({
 }
 
 export function DiscoverPage() {
+  const { user } = useAuth();
   const [state, setState] = useState<UserState>(() => loadUserState());
   useEffect(() => saveUserState(state), [state]);
 
@@ -150,6 +152,20 @@ export function DiscoverPage() {
         </h1>
         <p className="mt-0.5 text-sm text-slate-400">Can't decide where to eat? Spin for it.</p>
       </header>
+
+      {!user && (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2.5">
+          <p className="text-xs text-amber-100/90">
+            Spin freely — no account needed. Sign in to post meals & follow friends.
+          </p>
+          <Link
+            to="/login"
+            className="shrink-0 rounded-full bg-amber-300 px-3 py-1.5 text-xs font-bold text-slate-900"
+          >
+            Sign in
+          </Link>
+        </div>
+      )}
 
       <LocationInput value={state.lastLocation} onSet={(loc) => setState((s) => setLastLocation(s, loc))} />
 

@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
   email         TEXT UNIQUE,                 -- nullable for dev-login users
   avatar_url    TEXT,
   bio           TEXT,
+  password_hash TEXT,                        -- pbkdf2$iter$salt$hash (email signups only)
   auth_provider TEXT NOT NULL DEFAULT 'dev', -- 'dev' | 'google' | 'email'
   provider_sub  TEXT,                        -- provider subject id (google sub etc.)
   created_at    INTEGER NOT NULL

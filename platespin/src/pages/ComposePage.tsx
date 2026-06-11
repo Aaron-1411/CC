@@ -32,7 +32,7 @@ export function ComposePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && !user) navigate("/login", { replace: true });
+    if (!loading && !user) navigate("/login?next=/compose", { replace: true });
   }, [loading, user, navigate]);
 
   useEffect(() => {

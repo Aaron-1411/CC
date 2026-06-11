@@ -12,7 +12,9 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     authMethods: {
       dev: env.ALLOW_DEV_LOGIN === "1",
       google: Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
-      email: Boolean(env.RESEND_API_KEY),
+      // Email + password is self-contained (no email-delivery dependency), so it
+      // is always available.
+      email: true,
     },
   };
   return json(body);

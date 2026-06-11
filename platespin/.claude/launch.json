@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "platespin-v2",
+      "runtimeExecutable": "bunx",
+      "runtimeArgs": [
+        "wrangler",
+        "pages",
+        "dev",
+        "dist",
+        "--port",
+        "8788",
+        "--compatibility-date=2024-11-27"
+      ],
+      "port": 8788
+    }
+  ]
+}

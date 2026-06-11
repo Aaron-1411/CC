@@ -23,6 +23,7 @@ export interface UserRow {
   email: string | null;
   avatar_url: string | null;
   bio: string | null;
+  password_hash: string | null;
   auth_provider: string;
   provider_sub: string | null;
   created_at: number;

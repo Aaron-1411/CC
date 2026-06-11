@@ -61,6 +61,7 @@ export interface NewUser {
   avatarUrl?: string | null;
   authProvider: "dev" | "google" | "email";
   providerSub?: string | null;
+  passwordHash?: string | null;
 }
 
 export async function createUser(env: Env, input: NewUser): Promise<UserRow> {
@@ -68,8 +69,8 @@ export async function createUser(env: Env, input: NewUser): Promise<UserRow> {
   const handle = await ensureUniqueHandle(env, input.handle || input.displayName || "user");
   const now = nowSeconds();
   await env.DB.prepare(
-    `INSERT INTO users (id, handle, display_name, email, avatar_url, bio, auth_provider, provider_sub, created_at)
-     VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?)`,
+    `INSERT INTO users (id, handle, display_name, email, avatar_url, bio, password_hash, auth_provider, provider_sub, created_at)
+     VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`,
   )
     .bind(
       id,
@@ -77,6 +78,7 @@ export async function createUser(env: Env, input: NewUser): Promise<UserRow> {
       input.displayName || handle,
       input.email ? input.email.toLowerCase() : null,
       input.avatarUrl ?? null,
+      input.passwordHash ?? null,
       input.authProvider,
       input.providerSub ?? null,
       now,
