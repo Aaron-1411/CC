@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { AvailabilityMap, CuisineId, DietId, SavedLocation } from "@/contract/types";
+import type { AvailabilityMap, CuisineId, DietId, PlaceResult, SavedLocation } from "@/contract/types";
 import { fetchPlaces } from "@/data/api";
 import { countByCuisine } from "@/data/ranking";
 
@@ -19,6 +19,9 @@ function hasRealCenter(loc?: SavedLocation): loc is SavedLocation {
 
 export interface AvailabilityState {
   availability: AvailabilityMap | undefined;
+  /** The ranked, diet-filtered pre-flight pool — reused by the results list so a
+   *  spin shows real places instantly without a second request. */
+  places: PlaceResult[];
   loading: boolean;
   degraded: boolean;
 }
@@ -30,6 +33,7 @@ export function useAvailability(
   strictness: "only" | "any",
 ): AvailabilityState {
   const [availability, setAvailability] = useState<AvailabilityMap | undefined>(undefined);
+  const [places, setPlaces] = useState<PlaceResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [degraded, setDegraded] = useState(false);
 
@@ -49,6 +53,7 @@ export function useAvailability(
   useEffect(() => {
     if (!hasRealCenter(location) || selected.length === 0) {
       setAvailability(undefined);
+      setPlaces([]);
       setDegraded(false);
       return;
     }
@@ -72,11 +77,13 @@ export function useAvailability(
         const map: AvailabilityMap = {};
         for (const c of selected) map[c] = counts[c] ?? 0;
         setAvailability(map);
+        setPlaces(resp.results);
         setDegraded(!!resp.degraded);
       })
       .catch((err) => {
         if (err instanceof DOMException && err.name === "AbortError") return;
         setAvailability(undefined);
+        setPlaces([]);
         setDegraded(true);
       })
       .finally(() => setLoading(false));
@@ -84,5 +91,5 @@ export function useAvailability(
     return () => controller.abort();
   }, [key, location, selected, diets, strictness]);
 
-  return { availability, loading, degraded };
+  return { availability, places, loading, degraded };
 }

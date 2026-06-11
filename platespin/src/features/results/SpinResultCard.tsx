@@ -7,18 +7,22 @@ interface SpinResultCardProps {
   result: CuisineId;
   location?: SavedLocation;
   diets: DietId[];
+  /** True when the in-app ResultsList below has real places — then we hide the
+   *  redundant "search out" grid and keep this card as a compact hero. */
+  hasResults?: boolean;
   onRespin: () => void;
   onRespinWithout: () => void;
 }
 
-// Phase 2 result: the wheel landed on a cuisine. With no API yet, we still give a
-// genuinely useful action — deep-link OUT to find spots (Google Maps / TikTok /
-// Instagram / YouTube), already diet-aware. Phase 4 replaces this with in-app
-// ranked PlaceResult cards from /api/places.
+// The wheel landed on a cuisine. When we have in-app PlaceResult cards (Phase 4),
+// this is a compact celebration + respin controls. When we DON'T (no location,
+// degraded upstream, or zero nearby matches), it falls back to genuinely useful
+// diet-aware deep-links OUT (Google Maps / TikTok / Instagram) — works with ZERO API.
 export function SpinResultCard({
   result,
   location,
   diets,
+  hasResults = false,
   onRespin,
   onRespinWithout,
 }: SpinResultCardProps) {
@@ -46,32 +50,35 @@ export function SpinResultCard({
         </p>
       )}
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <a
-          href={links.googleMaps}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="col-span-2 flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 font-semibold text-slate-900 transition active:scale-[0.98]"
-        >
-          🔎 Find {cuisine?.label} on Google Maps
-        </a>
-        <a
-          href={links.tiktokSearch}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
-        >
-          TikTok
-        </a>
-        <a
-          href={links.instagramSearch}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
-        >
-          Instagram
-        </a>
-      </div>
+      {/* Fallback search-out grid — only when there are no in-app place cards. */}
+      {!hasResults && (
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <a
+            href={links.googleMaps}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="col-span-2 flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 font-semibold text-slate-900 transition active:scale-[0.98]"
+          >
+            🔎 Find {cuisine?.label} on Google Maps
+          </a>
+          <a
+            href={links.tiktokSearch}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
+          >
+            TikTok
+          </a>
+          <a
+            href={links.instagramSearch}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
+          >
+            Instagram
+          </a>
+        </div>
+      )}
 
       <div className="mt-3 flex items-center justify-center gap-2 text-sm">
         <button

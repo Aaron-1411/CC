@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CuisineId, UserState } from "@/contract/types";
 import {
   loadUserState,
+  markVisited,
   recordSpinResult,
   saveUserState,
   setDietStrictness,
   setLastLocation,
   toggleCuisine,
   toggleDiet,
+  toggleLiked,
 } from "@/state/userState";
 import { CuisinePicker } from "@/features/wheel/CuisinePicker";
 import { Wheel } from "@/features/wheel/Wheel";
@@ -16,6 +18,7 @@ import { useAvailability } from "@/features/wheel/useAvailability";
 import { DietProfile } from "@/features/diet/DietProfile";
 import { LocationInput } from "@/features/location/LocationInput";
 import { SpinResultCard } from "@/features/results/SpinResultCard";
+import { ResultsList } from "@/features/results/ResultsList";
 
 export default function App() {
   const [state, setState] = useState<UserState>(() => loadUserState());
@@ -26,7 +29,7 @@ export default function App() {
   // Honest wheel: pre-flight the area (one cached Overpass call) so the wheel
   // only spins to cuisines that actually have nearby, diet-compliant results.
   // Until we have a real location/selection this is `undefined` (all in play).
-  const { availability, degraded } = useAvailability(
+  const { availability, places, degraded } = useAvailability(
     state.lastLocation,
     state.spin.selected,
     state.diet.profile,
@@ -35,6 +38,14 @@ export default function App() {
 
   const onResult = useCallback((id: CuisineId) => {
     setState((s) => recordSpinResult(s, id));
+  }, []);
+
+  const handleToggleLike = useCallback((id: string) => {
+    setState((s) => toggleLiked(s, id));
+  }, []);
+
+  const handleVisit = useCallback((id: string) => {
+    setState((s) => markVisited(s, id));
   }, []);
 
   const wheel = useSpin(state.spin.selected, state.spin.recentResults, availability, onResult);
@@ -55,6 +66,13 @@ export default function App() {
 
   const selectedCount = state.spin.selected.length;
   const canShowWheel = selectedCount > 0;
+
+  // Does the landed cuisine have real in-app places? Drives whether SpinResultCard
+  // shows its compact hero (yes) or the deep-link fallback grid (no).
+  const resultHasPlaces = useMemo(
+    () => (wheel.result ? places.some((p) => p.cuisine.includes(wheel.result!)) : false),
+    [wheel.result, places],
+  );
 
   const headerSub = useMemo(() => {
     if (selectedCount === 0) return "Pick a few cuisines to get started";
@@ -113,13 +131,24 @@ export default function App() {
           </button>
 
           {wheel.result && !wheel.spinning && (
-            <SpinResultCard
-              result={wheel.result}
-              location={state.lastLocation}
-              diets={state.diet.profile}
-              onRespin={handleRespin}
-              onRespinWithout={handleRespinWithout}
-            />
+            <>
+              <SpinResultCard
+                result={wheel.result}
+                location={state.lastLocation}
+                diets={state.diet.profile}
+                hasResults={resultHasPlaces}
+                onRespin={handleRespin}
+                onRespinWithout={handleRespinWithout}
+              />
+              <ResultsList
+                cuisine={wheel.result}
+                places={places}
+                diets={state.diet.profile}
+                likedIds={state.liked}
+                onToggleLike={handleToggleLike}
+                onVisit={handleVisit}
+              />
+            </>
           )}
         </>
       ) : (
