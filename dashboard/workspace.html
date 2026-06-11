@@ -226,8 +226,8 @@
     .prio { font-size: 10px; font-weight: 600; font-family: 'JetBrains Mono', ui-monospace, monospace;
       letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 4px; }
     .prio.critical { color: #ef4444; }
-    .prio.high { color: #f87171; }
-    .prio.med  { color: var(--t2); }
+    .prio.high { color: #f59e0b; }
+    .prio.medium  { color: #60a5fa; }
     .prio.low  { color: var(--t3); }
 
     .meta-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -745,6 +745,10 @@
         <button class="filter" data-status="live">Live</button>
         <button class="filter" data-status="archived">Archived</button>
       </div>
+      <button class="btn-add" id="add-project-btn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Add Project
+      </button>
     </div>
     <div class="grid" id="proj-grid"></div>
   </section>
@@ -911,6 +915,31 @@
   </div>
 </div>
 
+<!-- ADD / EDIT PROJECT MODAL -->
+<div class="modal-card" id="project-modal">
+  <h3 id="pm-heading">Add Project</h3>
+  <div class="field"><label>Name</label><input id="pm-name" placeholder="e.g. PlateSpin" /></div>
+  <div class="field"><label>Description</label><textarea id="pm-desc" placeholder="What it does and who it's for"></textarea></div>
+  <div class="field"><label>Status</label>
+    <select id="pm-status">
+      <option value="idea">Idea</option><option value="planning">Planning</option>
+      <option value="building">Building</option><option value="testing">Testing</option>
+      <option value="live">Live</option><option value="archived">Archived</option>
+    </select>
+  </div>
+  <div class="field"><label>Priority</label>
+    <select id="pm-priority">
+      <option value="low">Low</option><option value="medium">Medium</option>
+      <option value="high">High</option><option value="critical">Critical</option>
+    </select>
+  </div>
+  <div class="field"><label>Quick Launch URL</label><input id="pm-url" placeholder="https://… (optional)" /></div>
+  <div class="modal-actions">
+    <button class="btn-ghost" data-close-modal>Cancel</button>
+    <button class="btn-primary" id="pm-save">Save Project</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- Phase A data layer (load before the inline script; attach window.HubStore / window.runSeed). -->
@@ -919,194 +948,9 @@
 
 <script>
 /* ─────────── SEED DATA ─────────── */
+// Projects, skills, prompts and tools live in seed.js (HUB_SEED) and are read
+// through HubStore — single source of truth. Only agents + memory remain inline.
 const REPO_BASE = 'https://github.com/Aaron-1411/CC/tree/master/';
-
-const SEED_PROJECTS = [
-  { id:'ecommerce', name:'🛒 E-Commerce Deep Dive', domain:'Analysis & Data',
-    desc:'13-pillar ecommerce brand audit. Paste any URL, get an AI gap analysis → Word report, PowerPoint deck, RAG dashboard.',
-    live:'https://ecommerce-deep-dive-app.pages.dev', folder:'ecommerce-deep-dive',
-    tags:['Next.js','Gemini','CF Pages'], status:'live', priority:'med',
-    needs:['slides','writing','branding','redesign'] },
-  { id:'digital-depth', name:'🔍 Digital Depth Dive', domain:'Analysis & Data',
-    desc:'Website analysis toolkit. AI visibility, keyword gaps, lead finder, content remix and landing-page AI.',
-    live:'https://digital-depth-dive-app.pages.dev', folder:'digital-depth-dive',
-    tags:['React','TS','CF Pages'], status:'live', priority:'low',
-    needs:['writing','marketing','redesign','ui'] },
-  { id:'open-eyes', name:'👁️ Open Eyes Data', domain:'Analysis & Data',
-    desc:'Public data transparency dashboard. Surfaces government datasets, contracts and records in one searchable UI.',
-    live:'https://open-eyes-data-app.mraaronmanu.workers.dev', folder:'open-eyes-data',
-    tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
-    needs:['ui','redesign','design','dashboard'] },
-  { id:'wealth', name:'💰 Wealth Companion', domain:'Finance',
-    desc:'Personal finance & wealth management. Track goals, assets and financial milestones in one place.',
-    live:'https://wealth-companion-app.mraaronmanu.workers.dev', folder:'wealth-companion',
-    tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
-    needs:['ui','redesign','design','dashboard'] },
-  { id:'isa', name:'📈 ISA Platform', domain:'Finance',
-    desc:'UK ISA investment tracker. Live prices, portfolio analytics, risk metrics, seasonality and fundamentals.',
-    live:'https://isa-platform.mraaronmanu.workers.dev', folder:'isa-investment-platform',
-    tags:['Next.js 16','Turso','CF Pages'], status:'live', priority:'med',
-    needs:['ui','redesign','design','mobile'] },
-  { id:'pension', name:'💷 Pension Finder UK', domain:'Finance',
-    desc:'Find lost workplace pensions, track all pots in one dashboard, get plain-English retirement projections.',
-    live:'https://pension-finder-app.pages.dev', folder:'pension-finder-uk',
-    tags:['Next.js','Recharts','CF Pages'], status:'live', priority:'low',
-    needs:['ui','redesign','design','dashboard'] },
-  { id:'moneymind', name:'🧠 MoneyMind UK', domain:'Finance',
-    desc:'Free UK money & rights course — 23 modules, 4 tiers. Lessons, quizzes, calculators, quests and an AI tutor.',
-    live:'https://moneymind-uk-app.pages.dev', folder:'moneymind-uk',
-    tags:['React','Vite','CF Pages'], status:'live', priority:'med',
-    needs:['ui','redesign','branding','writing','mobile'] },
-  { id:'tastybot', name:'🤖 Tastybot', domain:'Finance',
-    desc:'Trading bot dashboard for TastyTrade. Backtests, position management and strategy execution.',
-    live:'https://tastybot-app.pages.dev', folder:'tastybot',
-    tags:['React','Vite','CF Pages'], status:'live', priority:'low',
-    needs:['ui','redesign','design','dashboard'] },
-  { id:'quant', name:'📊 Tr4d3 · Quant Desk', domain:'Finance',
-    desc:'12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro. Analysis-only.',
-    live:'https://github.com/Aaron-1411/quant-desk', folder:'', localPath:'~/Desktop/quant-desk',
-    repoOverride:'https://github.com/Aaron-1411/quant-desk',
-    tags:['Python','FastAPI','React'], status:'testing', priority:'high',
-    needs:['ui','design','redesign','dashboard'] },
-  { id:'get-settld', name:'🏡 Get Settld', domain:'Property',
-    desc:'Free first-time-buyer toolkit. Affordability checks, area research, property valuation and viewing tools.',
-    live:'https://get-settld-app.pages.dev', folder:'get-settld',
-    tags:['React','TS','CF Pages'], status:'live', priority:'low',
-    needs:['ui','redesign','branding','mobile'] },
-  { id:'lease-guard', name:'🏠 Lease Guard', domain:'Property',
-    desc:'Lease management & tenant protection. Understand your rights, review clauses and track key dates.',
-    live:'https://lease-guard-app.mraaronmanu.workers.dev', folder:'lease-guard',
-    tags:['TanStack','TS','CF Workers'], status:'live', priority:'low',
-    needs:['ui','redesign','writing'] },
-  { id:'whole-health', name:'🧭 Whole Health Compass', domain:'Health',
-    desc:'White-label patient-education tool. Plain-English concern → practitioner-ready summary across Western/TCM/Ayurveda.',
-    live:'https://whole-health-compass-app.pages.dev', folder:'whole-health-compass',
-    tags:['React','Vite','CF Pages'], status:'live', priority:'med',
-    needs:['ui','redesign','branding','design'] },
-  { id:'lifedash', name:'⚡ LifeDash', domain:'Health',
-    desc:'Gamified personal life tracker — Body, Learn, Mind, Experience. XP, streaks, sleep, mood and habits.',
-    live:'https://lifedash-app.pages.dev', folder:'lifedash',
-    tags:['React','CF Pages'], status:'live', priority:'low',
-    needs:['ui','redesign','mobile','motion','design'] },
-  { id:'gymseek', name:'🏋️ GymSeek', domain:'Health',
-    desc:'AI gym finder. Enter location, budget and preferences → ranked results with pricing and facilities.',
-    live:'https://gymseek-app.pages.dev', folder:'gymseek',
-    tags:['Static','CF Functions'], status:'live', priority:'low',
-    needs:['ui','redesign','branding','mobile'] },
-  { id:'platespin', name:'🍽️ PlateSpin', domain:'Food & Lifestyle',
-    desc:'Spin a wheel of your cuisines, set location + dietary needs, get matched to nearby spots. Free, no login.',
-    live:'https://platespin-app.pages.dev', folder:'platespin',
-    tags:['React','Vite','CF Pages'], status:'building', priority:'high',
-    needs:['design','ui','redesign','mobile','motion','branding'] },
-  { id:'inkspector', name:'🖋 Inkspector', domain:'Food & Lifestyle',
-    desc:'Tattoo artist site for Jordan Mitchell, London. Portfolio gallery, booking form with admin dashboard, aftercare guides.',
-    live:'https://inkspector-app.pages.dev', folder:'inkspector',
-    tags:['Next.js','Supabase','CF Pages'], status:'testing', priority:'high',
-    needs:['design','ui','redesign','images','branding','motion'] },
-];
-
-// Real skills downloaded & active in ~/.claude/skills (catalogued in ~/skills-library/README.md).
-const SEED_SKILLS = [
-  // ── Design — full frontend build ──
-  { id:'atelier', name:'Atelier', invoke:'atelier', icon:'🎨', cat:'build',
-    desc:'Your signature design skill — sleek, high-tech, casual-expert. Ships polished public sites/apps with an outreach-tracking backend.',
-    tags:['design','ui','frontend','redesign','web','dashboard','motion'] },
-  { id:'impeccable', name:'Impeccable', invoke:'impeccable', icon:'✨', cat:'build',
-    desc:'Design + 23 commands (polish, audit, critique, animate, bolder, quieter…) with 41 deterministic anti-slop detectors and live browser iteration.',
-    tags:['design','ui','redesign','frontend','motion','components'] },
-  { id:'ui-ux-pro-max', name:'UI/UX Pro Max', invoke:'ui-ux-pro-max', icon:'🧠', cat:'build',
-    desc:'Design-intelligence DB: 50+ styles, 161 palettes, 57 font pairings, 25 chart types across 10 stacks. Plan, build, review and fix UI/UX.',
-    tags:['ui','design','components','mobile','web','frontend'] },
-  { id:'taste-skill', name:'Design Taste (Frontend)', invoke:'taste-skill', icon:'🎯', cat:'build',
-    desc:'Anti-slop frontend for landing pages, portfolios and redesigns. Reads the brief, infers direction, audit-first, strict pre-flight check.',
-    tags:['design','frontend','redesign','web','ui'] },
-  { id:'emil-design-eng', name:'Emil Design Eng', invoke:'emil-design-eng', icon:'🪄', cat:'build',
-    desc:"Emil Kowalski's philosophy on UI polish, component design, animation decisions and the invisible details that make software feel great.",
-    tags:['ui','design','motion','components','frontend'] },
-  { id:'soft-skill', name:'High-End Visual Design', invoke:'soft-skill', icon:'💎', cat:'build',
-    desc:'Design like a high-end agency — exact fonts, spacing, shadows, cards and animations that feel expensive. Blocks the cheap AI defaults.',
-    tags:['design','ui','web','motion'] },
-  { id:'redesign-skill', name:'Redesign Existing Projects', invoke:'redesign-skill', icon:'♻️', cat:'build',
-    desc:'Upgrade existing sites and apps to premium quality. Audits current design, kills generic AI patterns, never breaks functionality.',
-    tags:['redesign','design','ui','web'] },
-  // ── Design — style-specific looks ──
-  { id:'minimalist-skill', name:'Minimalist UI', invoke:'minimalist-skill', icon:'⬜', cat:'style',
-    desc:'Clean editorial interfaces — warm monochrome, typographic contrast, flat bento grids. No gradients, no heavy shadows.',
-    tags:['design','ui','web','redesign'] },
-  { id:'brutalist-skill', name:'Industrial Brutalist UI', invoke:'brutalist-skill', icon:'🏗️', cat:'style',
-    desc:'Swiss print × military terminal. Rigid grids, extreme type contrast, analog degradation — for data-heavy dashboards that feel declassified.',
-    tags:['design','ui','web','dashboard'] },
-  { id:'gpt-tasteskill', name:'GPT Taste (GSAP Motion)', invoke:'gpt-tasteskill', icon:'🌀', cat:'style',
-    desc:'Elite UX/UI & GSAP motion engineer — randomized layouts, AIDA structure, editorial type, scroll pinning/stacking/scrubbing.',
-    tags:['design','ui','web','motion','frontend'] },
-  { id:'stitch-skill', name:'Stitch Design Taste', invoke:'stitch-skill', icon:'🧵', cat:'style',
-    desc:'Semantic design-system skill for Google Stitch. Generates DESIGN.md files enforcing premium, anti-generic UI standards.',
-    tags:['design','ui','mobile','motion'] },
-  { id:'taste-skill-v1', name:'Design Taste v1 (Legacy)', invoke:'taste-skill-v1', icon:'🗂️', cat:'style',
-    desc:'The original v1 taste-skill, preserved for projects that depend on its exact behaviour. Use only for backward compatibility.',
-    tags:['design','frontend','redesign','web','ui'] },
-  // ── Design — image generation ──
-  { id:'imagegen-frontend-web', name:'Imagegen — Web', invoke:'imagegen-frontend-web', icon:'🖼️', cat:'image',
-    desc:'Premium website design references — ONE horizontal image per section (8 sections → 8 images), varied heroes, one consistent palette.',
-    tags:['images','design','web','marketing'] },
-  { id:'imagegen-frontend-mobile', name:'Imagegen — Mobile', invoke:'imagegen-frontend-mobile', icon:'📱', cat:'image',
-    desc:'Premium app-native screen concepts inside clean phone mockups (iOS/Android). Generates images only — does not write code.',
-    tags:['images','design','mobile'] },
-  { id:'image-to-code-skill', name:'Image to Code', invoke:'image-to-code-skill', icon:'🎛️', cat:'image',
-    desc:'Generates the design image first, deeply analyses it, then codes the site to match. Codex-tuned, large readable section images.',
-    tags:['design','frontend','web','images'] },
-  { id:'brandkit', name:'Brand Kit', invoke:'brandkit', icon:'📦', cat:'image',
-    desc:'Premium brand-guideline boards, logo systems, identity decks and visual-world presentations. Minimalist, cinematic, editorial.',
-    tags:['branding','images','design'] },
-  // ── Brand & marketing (ckm: plugin) ──
-  { id:'design', name:'CKM · Design', invoke:'design', icon:'🖌️', cat:'brand',
-    desc:'Logos (55 styles), corporate identity program (50 deliverables), HTML presentations, banners, icons and social photos.',
-    tags:['design','branding','images','slides','ui'] },
-  { id:'brand', name:'CKM · Brand', invoke:'brand', icon:'🏷️', cat:'brand',
-    desc:'Brand voice, visual identity, messaging frameworks, asset management and brand consistency. For branded content and style guides.',
-    tags:['branding','marketing','writing'] },
-  { id:'banner-design', name:'CKM · Banner Design', invoke:'banner-design', icon:'🪧', cat:'brand',
-    desc:'Banners for social, ads, web heroes and print. Multiple art directions with AI-generated visuals across 13+ styles.',
-    tags:['images','branding','marketing'] },
-  { id:'design-system', name:'CKM · Design System', invoke:'design-system', icon:'🧱', cat:'brand',
-    desc:'Three-layer design tokens (primitive→semantic→component), component specs and strategic slide generation.',
-    tags:['tokens','components','slides','design'] },
-  { id:'slides', name:'CKM · Slides', invoke:'slides', icon:'📊', cat:'brand',
-    desc:'Strategic HTML presentations with Chart.js, design tokens, responsive layouts and copywriting formulas.',
-    tags:['slides','design','writing'] },
-  { id:'ui-styling', name:'CKM · UI Styling', invoke:'ui-styling', icon:'🧩', cat:'brand',
-    desc:'Beautiful, accessible UIs with shadcn/ui (Radix + Tailwind), utility-first styling, dark mode and canvas-based visual designs.',
-    tags:['ui','components','frontend','web'] },
-  // ── Writing / output ──
-  { id:'stop-slop', name:'Stop Slop', invoke:'stop-slop', icon:'🧹', cat:'writing',
-    desc:'Removes AI writing patterns from prose. Use when drafting, editing or reviewing text to eliminate predictable AI tells.',
-    tags:['writing'] },
-  { id:'output-skill', name:'Full Output Enforcement', invoke:'output-skill', icon:'📜', cat:'writing',
-    desc:'Overrides default LLM truncation. Bans placeholders, forces complete code generation and handles token-limit splits cleanly.',
-    tags:['writing'] },
-  // ── Token efficiency & delegation (caveman plugin) ──
-  { id:'caveman', name:'Caveman', invoke:'/caveman', icon:'🪨', cat:'tokens',
-    desc:'Ultra-compressed mode — ~75% fewer tokens with full technical accuracy. Levels: lite, full, ultra, wenyan.',
-    tags:['efficiency'] },
-  { id:'cavecrew', name:'Cavecrew', invoke:'cavecrew', icon:'🦴', cat:'tokens',
-    desc:'Decision guide for delegating to compressed subagents (investigator/builder/reviewer) so the main thread eats ~60% fewer tokens.',
-    tags:['delegation','efficiency'] },
-  { id:'caveman-commit', name:'Caveman Commit', invoke:'/caveman-commit', icon:'✅', cat:'tokens',
-    desc:'Ultra-compressed Conventional Commits messages. Subject ≤50 chars, body only when the why is not obvious.',
-    tags:['commit','efficiency'] },
-  { id:'caveman-review', name:'Caveman Review', invoke:'/caveman-review', icon:'🔎', cat:'tokens',
-    desc:'One-line PR review comments — location, problem, fix. Severity-tagged, no throat-clearing.',
-    tags:['review','efficiency'] },
-  { id:'caveman-compress', name:'Caveman Compress', invoke:'/caveman-compress', icon:'🗜️', cat:'tokens',
-    desc:'Compress CLAUDE.md / memory files to caveman format to save input tokens. Keeps a human-readable .original.md backup.',
-    tags:['efficiency'] },
-  { id:'caveman-stats', name:'Caveman Stats', invoke:'/caveman-stats', icon:'📈', cat:'tokens',
-    desc:'Real token usage + estimated savings for the session, read straight from the Claude Code session log.',
-    tags:['efficiency'] },
-  { id:'caveman-help', name:'Caveman Help', invoke:'/caveman-help', icon:'❓', cat:'tokens',
-    desc:'Quick-reference card for all caveman modes, skills and commands. One-shot display, not a persistent mode.',
-    tags:['efficiency'] },
-];
 
 // Real subagents bundled with installed plugins (caveman, impeccable).
 const SEED_AGENTS = [
@@ -1125,32 +969,6 @@ const SEED_AGENTS = [
   { id:'impeccable-asset-producer', name:'Impeccable Asset Producer', plugin:'impeccable', icon:'🖼️', model:'inherit',
     tools:['Read','Write','Edit','Bash','Glob','Grep'],
     desc:'Produces clean reusable raster assets from approved Impeccable mock references — without redesigning the direction.' },
-];
-
-// Tool Stack data lives in seed.js (HUB_SEED.tools) — static config, rendered
-// by renderTools() via toolConfig(). No inline copy here (avoids duplication).
-
-const SEED_PROMPTS = [
-  { id:'p-rules', title:'Ship a feature the Aaron way', cat:'Development', fav:true,
-    body:'Build & deploy this following the rules: add it to the CC monorepo, wire a Cloudflare deploy job in .github/workflows/deploy.yml, add a hub card, ensure full mobile responsiveness, then push to master so CI deploys. Surface blockers only — do the work, don\'t narrate.' },
-  { id:'p-mobile', title:'Mobile responsive audit', cat:'Development', fav:true,
-    body:'Audit this page for mobile at 320px, 375px, 414px and 768px. Check: no horizontal overflow, touch targets ≥44px, inputs ≥16px font, nav collapses, images max-width 100%, grids reflow to one column. Fix every issue you find and report what changed.' },
-  { id:'p-proxy', title:'Add a keyless API proxy', cat:'Development', fav:false,
-    body:'Add a Cloudflare Pages Function that proxies <UPSTREAM API> so the API key never ships to the client. Include edge caching with a sensible TTL, a fallback mirror, and graceful degradation (return empty + degraded:true, never a 5xx) on upstream failure.' },
-  { id:'p-debug', title:'Debug a failing build', cat:'Development', fav:false,
-    body:'The build is failing. Read the full error, find the root cause (don\'t bypass with --no-verify or by disabling checks), fix it properly, re-run the build to confirm green, and explain in one line what was wrong.' },
-  { id:'p-teardown', title:'Competitor teardown', cat:'Research', fav:false,
-    body:'Do a teardown of <COMPETITOR>. Cover: positioning, pricing, core features, what they do well, where the gaps are, and 3 concrete openings I could exploit. Be specific and cite what you actually saw.' },
-  { id:'p-validate', title:'Validate a product idea', cat:'Research', fav:false,
-    body:'Pressure-test this idea: <IDEA>. Who is it for, what painful problem does it solve, why now, what\'s the cheapest way to test demand this week, and what would make me kill it? Be blunt.' },
-  { id:'p-landing', title:'Landing page copy', cat:'Marketing', fav:true,
-    body:'Write landing page copy for <PRODUCT>. Audience: <AUDIENCE>. Give me: a hero headline + subhead, 3 benefit blocks (outcome-led, not feature-led), social-proof framing, and one strong CTA. Confident, casual-expert tone — no corporate filler.' },
-  { id:'p-launch', title:'Launch thread', cat:'Marketing', fav:false,
-    body:'Write a launch thread (6–8 posts) for <PRODUCT>. Hook hard on post 1, show the problem, the build, a demo moment, and end with a clear CTA. Punchy, no emojis unless they earn their place.' },
-  { id:'p-blog', title:'Blog post from notes', cat:'Content', fav:false,
-    body:'Turn these rough notes into a tight blog post: <NOTES>. Keep my voice — direct, practical, builder-to-builder. Strong opening line, clear sections, a takeaway readers can act on today. No AI throat-clearing.' },
-  { id:'p-repurpose', title:'Repurpose to social', cat:'Content', fav:false,
-    body:'Repurpose this <ARTICLE/VIDEO> into: 1 LinkedIn post, 1 X thread, and 3 short hooks. Keep each native to its platform. Lead with the most counterintuitive insight.' },
 ];
 
 /* Project Memory — Obsidian-style branches. Empty sections scaffold on demand;
@@ -1207,13 +1025,10 @@ const LS = {
   get(k, d){ try { return JSON.parse(localStorage.getItem('ws:'+k)) ?? d; } catch { return d; } },
   set(k, v){ localStorage.setItem('ws:'+k, JSON.stringify(v)); },
 };
-let projOverrides = LS.get('projects', {});   // id -> {status, priority, note, updated}
+// Projects, skills and prompts now live in HubStore (see getters below).
 let focusText     = LS.get('focus', '');
 let focusPinned   = LS.get('focusPinned', ['platespin','inkspector','quant']);
-let customSkills  = LS.get('customSkills', []);
-let customPrompts = LS.get('customPrompts', []);
-let promptState   = LS.get('promptState', {}); // id -> {fav}
-let memStore      = LS.get('memory', {});      // branchId -> partial memory object
+let memStore      = LS.get('memory', {});      // branchId -> partial memory object (Phase 2)
 let memBranchesEx = LS.get('memBranches', []); // custom branches [{id,name,emoji}]
 let activity      = LS.get('activity', []);    // [{icon, text, ts}]
 const today = () => new Date().toISOString().slice(0,10);
@@ -1232,34 +1047,58 @@ function timeAgo(ts){
   const d = Math.floor(h/24); return d+'d ago';
 }
 
+// Static presentational extras keyed by id (domain/techTags/needs/repo, skill cat/invoke/icon)
+// come from the canonical catalog in seed.js; user-editable fields come from the store.
+function catalogExtras(kind){
+  const map = {};
+  ((window.HUB_SEED && window.HUB_SEED[kind]) || []).forEach(x => { map[x.id] = x; });
+  return map;
+}
+// Projects read from HubStore, enriched with catalog extras + legacy field aliases
+// (desc/live/tags/domain/needs/updated/repo) so existing renderers keep working.
 function projects(){
-  return SEED_PROJECTS.map(p => {
-    const o = projOverrides[p.id] || {};
+  const x = catalogExtras('projects');
+  return HubStore.projects.getAll().map(p => {
+    const e = x[p.id] || {};
     return { ...p,
-      status: o.status || p.status,
-      priority: o.priority || p.priority,
-      note: o.note || '',
-      updated: o.updated || null,
-      repo: p.repoOverride || (p.folder ? REPO_BASE + p.folder : null),
+      desc: p.description,
+      live: p.quickLaunchUrl,
+      tags: e.techTags || [],
+      domain: e.domain || '',
+      needs: e.needs || [],
+      folder: e.repoFolder || '',
+      localPath: e.localPath || '',
+      updated: p.updatedAt || null,
+      repo: e.repoOverride || (e.repoFolder ? REPO_BASE + e.repoFolder : null),
     };
   });
 }
-function allSkills(){ return [...customSkills, ...SEED_SKILLS]; }
+function project(id){ return projects().find(p => p.id === id) || null; }
+function allSkills(){
+  const x = catalogExtras('skills');
+  return HubStore.skills.getAll().map(s => {
+    const e = x[s.id] || {};
+    return { ...s, desc: s.description, cat: s.cat || e.cat, invoke: s.invoke || e.invoke, icon: s.icon || e.icon, source: s.sourceLink || '' };
+  });
+}
 function allAgents(){ return SEED_AGENTS; }
 
 /* ── memory branches & data ── */
 const EMPTY_MEM = () => ({ summary:'', architecture:'', decisions:[], skillsUsed:[], repoRefs:[], roadmap:[], openIssues:[], sessions:[] });
 function memBranches(){
   const list = [];
+  const seen = {};
   // seeded special branches (e.g. personal-hub)
   Object.keys(SEED_MEMORY).forEach(id => {
     const s = SEED_MEMORY[id];
     list.push({ id, name:s.name, emoji:s.emoji, status:s.status });
+    seen[id] = true;
   });
-  // every real project is a branch
-  SEED_PROJECTS.forEach(p => {
-    const o = projOverrides[p.id] || {};
-    list.push({ id:p.id, name:plainName(p.name), emoji:pinEmojiRaw(p.name), status:o.status||p.status });
+  // every project is a branch (from HubStore), skipping any already added above
+  projects().forEach(p => {
+    if (seen[p.id]) return;
+    list.push({ id:p.id, name:plainName(p.name), emoji:pinEmojiRaw(p.name), status:p.status });
+    seen[p.id] = true;
   });
   // custom user branches
   memBranchesEx.forEach(b => list.push({ id:b.id, name:b.name, emoji:b.emoji||'📁', status:'idea' }));
@@ -1276,11 +1115,9 @@ function saveMem(id, patch){
   delete memStore[id].name; delete memStore[id].emoji; delete memStore[id].status;
   LS.set('memory', memStore);
 }
+const CAT_LABEL = { development:'Development', research:'Research', marketing:'Marketing', content:'Content' };
 function allPrompts(){
-  return [...customPrompts, ...SEED_PROMPTS].map(p => {
-    const st = promptState[p.id] || {};
-    return { ...p, fav: ('fav' in st) ? st.fav : p.fav };
-  });
+  return HubStore.prompts.getAll().map(p => ({ ...p, cat: CAT_LABEL[p.category] || p.category, fav: !!p.favourite }));
 }
 
 /* ─────────── HELPERS ─────────── */
@@ -1289,8 +1126,10 @@ const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const esc = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const STATUS_LABEL = { idea:'Idea', planning:'Planning', building:'Building', testing:'Testing', live:'Live', archived:'Archived' };
 const STATUS_ORDER = ['idea','planning','building','testing','live','archived'];
-const PRIO_LABEL   = { critical:'Critical', high:'High', med:'Medium', low:'Low' };
-const PRIO_ORDER   = ['critical','high','med','low'];
+const PRIO_LABEL   = { critical:'Critical', high:'High', medium:'Medium', low:'Low' };
+const PRIO_ORDER   = ['critical','high','medium','low'];
+const PRIO_RANK    = { critical:0, high:1, medium:2, low:3 };
+const relTime = iso => { const t = Date.parse(iso); return isNaN(t) ? '—' : timeAgo(t); };
 
 function toast(msg){
   const t = $('#toast');
@@ -1310,7 +1149,14 @@ function prioBadge(p){ return `<span class="prio ${p}">▲ ${PRIO_LABEL[p]}</spa
 
 /* ─────────── RENDER: PROJECT CARD ─────────── */
 function projectCard(p){
-  const updated = p.updated ? p.updated : '—';
+  const updated = relTime(p.updatedAt);
+  const launch = p.quickLaunchUrl
+    ? `<a class="launch" href="${esc(p.quickLaunchUrl)}" target="_blank" rel="noopener" data-stop>
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>Launch
+      </a>`
+    : `<button class="launch" data-open="${p.id}" data-stop>
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>Open
+      </button>`;
   return `<div class="card" data-proj="${p.id}">
     <div class="card-head">
       <span class="card-name">${esc(p.name)}</span>
@@ -1319,14 +1165,12 @@ function projectCard(p){
     <p class="card-desc">${esc(p.desc)}</p>
     <div class="meta-row">
       ${prioBadge(p.priority)}
-      <span class="meta-x">· ${p.domain}</span>
+      ${p.domain ? `<span class="meta-x">· ${esc(p.domain)}</span>` : ''}
       <span class="meta-x">· upd ${updated}</span>
     </div>
     <div class="card-foot">
-      <div class="tags">${p.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
-      <a class="launch" href="${p.live}" target="_blank" rel="noopener" data-stop>
-        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>Launch
-      </a>
+      <div class="tags">${(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      ${launch}
     </div>
   </div>`;
 }
@@ -1397,7 +1241,7 @@ function renderDashboard(){
     : `<span class="meta-x">Pin projects from their panel to track them here.</span>`;
 
   // priorities = critical/high priority OR building/testing, never archived
-  const prioRank = { critical:0, high:1, med:2, low:3 };
+  const prioRank = PRIO_RANK;
   const prio = ps.filter(p => p.status!=='archived' &&
                  (p.priority==='critical' || p.priority==='high' || p.status==='building' || p.status==='testing'))
                  .sort((a,b)=> (prioRank[a.priority]??9) - (prioRank[b.priority]??9));
@@ -1708,6 +1552,7 @@ function openDrawer(id){
       <textarea id="drawer-note" placeholder="Where you left off, next steps…">${esc(p.note)}</textarea>
     </div>
     <div class="dgroup">
+      <button class="btn-ghost" id="edit-proj" style="width:100%;margin-bottom:8px">✎ Edit project details</button>
       <button class="btn-ghost" id="pin-toggle" style="width:100%;${pinned?'color:var(--accent);border-color:rgba(59,130,246,0.4)':''}">
         ${pinned ? '★ Pinned to “Working on now”' : '☆ Pin to “Working on now”'}
       </button>
@@ -1721,6 +1566,7 @@ function openDrawer(id){
   $$('#seg-prio .seg-btn').forEach(b=>b.onclick=()=>setOverride(id,'priority',b.dataset.prio));
   $('#drawer-note').addEventListener('input', e=>setOverride(id,'note',e.target.value,true));
   $('#copy-ctx').onclick = ()=>copy(ctxText,'Project context copied');
+  $('#edit-proj').onclick = ()=>{ closeDrawer(); openProjectModal(id); };
   $('#pin-toggle').onclick = ()=>{ togglePin(id); openDrawer(id); };
   $$('#d-body .sugg-row').forEach(r=>r.onclick=()=>{ closeDrawer(); switchView('skills');
     skillFilter='all'; $$('#skill-filters .filter').forEach(x=>x.classList.toggle('active',x.dataset.cat==='all'));
@@ -1742,8 +1588,10 @@ function projectContext(p){
   return lines.join('\n');
 }
 function setOverride(id, key, val, silent){
-  projOverrides[id] = { ...(projOverrides[id]||{}), [key]: val, updated: today() };
-  LS.set('projects', projOverrides);
+  const sp = HubStore.projects.get(id); if (!sp) return;
+  sp[key] = val;                                  // status | priority | note (note is an extra field)
+  sp.updatedAt = new Date().toISOString();
+  HubStore.projects.save(sp);
   if (!silent){
     // refresh the relevant seg highlight without full re-render
     if (key==='status'){ $$('#seg-status .seg-btn').forEach(b=>{ b.className='seg-btn '+b.dataset.status+(b.dataset.status===val?' on '+val:''); }); }
@@ -1790,6 +1638,9 @@ document.addEventListener('click', e=>{
   // tab / view switches
   const v = e.target.closest('[data-view]');
   if (v){ e.preventDefault(); switchView(v.dataset.view); return; }
+  // "Open" button on a project without a quick-launch URL → drawer
+  const op = e.target.closest('[data-open]');
+  if (op){ openDrawer(op.dataset.open); return; }
   // launch / source links inside cards shouldn't open drawer
   if (e.target.closest('[data-stop]')) { e.stopPropagation(); }
   // project card → drawer
@@ -1797,8 +1648,8 @@ document.addEventListener('click', e=>{
   if (pc && !e.target.closest('[data-stop]')){ openDrawer(pc.dataset.proj); return; }
   // prompt fav
   const fav = e.target.closest('[data-fav]');
-  if (fav){ const id=fav.dataset.fav; const cur=allPrompts().find(p=>p.id===id).fav;
-    promptState[id]={...(promptState[id]||{}), fav:!cur}; LS.set('promptState',promptState);
+  if (fav){ const id=fav.dataset.fav; const sp=HubStore.prompts.get(id);
+    if (sp){ sp.favourite=!sp.favourite; sp.updatedAt=new Date().toISOString(); HubStore.prompts.save(sp); }
     renderPrompts(); renderDashboard(); return; }
   // prompt copy
   const cp = e.target.closest('[data-copy]');
@@ -1816,6 +1667,41 @@ $('#focus-input').addEventListener('input', e=>{ focusText=e.target.value; LS.se
 $('#proj-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
   $$('#proj-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); projFilter=b.dataset.status; renderProjects(); });
 $('#proj-search').addEventListener('input', e=>{ projQuery=e.target.value; renderProjects(); });
+
+// project add / edit modal
+let editingProjectId = null;
+function openProjectModal(id){
+  editingProjectId = id || null;
+  const p = id ? HubStore.projects.get(id) : null;
+  $('#pm-heading').textContent = id ? 'Edit Project' : 'Add Project';
+  $('#pm-name').value     = p ? (p.name||'') : '';
+  $('#pm-desc').value     = p ? (p.description||'') : '';
+  $('#pm-status').value   = p ? p.status : 'idea';
+  $('#pm-priority').value = p ? p.priority : 'medium';
+  $('#pm-url').value      = p ? (p.quickLaunchUrl||'') : '';
+  openModal('project-modal');
+}
+$('#add-project-btn') && $('#add-project-btn').addEventListener('click', ()=>openProjectModal());
+$('#pm-save').addEventListener('click', ()=>{
+  const name = $('#pm-name').value.trim();
+  if (name.length < 3){ toast('Name needs at least 3 characters'); return; }
+  const now = new Date().toISOString();
+  const fields = { name, description:$('#pm-desc').value.trim(), status:$('#pm-status').value,
+    priority:$('#pm-priority').value, quickLaunchUrl:$('#pm-url').value.trim(), updatedAt:now };
+  if (editingProjectId){
+    const p = HubStore.projects.get(editingProjectId) || { id:editingProjectId, createdAt:now };
+    Object.assign(p, fields); if(!p.createdAt) p.createdAt = now;
+    HubStore.projects.save(p);
+    logActivity('✎', `<b>${esc(plainName(name))}</b> details updated`);
+    toast('Project updated');
+  } else {
+    HubStore.projects.save({ id:'p-'+Date.now(), createdAt:now, ...fields });
+    logActivity('➕', `Added project <b>${esc(plainName(name))}</b>`);
+    toast('Project added');
+  }
+  editingProjectId = null;
+  closeModals(); renderProjects(); renderDashboard();
+});
 
 // skills search + filter + add
 $('#skill-search').addEventListener('input', e=>{ skillQuery=e.target.value; renderSkills(); });
@@ -1845,11 +1731,13 @@ $('#mem-add-branch').addEventListener('click', ()=>{
   renderMemory();
 });
 $('#sk-save').addEventListener('click', ()=>{
-  const name=$('#sk-name').value.trim(); if(!name){ toast('Name required'); return; }
-  const sk={ id:'c-'+Date.now(), name, icon:'🧰', desc:$('#sk-desc').value.trim(),
+  const name=$('#sk-name').value.trim();
+  if(name.length<3){ toast('Name needs at least 3 characters'); return; }
+  const now=new Date().toISOString();
+  const sk={ id:'c-'+Date.now(), name, description:$('#sk-desc').value.trim(),
     tags:$('#sk-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    source:$('#sk-src').value.trim()||'#' };
-  customSkills.unshift(sk); LS.set('customSkills',customSkills);
+    sourceLink:$('#sk-src').value.trim(), createdAt:now, updatedAt:now };
+  HubStore.skills.save(sk);
   ['sk-name','sk-desc','sk-tags','sk-src'].forEach(i=>$('#'+i).value='');
   closeModals(); renderSkills(); renderDashboard(); toast('Skill added');
 });
@@ -1860,18 +1748,22 @@ $('#prompt-filters').addEventListener('click', e=>{ const b=e.target.closest('.f
 $('#prompt-search').addEventListener('input', e=>{ promptQuery=e.target.value; renderPrompts(); });
 $('#add-prompt-btn').addEventListener('click', ()=>openModal('prompt-modal'));
 $('#pr-save').addEventListener('click', ()=>{
-  const title=$('#pr-title').value.trim(); if(!title){ toast('Title required'); return; }
-  const pr={ id:'c-'+Date.now(), title, cat:$('#pr-cat').value, body:$('#pr-body').value.trim(), fav:false };
-  customPrompts.unshift(pr); LS.set('customPrompts',customPrompts);
+  const title=$('#pr-title').value.trim();
+  if(title.length<3){ toast('Title needs at least 3 characters'); return; }
+  const now=new Date().toISOString();
+  const pr={ id:'c-'+Date.now(), title, category:String($('#pr-cat').value||'development').toLowerCase(),
+    body:$('#pr-body').value.trim(), favourite:false, createdAt:now, updatedAt:now };
+  HubStore.prompts.save(pr);
   ['pr-title','pr-body'].forEach(i=>$('#'+i).value='');
-  closeModals(); renderPrompts(); toast('Prompt added');
+  closeModals(); renderPrompts(); renderDashboard(); toast('Prompt added');
 });
 $$('[data-close-modal]').forEach(b=>b.addEventListener('click', closeModals));
 
 /* ─────────── INIT ─────────── */
-// Phase A: seed the HubStore data layer on first run (never overwrites existing
-// data). Independent of the legacy `ws:` UI state, so behaviour is unchanged.
-try { if (typeof runSeed === 'function') runSeed(window.HubStore); } catch (e) { /* non-fatal */ }
+// Phase 1: seed + migrate the HubStore data layer on load. Seeds the full
+// catalog for new visitors; one-time upserts/imports legacy ws: data for
+// existing hubs. Never overwrites user edits. The whole UI reads from the store.
+try { if (typeof migrateHub === 'function') migrateHub(window.HubStore); } catch (e) { /* non-fatal */ }
 renderDashboard();
 </script>
 </body>
