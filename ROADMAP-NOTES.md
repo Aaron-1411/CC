@@ -173,3 +173,35 @@ Supabase and the Chairman proxy are both opt-in and reversible.
 - **Verified:** both Functions bundle cleanly under esbuild (no type-check, loose
   `any`); localStorage path renders error-free (17 projects, backend 'localStorage',
   `migrateHubToSupabase` present); fresh-context subagent review passed.
+
+## Phase 3 Part B — decisions & notes (Chairman chat UI)
+
+**Scope:** the orchestration UI on top of Part A's proxy. This closes the Phase 3
+definition of done — *"Chairman responds in context of a project, logs every
+action, reads and writes memory, works on mobile."* All in `workspace.html`; no
+build step, no new runtime deps, no client-side API key.
+
+- **Placement:** a dedicated top-level **Chairman** view (its own nav tab +
+  project selector), not a per-project tab. One interface; the user speaks to the
+  Chairman only, picking which project is in focus.
+- **Persistence:** per-project threads through `HubStore.state` under
+  `chairman:thread:<projectId>` — so each project keeps its own conversation and it
+  works identically on the localStorage and Supabase adapters (no new storage path).
+- **Context, not silent writes:** on switch/send the client loads the project's
+  memory branch (summary / roadmap / open-issues / skills) as the system context.
+  Memory is **never** written silently. When the Chairman emits a **line-start**
+  `Decided: …` line (regex `/^\s*Decided:\s*(.+)$/im`), a one-tap *Save decision to
+  memory* button appears; tapping it writes an ADR into the project branch and flags
+  the message saved. A "Decided:" mid-sentence does not trigger it — by design.
+- **Streaming:** `chairSend` posts `{messages, projectId, context}` to
+  `window.HUB_CONFIG.chatApi` (`/api/chat`) and renders the Anthropic SSE
+  token-by-token. `chairStream` buffers across chunk boundaries
+  (`buf.split('\n'); buf = lines.pop()`), JSON-parses each `data:` line, and appends
+  only `content_block_delta` `delta.text` (ignores `[DONE]`/keepalive). Errors land
+  as a `⚠️` assistant line; the thread is re-persisted after each turn.
+- **Mobile-first dark UI:** sticky compose bar, aligned user/assistant bubbles,
+  verified at 375px within viewport.
+- **Verified:** against a **local SSE mock** — streaming/accumulation proven by
+  direct replication, save-to-memory ADR write + per-project persistence confirmed,
+  375px layout screenshotted, test artifacts cleaned from localStorage. Live
+  Anthropic calls await the `ANTHROPIC_API_KEY` Cloudflare secret (Part A infra).
