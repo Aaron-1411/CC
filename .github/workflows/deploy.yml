@@ -210,19 +210,33 @@ jobs:
       - name: Create KV namespace (idempotent)
         id: kv
         run: |
-          RESULT=$(curl -s -X POST \
-            "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/storage/kv/namespaces" \
+          TITLE=brand-command-centre-data
+          ACCT=a1a1276a1a278339d95c187e0bf6de47
+          # Create the namespace. If it already exists CF returns an error that
+          # we deliberately ignore — the id is resolved from the list below, so
+          # the step is idempotent across re-runs.
+          CREATE=$(curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCT/storage/kv/namespaces" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"title":"brand-command-centre-data"}')
-          KV_ID=$(echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('result',{}).get('id',''))" 2>/dev/null)
+            -d "{\"title\":\"$TITLE\"}")
+          LIST=$(curl -s \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCT/storage/kv/namespaces?per_page=100" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}")
+          # Resolve the id from the list (covers just-created and already-exists).
+          # Defensive parse: result may be null/missing on an API error.
+          KV_ID=$(printf '%s' "$LIST" | python3 -c "import sys,json; ns=(json.load(sys.stdin).get('result') or []); print(next((n.get('id','') for n in ns if n.get('title')=='$TITLE'),''))") || true
           if [ -z "$KV_ID" ]; then
-            KV_ID=$(curl -s \
-              "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/storage/kv/namespaces?per_page=100" \
-              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" | \
-              python3 -c "import sys,json; ns=json.load(sys.stdin)['result']; print(next((n['id'] for n in ns if n['title']=='brand-command-centre-data'),''))" 2>/dev/null)
+            KV_ID=$(printf '%s' "$CREATE" | python3 -c "import sys,json; print((json.load(sys.stdin).get('result') or {}).get('id',''))") || true
+          fi
+          if [ -z "$KV_ID" ]; then
+            echo "ERROR: could not resolve KV namespace id for $TITLE"
+            echo "create response: $CREATE"
+            echo "list response:   $LIST"
+            exit 1
           fi
           echo "kv_id=$KV_ID" >> "$GITHUB_OUTPUT"
+          echo "Resolved KV namespace $TITLE -> $KV_ID"
       - name: Set CF Pages environment variables and KV binding
         run: |
           curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/ecommerce-deep-dive-app" \
