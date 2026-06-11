@@ -776,7 +776,7 @@
     <div class="toolbar">
       <div class="search">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input id="tool-search" placeholder="Search tools, purpose or agents…" />
+        <input id="tool-search" placeholder="Search tools or capabilities…" />
       </div>
       <div class="filters" id="tool-filters">
         <button class="filter active" data-tstatus="all">All</button>
@@ -1508,7 +1508,8 @@ function renderTools(){
   else if (toolFilter === 'available') tt = tt.filter(t => t.connected === false);
   else if (toolFilter === 'local') tt = tt.filter(t => LOCAL_TOOL_IDS.includes(t.id));
   if (toolQuery){ const q=toolQuery.toLowerCase();
-    tt = tt.filter(t => (t.name + ' ' + (t.capabilities||[]).join(' ') + ' ' + t.purpose + ' ' + (t.futureAgents||[]).join(' ')).toLowerCase().includes(q)); }
+    // Spec: filter by tool name OR capability.
+    tt = tt.filter(t => (t.name + ' ' + (t.capabilities||[]).join(' ')).toLowerCase().includes(q)); }
   $('#tool-grid').innerHTML = tt.length ? tt.map(toolCard).join('')
     : `<div class="empty">${toolConfig().length ? 'No tools match.' : 'No tools configured yet.'}</div>`;
 }
