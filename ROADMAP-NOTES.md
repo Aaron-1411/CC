@@ -110,3 +110,27 @@ never rebuild" direction; logged here for the record.
 - **Dashboard composition:** chosen with the user — the Dashboard shows all five
   sections in order **and** Projects/Skills/Prompts remain 1-click nav tabs
   (shared card builders + getters; independent filter/search state).
+
+---
+
+## Phase 2 — decisions & notes
+
+- **Memory rebuilt on HubStore.** One `MemoryBranch` per project (1:1 via
+  `projectId`), auto-created empty on branch open and on new-project save. The
+  old `ws:memory` / inline `SEED_MEMORY` / `MEM_SECTIONS` shape and the custom
+  "+ Add branch" feature were removed. Old `ws:memory` is **not** migrated — its
+  shape was incompatible and it was only a demo branch.
+- **Type-faithful sections.** `sections.roadmap` and `sections.openIssues` are
+  markdown **strings** (per `MemoryBranch`), not arrays; `decisions` are ADR
+  objects, `repositories` are `RepoRef`, `sessions` are immutable
+  `SessionSummary` records.
+- **Export Vault is dependency-free** (user decision). Hand-rolled ZIP "store"
+  writer (`crc32` + `makeZip`) instead of JSZip — honours the no-external-deps
+  hard rule. Output validated with system `unzip` (integrity OK, folder tree
+  `memory/{slug}/…` + `sessions/{date}-{slug}.md` extracts correctly).
+- **Tiny markdown renderer** (`mdToHtml`) for preview tabs: headings, ordered/
+  unordered lists, `- [x]/[ ]` task items, bold/italic, inline code, links. Not
+  a full CommonMark parser — sufficient for memory notes.
+- **Forward-compatible for auto-summarisation:** the schema is unchanged from
+  the types; `SessionSummary.tokensEstimate` is captured manually now and a
+  future Phase 3 agent can write sessions/decisions back via the same store API.

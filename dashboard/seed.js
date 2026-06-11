@@ -348,6 +348,12 @@
             decision: 'The Agents view is a read-only catalog of installed plugin subagents — no execution yet.',
             consequences: 'Capability visibility now; orchestration deferred to Chairman (Phase 3+).',
           },
+          {
+            id: 'd-4', date: '2026-06-11', title: 'Memory on HubStore + dependency-free export',
+            context: 'Phase 2 needed project memory with an Obsidian-compatible export, but the hard rule forbids external runtime dependencies (no JSZip).',
+            decision: 'Store one MemoryBranch per project in HubStore (1:1 via projectId, auto-created); roadmap/open-issues are markdown strings; sessions are immutable. Export Vault uses a hand-rolled dependency-free ZIP writer.',
+            consequences: 'No third-party deps; valid zip verified with system unzip; schema is forward-compatible with future automated summarisation.',
+          },
         ],
         skillsUsed: ['atelier', 'impeccable', 'ui-ux-pro-max', 'stop-slop'],
         repositories: [
@@ -355,7 +361,7 @@
           { name: 'Live workspace', url: 'https://aaron-projects-hub.pages.dev/workspace', note: 'Deployed Command Centre.' },
         ],
         roadmap: '## Roadmap\n\n- [x] Phase 0 — Tool Stack dashboard\n- [x] Phase 1 — Foundation: projects, dashboard, skills, prompts\n- [x] Phase 2 — Obsidian memory architecture (project branches)\n- [x] Phase A — Audit + HubStore data layer\n- [ ] Phase 3 — Chairman orchestration + Supabase\n- [ ] Phase 4 — Skills system (SKILL.md, arbitration)\n- [ ] Phase 5 — Council agents',
-        openIssues: '## Open issues\n\n- Memory is local-only — needs sync to the real Obsidian vault before multi-device use.\n- Tool connection status is manual — wire real health checks later (out of scope until scoped).\n- UI still reads legacy `ws:` keys; migrate renderers onto HubStore in a later step.',
+        openIssues: '## Open issues\n\n- Memory is local-only — sync to the real Obsidian vault (or Supabase from Phase 3) before multi-device use. Export Vault is the manual bridge for now.\n- Tool connection status is manual — wire real health checks later (out of scope until scoped).\n- Focus banner + recent-activity event log still use legacy `ws:` keys (non-entity UI state); migrate to HubStore.state in a later pass.',
       },
       sessions: [
         {
@@ -367,6 +373,16 @@
           id: 's-2', date: '2026-06-11', title: 'Phase A — Foundation data layer',
           summary: 'Audited the codebase (ARCHITECTURE.md), wrote CLAUDE.md and types.ts, and introduced the HubStore abstraction with a localStorage adapter, export/import and seed. App behaviour unchanged.',
           tokensEstimate: 22000,
+        },
+        {
+          id: 's-3', date: '2026-06-11', title: 'Phase 1 — Personal Hub Foundation',
+          summary: '## Phase 1\n\nMigrated projects, skills and prompts onto HubStore (full catalog, single source). Rebuilt the dashboard into five ordered sections — Active Projects, Current Priorities, Skills, Prompts, Workspace — with a project add/edit modal, autosaved notes, derived Recent Activity and JSON export/import.',
+          tokensEstimate: 41000,
+        },
+        {
+          id: 's-4', date: '2026-06-11', title: 'Phase 2 — Obsidian Memory Architecture',
+          summary: '## Phase 2\n\nRebuilt Memory on HubStore: one MemoryBranch per project, an 8-tab branch view (markdown summary/architecture/roadmap/open-issues with preview, ADR decisions, skills multi-select, repository refs, immutable session summaries) and an **Export Vault** that writes an Obsidian-ready zip via a dependency-free ZIP writer — no JSZip. Validated the archive with system `unzip`.',
+          tokensEstimate: 52000,
         },
       ],
     },
