@@ -1481,6 +1481,8 @@ const TOOL_ICONS = { 'claude-code':'✶', 'codex':'⌥', 'github':'⎇', 'obsidi
   'supabase':'🗄️', 'n8n':'🔗', 'lm-studio':'🧬', 'wispr-flow':'🎙️' };
 // Canonical tool config lives in seed.js (HUB_SEED.tools); static, not user-editable.
 function toolConfig(){ return (window.HUB_SEED && Array.isArray(window.HUB_SEED.tools)) ? window.HUB_SEED.tools : []; }
+// Tools that run locally on Aaron's machine (for the "Local" filter).
+const LOCAL_TOOL_IDS = ['lm-studio', 'obsidian', 'wispr-flow'];
 
 function toolCard(t){
   const on = t.connected === true;
@@ -1504,6 +1506,7 @@ function renderTools(){
   let tt = toolConfig();
   if (toolFilter === 'connected') tt = tt.filter(t => t.connected === true);
   else if (toolFilter === 'available') tt = tt.filter(t => t.connected === false);
+  else if (toolFilter === 'local') tt = tt.filter(t => LOCAL_TOOL_IDS.includes(t.id));
   if (toolQuery){ const q=toolQuery.toLowerCase();
     tt = tt.filter(t => (t.name + ' ' + (t.capabilities||[]).join(' ') + ' ' + t.purpose + ' ' + (t.futureAgents||[]).join(' ')).toLowerCase().includes(q)); }
   $('#tool-grid').innerHTML = tt.length ? tt.map(toolCard).join('')
