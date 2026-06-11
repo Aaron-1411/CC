@@ -112,12 +112,33 @@ Work identified for a later phase goes into `ROADMAP-NOTES.md` at the repo root
 Obsidian live sync, client-side LLM calls, external runtime deps), the answer
 is no.
 
-## Session protocol (per ROADMAP.md)
+## Session protocol (per ROADMAP.md + MASTER-BUILD)
 
-1. Read ROADMAP.md, CLAUDE.md, ARCHITECTURE.md before any code.
+1. Read ROADMAP.md, CLAUDE.md, ARCHITECTURE.md, and `dashboard/BUILD-STATE.md`
+   before any code.
 2. Present the full plan for the phase before writing a line; get approval.
-3. Implement in small commits — one logical change each.
-4. Before "done": a fresh-context subagent reviews the diff against the phase
+3. Touch only `dashboard/**`, root `ROADMAP.md`, `ROADMAP-NOTES.md`, and
+   `.gitignore`. Nothing else in the monorepo.
+4. Implement in small commits — one logical change each.
+5. At 50% context, run `/compact`.
+6. Tests are plain Node: `dashboard/tests/*.test.mjs` with `node:assert`
+   (no runner, no build step).
+7. Never mark a phase complete on a failing check.
+8. Before "done": a fresh-context subagent reviews the diff against the phase
    spec.
-5. Final step: update the Personal Hub memory branch with a session summary and
-   any new decisions.
+9. On completion, update `dashboard/BUILD-STATE.md` and tag `phase-{n}-complete`.
+10. Final step: update the Personal Hub memory branch with a session summary and
+    any new decisions.
+
+## Knowledge-repo rules (Appendix B — from Phase 3.5 onward)
+
+- Skills, agents, memory live in **cc-knowledge**. Never in Supabase, never
+  hardcoded in `dashboard/`.
+- All knowledge reads/writes go through `functions/api/knowledge.ts`.
+  `GITHUB_TOKEN` server-side only.
+- `SKILL.md` and agent files keep the Claude Code native formats; unknown
+  frontmatter keys allowed, breaking the format is not.
+- `~/.claude/skills` is additive territory: individual symlinks only, never
+  replace the folder.
+
+See ROADMAP.md Appendix A (STORAGE MAP) for the full three-homes boundary.
