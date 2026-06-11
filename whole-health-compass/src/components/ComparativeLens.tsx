@@ -1,4 +1,4 @@
-import { Stethoscope, UserRound, ArrowRight, Clock, Scale, Handshake } from "lucide-react";
+import { Stethoscope, UserRound, ArrowRight, Clock, Scale, Handshake, Network, Route, BookOpen } from "lucide-react";
 import type { Concern, TraditionMeta } from "@/data/types";
 import { traditions, LENS_SECTIONS, CLOSING_LINE } from "@/data/concerns";
 import { Card, type TabItem, Tabs } from "@/components/ui";
@@ -32,9 +32,21 @@ function LensPanel({ concern, t }: { concern: Concern; t: TraditionMeta }) {
 
       <Section label={LENS_SECTIONS.worldview}>{lens.worldview}</Section>
 
+      {lens.contributors && (
+        <Section label={LENS_SECTIONS.contributors} icon={<Network className="h-3.5 w-3.5" />}>
+          {lens.contributors}
+        </Section>
+      )}
+
       <Section label={LENS_SECTIONS.practitionerLooksAt} icon={<Stethoscope className="h-3.5 w-3.5" />}>
         {lens.practitionerLooksAt}
       </Section>
+
+      {lens.approaches && (
+        <Section label={LENS_SECTIONS.approaches} icon={<Route className="h-3.5 w-3.5" />}>
+          {lens.approaches}
+        </Section>
+      )}
 
       <Section label={LENS_SECTIONS.whoYouSee} icon={<UserRound className="h-3.5 w-3.5" />}>
         {lens.whoYouSee}
@@ -139,6 +151,15 @@ export function ComparativeLens({ concern, patientWords }: { concern: Concern; p
       {concern.commonGround && concern.commonGround.length > 0 && (
         <CommonGround points={concern.commonGround} />
       )}
+
+      <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+        <BookOpen className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <span>
+          What each tradition links this to, and the approaches it draws on, is summarised from public sources such as
+          the NHS, NICE and the US National Center for Complementary and Integrative Health (NCCIH), professional bodies,
+          and each tradition's own descriptions — to explain how each tradition thinks, not whether an approach works.
+        </span>
+      </p>
     </div>
   );
 }

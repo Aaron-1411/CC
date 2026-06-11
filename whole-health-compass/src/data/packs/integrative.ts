@@ -36,7 +36,7 @@ const traditions: TraditionMeta[] = [
     whatToExpect:
       "A first TCM consultation is often 45–90 minutes and privately paid. Expect detailed questions about your health, sleep, digestion and lifestyle, plus observation such as tongue and pulse, to build an individual picture.",
     evidenceAndRegulation:
-      "Acupuncture and TCM are voluntarily self-regulated in the UK — for acupuncture, look for membership of the British Acupuncture Council. The evidence base varies by use; a registered practitioner can discuss it honestly and tell you when to see your GP.",
+      "Acupuncture and TCM are voluntarily self-regulated in the UK — for acupuncture, look for membership of the British Acupuncture Council. If Chinese herbal medicine is ever suggested, use a registered practitioner and tell your GP and pharmacist what you are taking. The evidence base varies by use; a registered practitioner can discuss it honestly and tell you when to see your GP.",
   },
   {
     key: "ayurveda",
@@ -46,7 +46,7 @@ const traditions: TraditionMeta[] = [
     whatToExpect:
       "A first Ayurvedic consultation is typically 60–90 minutes and privately paid. Expect a wide-ranging conversation about your constitution, routine, digestion and sleep, so the practitioner can understand your whole picture.",
     evidenceAndRegulation:
-      "Ayurveda is not statutorily regulated in the UK, so credentials vary — look for a practitioner registered with a recognised professional association. Discuss the evidence for anything suggested, and keep your GP informed, especially alongside conventional care.",
+      "Ayurveda is not statutorily regulated in the UK, so credentials vary — look for a practitioner registered with a recognised professional association. Some traditional Ayurvedic products, particularly herbal-mineral preparations, have been found to contain heavy metals such as lead, mercury or arsenic, so use only a qualified practitioner and tell your GP and pharmacist about anything you take. Discuss the evidence for anything suggested, especially alongside conventional care.",
   },
 ];
 
@@ -73,8 +73,12 @@ const concerns: Concern[] = [
         oneLiner: "Looks for measurable causes across the body's systems.",
         worldview:
           "Conventional medicine treats fatigue and disrupted sleep as signals that one or more body systems may be under strain. It reasons from physiology — thyroid, iron and blood counts, blood sugar, hormones, mood and sleep quality — and from evidence gathered through history, examination and tests. “Evidence-based” here means leaning on findings studied across large groups of people.",
+        contributors:
+          "It tends to look for contributors such as sleep quality and routine, stress and mood, diet and activity, and physiological factors like iron levels, thyroid function or blood sugar — sometimes including the effects of current medication.",
         practitionerLooksAt:
           "A doctor typically asks how long it has been going on, your sleep pattern, mood, diet and stress, and may consider blood tests or a medication review to understand what's contributing.",
+        approaches:
+          "Depending on what's found, conventional care may draw on sleep-focused support (including a structured talking-therapy approach for insomnia), addressing any underlying physical contributor, lifestyle change and a review of current medicines — with anything prescribed decided and monitored by a clinician.",
         whoYouSee:
           "A GP first, who may refer to a specialist (such as an endocrinologist or a sleep service) if something specific needs closer attention.",
       },
@@ -82,8 +86,12 @@ const concerns: Concern[] = [
         oneLiner: "Reads it as a pattern of energy and balance.",
         worldview:
           "Traditional Chinese Medicine understands the body as a system of flowing energy (qi) and balancing forces (yin and yang). Persistent tiredness with poor sleep is often described in terms of depleted or “stuck” energy and an imbalance between activity and rest. Names like the Spleen, Heart and Kidney are used as functional concepts — patterns of how the body behaves — rather than the organs alone.",
+        contributors:
+          "It tends to link ongoing tiredness and broken sleep to depleted or “stuck” qi and to imbalance among the Spleen, Heart and Kidney concepts — often associated with overwork, irregular eating and too little genuine rest.",
         practitionerLooksAt:
           "A TCM practitioner gathers a detailed picture through questions and by observing things like the tongue and pulse, to identify the individual “pattern” they understand to be present.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture, tui na (a form of massage), gentle movement such as tai chi or qi gong, and dietary and lifestyle guidance.",
         whoYouSee:
           "A practitioner registered with a recognised body (for acupuncture, a member of the British Acupuncture Council), who tailors their approach to you.",
       },
@@ -91,8 +99,12 @@ const concerns: Concern[] = [
         oneLiner: "Frames it through constitution and balance.",
         worldview:
           "Ayurveda is an ancient system that understands health as balance between three functional energies — vata, pitta and kapha (the doshas). Low energy and unsettled sleep are often interpreted as a disturbance of this balance, shaped by your individual constitution (prakriti), daily rhythm and digestion (described as “agni”, a kind of digestive fire). It is a worldview about patterns and routine, not a set of fixes.",
+        contributors:
+          "It tends to relate low energy and unsettled sleep to imbalance among the doshas relative to your constitution, to weak or irregular digestion (agni), and to a daily rhythm that has drifted out of step.",
         practitionerLooksAt:
           "An Ayurvedic practitioner explores your constitution, routine, digestion and the qualities of your sleep to understand where balance may have shifted.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around diet, daily routine (dinacharya), sleep and waking rhythm, and grounding practices such as gentle yoga, breathing and meditation.",
         whoYouSee:
           "A qualified, registered Ayurvedic practitioner who works with your whole picture and lifestyle.",
       },
@@ -118,8 +130,12 @@ const concerns: Concern[] = [
         oneLiner: "Considers mind and body together, with evidence-based support.",
         worldview:
           "Conventional medicine sees stress and anxiety as real experiences with both psychological and physical sides — affecting sleep, concentration, the gut and the body's stress response. It draws on talking therapies and, where appropriate, other support, guided by what research shows tends to help.",
+        contributors:
+          "It tends to consider contributors such as life pressures and circumstances, sleep, the body's stress response, and sometimes physical factors like thyroid function or caffeine — looking at mind and body together.",
         practitionerLooksAt:
           "A GP or therapist explores how you're feeling, for how long, how it affects daily life, and whether anything physical might be involved, to understand the fuller picture.",
+        approaches:
+          "It commonly draws on talking therapies (such as a structured, evidence-based approach like CBT), guided self-help and lifestyle support, with medication considered only where appropriate and prescribed and reviewed by a clinician.",
         whoYouSee:
           "A GP, or a registered talking-therapy practitioner (such as a counsellor or psychologist), who can discuss options with you.",
       },
@@ -127,16 +143,24 @@ const concerns: Concern[] = [
         oneLiner: "Sees it as the movement and balance of energy.",
         worldview:
           "In Traditional Chinese Medicine, stress and a busy mind are often described as energy that has become “stuck” or out of balance — frequently linked to the Liver's role in the smooth flow of qi, and the Heart's connection to the mind (shen). These are functional concepts about how body and emotions move together.",
+        contributors:
+          "It tends to describe stress and a busy mind as qi that has become “stuck”, often linked to the Liver's role in smooth flow and the Heart's connection to the mind (shen).",
         practitionerLooksAt:
           "A TCM practitioner builds a detailed individual picture — including questions, tongue and pulse — to recognise the pattern they understand to be present.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture, tui na massage, calming movement such as tai chi or qi gong, and lifestyle guidance aimed at supporting smoother flow.",
         whoYouSee: "A practitioner registered with a recognised body, who tailors their approach to you.",
       },
       ayurveda: {
         oneLiner: "Relates it to vata and daily rhythm.",
         worldview:
           "Ayurveda often relates a restless, overwhelmed mind to an excess of vata — the energy associated with movement and change — and to disruption of natural daily and seasonal rhythms. Balance is understood to come from steadiness, routine and grounding, interpreted through your individual constitution.",
+        contributors:
+          "It tends to relate a restless, overwhelmed mind to excess vata and to disrupted daily and seasonal rhythm, interpreted through your individual constitution.",
         practitionerLooksAt:
           "An Ayurvedic practitioner looks at your constitution, routine, sleep and digestion to understand where things may have become unsettled.",
+        approaches:
+          "An Ayurvedic practitioner tailors grounding, steadying suggestions to your constitution — commonly around regular routine, calming diet, and practices such as yoga, breathing and meditation.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner who considers your whole lifestyle.",
       },
     },
@@ -162,24 +186,36 @@ const concerns: Concern[] = [
         oneLiner: "Investigates the gut and its many influences.",
         worldview:
           "Conventional medicine approaches digestive symptoms by considering the gut itself alongside diet, stress and how the bowel functions. It uses history, examination and — where indicated — tests to rule things in or out, guided by evidence about what tends to help.",
+        contributors:
+          "It tends to look at contributors such as diet, fibre and fluid, eating patterns, stress and the natural workings of the bowel — and, where indicated, specific conditions to rule in or out.",
         practitionerLooksAt:
           "A doctor asks about your symptoms, diet, patterns and triggers, and may suggest simple investigations to understand what's going on.",
+        approaches:
+          "It may draw on dietary adjustments (sometimes with a dietitian), addressing stress and routine, simple investigations where needed, and medication where appropriate, decided with a clinician.",
         whoYouSee: "A GP first, who may involve a dietitian or gastroenterologist if needed.",
       },
       tcm: {
         oneLiner: "Centres on the Spleen and Stomach as energy concepts.",
         worldview:
           "Traditional Chinese Medicine places digestion close to the centre of health, describing it largely through the Spleen and Stomach as functional systems that “transform” food into energy. Bloating and irregularity are often read as a sign that this transforming function is out of balance.",
+        contributors:
+          "It tends to centre digestion on the Spleen and Stomach as functional systems that “transform” food into energy, reading bloating and irregularity as that function being out of balance.",
         practitionerLooksAt:
           "A TCM practitioner forms an individual picture through detailed questions and observation of tongue and pulse to identify the pattern.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, often emphasising dietary therapy and lifestyle guidance alongside acupuncture or tui na massage.",
         whoYouSee: "A practitioner registered with a recognised body.",
       },
       ayurveda: {
         oneLiner: "Looks to “agni”, the digestive fire.",
         worldview:
           "Digestion is central in Ayurveda, described through “agni” — a digestive-fire concept — and the balance of the doshas. Discomfort is often interpreted as agni being too weak, too strong or irregular, shaped by routine, the qualities of food, and constitution.",
+        contributors:
+          "It tends to relate digestive discomfort to the state of “agni” (digestive fire) — too weak, too strong or irregular — and to dosha balance, shaped by routine and the qualities of what you eat.",
         practitionerLooksAt:
           "An Ayurvedic practitioner explores your eating routine, digestion and constitution to understand where balance may have shifted.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around eating routine, the qualities and timing of food, and daily-rhythm and lifestyle adjustments.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },
@@ -205,8 +241,12 @@ const concerns: Concern[] = [
         oneLiner: "Examines structure, movement and inflammation.",
         worldview:
           "Conventional medicine looks at persistent aches through the musculoskeletal system — muscles, joints, nerves and posture — and the role of inflammation, activity and past injury, using examination and sometimes imaging, informed by evidence.",
+        contributors:
+          "It tends to look at the musculoskeletal system — muscles, joints and nerves — alongside posture, activity levels, past injury, inflammation and sometimes deconditioning.",
         practitionerLooksAt:
           "A doctor or physiotherapist assesses where it hurts, what movements affect it, and how it limits you, to understand the cause.",
+        approaches:
+          "It commonly draws on physiotherapy and graded movement, staying gently active, pain-management strategies, and addressing contributing factors — with referral or further tests where a specific cause needs it.",
         whoYouSee:
           "A GP or a registered physiotherapist; sometimes a specialist for specific joints or nerves.",
       },
@@ -214,8 +254,12 @@ const concerns: Concern[] = [
         oneLiner: "Describes blocked flow in the body's channels.",
         worldview:
           "Traditional Chinese Medicine often describes pain in terms of qi and blood not flowing smoothly through the body's channels (meridians) — captured in the idea that free flow is comfort and obstruction is pain. Influences like cold, damp and tension are described as affecting that flow.",
+        contributors:
+          "It tends to describe pain as qi and blood not flowing freely through the body's channels, with influences like cold, damp or tension said to affect that flow.",
         practitionerLooksAt:
           "A TCM practitioner maps your individual pattern through questions and observation of tongue and pulse.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture, tui na massage and gentle movement such as tai chi or qi gong aimed at supporting freer, more comfortable movement.",
         whoYouSee:
           "A practitioner registered with a recognised body (for acupuncture, the British Acupuncture Council).",
       },
@@ -223,8 +267,12 @@ const concerns: Concern[] = [
         oneLiner: "Often relates discomfort to vata and balance.",
         worldview:
           "Ayurveda frequently relates aches and stiffness to an excess of vata — the energy of movement — and to the balance of the doshas, interpreted through your constitution, routine and the qualities (such as cold or dryness) thought to influence the body.",
+        contributors:
+          "It tends to relate aches and stiffness to excess vata — the energy of movement — and to dosha balance, interpreted through your constitution and qualities such as cold or dryness.",
         practitionerLooksAt:
           "An Ayurvedic practitioner considers your constitution, routine and the nature of the discomfort.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around warming, grounding routine, oil-based massage, and gentle yoga or movement.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },
@@ -248,23 +296,35 @@ const concerns: Concern[] = [
         oneLiner: "Looks at the endocrine system and the cycle.",
         worldview:
           "Conventional medicine understands hormonal and menstrual changes through the endocrine system and the menstrual cycle, considering life stage, patterns and overall health, using history and — where helpful — tests, guided by evidence.",
+        contributors:
+          "It tends to consider the endocrine system and menstrual cycle in the context of life stage, patterns and overall health — using history and, where helpful, tests.",
         practitionerLooksAt:
           "A doctor asks about your cycle, its timing, and how symptoms affect you, and may consider tests to understand the picture.",
+        approaches:
+          "It may draw on tracking and monitoring, investigations where indicated, lifestyle support, specialist referral, and treatment options discussed and prescribed by a clinician where appropriate.",
         whoYouSee: "A GP, who may refer to a gynaecologist or endocrinologist where appropriate.",
       },
       tcm: {
         oneLiner: "Reads cycles through balance and flow.",
         worldview:
           "Traditional Chinese Medicine understands cyclical and hormonal changes through the balance of yin and yang and the smooth flow of qi and blood, often referencing the Kidney and Liver as functional concepts tied to development, rhythm and reproduction.",
+        contributors:
+          "It tends to read cyclical and hormonal change through the balance of yin and yang and the smooth flow of qi and blood, often referencing the Kidney and Liver concepts tied to rhythm and development.",
         practitionerLooksAt:
           "A TCM practitioner builds an individual picture, including the qualities of the cycle, through questions and observation.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture and dietary and lifestyle guidance, often working with the rhythm of the cycle.",
         whoYouSee: "A practitioner registered with a recognised body.",
       },
       ayurveda: {
         oneLiner: "Interprets cycles through the doshas.",
         worldview:
           "Ayurveda interprets cyclical and hormonal changes through the rhythm of the doshas — different phases of the cycle and of life being associated with vata, pitta or kapha qualities — understood in the context of your constitution and routine.",
+        contributors:
+          "It tends to interpret cyclical and hormonal change through the rhythm of the doshas across phases of the cycle and of life, understood in the context of your constitution and routine.",
         practitionerLooksAt: "An Ayurvedic practitioner considers your constitution, cycle and daily rhythm.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution and cycle — commonly around daily and seasonal routine, diet, and steadying practices such as yoga and breathing.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },
@@ -289,24 +349,36 @@ const concerns: Concern[] = [
         oneLiner: "Identifies the headache type and its triggers.",
         worldview:
           "Conventional medicine approaches recurring headaches by distinguishing different types, looking at triggers, sleep, hydration, posture and stress, and watching for any features that need closer attention — guided by evidence about what helps.",
+        contributors:
+          "It tends to distinguish the type of headache and look at triggers such as sleep, hydration, posture, screens and stress — watching for any features needing closer attention, including overuse of pain relief.",
         practitionerLooksAt:
           "A doctor asks about the pattern, location, triggers and any warning features, to understand the type and what's contributing.",
+        approaches:
+          "It commonly draws on identifying the headache type, managing triggers (often with a headache diary), lifestyle adjustments, and medication where appropriate, decided with a clinician — with referral for certain patterns.",
         whoYouSee: "A GP first, who may refer to a neurologist for certain patterns.",
       },
       tcm: {
         oneLiner: "Locates patterns of flow and balance.",
         worldview:
           "Traditional Chinese Medicine often interprets headaches by their location and quality, relating them to the flow of qi and blood and to functional concepts such as the Liver, and to influences like tension, heat or damp.",
+        contributors:
+          "It tends to interpret headaches by their location and quality, relating them to the flow of qi and blood and to concepts such as the Liver, and to influences like tension, heat or damp.",
         practitionerLooksAt:
           "A TCM practitioner identifies the individual pattern through detailed questions and observation of tongue and pulse.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture alongside dietary and lifestyle guidance aimed at easing tension and supporting flow.",
         whoYouSee: "A practitioner registered with a recognised body.",
       },
       ayurveda: {
         oneLiner: "Relates headaches to dosha balance.",
         worldview:
           "Ayurveda often relates headaches to an imbalance among the doshas — for example heat-related (pitta), tension or dryness (vata), or heaviness (kapha) qualities — interpreted through your constitution, routine and digestion.",
+        contributors:
+          "It tends to relate headaches to dosha imbalance — for example heat (pitta), tension or dryness (vata), or heaviness (kapha) qualities — interpreted through your constitution, routine and digestion.",
         practitionerLooksAt:
           "An Ayurvedic practitioner considers your constitution, routine and the nature of the headaches.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around regular routine, diet, and calming practices such as breathing, meditation and gentle yoga.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },
@@ -330,23 +402,35 @@ const concerns: Concern[] = [
         oneLiner: "Treats mood as real, with evidence-based support.",
         worldview:
           "Conventional medicine recognises low mood as a genuine health experience with psychological, social and physical dimensions, drawing on talking therapies and other support shown by research to help, while also considering physical contributors such as sleep or thyroid.",
+        contributors:
+          "It tends to consider psychological, social and physical dimensions together — including sleep, life circumstances, and physical contributors such as thyroid function.",
         practitionerLooksAt:
           "A GP or therapist explores how you've been feeling, for how long, and how it affects daily life, sometimes alongside simple physical checks.",
+        approaches:
+          "It commonly draws on talking therapies, lifestyle support (activity, routine, daylight and connection) and social support — with medication considered only where appropriate and prescribed and reviewed by a clinician.",
         whoYouSee: "A GP or a registered talking-therapy practitioner.",
       },
       tcm: {
         oneLiner: "Sees mood through energy and the mind (shen).",
         worldview:
           "Traditional Chinese Medicine often relates low mood to the smooth flow of qi and to the Heart's connection with the mind (shen), describing emotions and energy as moving together rather than separately.",
+        contributors:
+          "It tends to relate low mood to the smooth flow of qi and to the Heart's connection with the mind (shen), describing emotions and energy as moving together.",
         practitionerLooksAt:
           "A TCM practitioner forms an individual picture through questions and observation to recognise the pattern.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture, gentle movement such as tai chi or qi gong, and lifestyle guidance.",
         whoYouSee: "A practitioner registered with a recognised body.",
       },
       ayurveda: {
         oneLiner: "Links mood to balance and routine.",
         worldview:
           "Ayurveda often associates low mood and heaviness with a kapha quality, or with disrupted rhythm and digestion, understood through your individual constitution and daily routine.",
+        contributors:
+          "It tends to associate low mood and heaviness with a kapha quality, or with disrupted rhythm and digestion, understood through your individual constitution.",
         practitionerLooksAt: "An Ayurvedic practitioner looks at your routine, sleep, digestion and constitution.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around an energising daily routine, diet, and activating practices such as yoga and breathing.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },
@@ -370,24 +454,36 @@ const concerns: Concern[] = [
         oneLiner: "Looks at overall health and what supports immunity.",
         worldview:
           "Conventional medicine considers frequent minor illness in the context of sleep, stress, nutrition and overall health, looking for anything specific where indicated, and leaning on evidence about what supports normal immune function.",
+        contributors:
+          "It tends to consider everyday factors such as sleep, nutrition, stress and activity — and lifestyle factors like smoking or excess alcohol — looking for anything specific where a pattern needs it.",
         practitionerLooksAt:
           "A doctor asks about how often you're unwell, your sleep, stress and lifestyle, to understand what's contributing.",
+        approaches:
+          "It commonly draws on supporting the basics (sleep, nutrition, moderate activity, not smoking, moderating alcohol) and vaccination where relevant, with investigation if frequent or unusual infections need it.",
         whoYouSee: "A GP, who may investigate further if a pattern needs it.",
       },
       tcm: {
         oneLiner: "Describes a protective energy at the surface.",
         worldview:
           "Traditional Chinese Medicine describes resilience partly through “wei qi” — a protective energy understood to defend the body's surface — and links recurrent illness to the balance of qi and to the Spleen and Lung as functional concepts.",
+        contributors:
+          "It tends to describe resilience partly through “wei qi” — a protective energy at the body's surface — linking frequent illness to the balance of qi and to the Spleen and Lung concepts.",
         practitionerLooksAt:
           "A TCM practitioner builds an individual picture through questions and observation of tongue and pulse.",
+        approaches:
+          "A registered practitioner tailors their approach to the pattern, and may draw on acupuncture, dietary therapy and lifestyle guidance aimed at supporting everyday resilience.",
         whoYouSee: "A practitioner registered with a recognised body.",
       },
       ayurveda: {
         oneLiner: "Connects resilience to “ojas” and digestion.",
         worldview:
           "Ayurveda relates resilience to a concept called “ojas” — understood as a vital essence supported by good digestion (agni), rest and routine — and interprets frequent illness through the balance of the doshas and your constitution.",
+        contributors:
+          "It tends to relate resilience to “ojas” — a vital essence supported by good digestion (agni), rest and routine — interpreting frequent illness through dosha balance and your constitution.",
         practitionerLooksAt:
           "An Ayurvedic practitioner considers your digestion, routine, rest and constitution.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around nourishing diet, supportive daily and seasonal routine, rest, and practices such as yoga and breathing.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },
@@ -411,23 +507,35 @@ const concerns: Concern[] = [
         oneLiner: "Starts from physiology and evidence.",
         worldview:
           "Conventional (Western) medicine understands the body through its physical systems and processes, and builds its approach on evidence — findings tested across large groups of people. It uses your history, examination and, where helpful, tests to understand what's happening.",
+        contributors:
+          "It tends to start from your body's physical systems and your history, looking for measurable or observable contributors and weighing them against evidence.",
         practitionerLooksAt:
           "A doctor gathers your story and any relevant signs to understand the cause and what tends to help.",
+        approaches:
+          "It draws on history, examination and, where helpful, tests to understand what's happening, then tailors evidence-based options — including referral to a specialist when needed.",
         whoYouSee: "A GP first, who can refer on to a specialist when needed.",
       },
       tcm: {
         oneLiner: "Reads the body as flowing energy in balance.",
         worldview:
           "Traditional Chinese Medicine understands health as the smooth flow and balance of energy (qi) and the forces of yin and yang, using functional concepts — like organ-systems and patterns — to describe how the body behaves as a whole.",
+        contributors:
+          "It tends to read whatever you're experiencing as part of the overall flow and balance of qi and the forces of yin and yang, described through functional patterns.",
         practitionerLooksAt:
           "A TCM practitioner builds an individual picture through detailed questions and observation of tongue and pulse.",
+        approaches:
+          "A registered practitioner tailors their approach to the individual pattern, and may draw on acupuncture, tui na massage, movement practices and dietary and lifestyle guidance.",
         whoYouSee: "A practitioner registered with a recognised body.",
       },
       ayurveda: {
         oneLiner: "Understands health as balance of the doshas.",
         worldview:
           "Ayurveda understands health as a balance between three functional energies — vata, pitta and kapha — shaped by your individual constitution, digestion and daily rhythm. It is a worldview about patterns and routine.",
+        contributors:
+          "It tends to interpret what you're experiencing through the balance of the doshas, your constitution, digestion and daily rhythm.",
         practitionerLooksAt: "An Ayurvedic practitioner considers your constitution, routine and digestion.",
+        approaches:
+          "An Ayurvedic practitioner tailors suggestions to your constitution — commonly around diet, daily routine, and practices such as yoga, breathing and meditation.",
         whoYouSee: "A qualified, registered Ayurvedic practitioner.",
       },
     },

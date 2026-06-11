@@ -22,7 +22,9 @@ export const concerns = activePack.concerns;
 
 export const LENS_SECTIONS = {
   worldview: "How this tradition sees it",
+  contributors: "What this tradition links it to",
   practitionerLooksAt: "What a practitioner looks at",
+  approaches: "The kinds of approaches it draws on",
   whoYouSee: "Who you'd see",
   whatToExpect: "What a first visit looks like",
   evidenceAndRegulation: "Regulation & evidence",

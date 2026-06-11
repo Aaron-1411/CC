@@ -10,8 +10,18 @@ export type Lens = {
   oneLiner: string;
   /** "How this tradition sees it" — worldview only, never a treatment. */
   worldview: string;
+  /** "What this tradition links it to" — the tradition's general explanatory
+   *  model for likely contributors. NEVER a personal diagnosis or cause-claim
+   *  about the reader; framed as how the tradition tends to think. Optional so
+   *  packs can adopt it gradually without breaking. */
+  contributors?: string;
   /** "What a practitioner looks at" — the assessment lens. */
   practitionerLooksAt: string;
+  /** "The kinds of approaches it draws on" — categories of approach a
+   *  registered practitioner tailors. NEVER a named remedy, herb, supplement,
+   *  dose, or any treats/cures/works claim; always routes to a qualified human.
+   *  Optional so packs can adopt it gradually without breaking. */
+  approaches?: string;
   /** "Who you'd see" — practitioner type, always registered/qualified. */
   whoYouSee: string;
 };
