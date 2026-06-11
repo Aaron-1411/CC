@@ -24,48 +24,63 @@
 
   var TS = '2026-06-11T00:00:00.000Z';
 
-  /** @type {Project[]} — real projects, spread across statuses/priorities. */
+  // Optional presentational extras (domain, techTags, needs, repoFolder,
+  // repoOverride, localPath) live alongside the typed Project core so the
+  // existing tile/drawer behaviour is preserved. The typed fields are the
+  // contract; extras are additive metadata.
+  /** @type {Array<Project & {domain?:string,techTags?:string[],needs?:string[],repoFolder?:string,repoOverride?:string,localPath?:string}>} */
   var PROJECTS = [
-    {
-      id: 'personal-hub',
-      name: 'Personal Hub',
-      description: 'Personal AI Development Command Centre — the management layer for a virtual AI software company. Projects, tool stack, skills, agents, prompts and project memory.',
-      status: 'building',
-      priority: 'critical',
-      quickLaunchUrl: 'https://aaron-projects-hub.pages.dev/workspace',
-      createdAt: TS,
-      updatedAt: TS,
-    },
-    {
-      id: 'inkspector',
-      name: 'Inkspector',
-      description: 'Tattoo artist site for Jordan Mitchell, London. Portfolio gallery, booking form with admin dashboard, aftercare guides.',
-      status: 'testing',
-      priority: 'high',
-      quickLaunchUrl: 'https://inkspector-app.pages.dev',
-      createdAt: TS,
-      updatedAt: TS,
-    },
-    {
-      id: 'platespin',
-      name: 'PlateSpin',
-      description: 'Spin a wheel of your cuisines, set location + dietary needs, get matched to nearby spots. Free, no login.',
-      status: 'building',
-      priority: 'high',
-      quickLaunchUrl: 'https://platespin-app.pages.dev',
-      createdAt: TS,
-      updatedAt: TS,
-    },
-    {
-      id: 'moneymind',
-      name: 'MoneyMind UK',
-      description: 'Free UK money & rights course — 23 modules, 4 tiers. Lessons, quizzes, calculators, quests and an AI tutor.',
-      status: 'live',
-      priority: 'medium',
-      quickLaunchUrl: 'https://moneymind-uk-app.pages.dev',
-      createdAt: TS,
-      updatedAt: TS,
-    },
+    { id:'personal-hub', name:'⌘ Personal Hub', description:'Personal AI Development Command Centre — the management layer for a virtual AI software company. Projects, tool stack, skills, agents, prompts and project memory.',
+      status:'building', priority:'critical', quickLaunchUrl:'https://aaron-projects-hub.pages.dev/workspace', createdAt:TS, updatedAt:TS,
+      domain:'Meta', techTags:['Vanilla JS','CF Pages'], needs:['ui','design','dashboard'], repoFolder:'dashboard' },
+    { id:'ecommerce', name:'🛒 E-Commerce Deep Dive', description:'13-pillar ecommerce brand audit. Paste any URL, get an AI gap analysis → Word report, PowerPoint deck, RAG dashboard.',
+      status:'live', priority:'medium', quickLaunchUrl:'https://ecommerce-deep-dive-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Analysis & Data', techTags:['Next.js','Gemini','CF Pages'], needs:['slides','writing','branding','redesign'], repoFolder:'ecommerce-deep-dive' },
+    { id:'digital-depth', name:'🔍 Digital Depth Dive', description:'Website analysis toolkit. AI visibility, keyword gaps, lead finder, content remix and landing-page AI.',
+      status:'live', priority:'low', quickLaunchUrl:'https://digital-depth-dive-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Analysis & Data', techTags:['React','TS','CF Pages'], needs:['writing','marketing','redesign','ui'], repoFolder:'digital-depth-dive' },
+    { id:'open-eyes', name:'👁️ Open Eyes Data', description:'Public data transparency dashboard. Surfaces government datasets, contracts and records in one searchable UI.',
+      status:'live', priority:'low', quickLaunchUrl:'https://open-eyes-data-app.mraaronmanu.workers.dev', createdAt:TS, updatedAt:TS,
+      domain:'Analysis & Data', techTags:['TanStack','TS','CF Workers'], needs:['ui','redesign','design','dashboard'], repoFolder:'open-eyes-data' },
+    { id:'wealth', name:'💰 Wealth Companion', description:'Personal finance & wealth management. Track goals, assets and financial milestones in one place.',
+      status:'live', priority:'low', quickLaunchUrl:'https://wealth-companion-app.mraaronmanu.workers.dev', createdAt:TS, updatedAt:TS,
+      domain:'Finance', techTags:['TanStack','TS','CF Workers'], needs:['ui','redesign','design','dashboard'], repoFolder:'wealth-companion' },
+    { id:'isa', name:'📈 ISA Platform', description:'UK ISA investment tracker. Live prices, portfolio analytics, risk metrics, seasonality and fundamentals.',
+      status:'live', priority:'medium', quickLaunchUrl:'https://isa-platform.mraaronmanu.workers.dev', createdAt:TS, updatedAt:TS,
+      domain:'Finance', techTags:['Next.js 16','Turso','CF Pages'], needs:['ui','redesign','design','mobile'], repoFolder:'isa-investment-platform' },
+    { id:'pension', name:'💷 Pension Finder UK', description:'Find lost workplace pensions, track all pots in one dashboard, get plain-English retirement projections.',
+      status:'live', priority:'low', quickLaunchUrl:'https://pension-finder-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Finance', techTags:['Next.js','Recharts','CF Pages'], needs:['ui','redesign','design','dashboard'], repoFolder:'pension-finder-uk' },
+    { id:'moneymind', name:'🧠 MoneyMind UK', description:'Free UK money & rights course — 23 modules, 4 tiers. Lessons, quizzes, calculators, quests and an AI tutor.',
+      status:'live', priority:'medium', quickLaunchUrl:'https://moneymind-uk-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Finance', techTags:['React','Vite','CF Pages'], needs:['ui','redesign','branding','writing','mobile'], repoFolder:'moneymind-uk' },
+    { id:'tastybot', name:'🤖 Tastybot', description:'Trading bot dashboard for TastyTrade. Backtests, position management and strategy execution.',
+      status:'live', priority:'low', quickLaunchUrl:'https://tastybot-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Finance', techTags:['React','Vite','CF Pages'], needs:['ui','redesign','design','dashboard'], repoFolder:'tastybot' },
+    { id:'quant', name:'📊 Tr4d3 · Quant Desk', description:'12-module quant analysis desk — technicals, fundamentals, factors, backtests, options, portfolio optimiser, macro. Analysis-only.',
+      status:'testing', priority:'high', quickLaunchUrl:'https://github.com/Aaron-1411/quant-desk', createdAt:TS, updatedAt:TS,
+      domain:'Finance', techTags:['Python','FastAPI','React'], needs:['ui','design','redesign','dashboard'], repoFolder:'', repoOverride:'https://github.com/Aaron-1411/quant-desk', localPath:'~/Desktop/quant-desk' },
+    { id:'get-settld', name:'🏡 Get Settld', description:'Free first-time-buyer toolkit. Affordability checks, area research, property valuation and viewing tools.',
+      status:'live', priority:'low', quickLaunchUrl:'https://get-settld-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Property', techTags:['React','TS','CF Pages'], needs:['ui','redesign','branding','mobile'], repoFolder:'get-settld' },
+    { id:'lease-guard', name:'🏠 Lease Guard', description:'Lease management & tenant protection. Understand your rights, review clauses and track key dates.',
+      status:'live', priority:'low', quickLaunchUrl:'https://lease-guard-app.mraaronmanu.workers.dev', createdAt:TS, updatedAt:TS,
+      domain:'Property', techTags:['TanStack','TS','CF Workers'], needs:['ui','redesign','writing'], repoFolder:'lease-guard' },
+    { id:'whole-health', name:'🧭 Whole Health Compass', description:'White-label patient-education tool. Plain-English concern → practitioner-ready summary across Western/TCM/Ayurveda.',
+      status:'live', priority:'medium', quickLaunchUrl:'https://whole-health-compass-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Health', techTags:['React','Vite','CF Pages'], needs:['ui','redesign','branding','design'], repoFolder:'whole-health-compass' },
+    { id:'lifedash', name:'⚡ LifeDash', description:'Gamified personal life tracker — Body, Learn, Mind, Experience. XP, streaks, sleep, mood and habits.',
+      status:'live', priority:'low', quickLaunchUrl:'https://lifedash-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Health', techTags:['React','CF Pages'], needs:['ui','redesign','mobile','motion','design'], repoFolder:'lifedash' },
+    { id:'gymseek', name:'🏋️ GymSeek', description:'AI gym finder. Enter location, budget and preferences → ranked results with pricing and facilities.',
+      status:'live', priority:'low', quickLaunchUrl:'https://gymseek-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Health', techTags:['Static','CF Functions'], needs:['ui','redesign','branding','mobile'], repoFolder:'gymseek' },
+    { id:'platespin', name:'🍽️ PlateSpin', description:'Spin a wheel of your cuisines, set location + dietary needs, get matched to nearby spots. Free, no login.',
+      status:'building', priority:'high', quickLaunchUrl:'https://platespin-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Food & Lifestyle', techTags:['React','Vite','CF Pages'], needs:['design','ui','redesign','mobile','motion','branding'], repoFolder:'platespin' },
+    { id:'inkspector', name:'🖋 Inkspector', description:'Tattoo artist site for Jordan Mitchell, London. Portfolio gallery, booking form with admin dashboard, aftercare guides.',
+      status:'testing', priority:'high', quickLaunchUrl:'https://inkspector-app.pages.dev', createdAt:TS, updatedAt:TS,
+      domain:'Food & Lifestyle', techTags:['Next.js','Supabase','CF Pages'], needs:['design','ui','redesign','images','branding','motion'], repoFolder:'inkspector' },
   ];
 
   /** @type {Prompt[]} — real prompts covering all four categories. */
@@ -124,38 +139,86 @@
       createdAt: TS,
       updatedAt: TS,
     },
+    {
+      id: 'p-proxy',
+      title: 'Add a keyless API proxy',
+      body: 'Add a Cloudflare Pages Function that proxies <UPSTREAM API> so the API key never ships to the client. Include edge caching with a sensible TTL, a fallback mirror, and graceful degradation (return empty + degraded:true, never a 5xx) on upstream failure.',
+      category: 'development',
+      favourite: false,
+      createdAt: TS,
+      updatedAt: TS,
+    },
+    {
+      id: 'p-debug',
+      title: 'Debug a failing build',
+      body: 'The build is failing. Read the full error, find the root cause (don’t bypass with --no-verify or by disabling checks), fix it properly, re-run the build to confirm green, and explain in one line what was wrong.',
+      category: 'development',
+      favourite: false,
+      createdAt: TS,
+      updatedAt: TS,
+    },
+    {
+      id: 'p-launch',
+      title: 'Launch thread',
+      body: 'Write a launch thread (6–8 posts) for <PRODUCT>. Hook hard on post 1, show the problem, the build, a demo moment, and end with a clear CTA. Punchy, no emojis unless they earn their place.',
+      category: 'marketing',
+      favourite: false,
+      createdAt: TS,
+      updatedAt: TS,
+    },
+    {
+      id: 'p-repurpose',
+      title: 'Repurpose to social',
+      body: 'Repurpose this <ARTICLE/VIDEO> into: 1 LinkedIn post, 1 X thread, and 3 short hooks. Keep each native to its platform. Lead with the most counterintuitive insight.',
+      category: 'content',
+      favourite: false,
+      createdAt: TS,
+      updatedAt: TS,
+    },
   ];
 
-  /** @type {Skill[]} — real installed skills (~/.claude/skills), not placeholders. */
+  // Real installed skills (~/.claude/skills), catalogued in ~/skills-library/README.md.
+  // Typed core = id/name/description/tags; cat/invoke/icon are optional extras the
+  // Skills view uses for category filtering and the invoke chip.
+  /** @type {Array<Skill & {cat?:string,invoke?:string,icon?:string}>} */
   var SKILLS = [
-    {
-      id: 'atelier',
-      name: 'Atelier',
-      description: 'Signature design skill — sleek, high-tech, casual-expert. Ships polished public sites/apps with an outreach-tracking backend.',
-      tags: ['design', 'ui', 'frontend', 'redesign', 'web', 'dashboard', 'motion'],
-      sourceLink: 'https://github.com/Aaron-1411/CC',
-    },
-    {
-      id: 'impeccable',
-      name: 'Impeccable',
-      description: 'Design + 23 commands (polish, audit, critique, animate…) with 41 deterministic anti-slop detectors and live browser iteration.',
-      tags: ['design', 'ui', 'redesign', 'frontend', 'motion', 'components'],
-      sourceLink: 'https://github.com/Aaron-1411/CC',
-    },
-    {
-      id: 'ui-ux-pro-max',
-      name: 'UI/UX Pro Max',
-      description: 'Design-intelligence DB: 50+ styles, 161 palettes, 57 font pairings, 25 chart types across 10 stacks. Plan, build, review and fix UI/UX.',
-      tags: ['ui', 'design', 'components', 'mobile', 'web', 'frontend'],
-      sourceLink: 'https://github.com/Aaron-1411/CC',
-    },
-    {
-      id: 'stop-slop',
-      name: 'Stop Slop',
-      description: 'Removes AI writing patterns from prose. Use when drafting, editing or reviewing text to eliminate predictable AI tells.',
-      tags: ['writing'],
-      sourceLink: 'https://github.com/Aaron-1411/CC',
-    },
+    // ── Design — full frontend build ──
+    { id:'atelier', name:'Atelier', invoke:'atelier', icon:'🎨', cat:'build', tags:['design','ui','frontend','redesign','web','dashboard','motion'], description:'Your signature design skill — sleek, high-tech, casual-expert. Ships polished public sites/apps with an outreach-tracking backend.' },
+    { id:'impeccable', name:'Impeccable', invoke:'impeccable', icon:'✨', cat:'build', tags:['design','ui','redesign','frontend','motion','components'], description:'Design + 23 commands (polish, audit, critique, animate, bolder, quieter…) with 41 deterministic anti-slop detectors and live browser iteration.' },
+    { id:'ui-ux-pro-max', name:'UI/UX Pro Max', invoke:'ui-ux-pro-max', icon:'🧠', cat:'build', tags:['ui','design','components','mobile','web','frontend'], description:'Design-intelligence DB: 50+ styles, 161 palettes, 57 font pairings, 25 chart types across 10 stacks. Plan, build, review and fix UI/UX.' },
+    { id:'taste-skill', name:'Design Taste (Frontend)', invoke:'taste-skill', icon:'🎯', cat:'build', tags:['design','frontend','redesign','web','ui'], description:'Anti-slop frontend for landing pages, portfolios and redesigns. Reads the brief, infers direction, audit-first, strict pre-flight check.' },
+    { id:'emil-design-eng', name:'Emil Design Eng', invoke:'emil-design-eng', icon:'🪄', cat:'build', tags:['ui','design','motion','components','frontend'], description:"Emil Kowalski's philosophy on UI polish, component design, animation decisions and the invisible details that make software feel great." },
+    { id:'soft-skill', name:'High-End Visual Design', invoke:'soft-skill', icon:'💎', cat:'build', tags:['design','ui','web','motion'], description:'Design like a high-end agency — exact fonts, spacing, shadows, cards and animations that feel expensive. Blocks the cheap AI defaults.' },
+    { id:'redesign-skill', name:'Redesign Existing Projects', invoke:'redesign-skill', icon:'♻️', cat:'build', tags:['redesign','design','ui','web'], description:'Upgrade existing sites and apps to premium quality. Audits current design, kills generic AI patterns, never breaks functionality.' },
+    // ── Design — style-specific looks ──
+    { id:'minimalist-skill', name:'Minimalist UI', invoke:'minimalist-skill', icon:'⬜', cat:'style', tags:['design','ui','web','redesign'], description:'Clean editorial interfaces — warm monochrome, typographic contrast, flat bento grids. No gradients, no heavy shadows.' },
+    { id:'brutalist-skill', name:'Industrial Brutalist UI', invoke:'brutalist-skill', icon:'🏗️', cat:'style', tags:['design','ui','web','dashboard'], description:'Swiss print × military terminal. Rigid grids, extreme type contrast, analog degradation — for data-heavy dashboards that feel declassified.' },
+    { id:'gpt-tasteskill', name:'GPT Taste (GSAP Motion)', invoke:'gpt-tasteskill', icon:'🌀', cat:'style', tags:['design','ui','web','motion','frontend'], description:'Elite UX/UI & GSAP motion engineer — randomized layouts, AIDA structure, editorial type, scroll pinning/stacking/scrubbing.' },
+    { id:'stitch-skill', name:'Stitch Design Taste', invoke:'stitch-skill', icon:'🧵', cat:'style', tags:['design','ui','mobile','motion'], description:'Semantic design-system skill for Google Stitch. Generates DESIGN.md files enforcing premium, anti-generic UI standards.' },
+    { id:'taste-skill-v1', name:'Design Taste v1 (Legacy)', invoke:'taste-skill-v1', icon:'🗂️', cat:'style', tags:['design','frontend','redesign','web','ui'], description:'The original v1 taste-skill, preserved for projects that depend on its exact behaviour. Use only for backward compatibility.' },
+    // ── Design — image generation ──
+    { id:'imagegen-frontend-web', name:'Imagegen — Web', invoke:'imagegen-frontend-web', icon:'🖼️', cat:'image', tags:['images','design','web','marketing'], description:'Premium website design references — ONE horizontal image per section (8 sections → 8 images), varied heroes, one consistent palette.' },
+    { id:'imagegen-frontend-mobile', name:'Imagegen — Mobile', invoke:'imagegen-frontend-mobile', icon:'📱', cat:'image', tags:['images','design','mobile'], description:'Premium app-native screen concepts inside clean phone mockups (iOS/Android). Generates images only — does not write code.' },
+    { id:'image-to-code-skill', name:'Image to Code', invoke:'image-to-code-skill', icon:'🎛️', cat:'image', tags:['design','frontend','web','images'], description:'Generates the design image first, deeply analyses it, then codes the site to match. Codex-tuned, large readable section images.' },
+    { id:'brandkit', name:'Brand Kit', invoke:'brandkit', icon:'📦', cat:'image', tags:['branding','images','design'], description:'Premium brand-guideline boards, logo systems, identity decks and visual-world presentations. Minimalist, cinematic, editorial.' },
+    // ── Brand & marketing (ckm: plugin) ──
+    { id:'design', name:'CKM · Design', invoke:'design', icon:'🖌️', cat:'brand', tags:['design','branding','images','slides','ui'], description:'Logos (55 styles), corporate identity program (50 deliverables), HTML presentations, banners, icons and social photos.' },
+    { id:'brand', name:'CKM · Brand', invoke:'brand', icon:'🏷️', cat:'brand', tags:['branding','marketing','writing'], description:'Brand voice, visual identity, messaging frameworks, asset management and brand consistency. For branded content and style guides.' },
+    { id:'banner-design', name:'CKM · Banner Design', invoke:'banner-design', icon:'🪧', cat:'brand', tags:['images','branding','marketing'], description:'Banners for social, ads, web heroes and print. Multiple art directions with AI-generated visuals across 13+ styles.' },
+    { id:'design-system', name:'CKM · Design System', invoke:'design-system', icon:'🧱', cat:'brand', tags:['tokens','components','slides','design'], description:'Three-layer design tokens (primitive→semantic→component), component specs and strategic slide generation.' },
+    { id:'slides', name:'CKM · Slides', invoke:'slides', icon:'📊', cat:'brand', tags:['slides','design','writing'], description:'Strategic HTML presentations with Chart.js, design tokens, responsive layouts and copywriting formulas.' },
+    { id:'ui-styling', name:'CKM · UI Styling', invoke:'ui-styling', icon:'🧩', cat:'brand', tags:['ui','components','frontend','web'], description:'Beautiful, accessible UIs with shadcn/ui (Radix + Tailwind), utility-first styling, dark mode and canvas-based visual designs.' },
+    // ── Writing / output ──
+    { id:'stop-slop', name:'Stop Slop', invoke:'stop-slop', icon:'🧹', cat:'writing', tags:['writing'], description:'Removes AI writing patterns from prose. Use when drafting, editing or reviewing text to eliminate predictable AI tells.' },
+    { id:'output-skill', name:'Full Output Enforcement', invoke:'output-skill', icon:'📜', cat:'writing', tags:['writing'], description:'Overrides default LLM truncation. Bans placeholders, forces complete code generation and handles token-limit splits cleanly.' },
+    // ── Token efficiency & delegation (caveman plugin) ──
+    { id:'caveman', name:'Caveman', invoke:'/caveman', icon:'🪨', cat:'tokens', tags:['efficiency'], description:'Ultra-compressed mode — ~75% fewer tokens with full technical accuracy. Levels: lite, full, ultra, wenyan.' },
+    { id:'cavecrew', name:'Cavecrew', invoke:'cavecrew', icon:'🦴', cat:'tokens', tags:['delegation','efficiency'], description:'Decision guide for delegating to compressed subagents (investigator/builder/reviewer) so the main thread eats ~60% fewer tokens.' },
+    { id:'caveman-commit', name:'Caveman Commit', invoke:'/caveman-commit', icon:'✅', cat:'tokens', tags:['commit','efficiency'], description:'Ultra-compressed Conventional Commits messages. Subject ≤50 chars, body only when the why is not obvious.' },
+    { id:'caveman-review', name:'Caveman Review', invoke:'/caveman-review', icon:'🔎', cat:'tokens', tags:['review','efficiency'], description:'One-line PR review comments — location, problem, fix. Severity-tagged, no throat-clearing.' },
+    { id:'caveman-compress', name:'Caveman Compress', invoke:'/caveman-compress', icon:'🗜️', cat:'tokens', tags:['efficiency'], description:'Compress CLAUDE.md / memory files to caveman format to save input tokens. Keeps a human-readable .original.md backup.' },
+    { id:'caveman-stats', name:'Caveman Stats', invoke:'/caveman-stats', icon:'📈', cat:'tokens', tags:['efficiency'], description:'Real token usage + estimated savings for the session, read straight from the Claude Code session log.' },
+    { id:'caveman-help', name:'Caveman Help', invoke:'/caveman-help', icon:'❓', cat:'tokens', tags:['efficiency'], description:'Quick-reference card for all caveman modes, skills and commands. One-shot display, not a persistent mode.' },
   ];
 
   /** @type {ToolCard[]} — the eight Phase 0 tools; `connected` is manual config (#3). */
@@ -328,7 +391,79 @@
     return true;
   }
 
+  // Bumped when the seed catalog grows so existing partial stores get the new
+  // items. Phase A shipped an implicit v1 (4/6/4 subset); Phase 1 = full catalog.
+  var SEED_VERSION = 2;
+
+  function readWs(key) {
+    try { var raw = global.localStorage.getItem('ws:' + key); return raw ? JSON.parse(raw) : null; }
+    catch (e) { return null; }
+  }
+
+  /** Add any catalog items missing from a repo by id (never overwrites). */
+  function upsertMissing(repo, items) {
+    var have = {};
+    repo.getAll().forEach(function (x) { if (x && x.id != null) have[x.id] = true; });
+    items.forEach(function (it) { if (!have[it.id]) repo.save(it); });
+  }
+
+  /**
+   * One-time import of legacy `ws:`-prefixed data into HubStore. This is the
+   * store/migration layer (not UI), so reading localStorage here is allowed.
+   */
+  function importLegacyWs(store) {
+    var PMAP = { med: 'medium', medium: 'medium', low: 'low', high: 'high', critical: 'critical' };
+    var po = readWs('projects') || {};
+    Object.keys(po).forEach(function (id) {
+      var p = store.projects.get(id); if (!p) return; var o = po[id] || {};
+      if (o.status) p.status = o.status;
+      if (o.priority) p.priority = PMAP[o.priority] || o.priority;
+      if (o.updated) p.updatedAt = o.updated;
+      store.projects.save(p);
+    });
+    (readWs('customSkills') || []).forEach(function (s) {
+      if (!store.skills.get(s.id)) {
+        store.skills.save({ id: s.id, name: s.name, description: s.desc || s.description || '', tags: s.tags || [], sourceLink: s.source || s.sourceLink || '' });
+      }
+    });
+    (readWs('customPrompts') || []).forEach(function (p) {
+      if (!store.prompts.get(p.id)) {
+        store.prompts.save({ id: p.id, title: p.title, body: p.body || '', category: String(p.cat || p.category || 'development').toLowerCase(), favourite: !!p.fav, createdAt: TS, updatedAt: TS });
+      }
+    });
+    var pstate = readWs('promptState') || {};
+    Object.keys(pstate).forEach(function (id) {
+      var p = store.prompts.get(id);
+      if (p && pstate[id] && 'fav' in pstate[id]) { p.favourite = !!pstate[id].fav; store.prompts.save(p); }
+    });
+  }
+
+  /**
+   * Seed + migrate on load. Seeds the full catalog for new visitors, then once
+   * per SEED_VERSION bump: upserts any missing catalog items into existing
+   * (partial) stores and imports legacy ws: data. Idempotent; preserves edits.
+   * @param {Object} [store] defaults to global.HubStore
+   * @returns {boolean}
+   */
+  function migrateHub(store) {
+    store = store || global.HubStore;
+    if (!store || typeof store.isEmpty !== 'function') { return false; }
+    runSeed(store); // full catalog if the store is empty (new visitor)
+    var ver = Number(store.state.get('seedVersion', 0)) || 0;
+    if (ver < SEED_VERSION) {
+      upsertMissing(store.projects, PROJECTS);
+      upsertMissing(store.prompts, PROMPTS);
+      upsertMissing(store.skills, SKILLS);
+      upsertMissing(store.tools, TOOLS);
+      upsertMissing(store.memory, MEMORY);
+      importLegacyWs(store);
+      store.state.set('seedVersion', SEED_VERSION);
+    }
+    return true;
+  }
+
   global.HUB_SEED = HUB_SEED;
   global.runSeed = runSeed;
-  if (typeof module !== 'undefined' && module.exports) { module.exports = { runSeed: runSeed, HUB_SEED: HUB_SEED }; }
+  global.migrateHub = migrateHub;
+  if (typeof module !== 'undefined' && module.exports) { module.exports = { runSeed: runSeed, migrateHub: migrateHub, HUB_SEED: HUB_SEED, SEED_VERSION: SEED_VERSION }; }
 })(typeof window !== 'undefined' ? window : this);

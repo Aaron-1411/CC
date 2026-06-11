@@ -129,16 +129,36 @@
     auditLog: createRepository('auditLog'),
   };
 
+  // ── Key-value app state (non-entity: workspace notes, prefs, etc.) ────────
+  // A single `hub:state` object. Keeps misc UI state inside HubStore so the UI
+  // never calls localStorage directly (locked decision #1).
+  var STATE_KEY = 'state';
+  function readState() {
+    try {
+      var raw = backend.getItem(KEY_PREFIX + STATE_KEY);
+      var parsed = raw ? JSON.parse(raw) : {};
+      return (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch (e) { return {}; }
+  }
+  var stateApi = {
+    /** @param {string} k @param {*} [dflt] */
+    get: function (k, dflt) { var s = readState(); return (k in s) ? s[k] : (dflt === undefined ? null : dflt); },
+    /** @param {string} k @param {*} v @returns {*} */
+    set: function (k, v) { var s = readState(); s[k] = v; backend.setItem(KEY_PREFIX + STATE_KEY, JSON.stringify(s)); return v; },
+    /** @returns {Object} the whole state object */
+    all: function () { return readState(); },
+  };
+
   /**
-   * Serialise every repository into one backup/migration document.
-   * @returns {string} pretty JSON: { version, exportedAt, data:{...arrays} }
+   * Serialise every repository + app state into one backup/migration document.
+   * @returns {string} pretty JSON: { version, exportedAt, data:{...arrays}, state:{} }
    */
   function exportAllData() {
     var data = {};
     Object.keys(repositories).forEach(function (name) {
       data[name] = repositories[name].getAll();
     });
-    return JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), data: data }, null, 2);
+    return JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), data: data, state: readState() }, null, 2);
   }
 
   /**
@@ -155,6 +175,9 @@
         repositories[name].importAll(JSON.stringify(data[name]));
       }
     });
+    if (parsed && parsed.state && typeof parsed.state === 'object') {
+      backend.setItem(KEY_PREFIX + STATE_KEY, JSON.stringify(parsed.state));
+    }
   }
 
   /** @returns {boolean} true when every repository is empty (seed gate). */
@@ -171,6 +194,7 @@
     tools: repositories.tools,
     memory: repositories.memory,
     auditLog: repositories.auditLog,
+    state: stateApi,
     exportAllData: exportAllData,
     importAllData: importAllData,
     isEmpty: isEmpty,
