@@ -455,3 +455,23 @@ If Claude Code proposes any of the above during a phase that doesn't include the
 ## ROADMAP-NOTES.md
 
 Any work identified during a session that belongs to a later phase goes into ROADMAP-NOTES.md in the repo root, not into the current build.
+
+---
+
+## Appendix A — STORAGE MAP
+
+Three homes; every entity has exactly one.
+
+**cc-knowledge GitHub repo (also an Obsidian vault) — the organisation's brain:**
+- `skills/{name}/SKILL.md` (Claude Code native: frontmatter `name`, `description`; extra keys `tags`/`useCases`/`version` allowed)
+- `agents/{name}.md` (native subagent: frontmatter `name`, `description`, `model`; body = system prompt)
+- `memory/{project-slug}/` with `summary.md`, `architecture.md`, `roadmap.md`, `open-issues.md`, `skills-used.md`, `repositories.md`, `decisions/NNNN-slug.md` (ADR: context/decision/consequences, append-only), `sessions/date-slug.md` (immutable).
+- Hub access only via `dashboard/functions/api/knowledge.ts` (GITHUB_TOKEN server-side; sha-based writes, one conflict retry). Local: vault cloned to a durable path, `memory/` opened in Obsidian with Obsidian Git; skills symlinked individually into `~/.claude/skills`; agents symlinked into the CC repo's `.claude/agents`.
+
+**Supabase — the operations floor (hot, queryable, high-write):**
+- `audit_log` · `agent_runtime_state` · `workflows` + `workflow_steps` · `projects` (incl. `authorisation_level`) · `prompts` · `tools` config · `workspace_notes`.
+
+**CC repo `dashboard/` — the machine:**
+- `workspace.html`, `.js` modules, `model-config.js`, Pages Functions. No knowledge content hardcoded.
+
+Knowledge never in Supabase; operations never in git. Session files immutable; decisions append-only (supersede with a new ADR, never edit history).
