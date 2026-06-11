@@ -3,67 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skills Library — Aaron's catalogue</title>
+<title>Resources — Aaron Manu's catalogue</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0a0b; --bg-2:#111113; --panel:#141417; --panel-2:#1a1a1e;
-    --line:#26262c; --line-2:#33333b;
-    --ink:#ecebe6; --ink-dim:#a3a09a; --ink-faint:#6f6c66;
-    --gold:#d4a857; --teal:#5fb3a3; --violet:#9d8cd6; --rose:#d68c9d; --sky:#7aa7d6;
-    --auto:#5fb3a3; --skill:#d4a857; --slash:#9d8cd6; --fetch:#7aa7d6; --cli:#d68c9d;
-    --r:14px; --maxw:1180px;
+    --bg:#07080f; --surface:#0d0f1a; --raised:#131724;
+    --panel:#0d0f1a; --panel-2:#131724;
+    --line:rgba(255,255,255,0.07); --line-2:rgba(255,255,255,0.16);
+    --ink:#f0f2f7; --ink-dim:#8892a4; --ink-faint:#414d60;
+    --accent:#3b82f6; --green:#10b981; --amber:#f59e0b;
+    --gold:#3b82f6;
+    --auto:#10b981; --skill:#3b82f6; --slash:#a78bfa; --fetch:#38bdf8; --cli:#f59e0b;
+    --r:14px; --maxw:1160px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
     background:var(--bg); color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
     line-height:1.55; -webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(1200px 600px at 80% -10%, rgba(212,168,87,.06), transparent 60%),
-                     radial-gradient(900px 500px at -10% 10%, rgba(95,179,163,.05), transparent 55%);
+    font-feature-settings:"cv11","ss01";
+    background-image:radial-gradient(1100px 550px at 80% -10%, rgba(59,130,246,.07), transparent 60%),
+                     radial-gradient(820px 480px at -10% 8%, rgba(96,165,250,.04), transparent 55%);
     background-attachment:fixed;
   }
-  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
-  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
-  a{color:inherit}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 48px}
+  a{color:inherit; text-decoration:none}
 
-  /* ── top bar ── */
-  header.bar{
-    position:sticky; top:0; z-index:50;
-    background:rgba(10,10,11,.82); backdrop-filter:blur(14px);
+  /* ── nav (harmonised with hub) ── */
+  nav{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 48px; height:56px;
+    background:rgba(7,8,15,0.88); backdrop-filter:blur(20px) saturate(160%);
     border-bottom:1px solid var(--line);
   }
-  .bar-inner{display:flex; align-items:center; gap:18px; padding:14px 28px; max-width:var(--maxw); margin:0 auto}
-  .brand{display:flex; align-items:center; gap:11px; font-weight:600; letter-spacing:.2px; white-space:nowrap}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
-  .search{flex:1; position:relative; max-width:420px; margin-left:auto}
-  .search input{
-    width:100%; background:var(--panel); border:1px solid var(--line);
-    color:var(--ink); padding:9px 14px 9px 36px; border-radius:10px; font-size:14px; outline:none;
-    transition:border-color .15s, background .15s;
+  .nav-logo{font-size:14px; font-weight:700; letter-spacing:-0.3px; color:var(--ink); white-space:nowrap}
+  .nav-logo span{color:var(--ink-faint); font-weight:400}
+  .nav-right{display:flex; align-items:center; gap:8px}
+  .nav-link{
+    font-size:13px; font-weight:500; color:var(--ink-dim);
+    padding:5px 11px; border-radius:6px; white-space:nowrap;
+    transition:color .12s, background .12s;
   }
-  .search input:focus{border-color:var(--gold); background:var(--panel-2)}
-  .search svg{position:absolute; left:11px; top:50%; transform:translateY(-50%); opacity:.5}
-  .counts{display:flex; gap:14px; font-size:12.5px; color:var(--ink-faint)}
-  .counts b{color:var(--ink-dim); font-weight:600}
-  @media(max-width:780px){ .counts{display:none} .search{margin-left:0} }
+  .nav-link:hover{color:var(--ink); background:rgba(255,255,255,0.05)}
+  .nav-search{position:relative; width:230px}
+  .nav-search input{
+    width:100%; background:var(--panel); border:1px solid var(--line);
+    color:var(--ink); padding:7px 12px 7px 32px; border-radius:8px; font-size:13px;
+    outline:none; font-family:inherit; transition:border-color .15s, background .15s;
+  }
+  .nav-search input:focus{border-color:var(--accent); background:var(--panel-2)}
+  .nav-search svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.5}
+  .nav-gh{
+    display:flex; align-items:center; gap:5px; font-size:12px; font-weight:500;
+    color:var(--ink-dim); padding:5px 10px; border:1px solid var(--line); border-radius:6px;
+    transition:all .12s; white-space:nowrap;
+  }
+  .nav-gh:hover{color:var(--ink); border-color:var(--line-2); background:var(--panel)}
+  @media(max-width:780px){ .nav-search{width:150px} .nav-link[href$="#live"]{display:none} }
+  @media(max-width:560px){ .nav-search{display:none} }
 
   /* ── hero ── */
-  .hero{padding:74px 0 38px; border-bottom:1px solid var(--line)}
-  .eyebrow{font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:18px}
-  .hero h1{
-    font-family:Georgia,"Times New Roman",serif; font-weight:500;
-    font-size:clamp(34px,6vw,62px); line-height:1.04; letter-spacing:-.5px; max-width:18ch;
+  .hero{padding:74px 0 38px; border-bottom:1px solid var(--line); position:relative; overflow:hidden}
+  .hero::before{
+    content:''; position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size:28px 28px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 30% 0%, #000 30%, transparent 100%);
+    mask-image:radial-gradient(ellipse 70% 60% at 30% 0%, #000 30%, transparent 100%);
+    pointer-events:none;
   }
-  .hero h1 em{font-style:italic; color:var(--gold)}
-  .hero p.lede{margin-top:22px; max-width:60ch; color:var(--ink-dim); font-size:17px}
+  .hero .wrap{position:relative}
+  .eyebrow{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--ink-faint);
+    margin-bottom:18px; display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:''; width:20px; height:1px; background:var(--ink-faint)}
+  .hero h1{
+    font-weight:700; font-size:clamp(34px,6vw,60px); line-height:1.0;
+    letter-spacing:-2px; max-width:18ch; color:var(--ink);
+  }
+  .hero h1 em{
+    font-style:normal;
+    background:linear-gradient(135deg,#60a5fa 0%,#a78bfa 60%,#f472b6 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero p.lede{margin-top:22px; max-width:60ch; color:var(--ink-dim); font-size:17px; line-height:1.6}
   .stat-row{display:flex; flex-wrap:wrap; gap:34px; margin-top:38px}
-  .stat .n{font-family:Georgia,serif; font-size:34px; color:var(--ink)}
-  .stat .l{font-size:12.5px; letter-spacing:.5px; color:var(--ink-faint); text-transform:uppercase}
+  .stat .n{font-weight:700; font-size:32px; letter-spacing:-1px; color:var(--ink)}
+  .stat .l{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; letter-spacing:.5px; color:var(--ink-faint); text-transform:uppercase}
 
   /* ── invocation legend ── */
   .legend{padding:48px 0; border-bottom:1px solid var(--line)}
-  .legend h2, .section h2{font-family:Georgia,serif; font-weight:500; font-size:27px; letter-spacing:-.3px}
+  .legend h2, .section h2{font-weight:700; font-size:24px; letter-spacing:-0.6px; color:var(--ink)}
   .legend .sub{color:var(--ink-dim); margin-top:10px; max-width:74ch; font-size:15.5px}
   .legend-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:28px}
   .lcard{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:18px}
@@ -72,18 +110,18 @@
   .lcard p b{color:var(--ink)}
   .answer{
     margin-top:26px; background:linear-gradient(180deg,var(--panel-2),var(--panel));
-    border:1px solid var(--line-2); border-left:3px solid var(--gold);
+    border:1px solid var(--line); border-left:3px solid var(--accent);
     border-radius:12px; padding:22px 24px;
   }
-  .answer .q{font-family:Georgia,serif; font-style:italic; font-size:17px; color:var(--ink); margin-bottom:12px}
+  .answer .q{font-weight:600; font-style:italic; font-size:16px; color:var(--ink); margin-bottom:12px}
   .answer p{font-size:14.5px; color:var(--ink-dim); margin-top:9px}
   .answer p b{color:var(--ink)}
-  .answer code{font-family:ui-monospace,monospace; background:#000; padding:1px 6px; border-radius:5px; font-size:13px; color:var(--gold)}
+  .answer code{font-family:'JetBrains Mono',ui-monospace,monospace; background:#000; padding:1px 6px; border-radius:5px; font-size:13px; color:var(--accent)}
 
   /* ── badges ── */
   .badge{
-    display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,monospace;
-    font-size:10.5px; letter-spacing:.6px; text-transform:uppercase; font-weight:600;
+    display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:10.5px; letter-spacing:.6px; text-transform:uppercase; font-weight:500;
     padding:3px 8px; border-radius:6px; border:1px solid; white-space:nowrap;
   }
   .badge::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor}
@@ -94,21 +132,21 @@
   .b-cli{color:var(--cli); border-color:color-mix(in srgb,var(--cli) 40%, transparent); background:color-mix(in srgb,var(--cli) 9%, transparent)}
 
   /* ── filter chips ── */
-  .filters{position:sticky; top:62px; z-index:40; background:rgba(10,10,11,.82); backdrop-filter:blur(14px);
+  .filters{position:sticky; top:56px; z-index:40; background:rgba(7,8,15,0.88); backdrop-filter:blur(20px) saturate(160%);
            border-bottom:1px solid var(--line); padding:12px 0}
   .chips{display:flex; flex-wrap:wrap; gap:9px}
   .chip{
-    font-size:13px; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
+    font-size:13px; font-weight:500; padding:6px 14px; border-radius:999px; border:1px solid var(--line);
     background:var(--panel); color:var(--ink-dim); cursor:pointer; transition:all .14s; user-select:none;
   }
   .chip:hover{border-color:var(--line-2); color:var(--ink)}
-  .chip.active{background:var(--gold); color:#1a1407; border-color:var(--gold); font-weight:600}
+  .chip.active{background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600}
 
   /* ── sections ── */
   .section{padding:50px 0; border-bottom:1px solid var(--line)}
   .section.hidden{display:none}
   .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px}
-  .sec-head .cnt{font-family:ui-monospace,monospace; font-size:13px; color:var(--ink-faint)}
+  .sec-head .cnt{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13px; color:var(--ink-faint)}
   .section > .wrap > p.intro{color:var(--ink-dim); margin-top:6px; margin-bottom:26px; max-width:72ch; font-size:15px}
 
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px}
@@ -120,7 +158,7 @@
   .card:hover{border-color:var(--line-2); background:var(--panel-2); transform:translateY(-2px)}
   .card.hidden{display:none}
   .card .top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
-  .card .nm{font-family:ui-monospace,monospace; font-size:14.5px; font-weight:600; color:var(--ink); letter-spacing:-.2px}
+  .card .nm{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:14px; font-weight:500; color:var(--ink); letter-spacing:-.2px}
   .card .desc{font-size:13.5px; color:var(--ink-dim); flex:1}
   .card .meta{font-size:11.5px; color:var(--ink-faint); display:flex; gap:8px; flex-wrap:wrap; align-items:center}
   .card .badges{display:flex; gap:6px; flex-wrap:wrap}
@@ -131,9 +169,9 @@
     display:flex; flex-direction:column; gap:6px; transition:border-color .15s, background .15s;
   }
   .divcard:hover{border-color:var(--fetch); background:var(--panel-2)}
-  .divcard .dn{font-family:ui-monospace,monospace; font-size:13.5px; color:var(--ink); text-transform:capitalize}
-  .divcard .dc{font-family:Georgia,serif; font-size:26px; color:var(--fetch)}
-  .divcard .dl{font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.5px}
+  .divcard .dn{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13.5px; color:var(--ink); text-transform:capitalize}
+  .divcard .dc{font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:500; font-size:24px; color:var(--fetch)}
+  .divcard .dl{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.5px}
 
   .repo-note{
     margin-top:22px; background:var(--panel); border:1px dashed var(--line-2);
@@ -141,8 +179,17 @@
   }
   .repo-note b{color:var(--ink)} .repo-note .mono{color:var(--fetch)}
 
-  footer{padding:46px 0 70px; color:var(--ink-faint); font-size:13px}
-  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px}
+  footer{
+    border-top:1px solid var(--line); max-width:var(--maxw); margin:0 auto;
+    padding:24px 48px; display:flex; align-items:center; justify-content:space-between;
+    font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; color:var(--ink-faint);
+  }
+  footer a{color:var(--ink-dim); transition:color .12s}
+  footer a:hover{color:var(--ink)}
+  @media(max-width:600px){
+    .wrap{padding:0 20px} nav{padding:0 20px}
+    footer{flex-direction:column; gap:8px; text-align:center; padding:20px}
+  }
 
   .empty{display:none; text-align:center; padding:70px 0; color:var(--ink-faint)}
   .empty.show{display:block}
@@ -150,33 +197,36 @@
 </head>
 <body>
 
-<header class="bar">
-  <div class="bar-inner">
-    <div class="brand"><span class="dot"></span> Skills Library</div>
-    <div class="counts">
-      <span><b id="c-skills">31</b> skills</span>
-      <span><b>2</b> MCP</span>
-      <span><b>3</b> plugins</span>
-      <span><b>248</b> subagents</span>
-    </div>
-    <div class="search">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+<!-- NAV (harmonised with the hub) -->
+<nav>
+  <a class="nav-logo" href="https://aaron-projects-hub.pages.dev/">Aaron Manu<span> · Resources</span></a>
+  <div class="nav-right">
+    <a class="nav-link" href="https://aaron-projects-hub.pages.dev/">← Hub</a>
+    <a class="nav-link" href="https://aaron-projects-hub.pages.dev/#live">Live Apps</a>
+    <a class="nav-link" href="#rules">House rules</a>
+    <div class="nav-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="q" type="text" placeholder="Search everything…" autocomplete="off">
     </div>
+    <a class="nav-gh" href="https://github.com/Aaron-1411" target="_blank">
+      <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
   </div>
-</header>
+</nav>
 
 <section class="hero">
   <div class="wrap">
     <div class="eyebrow">Capability Catalogue · ~/skills-library</div>
     <h1>Everything Claude can <em>reach for</em>, in one place.</h1>
-    <p class="lede">A single home for collected skills, MCP servers, plugins, CLI tools, references and specialised subagents — grouped by what they do and tagged by how they're invoked. So you always know what's available and whether you need to ask for it.</p>
+    <p class="lede">A single home for collected skills, MCP servers, plugins, CLI tools, references and specialised subagents — plus the house rules Claude works by. Grouped by what they do and tagged by how they're invoked, so you always know what's available and whether you need to ask for it.</p>
     <div class="stat-row">
       <div class="stat"><div class="n">31</div><div class="l">Active skills</div></div>
       <div class="stat"><div class="n">2</div><div class="l">MCP servers</div></div>
       <div class="stat"><div class="n">3</div><div class="l">Plugins</div></div>
       <div class="stat"><div class="n">3</div><div class="l">CLI tools</div></div>
-      <div class="stat"><div class="n">248</div><div class="l">Subagents · 17 divisions</div></div>
+      <div class="stat"><div class="n">248</div><div class="l">Subagents · 17 div</div></div>
+      <div class="stat"><div class="n">7</div><div class="l">House rules</div></div>
     </div>
   </div>
 </section>
@@ -185,7 +235,7 @@
 <section class="legend">
   <div class="wrap">
     <h2>How invocation works</h2>
-    <p class="sub">Every resource is tagged with one of five invocation types. The short version: the green and gold ones I reach for on my own — you don't have to ask. The others you trigger explicitly.</p>
+    <p class="sub">Every resource is tagged with one of five invocation types. The short version: the green and blue ones I reach for on my own — you don't have to ask. The others you trigger explicitly.</p>
 
     <div class="legend-grid">
       <div class="lcard"><span class="badge b-auto">Auto</span><p><b>I just use it.</b> Always-connected MCP servers. I reach for them automatically when a task needs them — no need to name them.</p></div>
@@ -209,6 +259,7 @@
   <div class="wrap">
     <div class="chips" id="chips">
       <span class="chip active" data-f="all">All</span>
+      <span class="chip" data-f="rules">House rules</span>
       <span class="chip" data-f="design">Design &amp; visual</span>
       <span class="chip" data-f="writing">Writing &amp; output</span>
       <span class="chip" data-f="caveman">Token efficiency</span>
@@ -226,10 +277,8 @@
 <div class="empty" id="empty"><div class="wrap">No matches. Try another search.</div></div>
 
 <footer>
-  <div class="wrap">
-    <span>~/skills-library — single home &amp; catalogue. Master notes in <span class="mono">README.md</span>.</span>
-    <span>Subagents → <span class="mono">github.com/Aaron-1411/resource</span> · fetched on demand</span>
-  </div>
+  <span>~/skills-library — single home &amp; catalogue · rules mirrored in <a href="https://github.com/Aaron-1411/CC/blob/master/RULES.md" target="_blank">RULES.md</a></span>
+  <span><a href="https://aaron-projects-hub.pages.dev/">← Back to hub</a></span>
 </footer>
 
 <script>
@@ -319,6 +368,18 @@ const DATA = {
   }
 };
 
+// ── House rules: the living view of how Claude works on every project ──
+// Keep in sync with RULES.md. New operating rules get a row here.
+const RULES = [
+  ["Do the work, don't narrate","Always","b-auto","Terse output, no step-by-step narration. Surface only blockers, forks worth a decision, and what's now live."],
+  ["Honest hosting signposting","Always","b-auto","Cloudflare can't run live backends (trading bots, Flask/FastAPI). Every app is badged Live / Visual demo / Self-host. When a deploy is blocked, I host it locally and give you the link."],
+  ["Token efficiency","Always","b-auto","Auto-compact near ~50% context, delegate broad search to subagents, surgical file reads, lean tool use. Running TL;DR via chapters."],
+  ["Project setup standard","Per project","b-fetch","New project → add to the CC monorepo → Cloudflare Pages project → deploy job in the workflow → card on the hub → update memory → commit. Full steps live in RULES.md."],
+  ["Back up on command","Trigger","b-cli","When you say \"back up\", I create an immutable GitHub restore point — an annotated tag via the gh API (never a force-push), named &lt;project&gt;-vN."],
+  ["Client work is hands-off","Always","b-auto","Never touch Ez Tuition, Plus 15, or the Plus 15 Case Study unless you explicitly ask."],
+  ["This list stays live","Meta","b-slash","Whenever an operating rule changes, it's updated here and in RULES.md — so this page always shows what's currently on."]
+];
+
 const DIVISIONS = [
   ["specialized",53],["marketing",36],["engineering",33],["game-development",20],
   ["strategy",16],["gis",13],["security",10],["design",9],["sales",9],["testing",8],
@@ -348,6 +409,20 @@ function sectionHTML(key){
   </section>`;
 }
 
+function rulesSectionHTML(){
+  const cards = RULES.map(r=>`<div class="card" data-name="${r[0].toLowerCase()}" data-desc="${r[3].toLowerCase()}">
+      <div class="top"><span class="nm">${r[0]}</span><span class="badge ${r[2]}">${r[1]}</span></div>
+      <div class="desc">${r[3]}</div>
+    </div>`).join("");
+  return `<section class="section" data-filter="rules" id="rules">
+    <div class="wrap">
+      <div class="sec-head"><h2>House rules</h2><span class="cnt">${RULES.length} active</span></div>
+      <p class="intro">The operating rules Claude works by on every project — the living view of what's currently on, kept in sync with <span class="mono">RULES.md</span>. New rules land here automatically.</p>
+      <div class="grid">${cards}</div>
+    </div>
+  </section>`;
+}
+
 function agentsSectionHTML(){
   const total = DIVISIONS.reduce((a,d)=>a+d[1],0);
   const cards = DIVISIONS.map(d=>`<div class="divcard" data-name="${d[0]}" data-desc="subagents ${d[0]}">
@@ -370,6 +445,7 @@ function agentsSectionHTML(){
 
 const main = document.getElementById("main");
 main.innerHTML =
+  rulesSectionHTML() +
   sectionHTML("design") + sectionHTML("writing") + sectionHTML("caveman") +
   sectionHTML("mcp") + sectionHTML("plugin") + sectionHTML("cli") +
   sectionHTML("ref") + agentsSectionHTML();
