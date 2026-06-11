@@ -205,3 +205,27 @@ build step, no new runtime deps, no client-side API key.
   direct replication, save-to-memory ADR write + per-project persistence confirmed,
   375px layout screenshotted, test artifacts cleaned from localStorage. Live
   Anthropic calls await the `ANTHROPIC_API_KEY` Cloudflare secret (Part A infra).
+
+---
+
+## Phase V — notes & spillover
+
+- **Durable workspace = `~/cc-hub`.** MASTER-BUILD assumed `~/Claude-Projects`;
+  that checkout turned out to be a divergent CC clone (150 behind / 1 ahead) with
+  **uncommitted client work** (`inkspector/**`, a hands-off client project), nested
+  per-project git repos, and a launchd sync dependency
+  (`com.aaronmanu.sync-projects.plist` → absolute path
+  `/Users/aaronmanu/Claude-Projects/sync-all.sh`). It was **not touched**. The
+  build runs from a clean dedicated clone at `~/cc-hub` instead.
+- **Stale clones — candidates for Aaron's cleanup (not a session's):**
+  `~/Claude-Projects` (divergent, uncommitted client work, launchd-wired) and
+  `/tmp/CC-fresh` (old working copy). Leave both alone; flagged for the owner.
+- **Missing spend indicator vs locked decision #7.** CLAUDE.md locked decision #7
+  says "a daily spend estimate is visible in the Tool Stack dashboard." No such
+  indicator exists in the UI. Phase V is "no new features", so building it is
+  deferred — schedule with the Phase 7a operations board (cost guardrails surface
+  naturally there) or earlier if Aaron wants it sooner.
+- **`MASTER-BUILD.md` not in the repo.** The governing plan lives at
+  `~/Downloads/MASTER-BUILD (2).md` (untracked). Decide whether to commit a copy
+  into the repo (e.g. `dashboard/MASTER-BUILD.md`) as the authoritative build plan,
+  or keep it external. Pending Aaron's call.
