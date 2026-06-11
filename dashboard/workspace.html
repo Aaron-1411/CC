@@ -274,7 +274,7 @@
       background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); transition: all 0.12s;
     }
     .btn-add:hover { background: rgba(59,130,246,0.25); }
-    .btn-add.sm { height: 30px; padding: 0 11px; font-size: 12px; border-radius: 7px; margin-left: auto; }
+    .btn-add.sm { height: 30px; padding: 0 11px; font-size: 12px; border-radius: 7px; }
 
     /* ── dashboard sections ── */
     .dash-filters { margin-bottom: 14px; }
@@ -571,32 +571,6 @@
     }
 
     /* ── MEMORY ── */
-    .mem-layout { display: grid; grid-template-columns: 232px 1fr; gap: 18px; align-items: start; }
-    .mem-rail {
-      position: sticky; top: 78px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 12px; max-height: calc(100vh - 100px); overflow-y: auto;
-    }
-    .mem-rail-head {
-      display: flex; align-items: center; justify-content: space-between; padding: 2px 6px 10px;
-      font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--t3);
-      font-family: 'JetBrains Mono', ui-monospace, monospace;
-    }
-    .mem-add-branch {
-      width: 22px; height: 22px; border-radius: 6px; font-size: 15px; line-height: 1; color: var(--t2);
-      background: var(--raised); border: 1px solid var(--border); transition: all 0.12s;
-    }
-    .mem-add-branch:hover { color: var(--text); border-color: var(--border-h); }
-    .mem-branches { display: flex; flex-direction: column; gap: 2px; }
-    .mem-branch {
-      display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px;
-      font-size: 13px; color: var(--t2); text-align: left; width: 100%; transition: all 0.12s; cursor: pointer;
-      border: 1px solid transparent;
-    }
-    .mem-branch:hover { background: var(--raised); color: var(--text); }
-    .mem-branch.active { background: rgba(59,130,246,0.12); color: var(--text); border-color: rgba(59,130,246,0.25); }
-    .mem-branch .mb-emoji { flex-shrink: 0; }
-    .mem-branch .mb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .mem-branch .mb-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--t3); }
 
     .mem-toc { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
     .mem-toc .filter { height: 34px; }
@@ -686,6 +660,8 @@
     .md-preview p { margin: 8px 0; color: var(--t2); }
     .md-preview ul,.md-preview ol { margin: 8px 0 8px 22px; color: var(--t2); }
     .md-preview li { margin: 3px 0; }
+    .md-preview li.md-task { list-style: none; margin-left: -20px; }
+    .md-preview li.md-task.done { color: var(--t3); }
     .md-preview code { background: var(--raised); padding: 1px 6px; border-radius: 5px; font-size: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
     .md-preview a { color: var(--accent); }
     .md-preview strong { color: var(--text); }
@@ -731,10 +707,7 @@
       .dlinks { grid-template-columns: 1fr; }
       .page-title { font-size: 22px; }
       footer { padding: 20px 16px; }
-      .mem-layout { grid-template-columns: 1fr; }
-      .mem-rail { position: static; max-height: none; }
-      .mem-branches { flex-direction: row; flex-wrap: wrap; }
-      .mem-branch { width: auto; }
+      .mem-tabs { gap: 4px; }
     }
     @media (max-width: 460px) {
       nav { padding: 0 10px; gap: 4px; }
@@ -1165,59 +1138,6 @@ const SEED_AGENTS = [
     desc:'Produces clean reusable raster assets from approved Impeccable mock references — without redesigning the direction.' },
 ];
 
-/* Project Memory — Obsidian-style branches. Empty sections scaffold on demand;
-   `personal-hub` is seeded as a worked example. Edits persist to localStorage. */
-const MEM_SECTIONS = [
-  { key:'summary',      type:'text', icon:'📄', title:'Summary',        placeholder:'High-level overview of this project…' },
-  { key:'architecture', type:'text', icon:'🏛️', title:'Architecture',   placeholder:'Stack, structure and technical decisions…' },
-  { key:'decisions',    type:'log',  icon:'⚖️', title:'Decisions',      placeholder:'Log a key decision…' },
-  { key:'skillsUsed',   type:'tags', icon:'🧰', title:'Skills Used',    placeholder:'Add a skill (e.g. atelier)…' },
-  { key:'repoRefs',     type:'links',icon:'🔗', title:'Repository References', placeholder:'Add a repo/URL reference…' },
-  { key:'roadmap',      type:'todo', icon:'🗺️', title:'Roadmap',        placeholder:'Add a roadmap item…' },
-  { key:'openIssues',   type:'list', icon:'⚠️', title:'Open Issues',    placeholder:'Add an open issue…' },
-  { key:'sessions',     type:'log',  icon:'🧠', title:'Session Summaries', placeholder:'Paste a compressed session summary…' },
-];
-const SEED_MEMORY = {
-  'personal-hub': {
-    name:'Personal Hub', emoji:'⌘', status:'building',
-    summary:'Personal AI Development Command Centre. Static single-file SPA (workspace.html) deployed on Cloudflare Pages. Evolving into the management layer for a virtual AI software company — projects, tool stack, skills, agents, prompts and project memory.',
-    architecture:'Vanilla JS + localStorage, no build step. Dark theme design tokens shared with the public hub. Views: Dashboard, Projects, Memory, Tools, Skills, Agents, Prompts. Deployed via Aaron-1411/CC master → GitHub Actions → Cloudflare Pages (aaron-projects-hub).',
-    decisions:[
-      { text:'Phase 1 — HubStore is the single source of truth: full catalog (17 projects, 31 skills, 10 prompts) lives in seed.js; inline SEED_* deleted; compat getters add presentational extras + aliases so tiles render unchanged. Added HubStore.state KV for workspace notes; Recent Activity derived from entity updatedAt; migrateHub() version-gated upsert + legacy ws: import.', date:'2026-06-11' },
-      { text:'Phase 0 — Tool Stack renders from the static tool config in seed.js (HUB_SEED.tools), not the mutable store or an inline copy. Tools are static config with no toggle (not a health check); removed the duplicate inline SEED_TOOLS.', date:'2026-06-11' },
-      { text:'Phase A — introduce a HubStore storage abstraction (hub: keys, localStorage adapter + export/import). UI never touches localStorage directly; backend swaps to Supabase from Phase 3 without UI changes.', date:'2026-06-11' },
-      { text:'Keep everything in one static HTML file — zero build, instant deploy, easy to reason about.', date:'2026-06-11' },
-      { text:'Persist all user state to localStorage (ws: prefix) — no backend until auth is actually needed.', date:'2026-06-11' },
-      { text:'Agents tab is a read-only catalog of installed plugin subagents — no autonomous execution yet.', date:'2026-06-11' },
-    ],
-    skillsUsed:['atelier','impeccable','taste-skill','stop-slop'],
-    repoRefs:[
-      { label:'Aaron-1411/CC (monorepo)', url:'https://github.com/Aaron-1411/CC' },
-      { label:'Live workspace', url:'https://aaron-projects-hub.pages.dev/workspace' },
-    ],
-    roadmap:[
-      { text:'Phase 0 — Tool Stack dashboard', done:true },
-      { text:'Phase 1 — Foundation: projects, dashboard, skills, prompts', done:true },
-      { text:'Phase 2 — Obsidian memory architecture (project branches)', done:true },
-      { text:'Phase A — Audit + HubStore data layer (types, store, seed)', done:true },
-      { text:'Phase 0 — Tool Stack dashboard (capabilities, filters)', done:true },
-      { text:'Phase 1 — Foundation: HubStore-backed dashboard, projects/skills/prompts, workspace', done:true },
-      { text:'Future — Chairman orchestration + council agents', done:false },
-      { text:'Future — SKILL.md generation + repository intelligence', done:false },
-    ],
-    openIssues:[
-      { text:'Memory is local-only — needs sync to the real Obsidian vault before multi-device use.' },
-      { text:'Tool connection status is manual — wire real health checks later.' },
-    ],
-    sessions:[
-      { text:'Phase 1 — Foundation: migrated projects/skills/prompts onto HubStore (full catalog, single source), added project add/edit modal with validation, and rebuilt the Dashboard into 5 ordered sections (Active Projects, Current Priorities, Skills, Prompts, Workspace) plus a project-context panel, autosaved notes, derived Recent Activity and JSON export/import. Status/priority colours to spec; works at 380px; existing tabs preserved.', date:'2026-06-11' },
-      { text:'Phase 0 — Tool Stack: added a capabilities field to ToolCard + all 8 tools, rebuilt the cards to render from config (binary connected badge, capability bullets, agent pills), and wired search (name/capability) + All/Connected/Local/Available filters. Works at 380px; existing views unchanged.', date:'2026-06-11' },
-      { text:'Phase A — Audit + Foundation: wrote ARCHITECTURE.md, CLAUDE.md and types.ts, then introduced the HubStore data layer (localStorage adapter, export/import, seed) wired on load. App behaviour unchanged; 26 store/seed assertions + fallback pass.', date:'2026-06-11' },
-      { text:'Built V2: added Tool Stack, extended project statuses/priorities, and the Obsidian-style Project Memory layer with per-project branches.', date:'2026-06-11' },
-    ],
-  },
-};
-
 /* ─────────── STATE ─────────── */
 const LS = {
   get(k, d){ try { return JSON.parse(localStorage.getItem('ws:'+k)) ?? d; } catch { return d; } },
@@ -1635,7 +1555,11 @@ function mdToHtml(src){
     if(/^\s*$/.test(ln)){ close(); return; }
     let m;
     if((m=ln.match(/^(#{1,4})\s+(.*)$/))){ close(); const n=m[1].length; out.push(`<h${n}>${mdInline(m[2])}</h${n}>`); return; }
-    if((m=ln.match(/^\s*[-*]\s+(.*)$/))){ if(list!=='ul'){ close(); out.push('<ul>'); list='ul'; } out.push(`<li>${mdInline(m[1])}</li>`); return; }
+    if((m=ln.match(/^\s*[-*]\s+(.*)$/))){ if(list!=='ul'){ close(); out.push('<ul>'); list='ul'; }
+      const tm=m[1].match(/^\[([ xX])\]\s+(.*)$/);
+      if(tm){ const done=tm[1].toLowerCase()==='x'; out.push(`<li class="md-task${done?' done':''}">${done?'☑':'☐'} ${mdInline(tm[2])}</li>`); }
+      else out.push(`<li>${mdInline(m[1])}</li>`);
+      return; }
     if((m=ln.match(/^\s*\d+\.\s+(.*)$/))){ if(list!=='ol'){ close(); out.push('<ol>'); list='ol'; } out.push(`<li>${mdInline(m[1])}</li>`); return; }
     close(); out.push(`<p>${mdInline(ln)}</p>`);
   });
