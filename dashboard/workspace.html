@@ -720,6 +720,33 @@
     @media (max-width: 380px) {
       .tab { padding: 6px 5px; font-size: 11.5px; letter-spacing: -0.2px; }
     }
+
+    /* ── Chairman (Phase 3 Part B) ── */
+    .chair-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+    .chair-select { flex: 1; min-width: 0; background: var(--raised); color: var(--text);
+      border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; font: inherit; }
+    .chair-select:focus { outline: none; border-color: var(--border-h); }
+    .chair-thread { display: flex; flex-direction: column; gap: 14px; padding: 4px 0 16px; min-height: 240px; }
+    .chair-intro { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; color: var(--t2); }
+    .chair-intro-h { color: var(--text); font-weight: 600; margin-bottom: 6px; }
+    .chair-msg { display: flex; flex-direction: column; max-width: 88%; }
+    .chair-msg.you { align-self: flex-end; align-items: flex-end; }
+    .chair-msg.chair { align-self: flex-start; align-items: flex-start; }
+    .chair-bubble { padding: 11px 14px; border-radius: 14px; line-height: 1.5; word-wrap: break-word; white-space: normal; }
+    .chair-msg.you .chair-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 5px; }
+    .chair-msg.chair .chair-bubble { background: var(--raised); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 5px; }
+    .chair-bubble .cursor { opacity: 0.5; }
+    .chair-save { margin-top: 6px; background: rgba(16,185,129,0.12); color: var(--green);
+      border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+    .chair-save:hover { background: rgba(16,185,129,0.2); }
+    .chair-saved { margin-top: 6px; color: var(--green); font-size: 13px; }
+    .chair-compose { position: sticky; bottom: 0; display: flex; gap: 8px; align-items: flex-end;
+      background: var(--bg); padding: 10px 0; border-top: 1px solid var(--border); }
+    .chair-compose textarea { flex: 1; resize: none; max-height: 160px; background: var(--raised);
+      color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; font: inherit; line-height: 1.4; }
+    .chair-compose textarea:focus { outline: none; border-color: var(--border-h); }
+    .chair-compose .btn-primary { flex: 0 0 auto; }
+    .chair-compose textarea:disabled, .chair-send:disabled { opacity: 0.6; }
   </style>
 </head>
 <body>
@@ -731,6 +758,7 @@
   </a>
   <div class="nav-tabs" id="tabs">
     <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="chairman">Chairman</button>
     <button class="tab" data-view="projects">Projects</button>
     <button class="tab" data-view="memory">Memory</button>
     <button class="tab" data-view="tools">Tools</button>
@@ -1006,6 +1034,23 @@
       </button>
     </div>
     <div class="grid" id="prompt-grid"></div>
+  </section>
+
+  <!-- ════ CHAIRMAN ════ -->
+  <section class="view" id="view-chairman">
+    <div class="page-head">
+      <div class="page-title">Chairman</div>
+      <div class="page-sub">Your single interface. The Chairman works in the context of one project — its memory, roadmap and skills are loaded automatically.</div>
+    </div>
+    <div class="chair-bar">
+      <select id="chair-project" class="chair-select" aria-label="Project context"></select>
+      <button class="btn-ghost" id="chair-clear" title="Clear this conversation">Clear</button>
+    </div>
+    <div class="chair-thread" id="chair-thread"></div>
+    <div class="chair-compose">
+      <textarea id="chair-input" rows="1" placeholder="Message the Chairman…"></textarea>
+      <button class="btn-primary" id="chair-send">Send</button>
+    </div>
   </section>
 
 </main>
@@ -1902,12 +1947,178 @@ function closeDrawer(){
   document.body.style.overflow=''; drawerProj=null;
 }
 
+/* ─────────── CHAIRMAN VIEW (Phase 3 Part B) ─────────── */
+// Single interface to the virtual company. Streams from /api/chat (the Anthropic
+// proxy — the key lives ONLY as a Cloudflare secret, never in client code). The
+// per-project thread persists via HubStore.state ('chairman:thread:'+projectId),
+// so it works on both the localStorage and Supabase adapters. When the Chairman
+// states "Decided: …" we surface a one-tap "Save to memory" that writes an ADR —
+// no silent auto-writes (the builder stays in control of what gets recorded).
+let chairBusy = false;
+
+function chairKey(pid){ return 'chairman:thread:' + pid; }
+function chairLoad(pid){ const t = HubStore.state.get(chairKey(pid), []); return Array.isArray(t) ? t : []; }
+function chairStore(pid, msgs){ HubStore.state.set(chairKey(pid), msgs); }
+
+function chairCurrentProject(){
+  const ps = projects();
+  let cur = HubStore.state.get('workspace:project', ps[0] ? ps[0].id : '');
+  if (!ps.some(p=>p.id===cur)) cur = ps[0] ? ps[0].id : '';
+  return cur;
+}
+function chairFmt(text){ return esc(text||'').replace(/\n/g,'<br>'); }
+// A concrete decision is a line beginning "Decided: …" (per the Chairman system prompt).
+function chairDecision(text){ const m = (text||'').match(/^\s*Decided:\s*(.+)$/im); return m ? m[1].trim() : null; }
+
+function renderChairman(){
+  const ps = projects();
+  const sel = $('#chair-project'); if(!sel) return;
+  if (!ps.length){
+    sel.innerHTML = '';
+    $('#chair-thread').innerHTML = `<div class="empty">Add a project first — the Chairman always works in the context of one.</div>`;
+    return;
+  }
+  const cur = chairCurrentProject();
+  sel.innerHTML = ps.map(p=>`<option value="${p.id}"${p.id===cur?' selected':''}>${esc(plainName(p.name))}</option>`).join('');
+  chairRenderThread(cur);
+}
+
+function chairRenderThread(pid){
+  const wrap = $('#chair-thread'); if(!wrap) return;
+  const msgs = chairLoad(pid);
+  if (!msgs.length){
+    const p = project(pid);
+    wrap.innerHTML = `<div class="chair-intro">
+      <div class="chair-intro-h">Chairman ready</div>
+      <p>Working on <b>${esc(plainName(p ? p.name : pid))}</b>. Its memory, roadmap and skills are loaded as context — ask me to plan, decide, or pick up where you left off.</p>
+    </div>`;
+    return;
+  }
+  wrap.innerHTML = msgs.map((m,i)=>chairBubble(m,i)).join('');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function chairBubble(m,i){
+  const who = m.role==='user' ? 'you' : 'chair';
+  let extra = '';
+  if (m.role==='assistant'){
+    if (m.saved) extra = `<span class="chair-saved">✓ Saved to memory</span>`;
+    else if (chairDecision(m.content)) extra = `<button class="chair-save" data-saveidx="${i}">＋ Save decision to memory</button>`;
+  }
+  return `<div class="chair-msg ${who}"><div class="chair-bubble">${chairFmt(m.content) || '<span class="cursor">▍</span>'}</div>${extra}</div>`;
+}
+
+// Build the plain-text context the proxy injects into the Chairman system prompt.
+function chairContext(pid){
+  const p = project(pid); if (!p) return '';
+  const parts = [ projectContext(p) ];
+  const b = memBranchFor(pid); const s = b.sections || {};
+  if (s.summary) parts.push('## Summary\n' + s.summary);
+  if (s.architecture) parts.push('## Architecture\n' + s.architecture);
+  if (s.roadmap) parts.push('## Roadmap\n' + s.roadmap);
+  if (s.openIssues) parts.push('## Open issues\n' + s.openIssues);
+  if (Array.isArray(s.skillsUsed) && s.skillsUsed.length) parts.push('## Skills used\n' + s.skillsUsed.join(', '));
+  if (Array.isArray(s.decisions) && s.decisions.length){
+    parts.push('## Recent decisions\n' + s.decisions.slice(0,5).map(d=>`- ${d.date||''} ${d.title}: ${d.decision||''}`.trim()).join('\n'));
+  }
+  if (Array.isArray(b.sessions) && b.sessions.length){
+    parts.push('## Recent sessions\n' + b.sessions.slice(0,3).map(x=>`- ${x.date||''} ${x.title}`.trim()).join('\n'));
+  }
+  return parts.join('\n\n');
+}
+
+function chairSetSending(on){
+  const btn=$('#chair-send'); if(btn){ btn.disabled=on; btn.textContent = on ? '…' : 'Send'; }
+  const inp=$('#chair-input'); if(inp) inp.disabled=on;
+}
+// Live-update the last (streaming) assistant bubble without a full re-render.
+function chairUpdateLast(pid, text){
+  const wrap = $('#chair-thread'); if(!wrap) return;
+  const bubbles = $$('.chair-msg.chair .chair-bubble', wrap);
+  const last = bubbles[bubbles.length-1];
+  if (last){ last.innerHTML = chairFmt(text) || '<span class="cursor">▍</span>'; wrap.scrollTop = wrap.scrollHeight; }
+}
+
+// Parse the Anthropic SSE stream, surfacing content_block_delta text chunks.
+async function chairStream(body, onText){
+  const reader = body.getReader(); const dec = new TextDecoder(); let buf = '';
+  for(;;){
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream:true });
+    const lines = buf.split('\n'); buf = lines.pop();
+    for (const line of lines){
+      const t = line.trim();
+      if (!t.startsWith('data:')) continue;
+      const payload = t.slice(5).trim();
+      if (!payload || payload==='[DONE]') continue;
+      try {
+        const evt = JSON.parse(payload);
+        if (evt.type==='content_block_delta' && evt.delta && typeof evt.delta.text==='string') onText(evt.delta.text);
+      } catch(_){ /* keepalive / non-JSON line */ }
+    }
+  }
+}
+
+async function chairSend(){
+  if (chairBusy) return;
+  const pid = $('#chair-project').value;
+  const input = $('#chair-input');
+  const text = (input.value || '').trim();
+  if (!text || !pid) return;
+
+  const msgs = chairLoad(pid);
+  msgs.push({ role:'user', content:text });
+  msgs.push({ role:'assistant', content:'' });   // placeholder we stream into
+  const aIdx = msgs.length - 1;
+  chairStore(pid, msgs);
+  input.value=''; input.style.height='auto';
+  chairRenderThread(pid);
+  chairBusy = true; chairSetSending(true);
+
+  try {
+    const apiMsgs = msgs.slice(0, aIdx).map(m=>({ role:m.role, content:m.content }));
+    const res = await fetch(window.HUB_CONFIG.chatApi, {
+      method:'POST', headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ messages: apiMsgs, projectId: pid, context: chairContext(pid) }),
+    });
+    if (!res.ok || !res.body){
+      const err = await res.text().catch(()=> '');
+      throw new Error('Chairman unavailable (' + res.status + '). ' + (err||'Is ANTHROPIC_API_KEY set in Cloudflare?'));
+    }
+    await chairStream(res.body, (chunk)=>{ msgs[aIdx].content += chunk; chairUpdateLast(pid, msgs[aIdx].content); });
+    chairStore(pid, msgs);
+    chairRenderThread(pid);   // final pass — adds the "Save decision" affordance if present
+  } catch(e){
+    msgs[aIdx].content = (msgs[aIdx].content ? msgs[aIdx].content + '\n\n' : '') + '⚠️ ' + (e && e.message ? e.message : 'Failed to reach the Chairman.');
+    chairStore(pid, msgs); chairRenderThread(pid);
+  } finally {
+    chairBusy = false; chairSetSending(false);
+  }
+}
+
+function chairSaveDecision(pid, idx){
+  const msgs = chairLoad(pid);
+  const m = msgs[idx];
+  if (!m || m.role!=='assistant' || m.saved) return;
+  const title = chairDecision(m.content); if (!title) return;
+  const b = memBranchFor(pid);
+  b.sections.decisions.unshift({
+    id:'d-'+Date.now(), date:today(), title:title.slice(0,120),
+    context:'Logged from a Chairman conversation.', decision:title, consequences:'',
+  });
+  saveBranch(b);
+  m.saved = true; chairStore(pid, msgs); chairRenderThread(pid);
+  toast('Decision saved to memory');
+}
+
 /* ─────────── VIEW ROUTER ─────────── */
 function switchView(v){
   $$('.view').forEach(s=>s.classList.toggle('active', s.id==='view-'+v));
   $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
   window.scrollTo({top:0});
   if (v==='dashboard') renderDashboard();
+  if (v==='chairman') renderChairman();
   if (v==='projects') renderProjects();
   if (v==='memory') renderMemory();
   if (v==='tools') renderTools();
@@ -2048,6 +2259,14 @@ $('#agent-filters').addEventListener('click', e=>{ const b=e.target.closest('.fi
 $('#tool-search').addEventListener('input', e=>{ toolQuery=e.target.value; renderTools(); });
 $('#tool-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
   $$('#tool-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); toolFilter=b.dataset.tstatus; renderTools(); });
+
+// chairman — project switch, send, enter-to-send, autosize, clear, save-decision
+$('#chair-project').addEventListener('change', e=>{ HubStore.state.set('workspace:project', e.target.value); chairRenderThread(e.target.value); });
+$('#chair-send').addEventListener('click', chairSend);
+$('#chair-input').addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); chairSend(); } });
+$('#chair-input').addEventListener('input', e=>autoGrow(e.target));
+$('#chair-clear').addEventListener('click', ()=>{ const pid=$('#chair-project').value; if(!pid) return; chairStore(pid, []); chairRenderThread(pid); toast('Conversation cleared'); });
+$('#chair-thread').addEventListener('click', e=>{ const sb=e.target.closest('[data-saveidx]'); if(sb) chairSaveDecision($('#chair-project').value, parseInt(sb.dataset.saveidx,10)); });
 
 // memory — list search + export vault + decision/session modal saves
 $('#mem-search').addEventListener('input', e=>{ memListQuery=e.target.value; renderMemList(); });
