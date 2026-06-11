@@ -1,2 +1,5 @@
 # Local Netlify folder
 .netlify
+
+# Local Claude Code launch config (machine-specific, absolute paths)
+.claude/launch.json
