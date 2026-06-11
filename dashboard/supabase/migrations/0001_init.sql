@@ -120,7 +120,9 @@ create index if not exists repo_refs_branch_idx on repo_refs(memory_branch_id);
 
 -- ── audit_log (live from Phase 3; every agent/API action) ────────────────────
 create table if not exists audit_log (
-  id                  uuid primary key default gen_random_uuid(),
+  -- text id (not uuid) for parity with AuditLogEntry.id and every other table;
+  -- the default lets server-side writers (functions/api/chat.ts) omit it.
+  id                  text primary key default gen_random_uuid()::text,
   timestamp           timestamptz not null default now(),
   agent_id            text not null,
   action              text not null default '',
