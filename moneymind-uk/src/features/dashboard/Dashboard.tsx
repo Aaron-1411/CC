@@ -56,12 +56,14 @@ export function Dashboard({ progress }: DashboardProps) {
     Object.keys(progress.quizScores).length > 0 ||
     progress.questsCompleted.length > 0;
 
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
   return (
-    <PageContainer className="py-8">
+    <PageContainer className="py-8 lg:py-12">
       {/* ── Slim status header ───────────────────────────────── */}
-      <header className="flex items-center justify-between gap-4">
+      <header className="mx-auto flex max-w-md items-center justify-between gap-4 lg:max-w-3xl">
         <div>
-          <h1 className="text-xl font-bold text-navy-900">Your money course</h1>
+          <h1 className="text-xl font-bold text-navy-900 sm:text-2xl">Your money course</h1>
           <p className="text-sm text-navy-500">
             {done} of {total} lessons · {rank}
           </p>
@@ -77,15 +79,17 @@ export function Dashboard({ progress }: DashboardProps) {
       </header>
 
       {/* Thin overall progress line */}
-      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-navy-100">
-        <div
-          className="h-full rounded-full bg-emerald-500 transition-[width] duration-500"
-          style={{ width: `${total ? Math.round((done / total) * 100) : 0}%` }}
-        />
+      <div className="mx-auto mt-3 max-w-md lg:max-w-3xl">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-navy-100">
+          <div
+            className="h-full rounded-full bg-emerald-500 transition-[width] duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
       </div>
 
       {graduate && (
-        <div className="mt-6 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 p-5 text-white shadow-card">
+        <div className="mx-auto mt-6 flex max-w-md items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 p-5 text-white shadow-card lg:max-w-3xl">
           <Trophy className="h-8 w-8 shrink-0 text-white/90" aria-hidden />
           <div>
             <div className="font-bold">MoneyMind Graduate</div>
@@ -96,53 +100,71 @@ export function Dashboard({ progress }: DashboardProps) {
         </div>
       )}
 
-      {/* ── The learning path ───────────────────────────────── */}
-      <div className="mx-auto mt-8 max-w-sm">
-        {TIERS.map((tier) => {
-          const unlocked = isTierUnlocked(tier.tier, progress);
-          const complete = isTierComplete(tier.tier, progress);
-          const tmods = modulesByTier(tier.tier);
-          return (
-            <section key={tier.tier} aria-label={`Tier ${tier.tier}: ${tier.name}`}>
-              <TierDivider tier={tier} unlocked={unlocked} complete={complete} />
-              <ol className="flex flex-col items-center">
-                {tmods.map((mod) => (
-                  <PathNode
-                    key={mod.id}
-                    mod={mod}
-                    status={getModuleStatus(mod.id, progress)}
-                    locked={!unlocked}
-                    current={nextUp?.id === mod.id}
-                    startedAny={startedAny}
-                  />
-                ))}
-              </ol>
-            </section>
-          );
-        })}
-      </div>
+      {/* ── Responsive body: centered path + desktop explore rail ── */}
+      <div className="mt-8 lg:mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-10 lg:items-start">
+        {/* The learning path — the one column everything points at */}
+        <div className="mx-auto w-full max-w-sm lg:max-w-md lg:justify-self-center">
+          {TIERS.map((tier) => {
+            const unlocked = isTierUnlocked(tier.tier, progress);
+            const complete = isTierComplete(tier.tier, progress);
+            const tmods = modulesByTier(tier.tier);
+            return (
+              <section key={tier.tier} aria-label={`Tier ${tier.tier}: ${tier.name}`}>
+                <TierDivider tier={tier} unlocked={unlocked} complete={complete} />
+                <ol className="flex flex-col items-center">
+                  {tmods.map((mod) => (
+                    <PathNode
+                      key={mod.id}
+                      mod={mod}
+                      status={getModuleStatus(mod.id, progress)}
+                      locked={!unlocked}
+                      current={nextUp?.id === mod.id}
+                      startedAny={startedAny}
+                    />
+                  ))}
+                </ol>
+              </section>
+            );
+          })}
+        </div>
 
-      {/* ── Quiet "more" area ───────────────────────────────── */}
-      <div className="mx-auto mt-10 max-w-sm space-y-3">
-        <MoneyMinute />
+        {/* ── Explore rail: stacks under the path on mobile, sticky
+              sidebar on desktop so the wide screen isn't wasted ── */}
+        <aside className="mx-auto mt-10 w-full max-w-sm space-y-3 lg:mt-0 lg:max-w-none lg:sticky lg:top-12">
+          {/* Desktop-only at-a-glance progress recap */}
+          <div className="hidden rounded-2xl border border-navy-100 bg-white p-4 shadow-card lg:block">
+            <div className="flex items-baseline justify-between">
+              <span className="text-xs font-semibold uppercase tracking-wide text-navy-400">
+                Progress
+              </span>
+              <span className="text-sm font-bold tabular-nums text-emerald-600">{pct}%</span>
+            </div>
+            <p className="mt-1 text-sm font-semibold text-navy-900">{rank}</p>
+            <p className="text-xs text-navy-500">
+              {done} of {total} lessons complete
+            </p>
+          </div>
 
-        {progress.persona ? (
+          <MoneyMinute />
+
+          {progress.persona ? (
+            <QuietLink
+              to="/start"
+              icon="Sparkles"
+              label={`Path: ${personaInfo(progress.persona)?.label ?? "Personalised"}`}
+              sub="Change your focus"
+            />
+          ) : (
+            <QuietLink to="/start" icon="Sparkles" label="Pick your path" sub="A 20-second quiz" />
+          )}
+
           <QuietLink
-            to="/start"
-            icon="Sparkles"
-            label={`Path: ${personaInfo(progress.persona)?.label ?? "Personalised"}`}
-            sub="Change your focus"
+            to="/kids"
+            icon="PiggyBank"
+            label="MoneyMind Kids"
+            sub="Money basics for ages 5–16"
           />
-        ) : (
-          <QuietLink to="/start" icon="Sparkles" label="Pick your path" sub="A 20-second quiz" />
-        )}
-
-        <QuietLink
-          to="/kids"
-          icon="PiggyBank"
-          label="MoneyMind Kids"
-          sub="Money basics for ages 5–16"
-        />
+        </aside>
       </div>
     </PageContainer>
   );
