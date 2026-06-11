@@ -1,11 +1,28 @@
 # Personal Hub — Architecture (Phase A audit)
 
 The "Personal Hub / Command Centre" is the dashboard app served at
-`https://aaron-projects-hub.pages.dev/workspace`. This document maps it as it
-exists today, before any V2 data-layer work. It is the reference for the
-HubStore migration in Phase A and every later phase.
+`https://aaron-projects-hub.pages.dev/workspace`. This document was written as a
+point-in-time audit of the app **before** the HubStore data-layer work. It is
+the reference for the migration in Phase A and every later phase.
 
 > Repo: https://github.com/Aaron-1411/CC · App folder: `dashboard/`
+
+> **Reconciled at Phase V (2026-06-11).** The Phase A audit below is preserved
+> as the historical record of the pre-HubStore app and the migration targets.
+> Where facts have since changed they are corrected inline with a **`Now:`**
+> note. Headline deltas since this audit:
+> - `workspace.html` is now **~2340 lines** (was ~1880).
+> - **Eight views**, not seven — a top-level **Chairman** view (LLM chat,
+>   Phase 3 Part B) was added: `dashboard, projects, memory, tools, skills,
+>   agents, prompts, chairman`.
+> - The **HubStore data layer exists** (`HubStore.js` + `seed.js` +
+>   `SupabaseAdapter.js` + `store-factory.js` + `config.js`). The renderers read
+>   **from HubStore**; the direct-`localStorage`/`ws:` description in §3 is the
+>   *starting* state that has since been migrated (see ROADMAP-NOTES Phase 1).
+> - Production runs the **localStorage** adapter (`config.js storeAdapter:
+>   'local'`); the Supabase adapter is opt-in and reversible.
+> - Pages Functions exist: `functions/api/chat.ts` (Anthropic SSE proxy +
+>   `audit_log` write) and `functions/api/models.ts`.
 
 ---
 
@@ -26,7 +43,7 @@ node_modules, or lockfile lives in `dashboard/`.
 ### Files in `dashboard/`
 | File | Size | Role |
 |---|---|---|
-| `workspace.html` | ~1880 lines | **The Command Centre.** Target of all hub work. |
+| `workspace.html` | ~2340 lines | **The Command Centre.** Target of all hub work. (Was ~1880 at Phase A.) |
 | `index.html` | ~69 KB | Public projects-hub landing page. |
 | `setup.html` | ~23 KB | One-off setup/instructions page. |
 | `favicon.svg` | — | Icon. |
@@ -39,7 +56,8 @@ Everything below describes `workspace.html` unless stated otherwise.
 
 No router and no URL state. The app is a single HTML document with seven
 "views" (`<section class="view" id="view-…">`); exactly one carries `.active`
-at a time.
+at a time. *(Now: **eight** views — a `chairman` view was added in Phase 3 Part
+B.)*
 
 - `switchView(v)` (≈ line 1776) toggles `.view.active` and `.tab.active`,
   scrolls to top, and calls the matching `render*()` function.
@@ -49,11 +67,19 @@ at a time.
   hash or History API usage. Reload always lands on `dashboard`
   (`renderDashboard()` is the only init call, line ~1879).
 
-The seven views: `dashboard, projects, memory, tools, skills, agents, prompts`.
+The views: `dashboard, projects, memory, tools, skills, agents, prompts` —
+*plus `chairman` (added Phase 3 Part B), eight in total.*
 
 ---
 
 ## 3. State management
+
+> **Now (post-Phase 1):** the renderers read **from HubStore**, not the inline
+> `SEED_*`/`ws:` path described below. `seed.js` holds the canonical catalog;
+> `HubStore.js` is the single store (localStorage adapter by default,
+> `SupabaseAdapter.js` opt-in via `store-factory.js`). The `LS` helper and `ws:`
+> keys below are the **pre-migration** state and the migration targets — kept
+> here as the historical record. See ROADMAP-NOTES "Phase 1" for the migration.
 
 State is module-scoped `let`/`const` variables at the top of the script,
 hydrated from localStorage on load through a tiny `LS` helper, then read by
