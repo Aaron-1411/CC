@@ -278,7 +278,9 @@ function PathNode({
           {startedAny ? "Continue" : "Start"}
         </motion.span>
       )}
-      <span className={`grid place-items-center rounded-full transition ${circle}`}>{glyph}</span>
+      <span className={`grid place-items-center rounded-full transition-colors duration-200 ${circle}`}>
+        {glyph}
+      </span>
       <span
         className={`mt-2 max-w-[8rem] text-center text-xs font-semibold leading-tight ${
           locked ? "text-navy-300" : current ? "text-navy-900" : "text-navy-600"
@@ -300,7 +302,7 @@ function PathNode({
         <Link
           to={`/module/${mod.slug}`}
           aria-label={`${mod.title} — ${status}`}
-          className="rounded-2xl outline-none transition-transform duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+          className="rounded-2xl outline-none transition-transform duration-200 ease-out hover:-translate-y-0.5 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
         >
           {body}
         </Link>
@@ -324,7 +326,7 @@ function QuietLink({
   return (
     <Link
       to={to}
-      className="group flex items-center gap-3 rounded-2xl border border-navy-100 bg-white px-4 py-3 shadow-card transition-colors hover:bg-navy-50"
+      className="group flex items-center gap-3 rounded-2xl border border-navy-100 bg-white px-4 py-3 shadow-card transition-[background-color,transform] duration-200 ease-out hover:bg-navy-50 active:scale-[0.99]"
     >
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-navy-50 text-emerald-600">
         <Icon name={icon} className="h-4 w-4" />
@@ -365,7 +367,7 @@ function MoneyMinute() {
       ) : (
         <button
           onClick={() => setRevealed(true)}
-          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 hover:underline"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 transition-transform duration-150 ease-out hover:underline active:scale-[0.97]"
         >
           Reveal <Sparkles className="h-3.5 w-3.5" aria-hidden />
         </button>
