@@ -78,6 +78,8 @@ export interface ToolCard {
   description: string
   purpose: string
   futureAgents: string[]
+  /** Bullet list of concrete capabilities this tool provides. Added in Phase 0. */
+  capabilities: string[]
 }
 
 /**
