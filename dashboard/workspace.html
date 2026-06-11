@@ -274,6 +274,48 @@
       background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); transition: all 0.12s;
     }
     .btn-add:hover { background: rgba(59,130,246,0.25); }
+    .btn-add.sm { height: 30px; padding: 0 11px; font-size: 12px; border-radius: 7px; margin-left: auto; }
+
+    /* ── dashboard sections ── */
+    .dash-filters { margin-bottom: 14px; }
+    .toolbar.slim { margin-bottom: 14px; }
+    .sec-actions { display: inline-flex; gap: 6px; margin-left: auto; }
+    .mini-btn {
+      height: 28px; padding: 0 11px; border-radius: 7px; font-size: 12px; font-weight: 600;
+      color: var(--t2); background: var(--raised); border: 1px solid var(--border); transition: all 0.12s; white-space: nowrap;
+    }
+    .mini-btn:hover { color: var(--text); border-color: var(--border-h); }
+    .prio-list { display: flex; flex-direction: column; gap: 6px; }
+    .prio-row {
+      display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.12s;
+    }
+    .prio-row:hover { border-color: var(--border-h); background: var(--raised); }
+    .prio-row-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+    .prio-row-upd { margin-left: auto; font-size: 11px; color: var(--t3); font-family: 'JetBrains Mono', ui-monospace, monospace; white-space: nowrap; }
+    /* ── workspace ── */
+    .ws-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; margin-bottom: 16px; }
+    .ws-context, .ws-notes-wrap {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 15px;
+    }
+    .ws-panel-label {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--t3);
+      font-family: 'JetBrains Mono', ui-monospace, monospace; margin-bottom: 9px;
+    }
+    #ws-project {
+      width: 100%; height: 36px; padding: 0 10px; border-radius: 8px; color: var(--text);
+      background: var(--raised); border: 1px solid var(--border); font-size: 13px; margin-bottom: 12px;
+    }
+    .ws-ctx-meta { display: flex; gap: 6px; align-items: center; margin-bottom: 9px; flex-wrap: wrap; }
+    .ws-ctx-desc { font-size: 12.5px; color: var(--t2); line-height: 1.55; margin-bottom: 12px; }
+    .ws-notes-wrap textarea {
+      width: 100%; min-height: 132px; resize: vertical; border-radius: 8px; padding: 10px 12px;
+      color: var(--text); background: var(--raised); border: 1px solid var(--border);
+      font-family: inherit; font-size: 13px; line-height: 1.55;
+    }
+    .ws-notes-wrap textarea:focus { outline: none; border-color: var(--border-h); }
+    .ws-recent .ws-panel-label { margin-bottom: 8px; }
+    @media (max-width: 720px) { .ws-layout { grid-template-columns: 1fr; } }
 
     /* ── SKILL CARD ── */
     .skill { cursor: default; }
@@ -694,34 +736,91 @@
       </div>
     </div>
 
-    <div class="section">
-      <div class="sec-head"><span class="sec-title">Current Priorities</span><span class="sec-line"></span>
-        <span class="sec-count" id="prio-count"></span></div>
-      <div class="grid" id="prio-grid"></div>
-    </div>
-
+    <!-- 1 · ACTIVE PROJECTS -->
     <div class="section">
       <div class="sec-head"><span class="sec-title">Active Projects</span><span class="sec-line"></span>
-        <span class="sec-link" data-view="projects">View all →</span></div>
-      <div class="grid" id="active-grid"></div>
+        <button class="btn-add sm" id="dash-add-project">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Project</button></div>
+      <div class="filters dash-filters" id="dash-proj-filters">
+        <button class="filter active" data-dstatus="all">All</button>
+        <button class="filter" data-dstatus="idea">Idea</button>
+        <button class="filter" data-dstatus="planning">Planning</button>
+        <button class="filter" data-dstatus="building">Building</button>
+        <button class="filter" data-dstatus="testing">Testing</button>
+        <button class="filter" data-dstatus="live">Live</button>
+        <button class="filter" data-dstatus="archived">Archived</button>
+      </div>
+      <div class="grid" id="dash-active-grid"></div>
     </div>
 
+    <!-- 2 · CURRENT PRIORITIES -->
     <div class="section">
-      <div class="sec-head"><span class="sec-title">Recent Skills</span><span class="sec-line"></span>
-        <span class="sec-link" data-view="skills">Library →</span></div>
-      <div class="grid-3" id="recent-skills"></div>
+      <div class="sec-head"><span class="sec-title">Current Priorities</span><span class="sec-line"></span>
+        <span class="sec-count" id="dash-prio-count"></span></div>
+      <div class="prio-list" id="dash-prio-list"></div>
     </div>
 
+    <!-- 3 · SKILLS LIBRARY -->
     <div class="section">
-      <div class="sec-head"><span class="sec-title">Favourite Prompts</span><span class="sec-line"></span>
-        <span class="sec-link" data-view="prompts">All prompts →</span></div>
-      <div class="grid-3" id="fav-prompts"></div>
+      <div class="sec-head"><span class="sec-title">Skills Library</span><span class="sec-line"></span>
+        <span class="sec-link" data-view="skills">Open tab →</span>
+        <button class="btn-add sm" id="dash-add-skill">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Skill</button></div>
+      <div class="toolbar slim">
+        <div class="search">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="dash-skill-search" placeholder="Search skills by name or tag…" />
+        </div>
+      </div>
+      <div class="grid" id="dash-skill-grid"></div>
     </div>
 
+    <!-- 4 · PROMPT LIBRARY -->
     <div class="section">
-      <div class="sec-head"><span class="sec-title">Recent Activity</span><span class="sec-line"></span>
-        <span class="sec-count" id="activity-count"></span></div>
-      <div class="activity" id="activity-list"></div>
+      <div class="sec-head"><span class="sec-title">Prompt Library</span><span class="sec-line"></span>
+        <span class="sec-link" data-view="prompts">Open tab →</span>
+        <button class="btn-add sm" id="dash-add-prompt">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add Prompt</button></div>
+      <div class="toolbar slim">
+        <div class="search">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="dash-prompt-search" placeholder="Search prompts by title or body…" />
+        </div>
+        <div class="filters" id="dash-prompt-filters">
+          <button class="filter active" data-dcat="all">All</button>
+          <button class="filter" data-dcat="fav">★ Favourites</button>
+          <button class="filter" data-dcat="Development">Development</button>
+          <button class="filter" data-dcat="Research">Research</button>
+          <button class="filter" data-dcat="Marketing">Marketing</button>
+          <button class="filter" data-dcat="Content">Content</button>
+        </div>
+      </div>
+      <div class="grid" id="dash-prompt-grid"></div>
+    </div>
+
+    <!-- 5 · WORKSPACE -->
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Workspace</span><span class="sec-line"></span>
+        <span class="sec-actions">
+          <button class="mini-btn" id="ws-export" title="Download all hub data as JSON">⬇ Export</button>
+          <button class="mini-btn" id="ws-import" title="Restore hub data from a JSON backup">⬆ Import</button>
+        </span></div>
+      <div class="ws-layout">
+        <div class="ws-context">
+          <div class="ws-panel-label">Project context</div>
+          <select id="ws-project"></select>
+          <div id="ws-context-body"></div>
+        </div>
+        <div class="ws-notes-wrap">
+          <div class="ws-panel-label">Notes</div>
+          <textarea id="ws-notes" placeholder="Scratch notes for this session — saved automatically on blur…"></textarea>
+        </div>
+      </div>
+      <div class="ws-recent">
+        <div class="ws-panel-label">Recent Activity</div>
+        <div class="activity" id="ws-activity"></div>
+      </div>
+      <input type="file" id="ws-import-file" accept="application/json,.json" hidden />
     </div>
   </section>
 
@@ -1230,9 +1329,14 @@ function promptCard(p){
 }
 
 /* ─────────── DASHBOARD ─────────── */
+// dashboard-scoped filter/search state (independent of the focused tabs)
+let dashProjFilter = 'all';
+let dashSkillQuery = '';
+let dashPromptFilter = 'all', dashPromptQuery = '';
+
 function renderDashboard(){
   const ps = projects();
-  // focus
+  // focus banner
   $('#focus-input').value = focusText;
   autoGrow($('#focus-input'));
   const chips = focusPinned.map(id => ps.find(p=>p.id===id)).filter(Boolean);
@@ -1240,39 +1344,92 @@ function renderDashboard(){
     ? chips.map(p=>`<a class="focus-chip" data-proj="${p.id}">${pinEmoji(p.name)}<span>${esc(plainName(p.name))}</span></a>`).join('')
     : `<span class="meta-x">Pin projects from their panel to track them here.</span>`;
 
-  // priorities = critical/high priority OR building/testing, never archived
-  const prioRank = PRIO_RANK;
-  const prio = ps.filter(p => p.status!=='archived' &&
-                 (p.priority==='critical' || p.priority==='high' || p.status==='building' || p.status==='testing'))
-                 .sort((a,b)=> (prioRank[a.priority]??9) - (prioRank[b.priority]??9));
-  $('#prio-count').textContent = prio.length + ' need attention';
-  $('#prio-grid').innerHTML = prio.length ? prio.map(projectCard).join('') : `<div class="empty">Nothing urgent — all clear.</div>`;
+  // 1 · Active Projects — non-archived (or the chosen status), critical-first then updatedAt
+  let active = (dashProjFilter==='all')
+    ? ps.filter(p=>p.status!=='archived')
+    : ps.filter(p=>p.status===dashProjFilter);
+  active.sort((a,b)=> (PRIO_RANK[a.priority]??9)-(PRIO_RANK[b.priority]??9)
+    || (Date.parse(b.updatedAt)||0)-(Date.parse(a.updatedAt)||0));
+  $('#dash-active-grid').innerHTML = active.length ? active.map(projectCard).join('')
+    : `<div class="empty">No projects in this view. Use “Add Project” to create one.</div>`;
 
-  // active = not idea, not archived
-  const active = ps.filter(p=>p.status!=='idea' && p.status!=='archived').slice(0,6);
-  $('#active-grid').innerHTML = active.map(projectCard).join('');
-
-  // recent skills (first few of library)
-  $('#recent-skills').innerHTML = allSkills().slice(0,3).map(skillCard).join('');
-
-  // favourite prompts
-  const favs = allPrompts().filter(p=>p.fav).slice(0,3);
-  $('#fav-prompts').innerHTML = favs.length ? favs.map(promptCard).join('') : `<div class="empty">Star a prompt to pin it here.</div>`;
-
-  // recent activity
-  renderActivity();
-}
-function renderActivity(){
-  const list = $('#activity-list'); if(!list) return;
-  const items = activity.slice(0, 8);
-  $('#activity-count').textContent = activity.length ? activity.length + ' events' : '';
-  list.innerHTML = items.length
-    ? items.map(a=>`<div class="act-row">
-        <span class="act-ico">${esc(a.icon||'•')}</span>
-        <span class="act-b"><div class="act-t">${a.text}</div></span>
-        <span class="act-time">${timeAgo(a.ts)}</span>
+  // 2 · Current Priorities — high/critical & not archived (compact list, derived)
+  const prio = ps.filter(p => p.status!=='archived' && (p.priority==='high'||p.priority==='critical'))
+                 .sort((a,b)=> (PRIO_RANK[a.priority]??9)-(PRIO_RANK[b.priority]??9));
+  $('#dash-prio-count').textContent = prio.length ? prio.length+' need attention' : '';
+  $('#dash-prio-list').innerHTML = prio.length
+    ? prio.map(p=>`<div class="prio-row" data-proj="${p.id}">
+        <span class="prio-row-name">${esc(p.name)}</span>
+        ${statusPill(p.status)}
+        <span class="prio-row-upd">upd ${relTime(p.updatedAt)}</span>
       </div>`).join('')
-    : `<div class="empty">Your status changes, notes and memory edits show up here.</div>`;
+    : `<div class="empty">No high priority active projects.</div>`;
+
+  // 3 · Skills Library — search by name or tag
+  let ss = allSkills();
+  if (dashSkillQuery){ const q=dashSkillQuery.toLowerCase();
+    ss = ss.filter(s => (s.name+' '+(s.tags||[]).join(' ')).toLowerCase().includes(q)); }
+  $('#dash-skill-grid').innerHTML = ss.length ? ss.map(skillCard).join('')
+    : `<div class="empty">${dashSkillQuery ? 'No skills match.' : 'No skills yet. Add your first skill.'}</div>`;
+
+  // 4 · Prompt Library — category tabs + search by title or body
+  let pp = allPrompts();
+  if (dashPromptFilter==='fav') pp = pp.filter(p=>p.fav);
+  else if (dashPromptFilter!=='all') pp = pp.filter(p=>p.cat===dashPromptFilter);
+  if (dashPromptQuery){ const q=dashPromptQuery.toLowerCase();
+    pp = pp.filter(p => (p.title+' '+p.body).toLowerCase().includes(q)); }
+  $('#dash-prompt-grid').innerHTML = pp.length ? pp.map(promptCard).join('')
+    : `<div class="empty">${dashPromptQuery ? 'No prompts match.'
+        : (dashPromptFilter==='fav' ? 'No favourite prompts yet — star one to pin it.'
+        : (dashPromptFilter==='all' ? 'No prompts yet. Add your first prompt.'
+        : 'No '+dashPromptFilter+' prompts yet.'))}</div>`;
+
+  // 5 · Workspace
+  renderWorkspace();
+}
+
+// Recent Activity — derived from entity updatedAt across all entities (Phase 1).
+function recentActivity(){
+  const items = [];
+  projects().forEach(p => items.push({ name:plainName(p.name), kind:'project', t:Date.parse(p.updatedAt)||0 }));
+  allPrompts().forEach(p => items.push({ name:p.title, kind:'prompt', t:Date.parse(p.updatedAt)||0 }));
+  allSkills().forEach(s => { const t=Date.parse(s.updatedAt)||0; if(t) items.push({ name:s.name, kind:'skill', t }); });
+  return items.filter(x=>x.t).sort((a,b)=>b.t-a.t).slice(0,10);
+}
+const ACT_ICON = { project:'📁', skill:'🧰', prompt:'💬' };
+function renderWsActivity(){
+  const items = recentActivity();
+  $('#ws-activity').innerHTML = items.length
+    ? items.map(a=>`<div class="act-row">
+        <span class="act-ico">${ACT_ICON[a.kind]||'•'}</span>
+        <span class="act-b"><div class="act-t">Updated <b>${esc(a.name)}</b></div></span>
+        <span class="act-time">${timeAgo(a.t)}</span>
+      </div>`).join('')
+    : `<div class="empty">Edit a project, skill or prompt and it shows up here.</div>`;
+}
+
+// Workspace context panel — the anchor point the Phase 3 Chairman will load
+// project context from. Keep this structure extensible.
+function renderWorkspace(){
+  const ps = projects();
+  const sel = $('#ws-project'); if(!sel) return;
+  let cur = HubStore.state.get('workspace:project', ps[0] ? ps[0].id : '');
+  if (!ps.some(p=>p.id===cur)) cur = ps[0] ? ps[0].id : '';
+  sel.innerHTML = ps.map(p=>`<option value="${p.id}"${p.id===cur?' selected':''}>${esc(plainName(p.name))}</option>`).join('');
+  renderWsContext(cur);
+  $('#ws-notes').value = HubStore.state.get('workspace:notes', '');
+  renderWsActivity();
+}
+function renderWsContext(id){
+  const p = project(id);
+  const body = $('#ws-context-body'); if(!body) return;
+  if (!p){ body.innerHTML = `<div class="empty">No project selected.</div>`; return; }
+  body.innerHTML = `
+    <div class="ws-ctx-meta">${statusPill(p.status)} ${prioBadge(p.priority)}</div>
+    <p class="ws-ctx-desc">${esc(p.description)}</p>
+    <button class="mini-btn" id="ws-open-mem" data-mem="${p.id}">Open Memory →</button>`;
+  const ob = $('#ws-open-mem');
+  if (ob) ob.onclick = ()=>{ memCurrent = p.id; LS.set('memCurrent', memCurrent); memToc='all'; switchView('memory'); };
 }
 function plainName(n){ return n.replace(/^\S+\s/, ''); }
 function pinEmoji(n){ const m=n.match(/^(\S+)\s/); return `<span class="emoji">${m?m[1]:'•'}</span>`; }
@@ -1643,8 +1800,8 @@ document.addEventListener('click', e=>{
   if (op){ openDrawer(op.dataset.open); return; }
   // launch / source links inside cards shouldn't open drawer
   if (e.target.closest('[data-stop]')) { e.stopPropagation(); }
-  // project card → drawer
-  const pc = e.target.closest('.card[data-proj]');
+  // project card / priority row / focus chip → drawer
+  const pc = e.target.closest('[data-proj]');
   if (pc && !e.target.closest('[data-stop]')){ openDrawer(pc.dataset.proj); return; }
   // prompt fav
   const fav = e.target.closest('[data-fav]');
@@ -1701,6 +1858,38 @@ $('#pm-save').addEventListener('click', ()=>{
   }
   editingProjectId = null;
   closeModals(); renderProjects(); renderDashboard();
+});
+
+/* ── dashboard section controls ── */
+$('#dash-proj-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#dash-proj-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); dashProjFilter=b.dataset.dstatus; renderDashboard(); });
+$('#dash-add-project').addEventListener('click', ()=>openProjectModal());
+$('#dash-skill-search').addEventListener('input', e=>{ dashSkillQuery=e.target.value; renderDashboard(); });
+$('#dash-add-skill').addEventListener('click', ()=>openModal('skill-modal'));
+$('#dash-prompt-filters').addEventListener('click', e=>{ const b=e.target.closest('.filter'); if(!b)return;
+  $$('#dash-prompt-filters .filter').forEach(x=>x.classList.toggle('active',x===b)); dashPromptFilter=b.dataset.dcat; renderDashboard(); });
+$('#dash-prompt-search').addEventListener('input', e=>{ dashPromptQuery=e.target.value; renderDashboard(); });
+$('#dash-add-prompt').addEventListener('click', ()=>openModal('prompt-modal'));
+
+/* ── workspace controls ── */
+$('#ws-project').addEventListener('change', e=>{
+  HubStore.state.set('workspace:project', e.target.value); renderWsContext(e.target.value); });
+$('#ws-notes').addEventListener('blur', e=>{
+  HubStore.state.set('workspace:notes', e.target.value); toast('Notes saved'); });
+$('#ws-export').addEventListener('click', ()=>{
+  const blob = new Blob([HubStore.exportAllData()], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'command-centre-backup-'+today()+'.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000); toast('Backup downloaded');
+});
+$('#ws-import').addEventListener('click', ()=>$('#ws-import-file').click());
+$('#ws-import-file').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{ try { HubStore.importAllData(String(reader.result));
+    toast('Data imported'); renderDashboard(); renderProjects(); renderSkills(); renderPrompts(); }
+    catch(err){ toast('Import failed — invalid file'); } e.target.value=''; };
+  reader.readAsText(file);
 });
 
 // skills search + filter + add
