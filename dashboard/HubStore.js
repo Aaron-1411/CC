@@ -198,8 +198,13 @@
     exportAllData: exportAllData,
     importAllData: importAllData,
     isEmpty: isEmpty,
+    /** No-op for the localStorage adapter (reads are already synchronous). The
+     *  Supabase adapter overrides this to hydrate its cache. Uniform contract so
+     *  app init can always `await HubStore.init()`. */
+    init: function () { return Promise.resolve(); },
     /** True when persisting to real localStorage; false on the in-memory fallback. */
     persistent: backend.persistent,
+    backend: 'localStorage',
     KEY_PREFIX: KEY_PREFIX,
   };
 

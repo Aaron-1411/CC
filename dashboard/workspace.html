@@ -1109,8 +1109,13 @@
 
 <div id="toast"></div>
 
-<!-- Phase A data layer (load before the inline script; attach window.HubStore / window.runSeed). -->
+<!-- Data layer (load before the inline script). Order matters: config + adapters
+     before the factory, which picks the active HubStore from window.HUB_CONFIG. -->
+<script src="/config.js"></script>
+<script src="/model-config.js"></script>
 <script src="/HubStore.js"></script>
+<script src="/SupabaseAdapter.js"></script>
+<script src="/store-factory.js"></script>
 <script src="/seed.js"></script>
 
 <script>
@@ -2102,11 +2107,14 @@ $('#pr-save').addEventListener('click', ()=>{
 $$('[data-close-modal]').forEach(b=>b.addEventListener('click', closeModals));
 
 /* ─────────── INIT ─────────── */
-// Phase 1: seed + migrate the HubStore data layer on load. Seeds the full
-// catalog for new visitors; one-time upserts/imports legacy ws: data for
-// existing hubs. Never overwrites user edits. The whole UI reads from the store.
-try { if (typeof migrateHub === 'function') migrateHub(window.HubStore); } catch (e) { /* non-fatal */ }
-renderDashboard();
+// Phase 3: hydrate the active adapter (localStorage = instant; Supabase = one
+// fetch) BEFORE seeding/rendering. Then seed + migrate (full catalog for new
+// visitors; one-time ws: import for existing hubs). The whole UI reads the store.
+(async function init(){
+  try { await window.HubStore.init(); } catch (e) { console.warn('HubStore init failed', e); }
+  try { if (typeof migrateHub === 'function') migrateHub(window.HubStore); } catch (e) { /* non-fatal */ }
+  renderDashboard();
+})();
 </script>
 </body>
 </html>
