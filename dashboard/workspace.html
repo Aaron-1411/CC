@@ -1171,6 +1171,7 @@ const SEED_MEMORY = {
     summary:'Personal AI Development Command Centre. Static single-file SPA (workspace.html) deployed on Cloudflare Pages. Evolving into the management layer for a virtual AI software company — projects, tool stack, skills, agents, prompts and project memory.',
     architecture:'Vanilla JS + localStorage, no build step. Dark theme design tokens shared with the public hub. Views: Dashboard, Projects, Memory, Tools, Skills, Agents, Prompts. Deployed via Aaron-1411/CC master → GitHub Actions → Cloudflare Pages (aaron-projects-hub).',
     decisions:[
+      { text:'Phase 0 — Tool Stack renders from the static tool config in seed.js (HUB_SEED.tools), not the mutable store or an inline copy. Tools are static config with no toggle (not a health check); removed the duplicate inline SEED_TOOLS.', date:'2026-06-11' },
       { text:'Phase A — introduce a HubStore storage abstraction (hub: keys, localStorage adapter + export/import). UI never touches localStorage directly; backend swaps to Supabase from Phase 3 without UI changes.', date:'2026-06-11' },
       { text:'Keep everything in one static HTML file — zero build, instant deploy, easy to reason about.', date:'2026-06-11' },
       { text:'Persist all user state to localStorage (ws: prefix) — no backend until auth is actually needed.', date:'2026-06-11' },
@@ -1194,6 +1195,7 @@ const SEED_MEMORY = {
       { text:'Tool connection status is manual — wire real health checks later.' },
     ],
     sessions:[
+      { text:'Phase 0 — Tool Stack: added a capabilities field to ToolCard + all 8 tools, rebuilt the cards to render from config (binary connected badge, capability bullets, agent pills), and wired search (name/capability) + All/Connected/Local/Available filters. Works at 380px; existing views unchanged.', date:'2026-06-11' },
       { text:'Phase A — Audit + Foundation: wrote ARCHITECTURE.md, CLAUDE.md and types.ts, then introduced the HubStore data layer (localStorage adapter, export/import, seed) wired on load. App behaviour unchanged; 26 store/seed assertions + fallback pass.', date:'2026-06-11' },
       { text:'Built V2: added Tool Stack, extended project statuses/priorities, and the Obsidian-style Project Memory layer with per-project branches.', date:'2026-06-11' },
     ],
