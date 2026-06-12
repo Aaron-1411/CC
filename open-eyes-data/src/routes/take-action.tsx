@@ -27,7 +27,7 @@ const HOW_TO_STEPS = [
   {
     n: "02",
     title: "See what politicians promised — and what they delivered",
-    body: "The Parties page shows every major party's pledges with their current delivery status. Green means kept, amber means partial, red means broken. Source documents are linked.",
+    body: "The Parties page shows every major party's pledges with a labelled delivery status — from Delivered to Off track — each with its evidence and source. All parties are assessed against the same published rubric.",
     link: { to: "/parties", label: "Check pledges →" },
   },
   {
