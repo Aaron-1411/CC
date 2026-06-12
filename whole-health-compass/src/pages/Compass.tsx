@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { RotateCcw, Sparkles } from "lucide-react";
 import { CompassFlow } from "@/flow/CompassFlow";
 import { PractitionerSummary } from "@/components/PractitionerSummary";
 import { ComparativeLens } from "@/components/ComparativeLens";
 import { SafetyPanel, InteractionsReminder, RedFlags } from "@/components/SafetyPanel";
+import { RedFlagInterrupt } from "@/components/RedFlagInterrupt";
 import { ContentGovernanceLine } from "@/components/ContentGovernance";
 import { PathwayNavigator } from "@/components/PathwayNavigator";
 import { LeadForm } from "@/components/LeadForm";
@@ -12,6 +13,7 @@ import { Eyebrow, Button } from "@/components/ui";
 import { getConcern } from "@/data/concerns";
 import { hasTaking, type IntakeData } from "@/lib/summary";
 import { track } from "@/lib/analytics";
+import { screenText } from "@/lib/redflags";
 
 const RESULT_KEY = "whc_result";
 
@@ -61,6 +63,17 @@ export function Compass() {
 
   const concern = getConcern(result.concernId || "something-else");
 
+  // Safety screen of everything the patient wrote, against the universal rules
+  // plus this concern's extra audiences. Renders above the summary; never gates.
+  const flags = useMemo(
+    () =>
+      screenText(
+        [result.patientWords, result.betterWorse, result.tried, result.taking, result.duration, result.goal].join("  "),
+        concern.sensitivity ?? [],
+      ),
+    [result, concern],
+  );
+
   return (
     <div className="bg-paper">
       <div className="container max-w-4xl py-10 sm:py-14">
@@ -81,6 +94,8 @@ export function Compass() {
         </div>
 
         <div className="space-y-10">
+          <RedFlagInterrupt rules={flags} />
+
           <PractitionerSummary data={result} />
 
           {hasTaking(result) && <InteractionsReminder />}

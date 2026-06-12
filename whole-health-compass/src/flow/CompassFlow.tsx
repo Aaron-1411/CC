@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { concerns, getConcern } from "@/data/concerns";
 import { Button, Card, Progress, Input, Textarea, Label, buttonClasses } from "@/components/ui";
 import { emptyIntake, type IntakeData } from "@/lib/summary";
 import { track, trackOnce } from "@/lib/analytics";
+import { screenText } from "@/lib/redflags";
+import { RedFlagInterrupt } from "@/components/RedFlagInterrupt";
 import { cn } from "@/lib/cn";
 
 const DURATIONS = ["A few days", "A few weeks", "A few months", "Longer than that", "It comes and goes"];
@@ -71,6 +73,12 @@ export function CompassFlow({ onComplete }: { onComplete: (data: IntakeData) => 
   const concern = data.concernId ? getConcern(data.concernId) : null;
   const canContinue = step > 0 || Boolean(data.concernId);
 
+  // Live, non-blocking safety screen of the free-text the patient has typed so
+  // far. Surfaces help early (e.g. they describe chest pain on step 1) without
+  // ever gating the journey. ids-only analytics; never the patient's words.
+  const screened = [data.patientWords, data.betterWorse, data.tried, data.taking, data.goal].join("  ");
+  const flowFlags = useMemo(() => screenText(screened, concern?.sensitivity ?? []), [screened, concern]);
+
   const goNext = () => {
     if (step < TOTAL_STEPS - 1) {
       setStep((s) => s + 1);
@@ -89,6 +97,12 @@ export function CompassFlow({ onComplete }: { onComplete: (data: IntakeData) => 
       <div className="mb-5">
         <Progress value={((step + 1) / TOTAL_STEPS) * 100} label={`Step ${step + 1} of ${TOTAL_STEPS}`} />
       </div>
+
+      {flowFlags.length > 0 && (
+        <div className="mb-6">
+          <RedFlagInterrupt rules={flowFlags} />
+        </div>
+      )}
 
       <Card className="p-6 sm:p-8">
         <div key={step} className="animate-fade-up">

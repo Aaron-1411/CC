@@ -26,6 +26,15 @@ export type Lens = {
   whoYouSee: string;
 };
 
+/** The contexts in which an extra, audience-specific red-flag rule should run.
+ *  "all" is universal (life-threatening signs that matter regardless of why
+ *  someone came) and is always active in the screen. The rest are opt-in per
+ *  concern via `Concern.sensitivity`, so a gated rule (e.g. pregnancy bleeding)
+ *  only fires where it is clinically relevant. Defined here, with the rest of
+ *  the content vocabulary, so the red-flag engine can import it without a cycle.
+ *  "children" is reserved for forward-compatibility — no rule ships for it yet. */
+export type RedFlagAudience = "all" | "mental_health" | "pregnancy" | "children" | "cardiac" | "neuro";
+
 export type Concern = {
   id: string;
   /** Short chip label for selection. */
@@ -42,6 +51,10 @@ export type Concern = {
   commonGround?: string[];
   /** When to seek prompt or urgent professional help. Safety, not diagnosis. */
   redFlags?: string[];
+  /** Extra red-flag audiences to screen free-text against for this concern, on
+   *  top of the always-on universal rules. Drives src/lib/redflags.ts. Safety
+   *  routing only — never diagnosis. */
+  sensitivity?: RedFlagAudience[];
 };
 
 /* ────────────────────────────────────────────────────────────────────────────

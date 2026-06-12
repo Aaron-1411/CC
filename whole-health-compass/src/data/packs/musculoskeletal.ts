@@ -53,6 +53,7 @@ const traditions: TraditionMeta[] = [
 const concerns: Concern[] = [
   {
     id: "low-back-pain",
+    sensitivity: ["neuro"],
     label: "Low back pain",
     patientPhrase: "ongoing low back pain",
     category: "Spine",
@@ -97,6 +98,7 @@ const concerns: Concern[] = [
   },
   {
     id: "neck-shoulder",
+    sensitivity: ["neuro"],
     label: "Neck & shoulder pain",
     patientPhrase: "persistent neck and shoulder pain",
     category: "Neck & shoulder",
@@ -226,6 +228,7 @@ const concerns: Concern[] = [
   },
   {
     id: "desk-posture",
+    sensitivity: ["neuro"],
     label: "Desk & posture tension",
     patientPhrase: "tension and stiffness from desk work and posture",
     category: "Work & posture",
@@ -269,6 +272,7 @@ const concerns: Concern[] = [
   },
   {
     id: "something-else",
+    sensitivity: ["neuro", "cardiac", "mental_health", "pregnancy"],
     label: "Something else",
     patientPhrase: "another musculoskeletal issue I'd like to understand",
     category: "General",

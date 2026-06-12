@@ -53,6 +53,7 @@ const traditions: TraditionMeta[] = [
 const concerns: Concern[] = [
   {
     id: "low-energy-sleep",
+    sensitivity: ["cardiac", "mental_health"],
     label: "Low energy & poor sleep",
     patientPhrase: "persistent low energy and poor sleep",
     category: "Energy & sleep",
@@ -112,6 +113,7 @@ const concerns: Concern[] = [
   },
   {
     id: "stress-anxiety",
+    sensitivity: ["mental_health"],
     label: "Stress, anxiety & overwhelm",
     patientPhrase: "ongoing stress, anxiety and feeling overwhelmed",
     category: "Mind & stress",
@@ -222,6 +224,7 @@ const concerns: Concern[] = [
   },
   {
     id: "aches-pains",
+    sensitivity: ["neuro"],
     label: "Persistent aches & pains",
     patientPhrase: "persistent aches and pains in the body",
     category: "Musculoskeletal",
@@ -279,6 +282,7 @@ const concerns: Concern[] = [
   },
   {
     id: "hormonal",
+    sensitivity: ["pregnancy"],
     label: "Hormonal & menstrual changes",
     patientPhrase: "hormonal or menstrual changes",
     category: "Hormonal & cyclical",
@@ -331,6 +335,7 @@ const concerns: Concern[] = [
   },
   {
     id: "headaches",
+    sensitivity: ["neuro"],
     label: "Headaches & migraines",
     patientPhrase: "recurring headaches or migraines",
     category: "Head & nervous system",
@@ -385,6 +390,7 @@ const concerns: Concern[] = [
   },
   {
     id: "low-mood",
+    sensitivity: ["mental_health"],
     label: "Low mood & motivation",
     patientPhrase: "low mood and low motivation",
     category: "Mind & stress",
@@ -490,6 +496,7 @@ const concerns: Concern[] = [
   },
   {
     id: "something-else",
+    sensitivity: ["cardiac", "neuro", "pregnancy", "mental_health"],
     label: "Something else",
     patientPhrase: "something else I'd like to understand",
     category: "General",
