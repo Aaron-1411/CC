@@ -72,15 +72,15 @@
 :root {
   --radius: 0.625rem;
   /* Editorial dark — transparenC */
-  --background: oklch(0.155 0.012 260);   /* #0a0c10 */
+  --background: oklch(0.155 0.012 260); /* #0a0c10 */
   --foreground: oklch(0.96 0.005 250);
-  --surface: oklch(0.19 0.012 260);       /* #111318 cards */
-  --surface-2: oklch(0.235 0.012 260);    /* hover */
+  --surface: oklch(0.19 0.012 260); /* #111318 cards */
+  --surface-2: oklch(0.235 0.012 260); /* hover */
   --card: oklch(0.19 0.012 260);
   --card-foreground: oklch(0.96 0.005 250);
   --popover: oklch(0.19 0.012 260);
   --popover-foreground: oklch(0.96 0.005 250);
-  --primary: oklch(0.78 0.155 75);        /* amber #f5a623 */
+  --primary: oklch(0.78 0.155 75); /* amber #f5a623 */
   --primary-foreground: oklch(0.18 0.012 260);
   --secondary: oklch(0.26 0.012 260);
   --secondary-foreground: oklch(0.96 0.005 250);
@@ -93,9 +93,9 @@
   --border: oklch(0.27 0.012 260);
   --input: oklch(0.27 0.012 260);
   --ring: oklch(0.78 0.155 75);
-  --amber: oklch(0.78 0.155 75);          /* #f5a623 */
-  --flag: oklch(0.66 0.22 25);            /* #ef4444 */
-  --ok: oklch(0.72 0.18 150);             /* #22c55e */
+  --amber: oklch(0.78 0.155 75); /* #f5a623 */
+  --flag: oklch(0.66 0.22 25); /* #ef4444 */
+  --ok: oklch(0.72 0.18 150); /* #22c55e */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -158,21 +158,78 @@
     font-feature-settings: "ss01", "ss02";
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
 
-  .font-mono, code, kbd, .label-mono {
+  .font-mono,
+  code,
+  kbd,
+  .label-mono {
     font-family: var(--font-mono);
   }
 }
 
 @keyframes live-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
 }
 
 .live-dot {
   animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+/* Accessibility: respect reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Accessibility: visible keyboard focus ring on all interactive elements. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-amber, #f59e0b);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip-to-content link — hidden until focused. */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  z-index: 100;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.375rem;
+  background: var(--color-amber, #f59e0b);
+  color: #1c1917;
+  font-weight: 600;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 0.5rem;
 }

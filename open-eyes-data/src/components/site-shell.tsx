@@ -114,6 +114,9 @@ export function SiteShell() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <a href="#main" className="skip-link label-mono text-xs uppercase tracking-wider">
+        Skip to content
+      </a>
       <header className="border-b border-border bg-surface/60 backdrop-blur sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-0 flex items-stretch justify-between gap-4">
           {/* Logo */}
@@ -129,6 +132,7 @@ export function SiteShell() {
               <Link
                 key={n.to}
                 to={n.to}
+                aria-current={isActive(n.to) ? "page" : undefined}
                 className={cn(
                   "px-2.5 py-3 text-[11px] label-mono uppercase tracking-wider transition-colors whitespace-nowrap border-b-2",
                   isActive(n.to)
@@ -182,6 +186,7 @@ export function SiteShell() {
                           <Link
                             key={n.to}
                             to={n.to}
+                            aria-current={isActive(n.to) ? "page" : undefined}
                             className={cn(
                               "py-1 text-[12px] transition-colors",
                               isActive(n.to)
@@ -268,6 +273,7 @@ export function SiteShell() {
                   <Link
                     key={n.to}
                     to={n.to}
+                    aria-current={isActive(n.to) ? "page" : undefined}
                     className={cn(
                       "px-2 py-2 rounded text-[12px] label-mono uppercase tracking-wider transition-colors",
                       isActive(n.to)
@@ -291,6 +297,7 @@ export function SiteShell() {
                     <Link
                       key={n.to}
                       to={n.to}
+                      aria-current={isActive(n.to) ? "page" : undefined}
                       className={cn(
                         "px-2 py-2 rounded text-[11px] label-mono uppercase tracking-wider transition-colors",
                         isActive(n.to)
@@ -316,7 +323,7 @@ export function SiteShell() {
         )}
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <main id="main" className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
         <Outlet />
       </main>
 
