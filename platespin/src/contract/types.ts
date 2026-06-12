@@ -68,6 +68,9 @@ export interface Diet {
 /** OSM availability values for a diet:* tag. */
 export type DietAvailability = "only" | "yes" | "limited" | "no" | "unknown";
 
+/** OSM `reservation` tag values. Absent = unknown (we still offer a booking handoff for sit-down restaurants). */
+export type ReservationStatus = "yes" | "no" | "required" | "recommended";
+
 // ── Geo ──────────────────────────────────────────────────────────────────────
 
 export interface LatLng {
@@ -100,6 +103,11 @@ export interface PlaceResult {
   hours?: string; // raw OSM opening_hours string
   /** Per-diet availability from OSM diet:* tags. Absent key = unknown, NOT "no". */
   diet?: Partial<Record<DietId, DietAvailability>>;
+  phone?: string; // OSM phone / contact:phone — powers the "Call" booking action
+  /** OSM `reservation` tag (sparse). "no" = walk-in only; absent = unknown. */
+  reservation?: ReservationStatus;
+  /** True for sit-down venues we can offer a booking handoff for (amenity=restaurant, not reservation=no). */
+  bookable?: boolean;
   dataQuality: DataQuality;
   // Media: photos are NOT hosted — they are external links
   links: PlaceLinks;
@@ -113,6 +121,7 @@ export interface PlaceLinks {
   instagramSearch: string;
   youtubeSearch: string; // free deep-link instead of quota-limited embed
   website?: string;
+  reserve?: string; // OpenTable search deep-link — booking handoff, no API/quota
 }
 
 // ── Search ───────────────────────────────────────────────────────────────────

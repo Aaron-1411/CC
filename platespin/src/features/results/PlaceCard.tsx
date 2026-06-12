@@ -63,6 +63,9 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
   const cuisineLabels = place.cuisine.map((c) => CUISINE_BY_ID[c]?.label).filter(Boolean);
   const badges = diets.map((d) => dietBadge(place, d));
   const links = place.links;
+  const canReserve = !!links.reserve;
+  const canCall = !!place.phone;
+  const hasBooking = canReserve || canCall;
 
   return (
     <li className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
@@ -108,13 +111,50 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
         </div>
       )}
 
+      {/* Booking row — only for sit-down venues OSM says we can act on. Booking is
+          an honest hand-off (OpenTable search / phone), since OSM has no reservation API. */}
+      {hasBooking && (
+        <div className="mt-3 flex items-center gap-1.5">
+          {canReserve && (
+            <a
+              href={links.reserve}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => onVisit(place.id)}
+              className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-amber-300 px-3 text-sm font-semibold text-slate-900 transition active:scale-[0.98]"
+              title="Find & book a table on OpenTable"
+            >
+              🍽️ Book a table
+            </a>
+          )}
+          {canCall && (
+            <a
+              href={`tel:${place.phone}`}
+              onClick={() => onVisit(place.id)}
+              className={`flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl px-3 text-sm font-semibold transition active:scale-[0.98] ${
+                canReserve
+                  ? "border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
+                  : "flex-1 bg-amber-300 text-slate-900"
+              }`}
+              title={`Call ${place.name}`}
+            >
+              📞 Call
+            </a>
+          )}
+        </div>
+      )}
+
       <div className="mt-3 flex items-center gap-1.5">
         <a
           href={links.googleMaps}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className="flex min-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-amber-300 px-3 text-sm font-semibold text-slate-900 transition active:scale-[0.98]"
+          className={`flex min-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-xl px-3 text-sm font-semibold transition active:scale-[0.98] ${
+            hasBooking
+              ? "border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
+              : "bg-amber-300 text-slate-900"
+          }`}
         >
           🗺️ Directions
         </a>
