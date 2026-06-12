@@ -295,6 +295,7 @@
       <span class="chip" data-f="plugin">Plugins</span>
       <span class="chip" data-f="cli">CLI tools</span>
       <span class="chip" data-f="ref">References</span>
+      <span class="chip" data-f="apps">Apps</span>
       <span class="chip" data-f="agents">Subagents</span>
     </div>
   </div>
@@ -392,6 +393,13 @@ const DATA = {
     items:[
       ["API-mega-list","~10,500 public APIs, searchable (26M).","fetch"],
       ["resource","232 specialised subagents → github.com/Aaron-1411/resource (private). Fetched when a task needs a specialist.","fetch"]
+    ]
+  },
+  apps: {
+    title:"Apps & experiments", filter:"apps", count:1, badge:"b-cli",
+    intro:"Standalone apps cloned into the library — run locally on demand, kept for reference and inspiration. Not auto-invoked; I spin one up when you ask.",
+    items:[
+      ["llm-council","Karpathy's multi-LLM \"council\". Sends your query to several models (GPT, Gemini, Claude, Grok) via OpenRouter, has them anonymously peer-review and rank each other, then a Chairman model synthesises the final answer. FastAPI + React, run locally via ./start.sh. Cloned for reference (1.0M).","cli"]
     ]
   }
 };
@@ -511,7 +519,7 @@ main.innerHTML =
   rulesSectionHTML() +
   sectionHTML("design") + sectionHTML("writing") + sectionHTML("caveman") +
   sectionHTML("mcp") + sectionHTML("plugin") + sectionHTML("cli") +
-  sectionHTML("ref") + agentsSectionHTML();
+  sectionHTML("ref") + sectionHTML("apps") + agentsSectionHTML();
 
 // ── filters ──
 const chips = document.querySelectorAll(".chip");
