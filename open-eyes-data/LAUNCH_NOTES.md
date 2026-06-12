@@ -1,7 +1,27 @@
 # transparenC — Launch Remediation Notes
 
 Branch: `launch-remediation` (pushed to GitHub; **not deployed** — `master` untouched).
-All commits typecheck clean (`tsc --noEmit`) and are prettier-formatted.
+All commits typecheck clean (`tsc --noEmit`), build clean (`bun run build` exit 0), prettier-formatted.
+
+## Post-remediation additions (beyond the original 8 workstreams)
+- **Learn** — political-education section (`/learn`, `/learn/$slug`): 6 sourced lesson
+  modules + interactive quizzes + a 10-item "democratic rights" quick-reference, mirroring
+  the MoneyMind education pattern.
+- **Simplifications** — nav slimmed to 5 primary items + a single "More" menu; the homepage
+  tool grid moved to a dedicated `/tools` directory (single source of truth).
+- **WS5 (no-KV portion)** — petitions "Outcomes" view: responded/debated petitions linking
+  to the official response/debate record. Velocity-over-time still needs KV.
+- **WS8 a11y** — skip-to-content link, focus-visible rings, reduced-motion support,
+  `aria-current` on nav, `aria-hidden` on decorative emoji icons.
+
+## Only-blocked-on-you items
+1. **Go-live** — merge `launch-remediation` → `master` (that's the deploy).
+2. **AI Briefing** (optional, free without it) — `wrangler secret put ANTHROPIC_API_KEY`.
+3. **KV namespace** (free) — unblocks petition velocity + a persistent rate limiter.
+4. **Lighthouse/contrast audit** — needs a running browser.
+5. **WS4 long tail** — verbatim manifesto quotes for the remaining pledges (careful sourcing;
+   2 flagship Labour pledges verified so far, incl. catching a ~50× NHS error).
+6. **D6 wording** — your final "who runs this" sentence.
 
 ## Decisions applied
 D1 workers.dev-safe (domain TBD) · D2 polling removed · D3 News→Coverage Tracker ·

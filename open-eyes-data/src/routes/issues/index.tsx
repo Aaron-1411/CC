@@ -44,7 +44,9 @@ function IssuesIndexPage() {
             >
               {/* Icon + title */}
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{def.icon}</span>
+                <span className="text-3xl" aria-hidden="true">
+                  {def.icon}
+                </span>
                 <div>
                   <div className="font-display text-xl font-bold group-hover:text-amber transition-colors leading-tight">
                     {def.title}

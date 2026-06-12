@@ -139,7 +139,7 @@ function IssuePage() {
       {/* Hero */}
       <section className="border-l-4 pl-5 py-1" style={{ borderColor: def.color }}>
         <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-1">
-          {def.icon} {def.title}
+          <span aria-hidden="true">{def.icon}</span> {def.title}
         </div>
         <h1 className="font-display text-3xl sm:text-4xl font-black leading-tight">
           {def.question}

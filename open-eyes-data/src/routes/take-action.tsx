@@ -417,7 +417,9 @@ function TakeActionPage() {
               className={`rounded-lg border ${band.borderColor} ${band.bgColor} group`}
             >
               <summary className="flex items-center gap-3 px-5 py-4 cursor-pointer list-none select-none">
-                <span className="text-2xl">{band.emoji}</span>
+                <span className="text-2xl" aria-hidden="true">
+                  {band.emoji}
+                </span>
                 <div className="flex-1 min-w-0">
                   <span className={`label-mono text-[11px] uppercase tracking-wider ${band.color}`}>
                     {band.range}
@@ -449,7 +451,9 @@ function TakeActionPage() {
                       className="rounded-lg bg-surface border border-border p-4 space-y-1"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-base">{action.icon}</span>
+                        <span className="text-base" aria-hidden="true">
+                          {action.icon}
+                        </span>
                         <span className="font-display text-sm font-semibold">{action.title}</span>
                       </div>
                       <p className="text-xs text-muted-foreground leading-relaxed">{action.body}</p>
@@ -492,7 +496,9 @@ function TakeActionPage() {
             const inner = (
               <>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{action.icon}</span>
+                  <span className="text-xl" aria-hidden="true">
+                    {action.icon}
+                  </span>
                   <span className="font-display text-sm font-semibold group-hover:text-amber transition-colors">
                     {action.title}
                   </span>

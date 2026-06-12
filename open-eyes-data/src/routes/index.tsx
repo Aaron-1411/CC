@@ -254,7 +254,9 @@ function IssueGrid() {
               params={{ issue: key }}
               className="group flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-4 hover:border-amber/50 hover:bg-surface-2 transition-colors text-center"
             >
-              <span className="text-2xl">{def.icon}</span>
+              <span className="text-2xl" aria-hidden="true">
+                {def.icon}
+              </span>
               <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-amber transition-colors leading-tight">
                 {def.title}
               </span>
