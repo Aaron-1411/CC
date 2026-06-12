@@ -40,17 +40,17 @@ type MPDetailData = {
 // Map interest categories to plain English
 function categoryLabel(cat: string): string {
   const map: Record<string, string> = {
-    "Employment and earnings":                       "Paid employment",
-    "Donations and other support for activities":   "Donations received",
-    "Gifts, benefits and hospitality":              "Gifts & hospitality",
-    "Shareholdings":                                "Share holdings",
-    "Land and property":                            "Land & property",
-    "Sponsorships":                                 "Sponsorships",
-    "Overseas visits":                              "Overseas trips",
-    "Overseas benefits and gifts":                  "Overseas gifts",
-    "Family members employed":                      "Family employment",
-    "Family members in lobbying":                   "Family in lobbying",
-    "Miscellaneous":                                "Other",
+    "Employment and earnings": "Paid employment",
+    "Donations and other support for activities": "Donations received",
+    "Gifts, benefits and hospitality": "Gifts & hospitality",
+    Shareholdings: "Share holdings",
+    "Land and property": "Land & property",
+    Sponsorships: "Sponsorships",
+    "Overseas visits": "Overseas trips",
+    "Overseas benefits and gifts": "Overseas gifts",
+    "Family members employed": "Family employment",
+    "Family members in lobbying": "Family in lobbying",
+    Miscellaneous: "Other",
   };
   for (const [k, v] of Object.entries(map)) {
     if (cat.toLowerCase().includes(k.toLowerCase().slice(0, 10))) return v;
@@ -81,14 +81,17 @@ function MyAreaPage() {
           </div>
           <h1 className="font-display text-3xl font-black">Your local accountability hub</h1>
           <p className="mt-3 text-muted-foreground max-w-xl">
-            Enter your postcode to see your MP's voting record, declared financial interests, local policing data and more.
+            Enter your postcode to see your MP's voting record, declared financial interests, local
+            policing data and more.
           </p>
         </div>
         <PostcodeWidget />
         <ContextBlock heading="What you'll see once you enter your postcode" variant="default">
           <ul className="space-y-1 list-disc list-inside">
             <li>Your MP's name, party and recent votes in the Commons</li>
-            <li>Your MP's declared financial interests (shareholdings, second jobs, paid lobbying)</li>
+            <li>
+              Your MP's declared financial interests (shareholdings, second jobs, paid lobbying)
+            </li>
             <li>Your local police force's stop and search data</li>
             <li>Links to write to your MP on any issue</li>
             <li>Your MP's expenses claim totals</li>
@@ -98,7 +101,13 @@ function MyAreaPage() {
     );
   }
 
-  const { mp, constituency: constituencyName, policeForceId, localAuthority, region } = constituency;
+  const {
+    mp,
+    constituency: constituencyName,
+    policeForceId,
+    localAuthority,
+    region,
+  } = constituency;
 
   return (
     <div className="space-y-8">
@@ -110,7 +119,10 @@ function MyAreaPage() {
         <h1 className="font-display text-3xl sm:text-4xl font-black leading-tight">
           {constituencyName}
         </h1>
-        <p className="mt-2 text-muted-foreground">{localAuthority}{region ? ` · ${region}` : ""}</p>
+        <p className="mt-2 text-muted-foreground">
+          {localAuthority}
+          {region ? ` · ${region}` : ""}
+        </p>
         <button
           onClick={clear}
           className="mt-2 label-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
@@ -130,15 +142,22 @@ function MyAreaPage() {
                   src={mp.thumbnailUrl}
                   alt={mp.name}
                   className="w-20 h-24 object-cover rounded border border-border shrink-0"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               )}
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: mp.partyColour }} />
+                  <div
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: mp.partyColour }}
+                  />
                   <span className="font-display text-xl font-bold">{mp.name}</span>
                 </div>
-                <div className="text-sm text-muted-foreground">{mp.party} MP for {mp.constituency}</div>
+                <div className="text-sm text-muted-foreground">
+                  {mp.party} MP for {mp.constituency}
+                </div>
                 {mp.membershipFrom && (
                   <div className="label-mono text-[10px] text-muted-foreground">
                     Member of Parliament since {mp.membershipFrom}
@@ -186,7 +205,9 @@ function MyAreaPage() {
           />
           {mpQ.isLoading && (
             <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-14 w-full" />
+              ))}
             </div>
           )}
           {mpQ.error && <ErrorNote>{(mpQ.error as Error).message}</ErrorNote>}
@@ -233,12 +254,14 @@ function MyAreaPage() {
             title="Second jobs, shares, gifts & more"
           />
           <p className="text-muted-foreground text-sm -mt-2 mb-4 max-w-xl">
-            MPs must declare all financial interests in the Register of Members' Financial Interests.
-            These are updated when changes occur.
+            MPs must declare all financial interests in the Register of Members' Financial
+            Interests. These are updated when changes occur.
           </p>
           {mpQ.isLoading && (
             <div className="space-y-2">
-              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
             </div>
           )}
           {!mpQ.isLoading && mpDetail && mpDetail.interests.length === 0 && (
@@ -253,12 +276,8 @@ function MyAreaPage() {
               {mpDetail.interests.map((interest) => (
                 <Card key={interest.interestId} className="py-3 px-4">
                   <div className="flex flex-wrap items-start gap-2">
-                    <FlagPill variant="neutral">
-                      {categoryLabel(interest.category)}
-                    </FlagPill>
-                    {interest.registeredLate && (
-                      <FlagPill variant="warn">Registered late</FlagPill>
-                    )}
+                    <FlagPill variant="neutral">{categoryLabel(interest.category)}</FlagPill>
+                    {interest.registeredLate && <FlagPill variant="warn">Registered late</FlagPill>}
                   </div>
                   <p className="text-sm mt-2 leading-relaxed">{interest.description}</p>
                 </Card>
@@ -285,7 +304,10 @@ function MyAreaPage() {
         <SectionHeader eyebrow="Local policing" title="Stop & search in your area" />
         <Card>
           <p className="text-sm text-muted-foreground mb-3">
-            Your local force: <strong className="text-foreground">{policeForceId.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</strong>
+            Your local force:{" "}
+            <strong className="text-foreground">
+              {policeForceId.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+            </strong>
           </p>
           <Link
             to="/stop-search"
@@ -301,19 +323,41 @@ function MyAreaPage() {
         <SectionHeader eyebrow="Explore further" title="Data relevant to your area" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
-            { to: "/contracts", label: "Government contracts", copy: "Search contracts awarded by government departments" },
-            { to: "/petitions", label: "Active petitions", copy: "Sign or share petitions on issues that matter to you" },
-            { to: "/nhs", label: "NHS performance", copy: "A&E wait times and NHS England statistics" },
-            { to: "/parties", label: "Party promises", copy: "What every party promised and how they're delivering" },
-            { to: "/briefing", label: "AI briefing", copy: "Ask about any local or national accountability issue" },
-            { to: "/expenses", label: "MP expenses", copy: "Find your MP in the IPSA expenses data" },
+            {
+              to: "/contracts",
+              label: "Government contracts",
+              copy: "Search contracts awarded by government departments",
+            },
+            {
+              to: "/petitions",
+              label: "Active petitions",
+              copy: "Sign or share petitions on issues that matter to you",
+            },
+            {
+              to: "/nhs",
+              label: "NHS performance",
+              copy: "A&E wait times and NHS England statistics",
+            },
+            {
+              to: "/parties",
+              label: "Party promises",
+              copy: "What every party promised and how they're delivering",
+            },
+            { to: "/learn", label: "Learn", copy: "How UK democracy works and how to take part" },
+            {
+              to: "/expenses",
+              label: "MP expenses",
+              copy: "Find your MP in the IPSA expenses data",
+            },
           ].map((tool) => (
             <Link
               key={tool.to}
               to={tool.to}
               className="group block bg-surface border border-border rounded-lg p-4 hover:border-amber/40 hover:bg-surface-2 transition-colors"
             >
-              <h3 className="font-display text-sm font-bold group-hover:text-amber transition-colors">{tool.label}</h3>
+              <h3 className="font-display text-sm font-bold group-hover:text-amber transition-colors">
+                {tool.label}
+              </h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{tool.copy}</p>
             </Link>
           ))}

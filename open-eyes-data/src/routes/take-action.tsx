@@ -21,7 +21,7 @@ const HOW_TO_STEPS = [
   {
     n: "01",
     title: "Pick an issue that matters to you",
-    body: "Start with the Issues page. Choose NHS, housing, the economy, crime, environment, immigration or education — or use the AI briefing to explore any topic in plain English.",
+    body: "Start with the Issues page. Choose NHS, housing, the economy, crime, environment, immigration or education to see the data in plain English — or read the Learn guide for how the system works.",
     link: { to: "/issues", label: "Browse issues →" },
   },
   {
@@ -45,7 +45,7 @@ const HOW_TO_STEPS = [
   {
     n: "05",
     title: "Take action",
-    body: "Sign open petitions, write to your MP, share data on social media, or use the AI briefing to research an issue before a local meeting or debate.",
+    body: "Sign open petitions, write to your MP, share verified data on social media, or use the tools here to research an issue before a local meeting or debate.",
     link: { to: "/petitions", label: "Sign a petition →" },
   },
 ];
@@ -89,7 +89,7 @@ const AGE_BANDS = [
     ],
     links: [
       { to: "/issues", label: "Explore issues" },
-      { to: "/briefing", label: "AI briefing" },
+      { to: "/learn", label: "Learn the system" },
       { to: "/my-area", label: "Find your MP" },
     ],
   },
@@ -550,11 +550,10 @@ function TakeActionPage() {
             Start exploring →
           </Link>
           <Link
-            to="/briefing"
-            search={{ topic: "" }}
+            to="/learn"
             className="px-4 py-2 border border-amber/30 rounded label-mono text-xs uppercase tracking-wider text-amber hover:bg-amber/10 transition-colors"
           >
-            AI briefing
+            Learn the system
           </Link>
         </div>
       </section>

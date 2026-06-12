@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Card, ErrorNote, LiveBadge, Skeleton } from "@/components/primitives";
 import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
 import { ISSUES, ISSUE_KEYS } from "@/data/issues";
@@ -228,9 +228,6 @@ function LiveSnapshot() {
 // ─── Issue grid ───────────────────────────────────────────────────────────────
 
 function IssueGrid() {
-  const [topic, setTopic] = useState("");
-  const router = useRouter();
-
   return (
     <section className="space-y-5">
       <div>
@@ -275,40 +272,6 @@ function IssueGrid() {
             </Link>
           );
         })}
-      </div>
-
-      {/* Quick briefing CTA */}
-      <div className="rounded-lg border border-amber/20 bg-amber/5 p-5">
-        <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-2">
-          AI Briefing
-        </div>
-        <p className="text-sm text-muted-foreground mb-3">
-          Ask any question about UK government accountability — ministers named, real figures,
-          department by department.
-        </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (topic.trim()) {
-              router.navigate({ to: "/briefing", search: { topic: topic.trim() } });
-            }
-          }}
-          className="flex gap-2"
-        >
-          <input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="e.g. NHS waiting list progress, HS2 overspend, asylum backlog…"
-            className="flex-1 bg-background border border-border rounded px-3 py-2 text-sm focus:border-amber outline-none min-w-0"
-          />
-          <button
-            type="submit"
-            disabled={topic.trim().length < 2}
-            className="px-4 py-2 bg-amber text-amber-foreground rounded label-mono text-xs uppercase tracking-wider disabled:opacity-50 shrink-0"
-          >
-            Ask →
-          </button>
-        </form>
       </div>
     </section>
   );

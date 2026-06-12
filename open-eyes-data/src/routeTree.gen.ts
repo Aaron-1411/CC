@@ -34,7 +34,6 @@ import { Route as DonationsRouteImport } from './routes/donations'
 import { Route as CrossrefRouteImport } from './routes/crossref'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CommitteesRouteImport } from './routes/committees'
-import { Route as BriefingRouteImport } from './routes/briefing'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -64,7 +63,6 @@ import { Route as ApiDonationsRouteImport } from './routes/api/donations'
 import { Route as ApiContractsRouteImport } from './routes/api/contracts'
 import { Route as ApiConstituencyMpRouteImport } from './routes/api/constituency-mp'
 import { Route as ApiCommitteesRouteImport } from './routes/api/committees'
-import { Route as ApiBriefingRouteImport } from './routes/api/briefing'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
 import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
 import { Route as PartiesPledgeIdRouteImport } from './routes/parties.pledge.$id'
@@ -192,11 +190,6 @@ const ContractsRoute = ContractsRouteImport.update({
 const CommitteesRoute = CommitteesRouteImport.update({
   id: '/committees',
   path: '/committees',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BriefingRoute = BriefingRouteImport.update({
-  id: '/briefing',
-  path: '/briefing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcobaRoute = AcobaRouteImport.update({
@@ -344,11 +337,6 @@ const ApiCommitteesRoute = ApiCommitteesRouteImport.update({
   path: '/api/committees',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBriefingRoute = ApiBriefingRouteImport.update({
-  id: '/api/briefing',
-  path: '/api/briefing',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiBillsRoute = ApiBillsRouteImport.update({
   id: '/api/bills',
   path: '/api/bills',
@@ -369,7 +357,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
-  '/briefing': typeof BriefingRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
   '/crossref': typeof CrossrefRoute
@@ -397,7 +384,6 @@ export interface FileRoutesByFullPath {
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
-  '/api/briefing': typeof ApiBriefingRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
@@ -430,7 +416,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
-  '/briefing': typeof BriefingRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
   '/crossref': typeof CrossrefRoute
@@ -458,7 +443,6 @@ export interface FileRoutesByTo {
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
-  '/api/briefing': typeof ApiBriefingRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
@@ -492,7 +476,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
-  '/briefing': typeof BriefingRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
   '/crossref': typeof CrossrefRoute
@@ -520,7 +503,6 @@ export interface FileRoutesById {
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
-  '/api/briefing': typeof ApiBriefingRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
@@ -555,7 +537,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
-    | '/briefing'
     | '/committees'
     | '/contracts'
     | '/crossref'
@@ -583,7 +564,6 @@ export interface FileRouteTypes {
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
-    | '/api/briefing'
     | '/api/committees'
     | '/api/constituency-mp'
     | '/api/contracts'
@@ -616,7 +596,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
-    | '/briefing'
     | '/committees'
     | '/contracts'
     | '/crossref'
@@ -644,7 +623,6 @@ export interface FileRouteTypes {
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
-    | '/api/briefing'
     | '/api/committees'
     | '/api/constituency-mp'
     | '/api/contracts'
@@ -677,7 +655,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
-    | '/briefing'
     | '/committees'
     | '/contracts'
     | '/crossref'
@@ -705,7 +682,6 @@ export interface FileRouteTypes {
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
-    | '/api/briefing'
     | '/api/committees'
     | '/api/constituency-mp'
     | '/api/contracts'
@@ -739,7 +715,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AcobaRoute: typeof AcobaRoute
-  BriefingRoute: typeof BriefingRoute
   CommitteesRoute: typeof CommitteesRoute
   ContractsRoute: typeof ContractsRoute
   CrossrefRoute: typeof CrossrefRoute
@@ -767,7 +742,6 @@ export interface RootRouteChildren {
   VotesRoute: typeof VotesRoute
   ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBillsRoute: typeof ApiBillsRoute
-  ApiBriefingRoute: typeof ApiBriefingRoute
   ApiCommitteesRoute: typeof ApiCommitteesRoute
   ApiConstituencyMpRoute: typeof ApiConstituencyMpRoute
   ApiContractsRoute: typeof ApiContractsRoute
@@ -970,13 +944,6 @@ declare module '@tanstack/react-router' {
       path: '/committees'
       fullPath: '/committees'
       preLoaderRoute: typeof CommitteesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/briefing': {
-      id: '/briefing'
-      path: '/briefing'
-      fullPath: '/briefing'
-      preLoaderRoute: typeof BriefingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acoba': {
@@ -1182,13 +1149,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCommitteesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/briefing': {
-      id: '/api/briefing'
-      path: '/api/briefing'
-      fullPath: '/api/briefing'
-      preLoaderRoute: typeof ApiBriefingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/bills': {
       id: '/api/bills'
       path: '/api/bills'
@@ -1238,7 +1198,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AcobaRoute: AcobaRoute,
-  BriefingRoute: BriefingRoute,
   CommitteesRoute: CommitteesRoute,
   ContractsRoute: ContractsRoute,
   CrossrefRoute: CrossrefRoute,
@@ -1266,7 +1225,6 @@ const rootRouteChildren: RootRouteChildren = {
   VotesRoute: VotesRoute,
   ApiAcobaRoute: ApiAcobaRoute,
   ApiBillsRoute: ApiBillsRoute,
-  ApiBriefingRoute: ApiBriefingRoute,
   ApiCommitteesRoute: ApiCommitteesRoute,
   ApiConstituencyMpRoute: ApiConstituencyMpRoute,
   ApiContractsRoute: ApiContractsRoute,

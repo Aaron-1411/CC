@@ -104,7 +104,7 @@ function AboutPage() {
           { href: "#economy", label: "Economy: indicators & spending" },
           { href: "#money", label: "Follow the money: contracts, donations & influence" },
           { href: "#services", label: "Public services: NHS, sewage, policing & welfare" },
-          { href: "#investigate", label: "Investigate: cross-reference, AI & projects" },
+          { href: "#investigate", label: "Investigate: cross-reference & projects" },
           { href: "#action", label: "Taking action" },
           { href: "#sources", label: "Data sources & reliability" },
           { href: "#who", label: "Who runs this" },
@@ -355,10 +355,10 @@ function AboutPage() {
 
       {/* Investigate */}
       <Section id="investigate">
-        <SectionTitle eyebrow="Investigate" title="Cross-reference, AI & major projects" />
+        <SectionTitle eyebrow="Investigate" title="Cross-reference & major projects" />
         <p className="text-muted-foreground leading-relaxed">
-          Power tools for deeper investigation — searching across multiple databases at once,
-          generating briefings, and tracking project cost overruns.
+          Power tools for deeper investigation — searching across multiple databases at once and
+          tracking project cost overruns.
         </p>
         <div className="grid gap-3">
           <ToolCard
@@ -373,24 +373,7 @@ function AboutPage() {
             title="HS2, Hinkley C & beyond"
             copy="Every IPA Government Major Projects Portfolio entry — delivery confidence RAG status (Green to Red), whole-life cost estimate, and department. Includes a notable cost overruns section for the most notorious cases."
           />
-          <ToolCard
-            to="/briefing"
-            eyebrow="AI Briefing"
-            title="Ask about any UK issue"
-            copy="Generate a non-partisan briefing on any UK accountability topic — drawn only from the cached official data behind this site, with every figure linked to its source."
-          />
         </div>
-        <Card className="bg-surface-2/40 border-border">
-          <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-            About AI Briefing
-          </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            The AI Briefing tool answers from the official data already cached on transparenC, and
-            lists the sources it used beneath every answer. It does not browse the open web for
-            figures. Briefings are AI-generated — always verify against the linked sources before
-            sharing.
-          </p>
-        </Card>
       </Section>
 
       {/* Taking action */}
@@ -413,13 +396,8 @@ function AboutPage() {
             },
             {
               icon: "↗",
-              title: "Share stats on X / Twitter",
-              copy: "Click 'Share on X' in the action bar for a pre-formatted tweet ready to post. On economy and sewage pages, hover over individual stat cards to share that specific number — the tweet copy is written to land.",
-            },
-            {
-              icon: "✦",
-              title: "Ask AI for a briefing",
-              copy: "The 'Ask AI about this' link pre-fills the briefing tool with a topic related to the page you're on. Good for generating a quick summary before a meeting or writing a letter.",
+              title: "Share verified stats",
+              copy: "Click 'Share on X' in the action bar for a pre-formatted post with the figure and its source. Sharing accurate, sourced data is one of the most useful things you can do.",
             },
           ].map((item) => (
             <div
@@ -528,9 +506,18 @@ function AboutPage() {
         <SectionTitle eyebrow="Who runs this" title="Who's behind transparenC" />
         <Card className="space-y-2">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Built and self-funded by one independent developer. No party affiliation, no donations,
-            no ads. The site makes no money and takes no money — it exists to make public data
-            usable.
+            transparenC is built and self-funded by one independent developer. It has no party
+            affiliation, takes no donations, runs no ads, and is not backed by any campaign, company
+            or think tank. The site makes no money and takes no money — it exists for one reason: to
+            make public data usable so that anyone can hold power to account.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Every figure links to its official source, every party is held to the same standard, and
+            every correction is published openly. If you think something here is wrong, you can{" "}
+            <Link to="/methodology" className="text-amber hover:underline">
+              challenge it with evidence
+            </Link>
+            .
           </p>
         </Card>
       </Section>

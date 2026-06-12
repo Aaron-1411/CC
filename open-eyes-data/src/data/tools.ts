@@ -61,7 +61,6 @@ export const TOOL_SECTIONS: ToolSection[] = [
     tools: [
       { to: "/crossref", label: "Cross-reference", copy: "Search every database at once" },
       { to: "/projects", label: "Major projects", copy: "HS2, Hinkley & cost overruns" },
-      { to: "/briefing", label: "AI briefing", copy: "Non-partisan topic briefings" },
       { to: "/methodology", label: "Methodology", copy: "How we judge and source" },
     ],
   },

@@ -82,11 +82,6 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         label: "Party pledges on NHS",
         description: "What every party promised and delivered",
       },
-      {
-        to: "/briefing",
-        label: "AI briefing",
-        description: "Generate a non-partisan NHS briefing",
-      },
     ],
   },
 
@@ -124,11 +119,6 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         to: "/petitions",
         label: "Housing petitions",
         description: "What the public is demanding on housing",
-      },
-      {
-        to: "/briefing",
-        label: "AI briefing",
-        description: "Ask about planning reform, house prices, renters",
       },
     ],
   },
@@ -216,11 +206,6 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         label: "Crime & policing pledges",
         description: "Knife crime, sentencing and police numbers",
       },
-      {
-        to: "/briefing",
-        label: "AI briefing",
-        description: "Ask about policing, knife crime or sentencing",
-      },
     ],
   },
 
@@ -260,11 +245,6 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         label: "Environment pledges",
         description: "Net zero, clean power and water policy",
       },
-      {
-        to: "/briefing",
-        label: "AI briefing",
-        description: "Ask about water companies, sewage or net zero",
-      },
     ],
   },
 
@@ -302,11 +282,6 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         to: "/petitions",
         label: "Immigration petitions",
         description: "Current public demands on immigration policy",
-      },
-      {
-        to: "/briefing",
-        label: "AI briefing",
-        description: "Ask about net migration, asylum or borders policy",
       },
     ],
   },
@@ -346,11 +321,6 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         to: "/petitions",
         label: "Education petitions",
         description: "What the public is demanding on schools and universities",
-      },
-      {
-        to: "/briefing",
-        label: "AI briefing",
-        description: "Ask about school funding, Ofsted or tuition fees",
       },
     ],
   },

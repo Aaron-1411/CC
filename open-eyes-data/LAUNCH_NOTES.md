@@ -14,14 +14,18 @@ All commits typecheck clean (`tsc --noEmit`), build clean (`bun run build` exit 
 - **WS8 a11y** — skip-to-content link, focus-visible rings, reduced-motion support,
   `aria-current` on nav, `aria-hidden` on decorative emoji icons.
 
+## Post-launch updates (2026-06-12)
+- **LIVE** — `launch-remediation` merged to `master` and deployed; hub card rebranded to transparenC.
+- **D6 done** — final "who runs this" wording added to /about.
+- **AI Briefing removed entirely** — page, `/api/briefing`, the AI gateway, the homepage CTA,
+  the ActionBar "Ask AI" button, and all nav/tool/issue links. The site is now fully free with
+  no AI dependency or API key of any kind.
+
 ## Only-blocked-on-you items
-1. **Go-live** — merge `launch-remediation` → `master` (that's the deploy).
-2. **AI Briefing** (optional, free without it) — `wrangler secret put ANTHROPIC_API_KEY`.
-3. **KV namespace** (free) — unblocks petition velocity + a persistent rate limiter.
-4. **Lighthouse/contrast audit** — needs a running browser.
-5. **WS4 long tail** — verbatim manifesto quotes for the remaining pledges (careful sourcing;
+1. **KV namespace** (free) — unblocks petition velocity + a persistent rate limiter.
+2. **Lighthouse/contrast audit** — needs a running browser.
+3. **WS4 long tail** — verbatim manifesto quotes for the remaining pledges (careful sourcing;
    2 flagship Labour pledges verified so far, incl. catching a ~50× NHS error).
-6. **D6 wording** — your final "who runs this" sentence.
 
 ## Decisions applied
 D1 workers.dev-safe (domain TBD) · D2 polling removed · D3 News→Coverage Tracker ·

@@ -56,7 +56,6 @@ const MORE_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     items: [
       { to: "/crossref", label: "Cross-reference" },
       { to: "/projects", label: "Major projects" },
-      { to: "/briefing", label: "AI briefing" },
       { to: "/methodology", label: "Methodology" },
     ],
   },

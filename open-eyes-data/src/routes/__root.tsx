@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Live UK government accountability dashboard: petitions, bills, contracts, MP expenses and AI-powered briefings, sourced from open public data.",
+          "Live UK government accountability: party pledges, petitions, bills, contracts, MP expenses, NHS and more — every figure sourced from open public data.",
       },
       { name: "author", content: "transparenC" },
       { property: "og:title", content: "transparenC — UK Government Accountability Dashboard" },

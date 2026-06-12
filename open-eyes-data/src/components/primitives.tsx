@@ -1,7 +1,13 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState, type ReactNode } from "react";
 
-export function LiveBadge({ timestamp, label = "LIVE" }: { timestamp?: string | number | Date | null; label?: string }) {
+export function LiveBadge({
+  timestamp,
+  label = "LIVE",
+}: {
+  timestamp?: string | number | Date | null;
+  label?: string;
+}) {
   const ts = timestamp ? new Date(timestamp) : null;
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -38,7 +44,12 @@ export function DataProvenance({
       <div>
         <span className="uppercase tracking-wider">Source: </span>
         {url ? (
-          <a href={url} target="_blank" rel="noreferrer" className="underline hover:text-amber break-all">
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="underline hover:text-amber break-all"
+          >
             {source}
           </a>
         ) : (
@@ -61,12 +72,7 @@ export function DataProvenance({
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div
-      className={cn(
-        "bg-surface border border-border rounded-lg p-5 sm:p-6",
-        className,
-      )}
-    >
+    <div className={cn("bg-surface border border-border rounded-lg p-5 sm:p-6", className)}>
       {children}
     </div>
   );
@@ -126,13 +132,7 @@ export function FlagPill({
   );
 }
 
-export function ThresholdBar({
-  value,
-  thresholds,
-}: {
-  value: number;
-  thresholds: number[];
-}) {
+export function ThresholdBar({ value, thresholds }: { value: number; thresholds: number[] }) {
   const max = Math.max(thresholds[thresholds.length - 1], value);
   const pct = Math.min(100, (value / max) * 100);
   return (
@@ -154,23 +154,15 @@ export function ThresholdBar({
         ))}
       </div>
       <div className="flex justify-between label-mono text-[10px] text-muted-foreground">
-        <span className={value >= thresholds[0] ? "text-ok" : ""}>
-          10k · response
-        </span>
-        <span className={value >= thresholds[1] ? "text-ok" : ""}>
-          100k · debate
-        </span>
+        <span className={value >= thresholds[0] ? "text-ok" : ""}>10k · response</span>
+        <span className={value >= thresholds[1] ? "text-ok" : ""}>100k · debate</span>
       </div>
     </div>
   );
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn("bg-surface-2/60 rounded animate-pulse", className)}
-    />
-  );
+  return <div className={cn("bg-surface-2/60 rounded animate-pulse", className)} />;
 }
 
 export function Stat({
@@ -213,17 +205,26 @@ export function Stat({
       >
         {loading ? <Skeleton className="h-8 w-24" /> : value}
       </div>
-      {hint && (
-        <div className="label-mono text-[11px] text-muted-foreground mt-1">{hint}</div>
-      )}
+      {hint && <div className="label-mono text-[11px] text-muted-foreground mt-1">{hint}</div>}
       {shareable && !loading && (
         <button
           onClick={handleShareStat}
           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded text-muted-foreground hover:text-amber"
           title="Share this stat on X/Twitter"
         >
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5.5 7.5V1.5" /><path d="M3 4L5.5 1.5L8 4" /><path d="M1.5 7.5V9.5h8V7.5" />
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 11 11"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5.5 7.5V1.5" />
+            <path d="M3 4L5.5 1.5L8 4" />
+            <path d="M1.5 7.5V9.5h8V7.5" />
           </svg>
         </button>
       )}
@@ -256,8 +257,8 @@ export function ContextBlock({
     variant === "critical"
       ? "border-flag/30 bg-flag/5"
       : variant === "warn"
-      ? "border-amber/30 bg-amber/5"
-      : "border-border bg-surface-2/40";
+        ? "border-amber/30 bg-amber/5"
+        : "border-border bg-surface-2/40";
   return (
     <div className={cn("rounded-lg border p-4 sm:p-5 space-y-2", border)}>
       <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -271,15 +272,15 @@ export function ContextBlock({
 
 /**
  * ActionBar — "what can I do?" row on every data page.
- * Provides write-to-MP (with optional pre-drafted letter), share, and AI briefing entry points.
+ * Provides write-to-MP (with optional pre-drafted letter) and share entry points.
  */
 export function ActionBar({
   mpTopic,
-  briefingTopic,
   shareText,
   letterTemplate,
 }: {
   mpTopic?: string;
+  /** @deprecated AI briefing was removed; kept so existing callers don't break. */
   briefingTopic?: string;
   shareText?: string;
   /** Pre-drafted letter body. If provided, shows a "Draft letter" button that opens a modal. */
@@ -347,15 +348,6 @@ export function ActionBar({
         >
           {copied ? "✓ Copied" : shareText ? "↗ Share on X" : "↗ Share this"}
         </button>
-
-        {briefingTopic && (
-          <a
-            href={`/briefing?topic=${encodeURIComponent(briefingTopic)}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border bg-surface label-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
-          >
-            ✦ Ask AI about this
-          </a>
-        )}
       </div>
 
       {/* Letter modal */}
@@ -370,23 +362,40 @@ export function ActionBar({
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <div>
-                <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Pre-drafted letter</div>
-                <div className="font-display text-base font-bold mt-0.5">Copy, personalise and send</div>
+                <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Pre-drafted letter
+                </div>
+                <div className="font-display text-base font-bold mt-0.5">
+                  Copy, personalise and send
+                </div>
               </div>
               <button
                 onClick={() => setLetterOpen(false)}
                 className="text-muted-foreground hover:text-foreground p-1"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <line x1="2" y1="2" x2="14" y2="14" /><line x1="14" y1="2" x2="2" y2="14" />
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <line x1="2" y1="2" x2="14" y2="14" />
+                  <line x1="14" y1="2" x2="2" y2="14" />
                 </svg>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-5">
-              <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans text-foreground">{letterTemplate}</pre>
+              <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans text-foreground">
+                {letterTemplate}
+              </pre>
             </div>
             <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-border bg-surface-2/40 rounded-b-xl">
-              <p className="text-xs text-muted-foreground">Edit before sending — personalise with your name and local detail.</p>
+              <p className="text-xs text-muted-foreground">
+                Edit before sending — personalise with your name and local detail.
+              </p>
               <div className="flex gap-2 shrink-0">
                 <button
                   onClick={copyLetter}
