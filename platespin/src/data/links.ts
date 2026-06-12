@@ -49,16 +49,12 @@ export function buildPlaceLinks(
   const gm = center
     ? `https://www.google.com/maps/search/?api=1&query=${enc(q)}&query_place_id=`
     : `https://www.google.com/maps/search/?api=1&query=${enc(q)}`;
-  // Booking hand-off (no API): OpenTable search, localised by coords when known.
-  const reserve = center
-    ? `https://www.opentable.com/s?term=${enc(name)}&latitude=${center.lat}&longitude=${center.lng}`
-    : `https://www.opentable.com/s?term=${enc(`${name} ${localityLabel}`.trim())}`;
   return {
     googleMaps: gm,
     tiktokSearch: `https://www.tiktok.com/search?q=${enc(q)}`,
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(q)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(q)}`,
     website,
-    reserve,
+    reserve: `https://www.opentable.com/s?term=${enc(q)}`,
   };
 }

@@ -307,17 +307,65 @@ jobs:
 
   deploy-platespin:
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: a1a1276a1a278339d95c187e0bf6de47
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - name: Ensure CF Pages project exists
         run: |
           curl -s -o /dev/null \
-            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H "Content-Type: application/json" \
             -d '{"name":"platespin-app","production_branch":"main"}' || true
-      - run: cd platespin && bun install && bun run build
+      # ── v2 needs durable state. Provision D1 + R2 with the same token CI ──
+      # already uses for Pages. Runs BEFORE build/deploy so any permission gap
+      # fails here and the last good v1 deployment stays live (non-destructive).
+      - name: Provision D1 + R2 and wire bindings
+        run: |
+          set -euo pipefail
+          API="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          AUTH="Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"
+
+          # D1: find-or-create the "platespin" database
+          D1_LIST=$(curl -s -H "$AUTH" "${API}/d1/database?name=platespin")
+          echo "$D1_LIST" | jq -e '.success == true' >/dev/null \
+            || { echo "::error::CF API token lacks D1 read scope"; echo "$D1_LIST"; exit 1; }
+          DB_ID=$(echo "$D1_LIST" | jq -r '.result[]? | select(.name=="platespin") | .uuid')
+          if [ -z "$DB_ID" ]; then
+            echo "Creating D1 database platespin…"
+            D1_NEW=$(curl -s -X POST -H "$AUTH" -H "Content-Type: application/json" \
+              -d '{"name":"platespin"}' "${API}/d1/database")
+            echo "$D1_NEW" | jq -e '.success == true' >/dev/null \
+              || { echo "::error::Failed to create D1 (token lacks D1:Edit?)"; echo "$D1_NEW"; exit 1; }
+            DB_ID=$(echo "$D1_NEW" | jq -r '.result.uuid')
+          fi
+          echo "D1 database id: ${DB_ID}"
+
+          # R2: find-or-create the "platespin-media" bucket
+          R2_LIST=$(curl -s -H "$AUTH" "${API}/r2/buckets")
+          echo "$R2_LIST" | jq -e '.success == true' >/dev/null \
+            || { echo "::error::CF API token lacks R2 read scope"; echo "$R2_LIST"; exit 1; }
+          HAVE_R2=$(echo "$R2_LIST" | jq -r '.result.buckets[]? | select(.name=="platespin-media") | .name')
+          if [ "$HAVE_R2" != "platespin-media" ]; then
+            echo "Creating R2 bucket platespin-media…"
+            R2_NEW=$(curl -s -X POST -H "$AUTH" -H "Content-Type: application/json" \
+              -d '{"name":"platespin-media"}' "${API}/r2/buckets")
+            echo "$R2_NEW" | jq -e '.success == true' >/dev/null \
+              || { echo "::error::Failed to create R2 bucket (token lacks R2:Edit?)"; echo "$R2_NEW"; exit 1; }
+          fi
+          echo "R2 bucket ready: platespin-media"
+
+          # Inject the live D1 id into wrangler.toml so pages deploy binds it
+          sed -i "s|REPLACE_WITH_PROD_D1_ID|${DB_ID}|" platespin/wrangler.toml
+          grep -q "${DB_ID}" platespin/wrangler.toml \
+            || { echo "::error::Failed to inject D1 id into wrangler.toml"; exit 1; }
+      - run: cd platespin && bun install
+      - name: Apply D1 migrations (remote)
+        run: cd platespin && bunx wrangler d1 migrations apply platespin --remote
+      - run: cd platespin && bun run build
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

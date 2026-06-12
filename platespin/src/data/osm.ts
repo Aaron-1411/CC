@@ -6,7 +6,6 @@ import type {
   LatLng,
   PlaceLinks,
   PlaceResult,
-  ReservationStatus,
 } from "../contract/types";
 import { CUISINE_BY_ID, OSM_VALUE_TO_CUISINE } from "./cuisines";
 import { DIETS } from "./diets";
@@ -81,16 +80,6 @@ function normaliseDietValue(raw: string | undefined): DietAvailability | undefin
   return undefined;
 }
 
-function normaliseReservation(raw: string | undefined): ReservationStatus | undefined {
-  if (!raw) return undefined;
-  const v = raw.toLowerCase();
-  if (v === "yes") return "yes";
-  if (v === "no") return "no";
-  if (v === "required") return "required";
-  if (v === "recommended") return "recommended";
-  return undefined;
-}
-
 function parseCuisines(raw: string | undefined): CuisineId[] {
   if (!raw) return [];
   const out = new Set<CuisineId>();
@@ -125,17 +114,17 @@ function classifyQuality(tags: Record<string, string>, hasDiet: boolean): DataQu
 
 const enc = encodeURIComponent;
 
-/**
- * Booking handoff with ZERO API/quota: OpenTable's search deep-link, localised by
- * the venue's own coordinates so the right restaurant surfaces first. OSM has no
- * booking endpoint, so this is an honest "find & book on OpenTable" hand-off, not
- * an in-app reservation. Only built for bookable (sit-down) venues — see normalise.
- */
-function buildReserveUrl(name: string, loc: LatLng): string {
-  return `https://www.opentable.com/s?term=${enc(name)}&latitude=${loc.lat}&longitude=${loc.lng}`;
+/** OpenTable search deep-link — finds a reservation page for this venue. Zero-API. */
+function buildReserveUrl(name: string, locality: string): string {
+  const term = locality ? `${name} ${locality}` : name;
+  return `https://www.opentable.com/s?term=${enc(term)}`;
 }
 
-function buildLinks(name: string, loc: LatLng, website?: string, reserve?: string): PlaceLinks {
+function buildLinks(
+  name: string,
+  loc: LatLng,
+  opts?: { website?: string; reserve?: string },
+): PlaceLinks {
   const q = `${name}`;
   const at = `${loc.lat},${loc.lng}`;
   return {
@@ -143,9 +132,18 @@ function buildLinks(name: string, loc: LatLng, website?: string, reserve?: strin
     tiktokSearch: `https://www.tiktok.com/search?q=${enc(q)}`,
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(q)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(q)}`,
-    website,
-    reserve,
+    website: opts?.website,
+    reserve: opts?.reserve,
   };
+}
+
+function normaliseReservation(
+  raw: string | undefined,
+): "yes" | "no" | "required" | "recommended" | undefined {
+  if (!raw) return undefined;
+  const v = raw.toLowerCase();
+  if (v === "yes" || v === "no" || v === "required" || v === "recommended") return v;
+  return undefined;
 }
 
 function buildAddress(tags: Record<string, string>): string | undefined {
@@ -186,12 +184,11 @@ export function normaliseOverpass(
     const website = tags["website"] || tags["contact:website"] || undefined;
     const phone = tags["phone"] || tags["contact:phone"] || undefined;
     const reservation = normaliseReservation(tags["reservation"]);
-
-    // Bookable = sit-down restaurant we can hand off to OpenTable. Fast-food and
-    // cafés are walk-in; a venue explicitly tagged reservation=no is too. Absence
-    // of the tag is "unknown" — we still offer the handoff (it's only a search).
+    const locality = tags["addr:city"] || tags["addr:suburb"] || "";
+    // "Book where possible": only offer a reservation link for table-service
+    // restaurants that don't explicitly say reservation=no (fast_food/cafe = walk-in).
     const bookable = tags["amenity"] === "restaurant" && reservation !== "no";
-    const reserve = bookable ? buildReserveUrl(name, loc) : undefined;
+    const reserve = bookable ? buildReserveUrl(name, locality) : undefined;
 
     out.push({
       id: `${el.type}/${el.id}`,
@@ -202,12 +199,11 @@ export function normaliseOverpass(
       address: buildAddress(tags),
       openNow: undefined, // opening_hours parsing deferred to Phase 7 (opening_hours.js)
       hours: tags["opening_hours"],
-      diet,
       phone,
       reservation,
-      bookable,
+      diet,
       dataQuality: classifyQuality(tags, !!diet),
-      links: buildLinks(name, loc, website, reserve),
+      links: buildLinks(name, loc, { website, reserve }),
       videoSearchUrl: `https://www.youtube.com/results?search_query=${enc(name)}`,
       distanceMeters: haversineMeters(center, loc),
     });

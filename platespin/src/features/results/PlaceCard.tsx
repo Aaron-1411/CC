@@ -63,9 +63,6 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
   const cuisineLabels = place.cuisine.map((c) => CUISINE_BY_ID[c]?.label).filter(Boolean);
   const badges = diets.map((d) => dietBadge(place, d));
   const links = place.links;
-  const canReserve = !!links.reserve;
-  const canCall = !!place.phone;
-  const hasBooking = canReserve || canCall;
 
   return (
     <li className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
@@ -96,6 +93,11 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
           🕒 <span className="text-slate-400">{place.hours}</span>
         </p>
       )}
+      {(place.reservation === "required" || place.reservation === "recommended") && (
+        <p className="mt-1 text-xs text-amber-200/80">
+          📅 Booking {place.reservation}
+        </p>
+      )}
 
       {badges.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -111,59 +113,48 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
         </div>
       )}
 
-      {/* Booking row — only for sit-down venues OSM says we can act on. Booking is
-          an honest hand-off (OpenTable search / phone), since OSM has no reservation API. */}
-      {hasBooking && (
-        <div className="mt-3 flex items-center gap-1.5">
-          {canReserve && (
-            <a
-              href={links.reserve}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => onVisit(place.id)}
-              className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-amber-300 px-3 text-sm font-semibold text-slate-900 transition active:scale-[0.98]"
-              title="Find & book a table on OpenTable"
-            >
-              🍽️ Book a table
-            </a>
-          )}
-          {canCall && (
-            <a
-              href={`tel:${place.phone}`}
-              onClick={() => onVisit(place.id)}
-              className={`flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl px-3 text-sm font-semibold transition active:scale-[0.98] ${
-                canReserve
-                  ? "border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
-                  : "flex-1 bg-amber-300 text-slate-900"
-              }`}
-              title={`Call ${place.name}`}
-            >
-              📞 Call
-            </a>
-          )}
-        </div>
-      )}
-
+      {/* Booking-first actions: reserve a table where the venue takes bookings,
+          then directions. Both are primary, full-height touch targets. */}
       <div className="mt-3 flex items-center gap-1.5">
+        {links.reserve && (
+          <a
+            href={links.reserve}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => onVisit(place.id)}
+            className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-300 px-3 text-sm font-bold text-slate-900 transition active:scale-[0.98]"
+          >
+            🍽️ Book a table
+          </a>
+        )}
         <a
           href={links.googleMaps}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className={`flex min-h-[40px] flex-1 items-center justify-center gap-1.5 rounded-xl px-3 text-sm font-semibold transition active:scale-[0.98] ${
-            hasBooking
-              ? "border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10"
-              : "bg-amber-300 text-slate-900"
-          }`}
+          className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-amber-300 px-3 text-sm font-semibold text-slate-900 transition active:scale-[0.98]"
         >
           🗺️ Directions
         </a>
+      </div>
+
+      <div className="mt-2 flex items-center gap-1.5">
+        {place.phone && (
+          <a
+            href={`tel:${place.phone.replace(/\s+/g, "")}`}
+            onClick={() => onVisit(place.id)}
+            className="flex min-h-[40px] flex-1 items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+            title={`Call to book — ${place.phone}`}
+          >
+            📞 Call
+          </a>
+        )}
         <a
           href={links.tiktokSearch}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className="flex min-h-[40px] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+          className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
           title="Search on TikTok"
         >
           TikTok
@@ -173,7 +164,7 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className="flex min-h-[40px] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+          className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
           title="Search on Instagram"
         >
           IG
@@ -184,7 +175,7 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onVisit(place.id)}
-            className="flex min-h-[40px] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+            className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
             title="Visit website"
           >
             Site

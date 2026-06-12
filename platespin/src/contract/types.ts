@@ -68,9 +68,6 @@ export interface Diet {
 /** OSM availability values for a diet:* tag. */
 export type DietAvailability = "only" | "yes" | "limited" | "no" | "unknown";
 
-/** OSM `reservation` tag values. Absent = unknown (we still offer a booking handoff for sit-down restaurants). */
-export type ReservationStatus = "yes" | "no" | "required" | "recommended";
-
 // ── Geo ──────────────────────────────────────────────────────────────────────
 
 export interface LatLng {
@@ -101,13 +98,11 @@ export interface PlaceResult {
   priceLevel?: 1 | 2 | 3 | 4; // rarely present from OSM
   openNow?: boolean; // derived from opening_hours via opening_hours.js; may be undefined
   hours?: string; // raw OSM opening_hours string
+  phone?: string; // raw OSM phone / contact:phone — powers a "Call to book" tel: link
+  /** OSM `reservation` tag if present (advisory): whether the venue takes bookings. */
+  reservation?: "yes" | "no" | "required" | "recommended";
   /** Per-diet availability from OSM diet:* tags. Absent key = unknown, NOT "no". */
   diet?: Partial<Record<DietId, DietAvailability>>;
-  phone?: string; // OSM phone / contact:phone — powers the "Call" booking action
-  /** OSM `reservation` tag (sparse). "no" = walk-in only; absent = unknown. */
-  reservation?: ReservationStatus;
-  /** True for sit-down venues we can offer a booking handoff for (amenity=restaurant, not reservation=no). */
-  bookable?: boolean;
   dataQuality: DataQuality;
   // Media: photos are NOT hosted — they are external links
   links: PlaceLinks;
@@ -121,7 +116,9 @@ export interface PlaceLinks {
   instagramSearch: string;
   youtubeSearch: string; // free deep-link instead of quota-limited embed
   website?: string;
-  reserve?: string; // OpenTable search deep-link — booking handoff, no API/quota
+  /** Find / make a reservation — OpenTable search deep-link keyed on name + locality.
+   *  Zero-API. Only set for table-service venues that don't explicitly say reservation=no. */
+  reserve?: string;
 }
 
 // ── Search ───────────────────────────────────────────────────────────────────
@@ -167,4 +164,96 @@ export interface UserState {
   lastLocation?: SavedLocation;
   liked: string[]; // PlaceResult.id[]
   visited: string[]; // PlaceResult.id[]
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// v2 — SOCIAL CONTRACT (Letterboxd × OpenTable for restaurants)
+// Accounts, one-way follows, meal posts with ratings + photos, friend-aware
+// discovery. These DTO shapes are the single source of truth shared by both the
+// React client and the Cloudflare Pages Functions (imported relatively server-side).
+// ═════════════════════════════════════════════════════════════════════════════
+
+/** A rating value: 0.5–5.0 in 0.5 steps (Letterboxd-style half stars). */
+export type Rating = number;
+
+/** Public-safe view of a user (never includes email / provider ids). */
+export interface PublicUser {
+  id: string;
+  handle: string; // unique, lowercase [a-z0-9_]
+  displayName: string;
+  avatarUrl?: string;
+  bio?: string;
+  createdAt: number; // unix seconds
+}
+
+/** A user's profile page payload: public user + social counts + viewer relation. */
+export interface UserProfile extends PublicUser {
+  followerCount: number;
+  followingCount: number;
+  mealCount: number;
+  avgRating?: number; // mean of this user's ratings, if any
+  isFollowing: boolean; // does the current viewer follow them
+  isSelf: boolean;
+}
+
+/** Lightweight venue reference embedded in a meal / used across the social UI. */
+export interface VenueLite {
+  id: string; // OSM id space, e.g. "node/123" — matches the wheel/Overpass proxy
+  name: string;
+  location: LatLng;
+  address?: string;
+  cuisines: CuisineId[];
+}
+
+/** A meal post — the core unit of the social graph ("I ate X at Y, n stars"). */
+export interface Meal {
+  id: string;
+  author: PublicUser;
+  venue: VenueLite;
+  dish: string;
+  rating: Rating;
+  note?: string;
+  photoUrl?: string; // served via /api/photo/<key>
+  dietTags: DietId[]; // diets the user asserts this dish met (advisory, not a guarantee)
+  eatenOn?: string; // optional ISO yyyy-mm-dd
+  createdAt: number; // unix seconds
+  likeCount: number;
+  likedByMe: boolean;
+}
+
+/** Feed selector. */
+export type FeedScope = "following" | "everyone";
+
+/** Payload to create a meal post. venue carries enough to upsert the cache row. */
+export interface CreateMealInput {
+  venue: VenueLite;
+  dish: string;
+  rating: Rating;
+  note?: string;
+  photoKey?: string; // R2 key returned by /api/upload
+  dietTags?: DietId[];
+  eatenOn?: string;
+}
+
+/** Aggregated rating signal for a venue, optionally split out for the viewer's friends. */
+export interface VenueStats {
+  id: string; // venue id
+  avg: number; // mean rating across all PlateSpin meals
+  count: number; // number of meals
+  friendAvg?: number; // mean among people the viewer follows
+  friendCount?: number; // number of meals from followed users
+}
+
+/** Full venue aggregate page payload. */
+export interface VenueAggregate {
+  venue: VenueLite;
+  stats: VenueStats;
+  meals: Meal[]; // recent meals at this venue
+}
+
+/** Response wrapper for the authenticated-user lookup. */
+export interface MeResponse {
+  user: PublicUser | null;
+  /** Which login methods the server has secrets configured for. */
+  authMethods: { dev: boolean; google: boolean; email: boolean };
 }

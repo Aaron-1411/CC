@@ -3,9 +3,39 @@ compatibility_date = "2024-11-27"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
 
-# PlateSpin's secure proxies live in /functions/api/* (added from Phase 3:
-# geocode, places, video, enrich). No secrets ship to the client — keyed/rate-
-# limited upstreams are injected onto the Pages project via the deploy workflow.
-# For local full-stack testing put keys in `.dev.vars` (git-ignored), e.g.:
-#   YOUTUBE_API_KEY = "..."
-# then run:  bunx wrangler pages dev dist
+# ── PlateSpin v2: social food platform ────────────────────────────────────────
+# v1 was a stateless SPA (Overpass/geocode proxies in /functions/api/*, no DB).
+# v2 adds accounts, follows, meal posts + ratings, and food photos. That needs
+# durable state, so we bind Cloudflare's $0-tier primitives:
+#   • D1  (SQLite)  → relational data (users, follows, venues, meals, likes)
+#   • R2  (objects) → food photos (served back through /api/photo/<key>)
+#
+# Public proxies (geocode, places) stay exactly as before — no secrets client-side.
+#
+# Local full-stack dev:
+#   bun run build && bunx wrangler pages dev dist
+#   wrangler auto-provisions a LOCAL D1 + R2; apply the schema with:
+#   bunx wrangler d1 migrations apply platespin --local
+# Put dev-only vars in `.dev.vars` (git-ignored), e.g.:
+#   ALLOW_DEV_LOGIN = "1"     # enables the no-OAuth email-only dev login
+#   GOOGLE_CLIENT_ID = "..."  # optional real Google OAuth
+#   GOOGLE_CLIENT_SECRET = "..."
+#   RESEND_API_KEY = "..."    # optional magic-link email
+
+[[d1_databases]]
+binding = "DB"
+database_name = "platespin"
+# PROD: replace with the id printed by `wrangler d1 create platespin`.
+# Left blank works for `wrangler pages dev` (local SQLite); prod deploy needs it.
+database_id = "REPLACE_WITH_PROD_D1_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "platespin-media"
+
+[vars]
+# Public site origin, used to build OAuth redirect URLs.
+SITE_ORIGIN = "https://platespin-app.pages.dev"
+# ALLOW_DEV_LOGIN is intentionally NOT set here — enable it only via .dev.vars
+# locally (or a Preview env var), never on production.
