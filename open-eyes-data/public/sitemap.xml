@@ -24,6 +24,9 @@
   <url><loc>https://transparenc.uk/foi</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://transparenc.uk/crossref</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://transparenc.uk/projects</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://transparenc.uk/briefing</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://transparenc.uk/learn</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://transparenc.uk/take-action</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://transparenc.uk/methodology</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://transparenc.uk/tools</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://transparenc.uk/my-area</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

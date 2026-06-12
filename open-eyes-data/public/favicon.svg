@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="transparenC">
+  <rect width="64" height="64" rx="14" fill="#0c0a09"/>
+  <g fill="none" stroke="#f5a623" stroke-width="6" stroke-linecap="round">
+    <circle cx="28" cy="28" r="14"/>
+    <line x1="38.5" y1="38.5" x2="50" y2="50"/>
+  </g>
+</svg>
