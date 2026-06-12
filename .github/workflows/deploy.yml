@@ -210,6 +210,28 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           command: pages deploy brand-command-centre-demo --project-name=ecommerce-deep-dive-app --branch=main
 
+  deploy-quant-desk-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Quant Desk (Tr4d3) is a self-contained FastAPI app that computes every
+      # number in Python from live market data — it can't run on CF Pages (Python
+      # backend + live providers). CF hosts a self-contained static "Visual demo"
+      # (quant-desk-demo/) with real numbers frozen from the live desk (AAPL
+      # snapshot). The fully interactive desk runs self-hosted; see GitHub repo.
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"quant-desk-demo","production_branch":"main"}' || true
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy quant-desk-demo --project-name=quant-desk-demo --branch=main
+
   deploy-moneymind-uk:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,1 @@
+{"detail":"Macro Dashboard (FRED) requires FRED_API_KEY, which is not set. Add it to your .env (see .env.example). Quant Desk uses no fake-data fallback."}
