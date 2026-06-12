@@ -40,6 +40,7 @@ import { Route as IssuesIndexRouteImport } from './routes/issues/index'
 import { Route as IssuesIssueRouteImport } from './routes/issues/$issue'
 import { Route as ApiVotesRouteImport } from './routes/api/votes'
 import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
+import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as ApiSpendingRouteImport } from './routes/api/spending'
 import { Route as ApiSewageRouteImport } from './routes/api/sewage'
 import { Route as ApiSanctionsRouteImport } from './routes/api/sanctions'
@@ -219,6 +220,11 @@ const ApiStopSearchRoute = ApiStopSearchRouteImport.update({
   path: '/api/stop-search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStatusRoute = ApiStatusRouteImport.update({
+  id: '/api/status',
+  path: '/api/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSpendingRoute = ApiSpendingRouteImport.update({
   id: '/api/spending',
   path: '/api/spending',
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
   '/api/spending': typeof ApiSpendingRoute
+  '/api/status': typeof ApiStatusRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
@@ -442,6 +449,7 @@ export interface FileRoutesByTo {
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
   '/api/spending': typeof ApiSpendingRoute
+  '/api/status': typeof ApiStatusRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
@@ -499,6 +507,7 @@ export interface FileRoutesById {
   '/api/sanctions': typeof ApiSanctionsRoute
   '/api/sewage': typeof ApiSewageRoute
   '/api/spending': typeof ApiSpendingRoute
+  '/api/status': typeof ApiStatusRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
@@ -557,6 +566,7 @@ export interface FileRouteTypes {
     | '/api/sanctions'
     | '/api/sewage'
     | '/api/spending'
+    | '/api/status'
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
@@ -613,6 +623,7 @@ export interface FileRouteTypes {
     | '/api/sanctions'
     | '/api/sewage'
     | '/api/spending'
+    | '/api/status'
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
@@ -669,6 +680,7 @@ export interface FileRouteTypes {
     | '/api/sanctions'
     | '/api/sewage'
     | '/api/spending'
+    | '/api/status'
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
@@ -726,6 +738,7 @@ export interface RootRouteChildren {
   ApiSanctionsRoute: typeof ApiSanctionsRoute
   ApiSewageRoute: typeof ApiSewageRoute
   ApiSpendingRoute: typeof ApiSpendingRoute
+  ApiStatusRoute: typeof ApiStatusRoute
   ApiStopSearchRoute: typeof ApiStopSearchRoute
   ApiVotesRoute: typeof ApiVotesRoute
   IssuesIssueRoute: typeof IssuesIssueRoute
@@ -951,6 +964,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStopSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/status': {
+      id: '/api/status'
+      path: '/api/status'
+      fullPath: '/api/status'
+      preLoaderRoute: typeof ApiStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/spending': {
       id: '/api/spending'
       path: '/api/spending'
@@ -1166,6 +1186,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSanctionsRoute: ApiSanctionsRoute,
   ApiSewageRoute: ApiSewageRoute,
   ApiSpendingRoute: ApiSpendingRoute,
+  ApiStatusRoute: ApiStatusRoute,
   ApiStopSearchRoute: ApiStopSearchRoute,
   ApiVotesRoute: ApiVotesRoute,
   IssuesIssueRoute: IssuesIssueRoute,

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import "@tanstack/react-start";
 import { callLovableAI } from "@/lib/ai-gateway";
-import { envelope, errorResponse, jsonResponse } from "@/lib/proxy";
+import { envelope, errorResponse, jsonResponse, rateLimit, clientKey } from "@/lib/proxy";
 
 const SYSTEM = `You are a non-partisan UK government accountability analyst writing for transparenC.
 Produce concise, factual briefings on UK politics, government performance, public spending and accountability.
@@ -18,9 +18,13 @@ export const Route = createFileRoute("/api/briefing")({
     handlers: {
       POST: async ({ request }) => {
         try {
+          // Abuse/cost guard: this endpoint triggers a paid LLM call. Limit per IP.
+          // (Per-isolate; a global KV/DO limiter is a documented launch-config task.)
+          if (!rateLimit(`briefing:${clientKey(request)}`, 8, 60_000)) {
+            return errorResponse("Too many briefings — please wait a minute and try again.", 429);
+          }
           const { topic } = (await request.json()) as { topic?: string };
-          if (!topic || topic.trim().length < 2)
-            return errorResponse("topic is required", 400);
+          if (!topic || topic.trim().length < 2) return errorResponse("topic is required", 400);
           const { content } = await callLovableAI({
             messages: [
               { role: "system", content: SYSTEM },
@@ -30,9 +34,9 @@ export const Route = createFileRoute("/api/briefing")({
           return jsonResponse(
             envelope(
               { topic: topic.trim(), markdown: content },
-              "Lovable AI Gateway (Gemini)",
-              "https://ai.gateway.lovable.dev",
-              "AI-generated; verify against primary sources",
+              "AI-generated from official data (Anthropic Claude)",
+              "https://www.anthropic.com",
+              "AI-generated — verify against the linked sources before sharing",
             ),
           );
         } catch (e) {
