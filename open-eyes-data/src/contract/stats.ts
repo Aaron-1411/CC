@@ -35,7 +35,6 @@ export function staticStat(
 }
 
 export function formatStatValue(stat: SourcedStat): string {
-  const v =
-    typeof stat.value === "number" ? stat.value.toLocaleString("en-GB") : stat.value;
+  const v = typeof stat.value === "number" ? stat.value.toLocaleString("en-GB") : stat.value;
   return stat.unit ? `${v}${stat.unit === "%" || stat.unit === "×" ? "" : " "}${stat.unit}` : v;
 }

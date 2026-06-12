@@ -9,6 +9,7 @@ import {
   SectionHeader,
   Skeleton,
 } from "@/components/primitives";
+import { SourcedStat } from "@/components/sourced-stat";
 import { getJSON } from "@/lib/api";
 import { ISSUES } from "@/data/issues";
 import type { IssueKey } from "@/data/issues";
@@ -49,23 +50,35 @@ export const Route = createFileRoute("/issues/$issue")({
 
 function statusVariant(s: PromiseStatus): React.ComponentProps<typeof FlagPill>["variant"] {
   switch (s) {
-    case "done": return "ok";
-    case "in-progress": return "neutral";
-    case "behind-target": return "warn";
-    case "stalled": return "direct";
-    case "contested": return "warn";
-    case "proposed": return "neutral";
+    case "done":
+      return "ok";
+    case "in-progress":
+      return "neutral";
+    case "behind-target":
+      return "warn";
+    case "stalled":
+      return "direct";
+    case "contested":
+      return "warn";
+    case "proposed":
+      return "neutral";
   }
 }
 
 function statusLabel(s: PromiseStatus): string {
   switch (s) {
-    case "done": return "Done ✓";
-    case "in-progress": return "In progress";
-    case "behind-target": return "Behind target";
-    case "stalled": return "Stalled";
-    case "contested": return "Contested";
-    case "proposed": return "Proposed";
+    case "done":
+      return "Done ✓";
+    case "in-progress":
+      return "In progress";
+    case "behind-target":
+      return "Behind target";
+    case "stalled":
+      return "Stalled";
+    case "contested":
+      return "Contested";
+    case "proposed":
+      return "Proposed";
   }
 }
 
@@ -106,7 +119,14 @@ function IssuePage() {
       }
     }
     // Sort: done first, then in-progress, then others
-    const order: Record<string, number> = { done: 0, "in-progress": 1, "behind-target": 2, stalled: 3, contested: 4, proposed: 5 };
+    const order: Record<string, number> = {
+      done: 0,
+      "in-progress": 1,
+      "behind-target": 2,
+      stalled: 3,
+      contested: 4,
+      proposed: 5,
+    };
     pledgeRows.sort((a, b) => (order[a.pledge.status] ?? 9) - (order[b.pledge.status] ?? 9));
   }
 
@@ -117,10 +137,7 @@ function IssuePage() {
   return (
     <div className="space-y-8">
       {/* Hero */}
-      <section
-        className="border-l-4 pl-5 py-1"
-        style={{ borderColor: def.color }}
-      >
+      <section className="border-l-4 pl-5 py-1" style={{ borderColor: def.color }}>
         <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-1">
           {def.icon} {def.title}
         </div>
@@ -132,8 +149,11 @@ function IssuePage() {
         </p>
       </section>
 
-      {/* Key fact */}
-      <ContextBlock heading={def.keyFact} variant="warn">
+      {/* Headline stat (sourced) + context */}
+      <ContextBlock heading="The headline figure" variant="warn">
+        <div className="mb-3">
+          <SourcedStat stat={def.headlineStat} size="lg" />
+        </div>
         <p>{def.keyFactContext}</p>
       </ContextBlock>
 
@@ -142,7 +162,9 @@ function IssuePage() {
         <SectionHeader eyebrow="Party pledges" title="What parties promised — and delivered" />
         {partiesQ.isLoading && (
           <div className="space-y-2">
-            {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full" />
+            ))}
           </div>
         )}
         {!partiesQ.isLoading && pledgeRows.length === 0 && (
@@ -191,10 +213,15 @@ function IssuePage() {
 
       {/* News */}
       <section>
-        <SectionHeader eyebrow="In the news" title={`What the media is saying about ${def.title.toLowerCase()}`} />
+        <SectionHeader
+          eyebrow="In the news"
+          title={`What the media is saying about ${def.title.toLowerCase()}`}
+        />
         {newsQ.isLoading && (
           <div className="space-y-2">
-            {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full" />
+            ))}
           </div>
         )}
         {!newsQ.isLoading && topicNews.length === 0 && (
@@ -271,7 +298,9 @@ function IssuePage() {
               <h3 className="font-display text-base font-bold group-hover:text-amber transition-colors leading-snug">
                 {tool.label}
               </h3>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{tool.description}</p>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                {tool.description}
+              </p>
             </Link>
           ))}
         </div>

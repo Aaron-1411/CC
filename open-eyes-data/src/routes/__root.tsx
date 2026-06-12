@@ -85,13 +85,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Live public data holding UK government to account.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "transparenC — UK Government Accountability Dashboard" },
-      { name: "description", content: "OpenGov Watch is a UK government accountability dashboard that displays live public data." },
-      { property: "og:description", content: "OpenGov Watch is a UK government accountability dashboard that displays live public data." },
-      { name: "twitter:description", content: "OpenGov Watch is a UK government accountability dashboard that displays live public data." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/449c0cf1-22a5-4195-af41-bfaa1ffe405b/id-preview-a3abf990--ee34b675-fee4-437f-99a1-a9179c6fc5ea.lovable.app-1779123892411.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/449c0cf1-22a5-4195-af41-bfaa1ffe405b/id-preview-a3abf990--ee34b675-fee4-437f-99a1-a9179c6fc5ea.lovable.app-1779123892411.png" },
+      { property: "og:site_name", content: "transparenC" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "transparenC — UK Government Accountability" },
+      {
+        name: "twitter:description",
+        content: "Live public data holding UK government to account — free of spin.",
+      },
+      // Self-hosted branded card (replaces the previous Lovable-hosted asset).
+      // Relative path; absolute URL is resolved per-deploy once the custom domain (D1) is live.
+      { property: "og:image", content: "/og-card.svg" },
+      { name: "twitter:image", content: "/og-card.svg" },
     ],
     links: [
       {

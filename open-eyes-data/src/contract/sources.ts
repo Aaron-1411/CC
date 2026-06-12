@@ -99,13 +99,12 @@ export const SOURCES = {
   "mhclg-housing": {
     id: "mhclg-housing",
     name: "MHCLG Net Additional Dwellings / Housing Supply",
-    homepage:
-      "https://www.gov.uk/government/collections/net-supply-of-housing",
+    homepage: "https://www.gov.uk/government/collections/net-supply-of-housing",
     termsUrl: LICENCE_URLS["OGL-3.0"],
     licence: "OGL-3.0",
     cadence: "annual",
   },
-  "obr": {
+  obr: {
     id: "obr",
     name: "Office for Budget Responsibility",
     homepage: "https://obr.uk/",
@@ -169,7 +168,7 @@ export const SOURCES = {
     licence: "OTHER",
     cadence: "quarterly",
   },
-  "ipsa": {
+  ipsa: {
     id: "ipsa",
     name: "IPSA — MP Business Costs & Expenses",
     homepage: "https://www.theipsa.org.uk/",
@@ -193,10 +192,11 @@ export const SOURCES = {
     licence: "OGL-3.0",
     cadence: "live",
   },
-  "acoba": {
+  acoba: {
     id: "acoba",
     name: "Advisory Committee on Business Appointments (ACOBA)",
-    homepage: "https://www.gov.uk/government/organisations/advisory-committee-on-business-appointments",
+    homepage:
+      "https://www.gov.uk/government/organisations/advisory-committee-on-business-appointments",
     termsUrl: LICENCE_URLS["OGL-3.0"],
     licence: "OGL-3.0",
     cadence: "live",

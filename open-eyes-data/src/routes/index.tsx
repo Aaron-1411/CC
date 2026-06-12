@@ -5,6 +5,8 @@ import { Card, ErrorNote, LiveBadge, Skeleton } from "@/components/primitives";
 import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
 import { ISSUES, ISSUE_KEYS } from "@/data/issues";
 import { PostcodeWidget } from "@/components/postcode-widget";
+import { formatStatValue } from "@/contract/stats";
+import { getSource } from "@/contract/sources";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -67,13 +69,13 @@ const TOOL_SECTIONS: Array<{
     label: "Economy & spending",
     tools: [
       { to: "/economy", label: "Indicators", copy: "GDP, inflation, wages & debt" },
-      { to: "/spending", label: "Public spending", copy: "Where your £1.2 trillion goes" },
+      { to: "/spending", label: "Public spending", copy: "Where public money goes" },
     ],
   },
   {
     label: "Follow the money",
     tools: [
-      { to: "/contracts", label: "Contracts", copy: "Every contract over £1m" },
+      { to: "/contracts", label: "Contracts", copy: "Search major public contracts" },
       { to: "/donations", label: "Donations", copy: "Who funds the parties" },
       { to: "/expenses", label: "MP Expenses", copy: "What MPs are claiming" },
       { to: "/meetings", label: "Ministers", copy: "Who ministers are meeting" },
@@ -313,8 +315,14 @@ function IssueGrid() {
               <span className="text-[10px] text-muted-foreground/70 leading-snug line-clamp-2 group-hover:text-muted-foreground transition-colors">
                 {def.question}
               </span>
-              <span className="label-mono text-[9px] uppercase tracking-wider text-amber/70 leading-tight mt-auto group-hover:text-amber transition-colors line-clamp-1">
-                {def.keyFact}
+              <span className="mt-auto flex flex-col items-center gap-0.5">
+                <span className="font-display text-sm font-black text-amber/90 leading-none group-hover:text-amber transition-colors">
+                  {formatStatValue(def.headlineStat)}
+                </span>
+                <span className="label-mono text-[8px] uppercase tracking-wider text-muted-foreground/60 leading-tight line-clamp-1">
+                  {getSource(def.headlineStat.sourceId).name} ·{" "}
+                  {new Date(def.headlineStat.asOf).getFullYear()}
+                </span>
               </span>
             </Link>
           );

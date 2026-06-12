@@ -277,21 +277,21 @@ const UNIVERSAL_ACTIONS = [
   {
     icon: "✉️",
     title: "Write to your MP",
-    body: "Find them via My Area. A specific, data-backed letter always gets a reply.",
+    body: "Find them via My Area. Replying to constituents is a strong convention, not a legal duty — so a reply is very likely, not guaranteed.",
     to: "/my-area",
     external: false,
   },
   {
     icon: "📋",
     title: "Sign or start a petition",
-    body: "100 signatures gets a response. 100,000 triggers a Parliamentary debate.",
+    body: "10,000 signatures requires a UK Government response; 100,000 means it is considered for debate (debates are usual but not automatic).",
     to: "/petitions",
     external: false,
   },
   {
     icon: "💸",
     title: "Check where public money goes",
-    body: "Every government contract over £10k is public. So are MP expenses.",
+    body: "Central government must publish contract details above £12,000 inc VAT (£30,000 for most other public bodies). So are MP expenses.",
     to: "/contracts",
     external: false,
   },
@@ -336,8 +336,7 @@ function TakeActionPage() {
           Participation guide
         </div>
         <h1 className="font-display text-4xl sm:text-5xl font-black leading-[1.08] tracking-tight">
-          Democracy works{" "}
-          <span className="text-amber">when you do</span>.
+          Democracy works <span className="text-amber">when you do</span>.
         </h1>
         <p className="text-muted-foreground text-base leading-relaxed max-w-2xl">
           transparenC gives you the data. This page gives you the map: how to use it, how to make
@@ -379,10 +378,7 @@ function TakeActionPage() {
         </div>
         <div className="space-y-3">
           {HOW_TO_STEPS.map((step) => (
-            <div
-              key={step.n}
-              className="flex gap-4 rounded-lg border border-border bg-surface p-5"
-            >
+            <div key={step.n} className="flex gap-4 rounded-lg border border-border bg-surface p-5">
               <div className="label-mono text-2xl font-black text-amber/30 leading-none shrink-0 pt-0.5">
                 {step.n}
               </div>
@@ -407,9 +403,7 @@ function TakeActionPage() {
           <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-1">
             Participation by age
           </div>
-          <h2 className="font-display text-2xl font-bold">
-            Everyone has a role. Here's yours.
-          </h2>
+          <h2 className="font-display text-2xl font-bold">Everyone has a role. Here's yours.</h2>
           <p className="text-muted-foreground text-sm mt-1 max-w-xl">
             Political participation isn't just voting. It's a spectrum of actions — and different
             stages of life open different doors.
@@ -450,7 +444,10 @@ function TakeActionPage() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{band.intro}</p>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {band.actions.map((action) => (
-                    <div key={action.title} className="rounded-lg bg-surface border border-border p-4 space-y-1">
+                    <div
+                      key={action.title}
+                      className="rounded-lg bg-surface border border-border p-4 space-y-1"
+                    >
                       <div className="flex items-center gap-2">
                         <span className="text-base">{action.icon}</span>
                         <span className="font-display text-sm font-semibold">{action.title}</span>

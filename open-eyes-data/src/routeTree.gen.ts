@@ -57,6 +57,7 @@ import { Route as ApiExpensesRouteImport } from './routes/api/expenses'
 import { Route as ApiEconomyRouteImport } from './routes/api/economy'
 import { Route as ApiDonationsRouteImport } from './routes/api/donations'
 import { Route as ApiContractsRouteImport } from './routes/api/contracts'
+import { Route as ApiConstituencyMpRouteImport } from './routes/api/constituency-mp'
 import { Route as ApiCommitteesRouteImport } from './routes/api/committees'
 import { Route as ApiBriefingRouteImport } from './routes/api/briefing'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
@@ -302,6 +303,11 @@ const ApiContractsRoute = ApiContractsRouteImport.update({
   path: '/api/contracts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConstituencyMpRoute = ApiConstituencyMpRouteImport.update({
+  id: '/api/constituency-mp',
+  path: '/api/constituency-mp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCommitteesRoute = ApiCommitteesRouteImport.update({
   id: '/api/committees',
   path: '/api/committees',
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/committees': typeof ApiCommitteesRoute
+  '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
   '/api/donations': typeof ApiDonationsRoute
   '/api/economy': typeof ApiEconomyRoute
@@ -408,6 +415,7 @@ export interface FileRoutesByTo {
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/committees': typeof ApiCommitteesRoute
+  '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
   '/api/donations': typeof ApiDonationsRoute
   '/api/economy': typeof ApiEconomyRoute
@@ -463,6 +471,7 @@ export interface FileRoutesById {
   '/api/bills': typeof ApiBillsRoute
   '/api/briefing': typeof ApiBriefingRoute
   '/api/committees': typeof ApiCommitteesRoute
+  '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
   '/api/donations': typeof ApiDonationsRoute
   '/api/economy': typeof ApiEconomyRoute
@@ -519,6 +528,7 @@ export interface FileRouteTypes {
     | '/api/bills'
     | '/api/briefing'
     | '/api/committees'
+    | '/api/constituency-mp'
     | '/api/contracts'
     | '/api/donations'
     | '/api/economy'
@@ -573,6 +583,7 @@ export interface FileRouteTypes {
     | '/api/bills'
     | '/api/briefing'
     | '/api/committees'
+    | '/api/constituency-mp'
     | '/api/contracts'
     | '/api/donations'
     | '/api/economy'
@@ -627,6 +638,7 @@ export interface FileRouteTypes {
     | '/api/bills'
     | '/api/briefing'
     | '/api/committees'
+    | '/api/constituency-mp'
     | '/api/contracts'
     | '/api/donations'
     | '/api/economy'
@@ -682,6 +694,7 @@ export interface RootRouteChildren {
   ApiBillsRoute: typeof ApiBillsRoute
   ApiBriefingRoute: typeof ApiBriefingRoute
   ApiCommitteesRoute: typeof ApiCommitteesRoute
+  ApiConstituencyMpRoute: typeof ApiConstituencyMpRoute
   ApiContractsRoute: typeof ApiContractsRoute
   ApiDonationsRoute: typeof ApiDonationsRoute
   ApiEconomyRoute: typeof ApiEconomyRoute
@@ -1044,6 +1057,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiContractsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/constituency-mp': {
+      id: '/api/constituency-mp'
+      path: '/api/constituency-mp'
+      fullPath: '/api/constituency-mp'
+      preLoaderRoute: typeof ApiConstituencyMpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/committees': {
       id: '/api/committees'
       path: '/api/committees'
@@ -1106,6 +1126,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiBillsRoute: ApiBillsRoute,
   ApiBriefingRoute: ApiBriefingRoute,
   ApiCommitteesRoute: ApiCommitteesRoute,
+  ApiConstituencyMpRoute: ApiConstituencyMpRoute,
   ApiContractsRoute: ApiContractsRoute,
   ApiDonationsRoute: ApiDonationsRoute,
   ApiEconomyRoute: ApiEconomyRoute,

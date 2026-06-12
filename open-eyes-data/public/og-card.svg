@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="transparenC — the UK government, held to account with public data">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0a09"/>
+      <stop offset="1" stop-color="#1c1917"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="8" fill="#f59e0b"/>
+  <text x="80" y="180" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="800" fill="#fafaf9">transparen<tspan fill="#f59e0b">C</tspan></text>
+  <text x="80" y="300" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="700" fill="#fafaf9">The UK government,</text>
+  <text x="80" y="368" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="700" fill="#f59e0b">held to account.</text>
+  <text x="80" y="452" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#a8a29e">Live public data — Parliament, ONS, NHS England, the Environment</text>
+  <text x="80" y="492" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#a8a29e">Agency and more, in one place, free of spin.</text>
+  <text x="80" y="576" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" letter-spacing="2" fill="#78716c">EVERY NUMBER LINKS TO ITS OFFICIAL SOURCE</text>
+</svg>
