@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card } from "@/components/primitives";
+import { CORRECTIONS } from "@/contract/corrections";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -106,6 +107,8 @@ function AboutPage() {
           { href: "#investigate", label: "Investigate: cross-reference, AI & projects" },
           { href: "#action", label: "Taking action" },
           { href: "#sources", label: "Data sources & reliability" },
+          { href: "#who", label: "Who runs this" },
+          { href: "#corrections", label: "Corrections log" },
         ].map((item) => (
           <a
             key={item.href}
@@ -438,7 +441,7 @@ function AboutPage() {
         <SectionTitle eyebrow="Data sources" title="Where the data comes from" />
         <p className="text-muted-foreground leading-relaxed">
           Every piece of data on transparenC comes from official UK public sources. No third-party
-          data aggregators, no scraping. Most content is published under the{" "}
+          data aggregators, no scraping. Built on open public data under the{" "}
           <a
             href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
             className="text-amber hover:underline"
@@ -446,7 +449,20 @@ function AboutPage() {
             rel="noreferrer"
           >
             Open Government Licence v3.0
-          </a>
+          </a>{" "}
+          and the{" "}
+          <a
+            href="https://www.parliament.uk/site-information/copyright-parliament/open-parliament-licence/"
+            className="text-amber hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Parliament Licence
+          </a>{" "}
+          — see the{" "}
+          <Link to="/methodology" className="text-amber hover:underline">
+            per-source licence table
+          </Link>
           .
         </p>
         <div className="grid sm:grid-cols-2 gap-2">
@@ -505,6 +521,52 @@ function AboutPage() {
             line.
           </p>
         </Card>
+      </Section>
+
+      {/* Who runs this */}
+      <Section id="who">
+        <SectionTitle eyebrow="Who runs this" title="Who's behind transparenC" />
+        <Card className="space-y-2">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Built and self-funded by one independent developer. No party affiliation, no donations,
+            no ads. The site makes no money and takes no money — it exists to make public data
+            usable.
+          </p>
+        </Card>
+      </Section>
+
+      {/* Corrections log */}
+      <Section id="corrections">
+        <SectionTitle eyebrow="Corrections" title="When we get it wrong, we say so" />
+        <p className="text-muted-foreground leading-relaxed">
+          A public, append-only record of factual corrections to this site. Publishing our own
+          mistakes is part of holding others to account.
+        </p>
+        <div className="space-y-2">
+          {CORRECTIONS.map((c, i) => (
+            <div key={i} className="rounded-lg border border-border bg-surface p-4 space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-display text-sm font-bold">{c.page}</span>
+                <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {new Date(c.date).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <span className="text-flag">Was:</span> {c.wasWrong}
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <span className="text-ok">Now:</span> {c.nowSays}
+              </p>
+              <p className="text-[11px] text-muted-foreground/70 leading-relaxed italic">
+                {c.reason}
+              </p>
+            </div>
+          ))}
+        </div>
       </Section>
 
       {/* Back to home */}

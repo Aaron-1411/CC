@@ -63,6 +63,7 @@ const NAV_GROUPS: Array<{
       { to: "/crossref", label: "Cross-ref" },
       { to: "/projects", label: "Projects" },
       { to: "/briefing", label: "Briefing" },
+      { to: "/methodology", label: "Method" },
     ],
   },
   {

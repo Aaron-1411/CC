@@ -22,6 +22,7 @@ import { Route as ParliamentRouteImport } from './routes/parliament'
 import { Route as NhsRouteImport } from './routes/nhs'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as MyAreaRouteImport } from './routes/my-area'
+import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as LobbyingRouteImport } from './routes/lobbying'
 import { Route as FoiRouteImport } from './routes/foi'
@@ -126,6 +127,11 @@ const NewsRoute = NewsRouteImport.update({
 const MyAreaRoute = MyAreaRouteImport.update({
   id: '/my-area',
   path: '/my-area',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeetingsRoute = MeetingsRouteImport.update({
@@ -343,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
+  '/methodology': typeof MethodologyRoute
   '/my-area': typeof MyAreaRoute
   '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
@@ -398,6 +405,7 @@ export interface FileRoutesByTo {
   '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
+  '/methodology': typeof MethodologyRoute
   '/my-area': typeof MyAreaRoute
   '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
@@ -454,6 +462,7 @@ export interface FileRoutesById {
   '/foi': typeof FoiRoute
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
+  '/methodology': typeof MethodologyRoute
   '/my-area': typeof MyAreaRoute
   '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
@@ -511,6 +520,7 @@ export interface FileRouteTypes {
     | '/foi'
     | '/lobbying'
     | '/meetings'
+    | '/methodology'
     | '/my-area'
     | '/news'
     | '/nhs'
@@ -566,6 +576,7 @@ export interface FileRouteTypes {
     | '/foi'
     | '/lobbying'
     | '/meetings'
+    | '/methodology'
     | '/my-area'
     | '/news'
     | '/nhs'
@@ -621,6 +632,7 @@ export interface FileRouteTypes {
     | '/foi'
     | '/lobbying'
     | '/meetings'
+    | '/methodology'
     | '/my-area'
     | '/news'
     | '/nhs'
@@ -677,6 +689,7 @@ export interface RootRouteChildren {
   FoiRoute: typeof FoiRoute
   LobbyingRoute: typeof LobbyingRoute
   MeetingsRoute: typeof MeetingsRoute
+  MethodologyRoute: typeof MethodologyRoute
   MyAreaRoute: typeof MyAreaRoute
   NewsRoute: typeof NewsRoute
   NhsRoute: typeof NhsRoute
@@ -810,6 +823,13 @@ declare module '@tanstack/react-router' {
       path: '/my-area'
       fullPath: '/my-area'
       preLoaderRoute: typeof MyAreaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meetings': {
@@ -1109,6 +1129,7 @@ const rootRouteChildren: RootRouteChildren = {
   FoiRoute: FoiRoute,
   LobbyingRoute: LobbyingRoute,
   MeetingsRoute: MeetingsRoute,
+  MethodologyRoute: MethodologyRoute,
   MyAreaRoute: MyAreaRoute,
   NewsRoute: NewsRoute,
   NhsRoute: NhsRoute,
