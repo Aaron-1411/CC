@@ -69,8 +69,10 @@ function BriefingPage() {
           right={<LiveBadge timestamp={m.data?.meta.fetchedAt} label="AI" />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          Type any UK accountability topic and get a non-partisan briefing with named ministers,
-          real figures and named departments. Verify against primary sources before publishing.
+          Ask about any UK accountability topic. The briefing is drawn only from the official data
+          already cached on transparenC — figures are cited with their source and date, and listed
+          beneath each answer. It does not browse the open web. Always verify against the linked
+          sources before sharing.
         </p>
       </div>
 
