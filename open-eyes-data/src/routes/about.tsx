@@ -1,11 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card } from "@/components/primitives";
+import { CORRECTIONS } from "@/contract/corrections";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "How to use transparenC — Guide" },
-      { name: "description", content: "A complete guide to using transparenC — the UK government accountability platform built on open public data." },
+      {
+        name: "description",
+        content:
+          "A complete guide to using transparenC — the UK government accountability platform built on open public data.",
+      },
       { property: "og:title", content: "How to use transparenC" },
     ],
   }),
@@ -25,13 +30,21 @@ function Section({ children, id }: { children: React.ReactNode; id?: string }) {
 function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div>
-      <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-1">{eyebrow}</div>
+      <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-1">
+        {eyebrow}
+      </div>
       <h2 className="font-display text-2xl font-bold">{title}</h2>
     </div>
   );
 }
 
-function ToolCard({ to, eyebrow, title, copy, status = "live" }: {
+function ToolCard({
+  to,
+  eyebrow,
+  title,
+  copy,
+  status = "live",
+}: {
   to: string;
   eyebrow: string;
   title: string;
@@ -46,10 +59,14 @@ function ToolCard({ to, eyebrow, title, copy, status = "live" }: {
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="label-mono text-[9px] uppercase tracking-[0.2em] text-amber">{eyebrow}</div>
         {status === "requires-key" && (
-          <span className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground border border-border rounded px-1.5 py-0.5">Needs API key</span>
+          <span className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground border border-border rounded px-1.5 py-0.5">
+            Needs API key
+          </span>
         )}
       </div>
-      <h3 className="font-display text-sm font-bold group-hover:text-amber transition-colors leading-snug mb-1">{title}</h3>
+      <h3 className="font-display text-sm font-bold group-hover:text-amber transition-colors leading-snug mb-1">
+        {title}
+      </h3>
       <p className="text-xs text-muted-foreground leading-relaxed">{copy}</p>
     </Link>
   );
@@ -60,24 +77,26 @@ function ToolCard({ to, eyebrow, title, copy, status = "live" }: {
 function AboutPage() {
   return (
     <div className="max-w-3xl space-y-16">
-
       {/* Hero */}
       <section className="pt-2">
-        <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-3">Guide</div>
+        <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-3">
+          Guide
+        </div>
         <h1 className="font-display text-4xl sm:text-5xl font-black leading-[1.08] tracking-tight">
-          How to use{" "}
-          <span className="text-amber">transparenC</span>
+          How to use <span className="text-amber">transparenC</span>
         </h1>
         <p className="mt-4 text-muted-foreground text-base leading-relaxed">
-          transparenC pulls live data from Parliament, the Electoral Commission, NHS England,
-          the Environment Agency, ONS and more — and puts it in one place, free of spin.
-          This guide walks you through every tool.
+          transparenC pulls live data from Parliament, the Electoral Commission, NHS England, the
+          Environment Agency, ONS and more — and puts it in one place, free of spin. This guide
+          walks you through every tool.
         </p>
       </section>
 
       {/* Table of contents */}
       <Card className="space-y-2">
-        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">Contents</div>
+        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
+          Contents
+        </div>
         {[
           { href: "#start", label: "Start here — set your constituency" },
           { href: "#issues", label: "Browse by issue" },
@@ -88,6 +107,8 @@ function AboutPage() {
           { href: "#investigate", label: "Investigate: cross-reference, AI & projects" },
           { href: "#action", label: "Taking action" },
           { href: "#sources", label: "Data sources & reliability" },
+          { href: "#who", label: "Who runs this" },
+          { href: "#corrections", label: "Corrections log" },
         ].map((item) => (
           <a
             key={item.href}
@@ -104,8 +125,10 @@ function AboutPage() {
         <SectionTitle eyebrow="Step one" title="Set your constituency" />
         <p className="text-muted-foreground leading-relaxed">
           The first thing to do is enter your postcode in{" "}
-          <Link to="/my-area" className="text-amber hover:underline">My Area</Link>.
-          This unlocks personalised data across the whole site:
+          <Link to="/my-area" className="text-amber hover:underline">
+            My Area
+          </Link>
+          . This unlocks personalised data across the whole site:
         </p>
         <ul className="space-y-2 text-sm text-muted-foreground">
           {[
@@ -122,10 +145,14 @@ function AboutPage() {
           ))}
         </ul>
         <Card className="bg-amber/5 border-amber/20">
-          <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-1">Privacy note</div>
+          <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-1">
+            Privacy note
+          </div>
           <p className="text-sm text-muted-foreground">
-            Your postcode is stored only in your browser's local storage. It is never sent to our
-            servers, never logged, and never shared with third parties. You can clear it at any time.
+            Your postcode is sent directly from your browser to postcodes.io — an open-source lookup
+            service built on ONS open data — solely to find your constituency. It never touches our
+            servers and is never logged by us. The result is saved only in your browser, and you can
+            clear it at any time.
           </p>
         </Card>
       </Section>
@@ -136,14 +163,22 @@ function AboutPage() {
         <p className="text-muted-foreground leading-relaxed">
           If you care about a specific topic — NHS, Housing, Economy, Crime, Environment,
           Immigration or Education — start at{" "}
-          <Link to="/issues" className="text-amber hover:underline">Issues</Link>.
-          Each issue page shows you:
+          <Link to="/issues" className="text-amber hover:underline">
+            Issues
+          </Link>
+          . Each issue page shows you:
         </p>
         <div className="grid sm:grid-cols-2 gap-3">
           {[
             { label: "The key facts", copy: "What the data says right now, in plain English" },
-            { label: "What parties promised", copy: "Every pledge from every major party, with delivery status" },
-            { label: "Latest news", copy: "Stories from multiple outlets, ranked by how many are covering it" },
+            {
+              label: "What parties promised",
+              copy: "Every pledge from every major party, with delivery status",
+            },
+            {
+              label: "Latest news",
+              copy: "Stories from multiple outlets, ranked by how many are covering it",
+            },
             { label: "Direct links", copy: "Jump straight to the relevant tool for that issue" },
           ].map((item) => (
             <div key={item.label} className="border border-border rounded-lg p-4 bg-surface">
@@ -158,8 +193,8 @@ function AboutPage() {
       <Section id="democracy">
         <SectionTitle eyebrow="Democracy" title="Parliament, votes & committees" />
         <p className="text-muted-foreground leading-relaxed">
-          Three tools covering what Parliament is actually doing — what laws are being debated,
-          how MPs vote, and what scrutiny committees are finding.
+          Three tools covering what Parliament is actually doing — what laws are being debated, how
+          MPs vote, and what scrutiny committees are finding.
         </p>
         <div className="grid gap-3">
           <ToolCard
@@ -184,7 +219,7 @@ function AboutPage() {
             to="/petitions"
             eyebrow="Petitions"
             title="What the public is demanding"
-            copy="Open petitions sorted by signatures. 10,000 signatures gets a government response. 100,000 triggers a debate in Parliament."
+            copy="Open petitions sorted by signatures. 10,000 signatures gets a UK Government response; 100,000 means the petition is considered for debate (debates are usual but not automatic)."
           />
         </div>
       </Section>
@@ -193,7 +228,8 @@ function AboutPage() {
       <Section id="economy">
         <SectionTitle eyebrow="Economy" title="The economic scorecard" />
         <p className="text-muted-foreground leading-relaxed">
-          Live ONS figures and Treasury data — the numbers politicians argue about, without the spin.
+          Live ONS figures and Treasury data — the numbers politicians argue about, without the
+          spin.
         </p>
         <div className="grid gap-3">
           <ToolCard
@@ -211,9 +247,10 @@ function AboutPage() {
         </div>
         <Card className="bg-surface-2/40 border-border">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Tip:</strong> The deficit and debt figures on the economy page are often confused by politicians.
-            "Deficit" is the annual gap between spending and tax revenue. "Debt" is the accumulated total owed.
-            A falling deficit means the government is still borrowing, just less than before.
+            <strong className="text-foreground">Tip:</strong> The deficit and debt figures on the
+            economy page are often confused by politicians. "Deficit" is the annual gap between
+            spending and tax revenue. "Debt" is the accumulated total owed. A falling deficit means
+            the government is still borrowing, just less than before.
           </p>
         </Card>
       </Section>
@@ -222,8 +259,8 @@ function AboutPage() {
       <Section id="money">
         <SectionTitle eyebrow="Follow the money" title="Contracts, donations & influence" />
         <p className="text-muted-foreground leading-relaxed">
-          Six tools for tracing where public money goes and who has access to government.
-          These are the hardest things to find on GOV.UK — we pull them into one place.
+          Six tools for tracing where public money goes and who has access to government. These are
+          the hardest things to find on GOV.UK — we pull them into one place.
         </p>
         <div className="grid gap-3">
           <ToolCard
@@ -260,13 +297,15 @@ function AboutPage() {
             to="/acoba"
             eyebrow="Revolving Door"
             title="Ministers into private sector"
-            copy="ACOBA publishes every case of a minister or senior official moving into a private sector role connected to their government work. Critics say the current system is too lax."
+            copy="ACOBA publishes every case of a minister or senior official taking a private-sector role after leaving government, along with the conditions it set. We show the register; you draw your own conclusions."
           />
         </div>
         <Card className="bg-surface-2/40 border-border">
           <p className="text-xs text-muted-foreground leading-relaxed">
             <strong className="text-foreground">Cross-reference tip:</strong> Use the{" "}
-            <Link to="/crossref" className="text-amber hover:underline">Cross-Reference tool</Link>{" "}
+            <Link to="/crossref" className="text-amber hover:underline">
+              Cross-Reference tool
+            </Link>{" "}
             to search a company or person name across contracts, donations, ACOBA and the lobbying
             register at once. Useful when a company appears in the news.
           </p>
@@ -277,8 +316,8 @@ function AboutPage() {
       <Section id="services">
         <SectionTitle eyebrow="Public services" title="NHS, environment, policing & welfare" />
         <p className="text-muted-foreground leading-relaxed">
-          Real-world data on the services that affect everyone, from NHS waiting times
-          to sewage discharge hours to racial disparity in policing.
+          Real-world data on the services that affect everyone, from NHS waiting times to sewage
+          discharge hours to racial disparity in policing.
         </p>
         <div className="grid gap-3">
           <ToolCard
@@ -303,7 +342,7 @@ function AboutPage() {
             to="/sanctions"
             eyebrow="Sanctions"
             title="Benefits conditionality"
-            copy="DWP Universal Credit sanctions data. A sanction can cut a claimant's only income to zero for up to three years — often for missing a single Jobcentre appointment."
+            copy="DWP Universal Credit sanctions data: how many claimants are sanctioned, for how long, and the official recorded reason categories."
           />
           <ToolCard
             to="/foi"
@@ -338,17 +377,18 @@ function AboutPage() {
             to="/briefing"
             eyebrow="AI Briefing"
             title="Ask about any UK issue"
-            copy="Generate a non-partisan briefing on any UK accountability topic — ministers named, real figures, department by department. Requires ANTHROPIC_API_KEY or LOVABLE_API_KEY in your environment."
-            status="requires-key"
+            copy="Generate a non-partisan briefing on any UK accountability topic — drawn only from the cached official data behind this site, with every figure linked to its source."
           />
         </div>
         <Card className="bg-surface-2/40 border-border">
-          <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">About AI Briefing</div>
+          <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            About AI Briefing
+          </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            The AI Briefing tool generates non-partisan summaries using Claude (via Anthropic API) or Gemini
-            (via Lovable gateway). To enable it, set <code className="bg-surface-2 px-1 rounded text-[11px]">ANTHROPIC_API_KEY</code> in
-            your Netlify environment variables. Briefings are AI-generated — always verify figures
-            against primary sources before publishing or sharing.
+            The AI Briefing tool answers from the official data already cached on transparenC, and
+            lists the sources it used beneath every answer. It does not browse the open web for
+            figures. Briefings are AI-generated — always verify against the linked sources before
+            sharing.
           </p>
         </Card>
       </Section>
@@ -382,7 +422,10 @@ function AboutPage() {
               copy: "The 'Ask AI about this' link pre-fills the briefing tool with a topic related to the page you're on. Good for generating a quick summary before a meeting or writing a letter.",
             },
           ].map((item) => (
-            <div key={item.title} className="flex gap-4 p-4 bg-surface border border-border rounded-lg">
+            <div
+              key={item.title}
+              className="flex gap-4 p-4 bg-surface border border-border rounded-lg"
+            >
               <div className="text-amber text-xl shrink-0 w-6 text-center">{item.icon}</div>
               <div>
                 <div className="font-display text-sm font-bold mb-1">{item.title}</div>
@@ -398,16 +441,39 @@ function AboutPage() {
         <SectionTitle eyebrow="Data sources" title="Where the data comes from" />
         <p className="text-muted-foreground leading-relaxed">
           Every piece of data on transparenC comes from official UK public sources. No third-party
-          data aggregators, no scraping. Most content is published under the{" "}
-          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" className="text-amber hover:underline" target="_blank" rel="noreferrer">
+          data aggregators, no scraping. Built on open public data under the{" "}
+          <a
+            href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+            className="text-amber hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
             Open Government Licence v3.0
-          </a>.
+          </a>{" "}
+          and the{" "}
+          <a
+            href="https://www.parliament.uk/site-information/copyright-parliament/open-parliament-licence/"
+            className="text-amber hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Parliament Licence
+          </a>{" "}
+          — see the{" "}
+          <Link to="/methodology" className="text-amber hover:underline">
+            per-source licence table
+          </Link>
+          .
         </p>
         <div className="grid sm:grid-cols-2 gap-2">
           {[
             ["Parliament Bills API", "bills.parliament.uk", "Bills, votes, committees"],
             ["Electoral Commission", "electoralcommission.org.uk", "Donations register"],
-            ["Contracts Finder (Cabinet Office)", "contractsfinder.service.gov.uk", "Government contracts"],
+            [
+              "Contracts Finder (Cabinet Office)",
+              "contractsfinder.service.gov.uk",
+              "Government contracts",
+            ],
             ["ONS API", "api.ons.gov.uk", "GDP, inflation, unemployment, wages, debt"],
             ["HM Treasury PESA", "gov.uk/collections/pesa", "Departmental spending"],
             ["NHS England", "england.nhs.uk", "Waiting times, A&E performance"],
@@ -415,9 +481,21 @@ function AboutPage() {
             ["data.police.uk", "data.police.uk", "Stop & search records"],
             ["IPSA", "theipsa.org.uk", "MP expenses"],
             ["DWP", "gov.uk/dwp", "Benefits sanctions data"],
-            ["GOV.UK (search API)", "gov.uk/api/search.json", "Ministerial meetings, lobbying, ACOBA"],
-            ["Parliament Members API", "members-api.parliament.uk", "MP profiles, votes, interests"],
-            ["IPA GMPP", "gov.uk/government/collections/government-major-projects", "Major projects"],
+            [
+              "GOV.UK (search API)",
+              "gov.uk/api/search.json",
+              "Ministerial meetings, lobbying, ACOBA",
+            ],
+            [
+              "Parliament Members API",
+              "members-api.parliament.uk",
+              "MP profiles, votes, interests",
+            ],
+            [
+              "IPA GMPP",
+              "gov.uk/government/collections/government-major-projects",
+              "Major projects",
+            ],
             ["postcodes.io", "postcodes.io", "Postcode → constituency lookup"],
           ].map(([name, domain, covers]) => (
             <div key={domain} className="border border-border rounded-lg p-3 bg-surface">
@@ -428,23 +506,78 @@ function AboutPage() {
           ))}
         </div>
         <Card className="bg-amber/5 border-amber/20 space-y-2">
-          <div className="label-mono text-[10px] uppercase tracking-wider text-amber">Non-partisan commitment</div>
+          <div className="label-mono text-[10px] uppercase tracking-wider text-amber">
+            Non-partisan commitment
+          </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            transparenC does not editorialize. Where context is provided (the "What this means" sections),
-            it draws on the same data, official reports and parliamentary record — not commentary.
-            The goal is to make it harder to ignore public data, not to push a political line.
-            All parties' promises are tracked the same way.
+            Where a number can settle it, the number does. Where judgement is unavoidable — such as
+            assessing whether a pledge is on track — the rubric, the evidence, and every status
+            change are published on our{" "}
+            <Link to="/methodology" className="text-amber hover:underline">
+              methodology page
+            </Link>
+            , and anyone can challenge an assessment with evidence. All parties are held to the same
+            standard. The goal is to make public data harder to ignore, not to push a political
+            line.
           </p>
         </Card>
       </Section>
 
+      {/* Who runs this */}
+      <Section id="who">
+        <SectionTitle eyebrow="Who runs this" title="Who's behind transparenC" />
+        <Card className="space-y-2">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Built and self-funded by one independent developer. No party affiliation, no donations,
+            no ads. The site makes no money and takes no money — it exists to make public data
+            usable.
+          </p>
+        </Card>
+      </Section>
+
+      {/* Corrections log */}
+      <Section id="corrections">
+        <SectionTitle eyebrow="Corrections" title="When we get it wrong, we say so" />
+        <p className="text-muted-foreground leading-relaxed">
+          A public, append-only record of factual corrections to this site. Publishing our own
+          mistakes is part of holding others to account.
+        </p>
+        <div className="space-y-2">
+          {CORRECTIONS.map((c, i) => (
+            <div key={i} className="rounded-lg border border-border bg-surface p-4 space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-display text-sm font-bold">{c.page}</span>
+                <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {new Date(c.date).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <span className="text-flag">Was:</span> {c.wasWrong}
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <span className="text-ok">Now:</span> {c.nowSays}
+              </p>
+              <p className="text-[11px] text-muted-foreground/70 leading-relaxed italic">
+                {c.reason}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* Back to home */}
       <div className="pt-4 border-t border-border">
-        <Link to="/" className="label-mono text-[10px] uppercase tracking-wider text-amber hover:underline">
+        <Link
+          to="/"
+          className="label-mono text-[10px] uppercase tracking-wider text-amber hover:underline"
+        >
           ← Back to home
         </Link>
       </div>
-
     </div>
   );
 }

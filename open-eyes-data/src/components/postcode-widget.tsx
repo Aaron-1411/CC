@@ -12,7 +12,9 @@ export function PostcodeBar({ className }: { className?: string }) {
   if (data) {
     return (
       <div className={cn("flex items-center gap-2 text-xs", className)}>
-        <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Your area:</span>
+        <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          Your area:
+        </span>
         <Link
           to="/my-area"
           className="label-mono text-[10px] uppercase tracking-wider text-amber hover:underline"
@@ -66,11 +68,16 @@ export function PostcodeWidget() {
   if (data) {
     return (
       <div className="rounded-lg border border-amber/20 bg-amber/5 p-5">
-        <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-2">Your area</div>
+        <div className="label-mono text-[10px] uppercase tracking-wider text-amber mb-2">
+          Your area
+        </div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1">
             <div className="font-display text-xl font-bold">{data.constituency}</div>
-            <div className="text-sm text-muted-foreground">{data.localAuthority}{data.region ? ` · ${data.region}` : ""}</div>
+            <div className="text-sm text-muted-foreground">
+              {data.localAuthority}
+              {data.region ? ` · ${data.region}` : ""}
+            </div>
             {data.mp && (
               <div className="flex items-center gap-2 mt-2">
                 {data.mp.thumbnailUrl && (
@@ -78,7 +85,9 @@ export function PostcodeWidget() {
                     src={data.mp.thumbnailUrl}
                     alt={data.mp.name}
                     className="w-8 h-8 rounded-full object-cover border border-border"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
                   />
                 )}
                 <div>
@@ -88,7 +97,9 @@ export function PostcodeWidget() {
                       className="w-2 h-2 rounded-full"
                       style={{ backgroundColor: data.mp.partyColour }}
                     />
-                    <span className="label-mono text-[10px] text-muted-foreground">{data.mp.party}</span>
+                    <span className="label-mono text-[10px] text-muted-foreground">
+                      {data.mp.party}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -120,7 +131,8 @@ export function PostcodeWidget() {
       </div>
       <h3 className="font-display text-lg font-bold mb-1">Enter your postcode</h3>
       <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-        See your MP's voting record, local policing data, and which issues affect your area — all filtered to where you live.
+        See your MP's voting record, local policing data, and which issues affect your area — all
+        filtered to where you live.
       </p>
       <form
         onSubmit={(e) => {
@@ -145,10 +157,15 @@ export function PostcodeWidget() {
         </button>
       </form>
       {error && (
-        <p className="text-sm text-flag mt-2">{error === "Postcode not found" ? "Postcode not found — try a different format" : `Error: ${error}`}</p>
+        <p className="text-sm text-flag mt-2">
+          {error === "Postcode not found"
+            ? "Postcode not found — try a different format"
+            : `Error: ${error}`}
+        </p>
       )}
       <p className="label-mono text-[9px] text-muted-foreground/60 mt-3">
-        Your postcode is stored only in your browser. It is never sent to our servers or shared.
+        Your postcode goes directly from your browser to postcodes.io to find your constituency. It
+        never touches our servers, and the result is saved only in your browser.
       </p>
     </div>
   );

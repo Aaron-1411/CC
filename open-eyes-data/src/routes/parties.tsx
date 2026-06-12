@@ -12,7 +12,26 @@ import {
   Skeleton,
 } from "@/components/primitives";
 import { fmtNumber, getJSON } from "@/lib/api";
+import { toPledgeStatus } from "@/data/parties";
 import type { Issue, Party, PartyPromise, PromiseStatus } from "@/data/parties";
+import { PLEDGE_STATUS_META } from "@/contract/pledges";
+
+const slugIssue = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+/**
+ * Recompute a pledge's stable permalink id from the party's full (unfiltered)
+ * pledge list, matching the scheme in data/parties.ts ALL_PLEDGES.
+ */
+function pledgeId(partyId: string, fullList: PartyPromise[], pledge: PartyPromise): string {
+  const idx = fullList.indexOf(pledge);
+  let n = 0;
+  for (let i = 0; i <= idx; i++) if (fullList[i].issue === pledge.issue) n++;
+  return `${partyId}-${slugIssue(pledge.issue)}-${n}`;
+}
 
 export const Route = createFileRoute("/parties")({
   head: () => ({
@@ -82,7 +101,6 @@ function statusLabel(status: PromiseStatus): string {
 
 function CoverageBar({ parties }: { parties: Party[] }) {
   const totalSeats = parties.reduce((s, p) => s + p.seats, 0);
-  const totalPolling = parties.reduce((s, p) => s + p.polling, 0);
 
   return (
     <div className="space-y-4">
@@ -124,49 +142,19 @@ function CoverageBar({ parties }: { parties: Party[] }) {
           ))}
         </div>
       </div>
-
-      {/* Polling bar */}
-      <div>
-        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
-          Indicative polling — {totalPolling}% of vote share shown (approx.)
-        </div>
-        <div className="flex h-4 rounded overflow-hidden gap-px">
-          {parties.map((p) => (
-            <div
-              key={p.id}
-              title={`${p.name}: ~${p.polling}%`}
-              style={{
-                width: `${p.polling}%`,
-                backgroundColor: p.colour,
-                opacity: 0.8,
-              }}
-              className="shrink-0"
-            />
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-3 mt-2">
-          {parties.map((p) => (
-            <div key={p.id} className="flex items-center gap-1.5">
-              <div
-                className="w-2.5 h-2.5 rounded-sm shrink-0"
-                style={{ backgroundColor: p.colour, opacity: 0.8 }}
-              />
-              <span className="label-mono text-[10px] text-muted-foreground">
-                {p.name}: ~{p.polling}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
 
 // ─── Live data callouts per issue ────────────────────────────────────────────
 
-type NHSStats = { stats: Array<{ label: string; value: string; target?: string; context: string }> };
+type NHSStats = {
+  stats: Array<{ label: string; value: string; target?: string; context: string }>;
+};
 type SewageData = { totalHours: number; totalCount: number; year: number };
-type StopSearchData = { totalStops: number; year?: string } | Array<{ month: string; stops?: number }>;
+type StopSearchData =
+  | { totalStops: number; year?: string }
+  | Array<{ month: string; stops?: number }>;
 
 function LiveDataCallout({ issue }: { issue: Issue | "All" }) {
   const nhsQ = useQuery({
@@ -192,7 +180,13 @@ function LiveDataCallout({ issue }: { issue: Issue | "All" }) {
 
   if ((issue === "NHS" || issue === "All") && nhsQ.data) {
     const ae = nhsQ.data.data.stats?.find((s) => s.label.includes("4-hour"));
-    if (ae) stats.push({ label: "A&E 4h target", value: ae.value, sub: `target ${ae.target ?? "95%"}`, to: "/nhs" });
+    if (ae)
+      stats.push({
+        label: "A&E 4h target",
+        value: ae.value,
+        sub: `target ${ae.target ?? "95%"}`,
+        to: "/nhs",
+      });
   }
   if ((issue === "Environment" || issue === "All") && sewageQ.data) {
     const d = sewageQ.data.data;
@@ -213,7 +207,13 @@ function LiveDataCallout({ issue }: { issue: Issue | "All" }) {
     } else if (typeof (raw as { totalStops?: number }).totalStops === "number") {
       total = (raw as { totalStops: number }).totalStops;
     }
-    if (total > 0) stats.push({ label: "Stop & search (latest year)", value: fmtNumber(total), sub: "England & Wales", to: "/stop-search" });
+    if (total > 0)
+      stats.push({
+        label: "Stop & search (latest year)",
+        value: fmtNumber(total),
+        sub: "England & Wales",
+        to: "/stop-search",
+      });
   }
 
   if (stats.length === 0) return null;
@@ -265,9 +265,9 @@ function PartiesPage() {
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          How are the UK's political parties performing against their own pledges? Track
-          commitments on the issues that matter most — from NHS waiting lists to net migration
-          and the housing crisis.
+          How are the UK's political parties performing against their own pledges? Track commitments
+          on the issues that matter most — from NHS waiting lists to net migration and the housing
+          crisis.
         </p>
       </div>
 
@@ -367,7 +367,10 @@ function PartiesPage() {
                   </div>
                   <div className="flex gap-4 shrink-0">
                     <div className="text-right">
-                      <div className="font-display text-2xl font-bold" style={{ color: party.colour }}>
+                      <div
+                        className="font-display text-2xl font-bold"
+                        style={{ color: party.colour }}
+                      >
                         {party.seats}
                       </div>
                       <div className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground">
@@ -375,11 +378,11 @@ function PartiesPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-display text-2xl font-bold text-amber">
-                        ~{party.polling}%
+                      <div className="font-display text-sm font-bold text-foreground leading-tight max-w-[10rem]">
+                        {party.role}
                       </div>
                       <div className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-                        polling
+                        {party.leader}
                       </div>
                     </div>
                   </div>
@@ -387,37 +390,64 @@ function PartiesPage() {
 
                 {/* Promises */}
                 <div className="space-y-2">
-                  {filtered.map((pledge, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-wrap items-start gap-2 py-2.5 border-t border-border first:border-0"
-                    >
-                      <FlagPill variant={statusVariant(pledge.status)}>
-                        {statusLabel(pledge.status)}
-                      </FlagPill>
-                      <span className="label-mono text-[10px] uppercase tracking-wider text-amber shrink-0 mt-0.5">
-                        {pledge.issue}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium leading-snug">{pledge.promise}</p>
-                        {pledge.detail && (
-                          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                            {pledge.detail}
-                          </p>
-                        )}
-                        {pledge.sourceUrl && (
-                          <a
-                            href={pledge.sourceUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 hover:text-amber mt-0.5 inline-block"
+                  {filtered.map((pledge) => {
+                    const pid = pledgeId(party.id, partyPledges, pledge);
+                    const meta = PLEDGE_STATUS_META[toPledgeStatus(pledge.status)];
+                    return (
+                      <div
+                        key={pid}
+                        className="flex flex-wrap items-start gap-2 py-2.5 border-t border-border first:border-0"
+                      >
+                        <FlagPill variant={meta.tone}>
+                          <span aria-hidden="true">{meta.icon}</span> {meta.label}
+                        </FlagPill>
+                        <span className="label-mono text-[10px] uppercase tracking-wider text-amber shrink-0 mt-0.5">
+                          {pledge.issue}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <Link
+                            to="/parties/pledge/$id"
+                            params={{ id: pid }}
+                            className="text-sm font-medium leading-snug hover:text-amber transition-colors"
                           >
-                            Source: {pledge.sourceLabel ?? "Gov.uk"} →
-                          </a>
-                        )}
+                            {pledge.promise}
+                          </Link>
+                          {pledge.detail && (
+                            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                              {pledge.detail}
+                            </p>
+                          )}
+                          <div className="flex flex-wrap items-center gap-3 mt-1">
+                            {pledge.sourceUrl && (
+                              <a
+                                href={pledge.sourceUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 hover:text-amber inline-block"
+                              >
+                                Source: {pledge.sourceLabel ?? "official record"} ↗
+                              </a>
+                            )}
+                            {pledge.quote && (
+                              <span
+                                className="label-mono text-[9px] uppercase tracking-wider text-ok"
+                                title="Verbatim manifesto quote on file"
+                              >
+                                ✓ verbatim
+                              </span>
+                            )}
+                            <Link
+                              to="/parties/pledge/$id"
+                              params={{ id: pid }}
+                              className="label-mono text-[9px] uppercase tracking-wider text-amber/70 hover:text-amber inline-block"
+                            >
+                              Permalink →
+                            </Link>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </Card>
             );
@@ -425,9 +455,13 @@ function PartiesPage() {
       </div>
 
       <p className="text-xs text-muted-foreground label-mono">
-        Polling figures are indicative only — aggregated across various pollsters (YouGov, Ipsos,
-        Savanta et al.). Seat counts reflect the 2024 general election result. Promise status
-        assessments are editorial judgements based on publicly available information as of May 2026.
+        Seat counts reflect the 2024 general election result. Pledge status assessments are made
+        against our published{" "}
+        <Link to="/methodology" className="text-amber hover:underline">
+          rubric
+        </Link>
+        ; each status shows its own evidence and can be challenged. All parties are assessed the
+        same way.
       </p>
 
       <DataProvenance

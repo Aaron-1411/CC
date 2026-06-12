@@ -3,6 +3,8 @@
  * news, related tools, and action prompts into one place.
  */
 
+import type { SourcedStat } from "@/contract/stats";
+
 export type IssueKey =
   | "nhs"
   | "housing"
@@ -32,9 +34,13 @@ export type IssueDef = {
   mpTopic: string;
   /** Pre-filled topic for AI briefing */
   briefingTopic: string;
-  /** Key hardcoded context fact shown on the hub */
-  keyFact: string;
-  /** "What does this mean?" one-liner for the key fact */
+  /**
+   * Headline figure for the issue, rendered via <SourcedStat>. This replaces the
+   * old free-text `keyFact` so every number on the hub carries a source + asOf.
+   * Verified against the cited source on 2026-06-12.
+   */
+  headlineStat: SourcedStat;
+  /** Short plain-English gloss on what the headline figure means (no bare stats). */
   keyFactContext: string;
   /** Related data tools within the app */
   relatedTools: Array<{ to: string; label: string; description: string }>;
@@ -46,20 +52,41 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "NHS & Health",
     question: "Is the NHS keeping up with demand?",
     description:
-      "The NHS is the UK's most valued institution — but it has missed its core A&E target every single month since July 2015. Waiting lists peaked at 7.8 million. Labour promised 2 million extra appointments per week. This is where you can see whether they're delivering.",
+      "The NHS is the UK's most valued institution — but its core A&E four-hour standard has gone unmet for years, and waiting lists rose into the millions. This is where you can see how it is performing, and what each party promised.",
     color: "#3b82f6",
     icon: "🏥",
     partyIssue: "NHS",
     newsTopic: "NHS",
     mpTopic: "NHS waiting times and A&E performance",
     briefingTopic: "NHS England waiting list and A&E performance 2025",
-    keyFact: "~76% of A&E patients seen within 4 hours",
+    headlineStat: {
+      value: "76.9%",
+      label: "of A&E patients admitted, transferred or discharged within 4 hours",
+      sourceId: "nhs-england",
+      sourceUrl:
+        "https://www.england.nhs.uk/statistics/statistical-work-areas/ae-waiting-times-and-activity/",
+      asOf: "2026-04-30",
+      methodologyNote:
+        "Against a 95% legal standard; NHS England works to an interim 78% goal. Live monthly figures on the NHS page.",
+    },
     keyFactContext:
-      "The target is 95%. The NHS hasn't hit it since July 2015 — a decade of consecutive misses. In that time, it has been managed by nine different Health Secretaries.",
+      "The 95% four-hour standard was last met in July 2015. Current monthly performance is published by NHS England and shown live on the NHS data page.",
     relatedTools: [
-      { to: "/nhs", label: "A&E performance data", description: "Latest published NHS England statistics" },
-      { to: "/parties", label: "Party pledges on NHS", description: "What every party promised and delivered" },
-      { to: "/briefing", label: "AI briefing", description: "Generate a non-partisan NHS briefing" },
+      {
+        to: "/nhs",
+        label: "A&E performance data",
+        description: "Latest published NHS England statistics",
+      },
+      {
+        to: "/parties",
+        label: "Party pledges on NHS",
+        description: "What every party promised and delivered",
+      },
+      {
+        to: "/briefing",
+        label: "AI briefing",
+        description: "Generate a non-partisan NHS briefing",
+      },
     ],
   },
 
@@ -68,20 +95,41 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "Housing",
     question: "Will there be enough homes — and can people afford them?",
     description:
-      "The UK has underbuilt homes for decades. Labour's 2024 manifesto committed to 1.5 million new homes this parliament. Renters have won the abolition of no-fault evictions. But build rates remain below target and house prices are still unaffordable for most first-time buyers.",
+      "The UK has underbuilt homes for decades. The Government has committed to 1.5 million new homes in England this Parliament, and is reforming renters' rights and planning. Whether build rates can reach the target is the open question.",
     color: "#f59e0b",
     icon: "🏠",
     partyIssue: "Housing",
     newsTopic: "Housing",
     mpTopic: "housing targets, planning reform and renters rights",
     briefingTopic: "UK housing crisis, building targets and renters reform 2025",
-    keyFact: "Labour target: 1.5 million homes this parliament",
+    headlineStat: {
+      value: 1_500_000,
+      unit: "homes",
+      label: "Government target for new homes in England this Parliament",
+      sourceId: "mhclg-housing",
+      sourceUrl: "https://www.gov.uk/government/collections/net-supply-of-housing",
+      asOf: "2024-07-04",
+      methodologyNote:
+        "A pledge target. Delivery against it is tracked on the Parties pledge page.",
+    },
     keyFactContext:
-      "England needs roughly 300,000 new homes per year to meet the target. Build rates in 2024-25 came in at around 200,000 — a shortfall of 100,000 per year. At this rate the target will be missed by around 400,000 homes.",
+      "Meeting 1.5 million homes over a Parliament implies roughly 300,000 a year in England — well above recent build rates. Official net additional dwellings data is published annually by MHCLG.",
     relatedTools: [
-      { to: "/parties", label: "Party pledges on housing", description: "Targets, renters reform, planning changes" },
-      { to: "/petitions", label: "Housing petitions", description: "What the public is demanding on housing" },
-      { to: "/briefing", label: "AI briefing", description: "Ask about planning reform, house prices, renters" },
+      {
+        to: "/parties",
+        label: "Party pledges on housing",
+        description: "Targets, renters reform, planning changes",
+      },
+      {
+        to: "/petitions",
+        label: "Housing petitions",
+        description: "What the public is demanding on housing",
+      },
+      {
+        to: "/briefing",
+        label: "AI briefing",
+        description: "Ask about planning reform, house prices, renters",
+      },
     ],
   },
 
@@ -90,21 +138,46 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "Economy",
     question: "Is the economy working for ordinary people?",
     description:
-      "The UK economy grew by around 1% in 2025 — below the G7 average. Inflation has fallen from its 2022 peak but cost-of-living pressures persist. Government contracts, party donations, and lobbying all shape economic policy — follow the money to understand who benefits.",
+      "Growth, inflation and the cost of living shape every household budget. Government contracts, party donations and lobbying all shape economic policy too — follow the money to understand who benefits.",
     color: "#10b981",
     icon: "📈",
     partyIssue: "Economy",
     newsTopic: "Economy",
     mpTopic: "cost of living, economic growth and government spending",
     briefingTopic: "UK economic growth, inflation and cost of living 2025",
-    keyFact: "~1% GDP growth forecast for 2025",
+    headlineStat: {
+      value: "1.4%",
+      label: "UK GDP growth in 2025 (annual, ONS)",
+      sourceId: "ons-economy",
+      sourceUrl:
+        "https://www.ons.gov.uk/economy/grossdomesticproductgdp/bulletins/quarterlynationalaccounts/octobertodecember2025",
+      asOf: "2025-12-31",
+      methodologyNote:
+        "Up from 1.0% in 2024. Live indicators (GDP, CPI, wages, debt) on the Economy page.",
+    },
     keyFactContext:
-      "Labour promised the highest sustained growth in the G7. The OBR revised its forecast down to around 1% for 2025, placing the UK towards the bottom of G7 economies. The £40bn tax rise in the October 2024 Budget was intended to stabilise public finances.",
+      "Growth of 1.4% in 2025 was an improvement on 2024 but remains modest by historical standards. Inflation, wages and public debt are tracked live on the Economy page.",
     relatedTools: [
-      { to: "/contracts", label: "Government contracts", description: "Where public money is being spent" },
-      { to: "/donations", label: "Party donations", description: "Who funds the parties making economic policy" },
-      { to: "/projects", label: "Major projects", description: "HS2, Hinkley and other big-ticket spending" },
-      { to: "/parties", label: "Economic pledges", description: "What parties promised on the economy" },
+      {
+        to: "/contracts",
+        label: "Government contracts",
+        description: "Where public money is being spent",
+      },
+      {
+        to: "/donations",
+        label: "Party donations",
+        description: "Who funds the parties making economic policy",
+      },
+      {
+        to: "/projects",
+        label: "Major projects",
+        description: "HS2, Hinkley and other big-ticket spending",
+      },
+      {
+        to: "/parties",
+        label: "Economic pledges",
+        description: "What parties promised on the economy",
+      },
     ],
   },
 
@@ -113,20 +186,41 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "Crime & Policing",
     question: "Is the criminal justice system fair and effective?",
     description:
-      "Knife crime, stop and search, sentencing reform and police numbers are all live debates. Labour promised to cut knife crime by 50% in a decade and recruit 13,000 neighbourhood officers. Meanwhile, stop-and-search data shows Black people are searched at 7× the rate of white people.",
+      "Knife crime, stop and search, sentencing reform and police numbers are all live debates. Stop-and-search data also shows a persistent ethnic disparity in who is searched — one of the clearest, most-scrutinised figures in policing.",
     color: "#8b5cf6",
     icon: "⚖️",
     partyIssue: "Crime",
     newsTopic: "Crime",
     mpTopic: "knife crime, stop and search, policing and criminal justice",
     briefingTopic: "UK knife crime, stop and search racial disparity, policing 2025",
-    keyFact: "Black people are 7× more likely to be stopped and searched",
+    headlineStat: {
+      value: "3.8×",
+      label: "the rate at which Black people are stopped and searched vs White people",
+      sourceId: "homeoffice-stop-search",
+      sourceUrl:
+        "https://www.ethnicity-facts-figures.service.gov.uk/crime-justice-and-the-law/policing/stop-and-search/latest/",
+      asOf: "2025-03-31",
+      methodologyNote:
+        "Year ending March 2025. The disparity has fallen from higher levels (5.5× in 2020–21). Force-level data on the Policing page.",
+    },
     keyFactContext:
-      "Home Office statistics consistently show Black people are stopped at roughly 7 times the rate of white people in England and Wales. Only 17% of stop-and-searches result in any action being taken — raising questions about whether the power is being used proportionately.",
+      "In the year ending March 2025, Black people were searched at 3.8 times the rate of White people in England and Wales — down from 5.5× four years earlier, but still a wide gap. Per-force breakdowns are on the Policing page.",
     relatedTools: [
-      { to: "/stop-search", label: "Stop & search data", description: "Ethnic breakdown by force, outcome and reason" },
-      { to: "/parties", label: "Crime & policing pledges", description: "Knife crime, sentencing and police numbers" },
-      { to: "/briefing", label: "AI briefing", description: "Ask about policing, knife crime or sentencing" },
+      {
+        to: "/stop-search",
+        label: "Stop & search data",
+        description: "Ethnic breakdown by force, outcome and reason",
+      },
+      {
+        to: "/parties",
+        label: "Crime & policing pledges",
+        description: "Knife crime, sentencing and police numbers",
+      },
+      {
+        to: "/briefing",
+        label: "AI briefing",
+        description: "Ask about policing, knife crime or sentencing",
+      },
     ],
   },
 
@@ -135,20 +229,42 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "Environment",
     question: "Are water companies and government meeting their environmental obligations?",
     description:
-      "In 2024, water companies discharged raw or partly-treated sewage into rivers and seas for over 3.6 million hours — a new record. Labour promised clean power by 2030 via Great British Energy. The Conservatives and Reform have opposing positions on net zero.",
+      "Water companies discharge sewage into rivers and seas through storm overflows, and the Environment Agency publishes exactly how long each one spilled. Net zero and clean power are also live dividing lines between the parties.",
     color: "#22c55e",
     icon: "🌊",
     partyIssue: "Environment",
     newsTopic: "Environment",
     mpTopic: "sewage discharges, water companies and net zero",
     briefingTopic: "UK sewage pollution, water company accountability and net zero policy 2025",
-    keyFact: "3.6 million hours of sewage discharged in 2024",
+    headlineStat: {
+      value: 3_614_427,
+      unit: "hours",
+      label: "untreated sewage discharged through storm overflows in England in 2024",
+      sourceId: "ea-edm",
+      sourceUrl:
+        "https://www.gov.uk/government/news/environment-agency-storm-overflow-spill-data-for-2024",
+      asOf: "2024-12-31",
+      methodologyNote:
+        "A record total, 0.2% above 2023. Per-company, per-site hours on the Sewage page.",
+    },
     keyFactContext:
-      "That is equivalent to every water company in England spilling sewage continuously for over 400 years, combined. Water companies paid out £1.4bn in dividends the same year while repeatedly missing their own improvement targets.",
+      "The Environment Agency's Event Duration Monitoring shows 2024 was a record for spill duration. Each overflow operated on average around 32 times; the Government's target is fewer than 10. Site-level data is on the Sewage page.",
     relatedTools: [
-      { to: "/sewage", label: "Sewage discharge data", description: "Per-company, per-site storm overflow hours" },
-      { to: "/parties", label: "Environment pledges", description: "Net zero, clean power and water policy" },
-      { to: "/briefing", label: "AI briefing", description: "Ask about water companies, sewage or net zero" },
+      {
+        to: "/sewage",
+        label: "Sewage discharge data",
+        description: "Per-company, per-site storm overflow hours",
+      },
+      {
+        to: "/parties",
+        label: "Environment pledges",
+        description: "Net zero, clean power and water policy",
+      },
+      {
+        to: "/briefing",
+        label: "AI briefing",
+        description: "Ask about water companies, sewage or net zero",
+      },
     ],
   },
 
@@ -157,20 +273,41 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "Immigration",
     question: "How is the UK managing migration and the asylum system?",
     description:
-      "Net migration reached 728,000 in the latest ONS figures. The asylum backlog stood at over 100,000 cases. Labour pledged to reduce net migration significantly while restoring safe legal routes. Reform UK wants near-zero migration. The debate affects housing, public services, and labour markets simultaneously.",
+      "Net migration has fallen sharply from its mid-2020s peak as work and study visa routes tightened. The asylum system, safe legal routes and the parties' competing targets remain central to the debate, touching housing, public services and the labour market.",
     color: "#f97316",
     icon: "✈️",
     partyIssue: "Immigration",
     newsTopic: "Immigration",
     mpTopic: "net migration, asylum backlog and immigration policy",
     briefingTopic: "UK net migration figures, asylum system and immigration policy 2025",
-    keyFact: "728,000 net migration (latest ONS figures)",
+    headlineStat: {
+      value: 171_000,
+      label: "net migration to the UK, year ending December 2025 (provisional)",
+      sourceId: "ons-ltim",
+      sourceUrl:
+        "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingdecember2025",
+      asOf: "2025-12-31",
+      methodologyNote:
+        "Provisional; 813,000 arrived and 642,000 left. Down from a revised 331,000 a year earlier and a peak above 900,000.",
+    },
     keyFactContext:
-      "This is the second highest figure on record. Labour inherited a pledge to reduce it 'significantly' but has not set a numerical target. Reform UK wants net migration below zero. The Conservatives previously promised under 100,000 — a target never achieved during their 14 years in government.",
+      "ONS estimates net migration at 171,000 for the year to December 2025 — roughly half the previous year — driven mainly by a fall in work-related arrivals. Figures are provisional and revised at each release.",
     relatedTools: [
-      { to: "/parties", label: "Party positions on immigration", description: "Every party's pledges and delivery status" },
-      { to: "/petitions", label: "Immigration petitions", description: "Current public demands on immigration policy" },
-      { to: "/briefing", label: "AI briefing", description: "Ask about net migration, asylum or borders policy" },
+      {
+        to: "/parties",
+        label: "Party positions on immigration",
+        description: "Every party's pledges and delivery status",
+      },
+      {
+        to: "/petitions",
+        label: "Immigration petitions",
+        description: "Current public demands on immigration policy",
+      },
+      {
+        to: "/briefing",
+        label: "AI briefing",
+        description: "Ask about net migration, asylum or borders policy",
+      },
     ],
   },
 
@@ -179,20 +316,42 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     title: "Education",
     question: "Are children and young people getting the education they deserve?",
     description:
-      "Teacher shortages, university tuition fees, school funding and Ofsted reform are all in flux. Labour abolished single-word Ofsted ratings, launched free breakfast clubs in primary schools, and pledged to recruit 6,500 new teachers. University tuition remains a live debate for all parties.",
+      "Teacher recruitment, university tuition fees, school funding and Ofsted reform are all in flux. The Government pledged thousands of new expert teachers and has changed how schools are inspected. Whether recruitment keeps pace with need is the test.",
     color: "#ec4899",
     icon: "📚",
     partyIssue: "Education",
     newsTopic: "Education",
     mpTopic: "school funding, teacher recruitment and university tuition fees",
     briefingTopic: "UK education: school funding, teacher shortages, Ofsted and tuition fees 2025",
-    keyFact: "Labour target: recruit 6,500 new teachers",
+    headlineStat: {
+      value: 6_500,
+      unit: "teachers",
+      label: "Government pledge for additional expert teachers in England",
+      sourceId: "dfe-workforce",
+      sourceUrl:
+        "https://explore-education-statistics.service.gov.uk/find-statistics/school-workforce-in-england",
+      asOf: "2024-07-04",
+      methodologyNote:
+        "A pledge target. Recruitment is measured against the DfE School Workforce Census; delivery is tracked on the Parties pledge page.",
+    },
     keyFactContext:
-      "Teacher training bursaries were increased but recruitment in secondary subjects like maths, physics and languages remains below target. Meanwhile, teacher retention is falling — around 40% of newly-qualified teachers leave within five years, undermining recruitment gains.",
+      "Recruitment in shortage subjects such as maths, physics and languages has historically run below target, and retention of early-career teachers is a persistent challenge. Official workforce figures are published annually by the DfE.",
     relatedTools: [
-      { to: "/parties", label: "Education pledges", description: "Teacher recruitment, tuition fees, breakfast clubs" },
-      { to: "/petitions", label: "Education petitions", description: "What the public is demanding on schools and universities" },
-      { to: "/briefing", label: "AI briefing", description: "Ask about school funding, Ofsted or tuition fees" },
+      {
+        to: "/parties",
+        label: "Education pledges",
+        description: "Teacher recruitment, tuition fees, breakfast clubs",
+      },
+      {
+        to: "/petitions",
+        label: "Education petitions",
+        description: "What the public is demanding on schools and universities",
+      },
+      {
+        to: "/briefing",
+        label: "AI briefing",
+        description: "Ask about school funding, Ofsted or tuition fees",
+      },
     ],
   },
 };

@@ -17,13 +17,13 @@ import type { NewsStory } from "@/routes/api/news";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "UK News — transparenC" },
+      { title: "Coverage Tracker — transparenC" },
       {
         name: "description",
         content:
-          "UK news ranked by multi-outlet coverage. Stories reported by more outlets indicate broader consensus. Filter by topic: NHS, Housing, Economy, Crime, Environment, Immigration, Education.",
+          "What the UK media is amplifying, ranked by how many outlets are covering each story. A coverage-volume tracker, not a news feed — filter by topic: NHS, Housing, Economy, Crime, Environment, Immigration, Education.",
       },
-      { property: "og:title", content: "UK News — transparenC" },
+      { property: "og:title", content: "Coverage Tracker — transparenC" },
     ],
   }),
   component: NewsPage,
@@ -41,61 +41,28 @@ const ISSUES: Issue[] = [
 ];
 
 const OUTLETS = [
-  { name: "BBC News", bias: "Centre", lean: 0 },
-  { name: "The Guardian", bias: "Centre-Left", lean: -2 },
-  { name: "Sky News", bias: "Centre", lean: 0 },
-  { name: "The Independent", bias: "Centre-Left", lean: -1 },
+  { name: "BBC News" },
+  { name: "The Guardian" },
+  { name: "Sky News" },
+  { name: "The Independent" },
 ];
-
-function leanColour(lean: number): string {
-  if (lean < -1) return "#3b82f6"; // left — blue
-  if (lean > 1) return "#ef4444"; // right — red
-  return "#6b7280"; // centre — grey
-}
-
-function leanLabel(lean: number): string {
-  if (lean <= -2) return "L";
-  if (lean === -1) return "CL";
-  if (lean === 1) return "CR";
-  if (lean >= 2) return "R";
-  return "C";
-}
 
 function OutletLegend() {
   return (
     <div className="flex flex-wrap gap-3 items-center">
       {OUTLETS.map((o) => (
         <div key={o.name} className="flex items-center gap-1.5">
-          <div
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ backgroundColor: leanColour(o.lean) }}
-          />
-          <span className="label-mono text-[10px] text-muted-foreground">
-            {o.name}
-          </span>
-          <span
-            className="label-mono text-[9px] px-1 rounded"
-            style={{ color: leanColour(o.lean), border: `1px solid ${leanColour(o.lean)}40` }}
-          >
-            {o.bias}
-          </span>
+          <div className="w-2 h-2 rounded-full shrink-0 bg-muted-foreground/50" />
+          <span className="label-mono text-[10px] text-muted-foreground">{o.name}</span>
         </div>
       ))}
     </div>
   );
 }
 
-function SourcePill({ name, lean }: { name: string; lean: number }) {
+function SourcePill({ name }: { name: string }) {
   return (
-    <span
-      className="label-mono text-[9px] px-1.5 py-0.5 rounded border shrink-0"
-      style={{
-        color: leanColour(lean),
-        borderColor: `${leanColour(lean)}40`,
-        backgroundColor: `${leanColour(lean)}10`,
-      }}
-      title={`Political lean: ${leanLabel(lean)}`}
-    >
+    <span className="label-mono text-[9px] px-1.5 py-0.5 rounded border border-border bg-surface text-muted-foreground shrink-0">
       {name}
     </span>
   );
@@ -121,9 +88,7 @@ function StoryCard({ story }: { story: NewsStory }) {
         </span>
 
         {/* Topic pill */}
-        {story.topic && (
-          <FlagPill variant="neutral">{story.topic}</FlagPill>
-        )}
+        {story.topic && <FlagPill variant="neutral">{story.topic}</FlagPill>}
 
         {/* Date */}
         <span className="label-mono text-[10px] text-muted-foreground ml-auto shrink-0">
@@ -156,7 +121,7 @@ function StoryCard({ story }: { story: NewsStory }) {
       {story.sources.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-2.5">
           {story.sources.map((src) => (
-            <SourcePill key={src.name} name={src.name} lean={src.lean} />
+            <SourcePill key={src.name} name={src.name} />
           ))}
         </div>
       )}
@@ -174,32 +139,32 @@ function NewsPage() {
   });
 
   const stories: NewsStory[] = q.data?.data ?? [];
-  const filtered =
-    activeIssue === "All" ? stories : stories.filter((s) => s.topic === activeIssue);
+  const filtered = activeIssue === "All" ? stories : stories.filter((s) => s.topic === activeIssue);
 
   return (
     <div className="space-y-6">
       <div>
         <SectionHeader
-          eyebrow="Impartial Coverage"
-          title="UK News"
+          eyebrow="Coverage tracker"
+          title="What the media is amplifying"
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          Stories ranked by multi-outlet coverage. More outlets = broader consensus. Filter by
-          topic to see what's dominating each area of public life.
+          Stories ranked by how many outlets are covering them — a measure of what's dominating the
+          agenda, not an endorsement of any story. This is a coverage-volume tracker, not a news
+          feed: we don't write or rate the stories, we only count who's running them.
         </p>
       </div>
 
-      {/* Outlet legend */}
+      {/* Outlets tracked */}
       <Card>
         <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
-          Outlets &amp; political lean
+          Outlets tracked
         </div>
         <OutletLegend />
         <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-          Political lean assessed editorially. L = Left, CL = Centre-Left, C = Centre, CR = Centre-Right, R = Right.
-          Lean colouring: blue (left), grey (centre), red (right).
+          We track headline volume across these RSS feeds and link to each outlet directly. We make
+          no judgement about any outlet's politics — only how many are covering a story.
         </p>
       </Card>
 
@@ -247,9 +212,7 @@ function NewsPage() {
           </Card>
         )}
 
-        {!q.isLoading && filtered.map((story) => (
-          <StoryCard key={story.id} story={story} />
-        ))}
+        {!q.isLoading && filtered.map((story) => <StoryCard key={story.id} story={story} />)}
       </div>
 
       <ActionBar

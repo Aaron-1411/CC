@@ -1,16 +1,28 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { Card, DataProvenance, ErrorNote, LiveBadge, SectionHeader, Skeleton } from "@/components/primitives";
+import {
+  Card,
+  DataProvenance,
+  ErrorNote,
+  LiveBadge,
+  SectionHeader,
+  Skeleton,
+} from "@/components/primitives";
 import { Markdown } from "@/components/markdown";
 import { getJSON } from "@/lib/api";
 
 export const Route = createFileRoute("/briefing")({
-  validateSearch: (s: Record<string, unknown>) => ({ topic: typeof s.topic === "string" ? s.topic : "" }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    topic: typeof s.topic === "string" ? s.topic : "",
+  }),
   head: () => ({
     meta: [
       { title: "AI Accountability Briefing — transparenC" },
-      { name: "description", content: "Generate a non-partisan AI briefing on any UK government accountability topic." },
+      {
+        name: "description",
+        content: "Generate a non-partisan AI briefing on any UK government accountability topic.",
+      },
       { property: "og:title", content: "AI Accountability Briefing — transparenC" },
     ],
   }),
@@ -57,7 +69,10 @@ function BriefingPage() {
           right={<LiveBadge timestamp={m.data?.meta.fetchedAt} label="AI" />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          Type any UK accountability topic and get a non-partisan briefing with named ministers, real figures and named departments. Verify against primary sources before publishing.
+          Ask about any UK accountability topic. The briefing is drawn only from the official data
+          already cached on transparenC — figures are cited with their source and date, and listed
+          beneath each answer. It does not browse the open web. Always verify against the linked
+          sources before sharing.
         </p>
       </div>
 
@@ -116,13 +131,16 @@ function BriefingPage() {
 
       {m.data && (
         <Card>
-          <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-2">Briefing</div>
+          <div className="label-mono text-[10px] uppercase tracking-[0.2em] text-amber mb-2">
+            Briefing
+          </div>
           <h3 className="font-display text-2xl font-bold mb-4">{m.data.data.topic}</h3>
-          <div className="text-[15px] leading-7"><Markdown source={m.data.data.markdown} /></div>
+          <div className="text-[15px] leading-7">
+            <Markdown source={m.data.data.markdown} />
+          </div>
           <DataProvenance
-            source="Lovable AI Gateway (Gemini)"
-            url="https://ai.gateway.lovable.dev"
-            licence="AI-generated; verify against primary sources"
+            source="AI-generated from transparenC's cached official data (Anthropic Claude)"
+            licence="AI-generated — verify against the linked sources before sharing"
             fetchedAt={m.data.meta.fetchedAt}
           />
         </Card>

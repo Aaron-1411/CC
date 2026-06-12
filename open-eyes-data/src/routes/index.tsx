@@ -5,6 +5,9 @@ import { Card, ErrorNote, LiveBadge, Skeleton } from "@/components/primitives";
 import { fmtGBP, fmtNumber, getJSON, relTime } from "@/lib/api";
 import { ISSUES, ISSUE_KEYS } from "@/data/issues";
 import { PostcodeWidget } from "@/components/postcode-widget";
+import { formatStatValue } from "@/contract/stats";
+import { getSource } from "@/contract/sources";
+import { TOTAL_TOOLS } from "@/data/tools";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,61 +49,6 @@ type SearchResp = {
   }>;
 };
 
-// ─── All tools (compact grid) ─────────────────────────────────────────────────
-
-const TOOL_SECTIONS: Array<{
-  label: string;
-  tools: Array<{ to: string; label: string; copy: string }>;
-}> = [
-  {
-    label: "Politics & democracy",
-    tools: [
-      { to: "/parties", label: "Party pledges", copy: "Are they keeping their word?" },
-      { to: "/news", label: "News", copy: "Stories ranked by coverage" },
-      { to: "/petitions", label: "Petitions", copy: "Most-signed open petitions" },
-      { to: "/parliament", label: "Bills", copy: "Legislation in Parliament" },
-      { to: "/votes", label: "Votes", copy: "How MPs actually vote" },
-      { to: "/committees", label: "Committees", copy: "Select committee reports" },
-    ],
-  },
-  {
-    label: "Economy & spending",
-    tools: [
-      { to: "/economy", label: "Indicators", copy: "GDP, inflation, wages & debt" },
-      { to: "/spending", label: "Public spending", copy: "Where your £1.2 trillion goes" },
-    ],
-  },
-  {
-    label: "Follow the money",
-    tools: [
-      { to: "/contracts", label: "Contracts", copy: "Every contract over £1m" },
-      { to: "/donations", label: "Donations", copy: "Who funds the parties" },
-      { to: "/expenses", label: "MP Expenses", copy: "What MPs are claiming" },
-      { to: "/meetings", label: "Ministers", copy: "Who ministers are meeting" },
-      { to: "/lobbying", label: "Lobbying", copy: "Paid influence register" },
-      { to: "/acoba", label: "Revolving Door", copy: "Ministers to private sector" },
-    ],
-  },
-  {
-    label: "Public services",
-    tools: [
-      { to: "/nhs", label: "NHS", copy: "Waiting times & A&E performance" },
-      { to: "/sewage", label: "Sewage", copy: "Water company discharge hours" },
-      { to: "/stop-search", label: "Policing", copy: "Stop & search racial disparity" },
-      { to: "/sanctions", label: "Sanctions", copy: "Benefits conditionality data" },
-      { to: "/foi", label: "FOI", copy: "Who withholds the most info" },
-    ],
-  },
-  {
-    label: "Investigate",
-    tools: [
-      { to: "/crossref", label: "Cross-reference", copy: "Search across all databases at once" },
-      { to: "/projects", label: "Major Projects", copy: "HS2, Hinkley & cost overruns" },
-      { to: "/briefing", label: "AI Briefing", copy: "Non-partisan topic briefings" },
-    ],
-  },
-];
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 function HomePage() {
@@ -111,7 +59,7 @@ function HomePage() {
       <IssueGrid />
       <TakeActionBanner />
       <PostcodeWidget />
-      <AllTools />
+      <BrowseTools />
     </div>
   );
 }
@@ -306,15 +254,23 @@ function IssueGrid() {
               params={{ issue: key }}
               className="group flex flex-col items-center gap-2 rounded-lg border border-border bg-surface p-4 hover:border-amber/50 hover:bg-surface-2 transition-colors text-center"
             >
-              <span className="text-2xl">{def.icon}</span>
+              <span className="text-2xl" aria-hidden="true">
+                {def.icon}
+              </span>
               <span className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-amber transition-colors leading-tight">
                 {def.title}
               </span>
               <span className="text-[10px] text-muted-foreground/70 leading-snug line-clamp-2 group-hover:text-muted-foreground transition-colors">
                 {def.question}
               </span>
-              <span className="label-mono text-[9px] uppercase tracking-wider text-amber/70 leading-tight mt-auto group-hover:text-amber transition-colors line-clamp-1">
-                {def.keyFact}
+              <span className="mt-auto flex flex-col items-center gap-0.5">
+                <span className="font-display text-sm font-black text-amber/90 leading-none group-hover:text-amber transition-colors">
+                  {formatStatValue(def.headlineStat)}
+                </span>
+                <span className="label-mono text-[8px] uppercase tracking-wider text-muted-foreground/60 leading-tight line-clamp-1">
+                  {getSource(def.headlineStat.sourceId).name} ·{" "}
+                  {new Date(def.headlineStat.asOf).getFullYear()}
+                </span>
               </span>
             </Link>
           );
@@ -358,22 +314,6 @@ function IssueGrid() {
   );
 }
 
-// ─── All tools (compact grid) ─────────────────────────────────────────────────
-
-function CompactToolCard({ to, label, copy }: { to: string; label: string; copy: string }) {
-  return (
-    <Link
-      to={to}
-      className="group flex flex-col bg-surface border border-border rounded-lg px-4 py-3 hover:border-amber/40 hover:bg-surface-2 transition-colors"
-    >
-      <span className="font-display text-sm font-semibold group-hover:text-amber transition-colors leading-snug">
-        {label}
-      </span>
-      <span className="text-xs text-muted-foreground mt-0.5 leading-snug">{copy}</span>
-    </Link>
-  );
-}
-
 // ─── Take action banner ───────────────────────────────────────────────────────
 
 function TakeActionBanner() {
@@ -401,47 +341,27 @@ function TakeActionBanner() {
   );
 }
 
-// ─── All tools (compact grid) ─────────────────────────────────────────────────
+// ─── Browse-all-tools card ────────────────────────────────────────────────────
 
-const INITIAL_SECTION_COUNT = 2;
-const TOTAL_TOOLS = TOOL_SECTIONS.reduce((n, s) => n + s.tools.length, 0);
-
-function AllTools() {
-  const [expanded, setExpanded] = useState(false);
-  const visibleSections = expanded ? TOOL_SECTIONS : TOOL_SECTIONS.slice(0, INITIAL_SECTION_COUNT);
-
+function BrowseTools() {
   return (
-    <section className="space-y-6">
-      <div>
-        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-          All {TOTAL_TOOLS} tools
+    <section className="rounded-lg border border-border bg-surface p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          {TOTAL_TOOLS} tools
         </div>
-        <h2 className="font-display text-2xl font-bold">Explore the full dataset</h2>
+        <h2 className="font-display text-lg font-bold">Looking for something specific?</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Contracts, donations, MP expenses, NHS performance, sewage, lobbying, FOI and more — the
+          full directory in one place.
+        </p>
       </div>
-      {visibleSections.map((section) => (
-        <div key={section.label}>
-          <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
-            {section.label}
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-            {section.tools.map((tool) => (
-              <CompactToolCard key={tool.to} {...tool} />
-            ))}
-          </div>
-        </div>
-      ))}
-      {!expanded && (
-        <button
-          onClick={() => setExpanded(true)}
-          className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-muted-foreground hover:border-amber/40 hover:text-foreground transition-colors label-mono uppercase tracking-wider text-[10px]"
-        >
-          Show all {TOTAL_TOOLS} tools —{" "}
-          {TOOL_SECTIONS.slice(INITIAL_SECTION_COUNT)
-            .map((s) => s.label)
-            .join(", ")}{" "}
-          →
-        </button>
-      )}
+      <Link
+        to="/tools"
+        className="shrink-0 px-5 py-2.5 border border-amber/40 text-amber rounded label-mono text-xs uppercase tracking-wider hover:bg-amber/10 transition-colors whitespace-nowrap"
+      >
+        Browse all tools →
+      </Link>
     </section>
   );
 }

@@ -1,7 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
-import type { PostcodeResult } from "@/routes/api/postcode";
+import type { PostcodeResult, MPData } from "@/routes/api/postcode";
+import { pfaToForceId } from "@/lib/uk-geo";
 
 const STORAGE_KEY = "transparenC_constituency_v1";
+
+/** postcodes.io response shape (subset we use). */
+type PostcodesIOResult = {
+  result: {
+    postcode: string;
+    parliamentary_constituency_2024: string;
+    pfa: string;
+    admin_district: string;
+    region: string;
+  };
+};
 
 export type ConstituencyState = PostcodeResult & {
   storedAt: string;
@@ -20,20 +32,54 @@ export function useConstituency() {
         const parsed = JSON.parse(raw) as ConstituencyState;
         setData(parsed);
       }
-    } catch { /* corrupted — ignore */ }
+    } catch {
+      /* corrupted — ignore */
+    }
   }, []);
 
   const lookup = useCallback(async (postcode: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/postcode?postcode=${encodeURIComponent(postcode.trim())}`);
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(j.error ?? `HTTP ${res.status}`);
+      const clean = postcode.replace(/\s+/g, "").toUpperCase();
+
+      // 1. Browser → postcodes.io DIRECTLY. The postcode never touches our servers (D8).
+      const pcRes = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(clean)}`, {
+        signal: AbortSignal.timeout(8_000),
+      });
+      if (!pcRes.ok) {
+        if (pcRes.status === 404) throw new Error("Postcode not found");
+        throw new Error(`postcodes.io: HTTP ${pcRes.status}`);
       }
-      const j = (await res.json()) as { data: PostcodeResult };
-      const state: ConstituencyState = { ...j.data, storedAt: new Date().toISOString() };
+      const pc = (await pcRes.json()) as PostcodesIOResult;
+      const r = pc.result;
+      const constituency = r.parliamentary_constituency_2024 ?? "";
+
+      // 2. Enrich with the sitting MP by CONSTITUENCY NAME (no postcode sent).
+      let mp: MPData | null = null;
+      if (constituency) {
+        try {
+          const mpRes = await fetch(
+            `/api/constituency-mp?constituency=${encodeURIComponent(constituency)}`,
+          );
+          if (mpRes.ok) {
+            const mpJson = (await mpRes.json()) as { data: MPData | null };
+            mp = mpJson.data;
+          }
+        } catch {
+          /* MP enrichment is best-effort */
+        }
+      }
+
+      const result: PostcodeResult = {
+        postcode: r.postcode,
+        constituency,
+        policeForceId: pfaToForceId(r.pfa ?? ""),
+        localAuthority: r.admin_district ?? "",
+        region: r.region ?? "",
+        mp,
+      };
+      const state: ConstituencyState = { ...result, storedAt: new Date().toISOString() };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       setData(state);
       return state;
