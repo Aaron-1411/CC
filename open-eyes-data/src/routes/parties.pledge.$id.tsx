@@ -42,7 +42,9 @@ export const Route = createFileRoute("/parties/pledge/$id")({
 });
 
 function PledgePage() {
-  const { pledge } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const pledge = getPledgeById(id);
+  if (!pledge) return null; // notFoundComponent handles the missing case
   const status = toPledgeStatus(pledge.status);
   const meta = PLEDGE_STATUS_META[status];
 
@@ -71,13 +73,41 @@ function PledgePage() {
           </span>
         </div>
 
-        {/* The pledge — clearly labelled as our tracked summary, not a verbatim quote */}
+        {/* The pledge — verbatim quote when verified, else our tracked summary */}
         <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-          Pledge — as tracked by transparenC
+          {pledge.quote ? "The pledge — verbatim" : "Pledge — as tracked by transparenC"}
         </div>
         <h1 className="font-display text-2xl sm:text-3xl font-black leading-tight">
           {pledge.promise}
         </h1>
+
+        {pledge.quote && (
+          <figure className="border-l-4 border-amber/50 pl-4 mt-2 space-y-2">
+            <blockquote className="text-base text-foreground leading-relaxed italic">
+              &ldquo;{pledge.quote}&rdquo;
+            </blockquote>
+            <figcaption className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              {pledge.quoteSourceUrl ? (
+                <a
+                  href={pledge.quoteSourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-amber hover:underline"
+                >
+                  {pledge.partyName} manifesto ↗
+                </a>
+              ) : (
+                `${pledge.partyName} manifesto`
+              )}
+              {pledge.quoteDate
+                ? ` · ${new Date(pledge.quoteDate).toLocaleDateString("en-GB", {
+                    month: "short",
+                    year: "numeric",
+                  })}`
+                : ""}
+            </figcaption>
+          </figure>
+        )}
       </div>
 
       {/* Assessment / evidence */}

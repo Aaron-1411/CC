@@ -545,6 +545,7 @@ function TakeActionPage() {
           </Link>
           <Link
             to="/briefing"
+            search={{ topic: "" }}
             className="px-4 py-2 border border-amber/30 rounded label-mono text-xs uppercase tracking-wider text-amber hover:bg-amber/10 transition-colors"
           >
             AI briefing

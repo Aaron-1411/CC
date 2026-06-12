@@ -17,6 +17,7 @@ export type PromiseStatus =
 
 export type PartyPromise = {
   issue: Issue;
+  /** Short tracked summary of the pledge (transparenC's wording). */
   promise: string;
   status: PromiseStatus;
   detail?: string;
@@ -24,6 +25,16 @@ export type PartyPromise = {
   sourceUrl?: string;
   /** Short label for the source (e.g. "NHS England", "OBR") */
   sourceLabel?: string;
+  /**
+   * VERBATIM pledge text, exactly as published in the manifesto/official source.
+   * Only set when the wording has been verified against the original document —
+   * never paraphrased. When present, it is shown in quotation marks with a citation.
+   */
+  quote?: string;
+  /** Deep link to the manifesto page/PDF the verbatim quote comes from. */
+  quoteSourceUrl?: string;
+  /** ISO date of the source document. */
+  quoteDate?: string;
 };
 
 export type Party = {
@@ -104,12 +115,17 @@ export const PLEDGES: Record<string, PartyPromise[]> = {
   labour: [
     {
       issue: "NHS",
-      promise: "2 million extra NHS appointments per week",
+      promise:
+        "40,000 more NHS appointments, operations and scans every week (two million more a year)",
       status: "in-progress",
-      detail: "Appointment volumes rising but full target not yet confirmed by NHS England.",
-      sourceUrl:
-        "https://www.england.nhs.uk/statistics/statistical-work-areas/ae-waiting-times-and-activity/",
-      sourceLabel: "NHS England",
+      detail:
+        "Government reports the two-million-a-year milestone was met early; independent trackers note it is measured against a baseline and continues to be monitored.",
+      quote:
+        "As a first step, in England Labour will deliver an extra two million NHS operations, scans, and appointments every year; that is 40,000 more appointments every week.",
+      quoteSourceUrl: "https://labour.org.uk/change/build-an-nhs-fit-for-the-future/",
+      quoteDate: "2024-06-13",
+      sourceUrl: "https://fullfact.org/government-tracker/40000-nhs-appointments-per-week/",
+      sourceLabel: "Full Fact tracker",
     },
     {
       issue: "NHS",
@@ -124,9 +140,12 @@ export const PLEDGES: Record<string, PartyPromise[]> = {
       promise: "1.5 million new homes this parliament",
       status: "behind-target",
       detail: "Build rates below trajectory needed; planning reform passed but delivery slow.",
-      sourceUrl:
-        "https://www.ons.gov.uk/peoplepopulationandcommunity/housing/bulletins/housingaffordabilityinenglandandwales/latest",
-      sourceLabel: "ONS housing data",
+      quote:
+        "Labour will get Britain building again, creating jobs across England, with 1.5 million new homes over the next parliament.",
+      quoteSourceUrl: "https://labour.org.uk/change/kickstart-economic-growth/",
+      quoteDate: "2024-06-13",
+      sourceUrl: "https://fullfact.org/government-tracker/1-5-million-homes/",
+      sourceLabel: "Full Fact tracker",
     },
     {
       issue: "Housing",

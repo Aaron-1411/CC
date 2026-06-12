@@ -55,6 +55,15 @@ export const CORRECTIONS: CorrectionEntry[] = [
   },
   {
     date: "2026-06-12",
+    page: "Parties — Labour NHS pledge",
+    wasWrong: "“2 million extra NHS appointments per week”.",
+    nowSays:
+      "40,000 more appointments every week — two million more a year — matching the verbatim manifesto pledge.",
+    reason:
+      "Our summary overstated the pledge by roughly fifty times (it conflated the weekly and annual figures). Corrected against the Labour 2024 manifesto wording.",
+  },
+  {
+    date: "2026-06-12",
     page: "Take Action — contracts",
     wasWrong: "“Every government contract over £10k is public.”",
     nowSays:

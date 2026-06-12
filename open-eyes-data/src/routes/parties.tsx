@@ -428,6 +428,14 @@ function PartiesPage() {
                                 Source: {pledge.sourceLabel ?? "official record"} ↗
                               </a>
                             )}
+                            {pledge.quote && (
+                              <span
+                                className="label-mono text-[9px] uppercase tracking-wider text-ok"
+                                title="Verbatim manifesto quote on file"
+                              >
+                                ✓ verbatim
+                              </span>
+                            )}
                             <Link
                               to="/parties/pledge/$id"
                               params={{ id: pid }}
