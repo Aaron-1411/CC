@@ -1,6 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ActionBar, Card, ContextBlock, DataProvenance, ErrorNote, FlagPill, LiveBadge, SectionHeader, Skeleton, Stat } from "@/components/primitives";
+import {
+  ActionBar,
+  Card,
+  ContextBlock,
+  DataProvenance,
+  ErrorNote,
+  FlagPill,
+  LiveBadge,
+  SectionHeader,
+  Skeleton,
+  Stat,
+} from "@/components/primitives";
 import { getJSON, relTime } from "@/lib/api";
 
 export const Route = createFileRoute("/sanctions")({
@@ -10,7 +21,7 @@ export const Route = createFileRoute("/sanctions")({
       {
         name: "description",
         content:
-          "DWP applies sanctions (benefit cuts) to claimants for failing conditionality requirements. Critics argue the system is punitive and targets the most vulnerable.",
+          "DWP Universal Credit sanctions data: how many claimants are sanctioned, for how long, and the official recorded reasons — from published DWP statistics.",
       },
       { property: "og:title", content: "Benefits Sanctions Tracker — transparenC" },
     ],
@@ -56,25 +67,27 @@ function SanctionsPage() {
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          The DWP can cut or stop Universal Credit payments when claimants miss appointments or
-          fail to meet job-search requirements. This is called a sanction. Here is the published data
-          on how often this happens and who it affects.
+          The DWP can cut or stop Universal Credit payments when claimants miss appointments or fail
+          to meet job-search requirements. This is called a sanction. Here is the published data on
+          how often this happens and who it affects.
         </p>
       </div>
 
       {/* What this means */}
-      <ContextBlock heading="Hundreds of thousands of people have their only income cut — often for missing an appointment" variant="warn">
+      <ContextBlock heading="How the sanctions system works" variant="warn">
         <p>
-          A sanction can reduce a claimant's Universal Credit payment to zero for up to three years in
-          the most severe cases. The most common reason for a sanction is{" "}
-          <strong className="text-foreground">missing a Jobcentre appointment</strong>, which can happen
-          due to illness, caring responsibilities, or simply not receiving the letter in time.
+          Under Universal Credit, claimants accept a "claimant commitment" of agreed activities. If
+          the DWP records that a claimant did not meet a requirement without good reason, it can
+          apply a sanction that reduces their standard allowance — in the most severe cases to zero,
+          for a set period. The data below shows how many sanctions are applied and the official
+          recorded reason categories.
         </p>
         <p>
-          Independent research has linked sanctions to increased foodbank use, debt, homelessness and
-          mental illness. A significant proportion of sanctioned claimants have disabilities or mental
-          health conditions. The DWP's own data shows that sanctions do not consistently improve
-          employment outcomes.
+          The reasons the DWP records, in its own categories, include failing to attend or
+          participate in a mandatory interview, not undertaking agreed work-search activity, and not
+          taking up employment. The Government's stated rationale is that conditionality encourages
+          job-seeking; critics, including some select committees and charities, question its
+          effectiveness and impact — both positions are part of the public debate.
         </p>
       </ContextBlock>
 
@@ -95,13 +108,7 @@ function SanctionsPage() {
 
           {!q.isLoading &&
             contextStats.map((s) => (
-              <Stat
-                key={s.label}
-                label={s.label}
-                value={s.value}
-                accent="amber"
-                hint={s.notes}
-              />
+              <Stat key={s.label} label={s.label} value={s.value} accent="amber" hint={s.notes} />
             ))}
         </div>
       </div>
@@ -110,9 +117,7 @@ function SanctionsPage() {
 
       {/* Publications list */}
       <div>
-        <h3 className="font-display text-xl font-bold mb-3">
-          Latest DWP Sanctions Publications
-        </h3>
+        <h3 className="font-display text-xl font-bold mb-3">Latest DWP Sanctions Publications</h3>
         <p className="text-xs text-muted-foreground label-mono mb-4">
           From GOV.UK — Department for Work and Pensions
         </p>
@@ -195,20 +200,18 @@ function SanctionsPage() {
       <ActionBar
         mpTopic="Universal Credit sanctions, welfare conditionality and foodbank use"
         briefingTopic="UK Universal Credit sanctions system, DWP conditionality and impact on vulnerable claimants"
-        shareText="Hundreds of thousands of people have their benefits cut each year — often for missing an appointment"
+        shareText="DWP Universal Credit sanctions: how many are applied, for how long, and for which official reasons — the published data"
         letterTemplate={`Dear [MP Name],
 
 I am writing as a constituent about the DWP's Universal Credit sanctions system.
 
-Published DWP data shows that hundreds of thousands of people have their only income cut — sometimes to zero — each year under the sanctions system. The most common reason for a sanction is missing a Jobcentre appointment, which can happen due to illness, caring responsibilities, or simply not receiving a letter in time.
+Published DWP statistics record the number of Universal Credit sanctions applied, their duration, and the official reason categories. I would like to understand the position in our area and the evidence base for the policy.
 
-Independent research has linked sanctions to increased foodbank use, debt, homelessness and mental illness. A significant proportion of sanctioned claimants have disabilities or mental health conditions.
-
-I would like to know:
-1. How many sanctions were applied in our constituency last year?
-2. What proportion of sanctioned claimants successfully appealed or had their sanction reversed?
-3. Does the government have evidence that sanctions actually improve employment outcomes?
-4. What safeguards exist for claimants with disabilities or mental health conditions who miss appointments due to their condition?
+I would be grateful if you could help me find out:
+1. How many sanctions were applied in our constituency in the most recent period?
+2. What proportion of sanctioned claimants successfully appealed or had a sanction overturned?
+3. What evidence the Government holds on whether sanctions improve employment outcomes?
+4. What safeguards apply for claimants with disabilities or health conditions?
 
 I would be grateful for your response.
 

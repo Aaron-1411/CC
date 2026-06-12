@@ -16,7 +16,7 @@ const NAV_GROUPS: Array<{
     items: [
       { to: "/issues", label: "Issues" },
       { to: "/parties", label: "Parties" },
-      { to: "/news", label: "News" },
+      { to: "/news", label: "Coverage" },
       { to: "/take-action", label: "Take Action" },
     ],
   },

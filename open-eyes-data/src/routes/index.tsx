@@ -58,7 +58,7 @@ const TOOL_SECTIONS: Array<{
     label: "Politics & democracy",
     tools: [
       { to: "/parties", label: "Party pledges", copy: "Are they keeping their word?" },
-      { to: "/news", label: "News", copy: "Stories ranked by coverage" },
+      { to: "/news", label: "Coverage", copy: "What outlets are amplifying" },
       { to: "/petitions", label: "Petitions", copy: "Most-signed open petitions" },
       { to: "/parliament", label: "Bills", copy: "Legislation in Parliament" },
       { to: "/votes", label: "Votes", copy: "How MPs actually vote" },
