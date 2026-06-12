@@ -25,6 +25,7 @@ import { Route as MyAreaRouteImport } from './routes/my-area'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as LobbyingRouteImport } from './routes/lobbying'
+import { Route as LearnRouteImport } from './routes/learn'
 import { Route as FoiRouteImport } from './routes/foi'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as EconomyRouteImport } from './routes/economy'
@@ -37,6 +38,7 @@ import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as IssuesIndexRouteImport } from './routes/issues/index'
+import { Route as LearnSlugRouteImport } from './routes/learn.$slug'
 import { Route as IssuesIssueRouteImport } from './routes/issues/$issue'
 import { Route as ApiVotesRouteImport } from './routes/api/votes'
 import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
@@ -146,6 +148,11 @@ const LobbyingRoute = LobbyingRouteImport.update({
   path: '/lobbying',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FoiRoute = FoiRouteImport.update({
   id: '/foi',
   path: '/foi',
@@ -205,6 +212,11 @@ const IssuesIndexRoute = IssuesIndexRouteImport.update({
   id: '/issues/',
   path: '/issues/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LearnSlugRoute = LearnSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LearnRoute,
 } as any)
 const IssuesIssueRoute = IssuesIssueRouteImport.update({
   id: '/issues/$issue',
@@ -359,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/economy': typeof EconomyRoute
   '/expenses': typeof ExpensesRoute
   '/foi': typeof FoiRoute
+  '/learn': typeof LearnRouteWithChildren
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
   '/methodology': typeof MethodologyRoute
@@ -402,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
+  '/learn/$slug': typeof LearnSlugRoute
   '/issues/': typeof IssuesIndexRoute
   '/parties/pledge/$id': typeof PartiesPledgeIdRoute
 }
@@ -417,6 +431,7 @@ export interface FileRoutesByTo {
   '/economy': typeof EconomyRoute
   '/expenses': typeof ExpensesRoute
   '/foi': typeof FoiRoute
+  '/learn': typeof LearnRouteWithChildren
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
   '/methodology': typeof MethodologyRoute
@@ -460,6 +475,7 @@ export interface FileRoutesByTo {
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
+  '/learn/$slug': typeof LearnSlugRoute
   '/issues': typeof IssuesIndexRoute
   '/parties/pledge/$id': typeof PartiesPledgeIdRoute
 }
@@ -476,6 +492,7 @@ export interface FileRoutesById {
   '/economy': typeof EconomyRoute
   '/expenses': typeof ExpensesRoute
   '/foi': typeof FoiRoute
+  '/learn': typeof LearnRouteWithChildren
   '/lobbying': typeof LobbyingRoute
   '/meetings': typeof MeetingsRoute
   '/methodology': typeof MethodologyRoute
@@ -519,6 +536,7 @@ export interface FileRoutesById {
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
+  '/learn/$slug': typeof LearnSlugRoute
   '/issues/': typeof IssuesIndexRoute
   '/parties/pledge/$id': typeof PartiesPledgeIdRoute
 }
@@ -536,6 +554,7 @@ export interface FileRouteTypes {
     | '/economy'
     | '/expenses'
     | '/foi'
+    | '/learn'
     | '/lobbying'
     | '/meetings'
     | '/methodology'
@@ -579,6 +598,7 @@ export interface FileRouteTypes {
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
+    | '/learn/$slug'
     | '/issues/'
     | '/parties/pledge/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -594,6 +614,7 @@ export interface FileRouteTypes {
     | '/economy'
     | '/expenses'
     | '/foi'
+    | '/learn'
     | '/lobbying'
     | '/meetings'
     | '/methodology'
@@ -637,6 +658,7 @@ export interface FileRouteTypes {
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
+    | '/learn/$slug'
     | '/issues'
     | '/parties/pledge/$id'
   id:
@@ -652,6 +674,7 @@ export interface FileRouteTypes {
     | '/economy'
     | '/expenses'
     | '/foi'
+    | '/learn'
     | '/lobbying'
     | '/meetings'
     | '/methodology'
@@ -695,6 +718,7 @@ export interface FileRouteTypes {
     | '/api/stop-search'
     | '/api/votes'
     | '/issues/$issue'
+    | '/learn/$slug'
     | '/issues/'
     | '/parties/pledge/$id'
   fileRoutesById: FileRoutesById
@@ -711,6 +735,7 @@ export interface RootRouteChildren {
   EconomyRoute: typeof EconomyRoute
   ExpensesRoute: typeof ExpensesRoute
   FoiRoute: typeof FoiRoute
+  LearnRoute: typeof LearnRouteWithChildren
   LobbyingRoute: typeof LobbyingRoute
   MeetingsRoute: typeof MeetingsRoute
   MethodologyRoute: typeof MethodologyRoute
@@ -871,6 +896,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LobbyingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/foi': {
       id: '/foi'
       path: '/foi'
@@ -954,6 +986,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/issues/'
       preLoaderRoute: typeof IssuesIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/learn/$slug': {
+      id: '/learn/$slug'
+      path: '/$slug'
+      fullPath: '/learn/$slug'
+      preLoaderRoute: typeof LearnSlugRouteImport
+      parentRoute: typeof LearnRoute
     }
     '/issues/$issue': {
       id: '/issues/$issue'
@@ -1154,6 +1193,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface LearnRouteChildren {
+  LearnSlugRoute: typeof LearnSlugRoute
+}
+
+const LearnRouteChildren: LearnRouteChildren = {
+  LearnSlugRoute: LearnSlugRoute,
+}
+
+const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
+
 interface PartiesRouteChildren {
   PartiesPledgeIdRoute: typeof PartiesPledgeIdRoute
 }
@@ -1177,6 +1226,7 @@ const rootRouteChildren: RootRouteChildren = {
   EconomyRoute: EconomyRoute,
   ExpensesRoute: ExpensesRoute,
   FoiRoute: FoiRoute,
+  LearnRoute: LearnRouteWithChildren,
   LobbyingRoute: LobbyingRoute,
   MeetingsRoute: MeetingsRoute,
   MethodologyRoute: MethodologyRoute,
