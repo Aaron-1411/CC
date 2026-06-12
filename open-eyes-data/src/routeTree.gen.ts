@@ -64,6 +64,7 @@ import { Route as ApiCommitteesRouteImport } from './routes/api/committees'
 import { Route as ApiBriefingRouteImport } from './routes/api/briefing'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
 import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
+import { Route as PartiesPledgeIdRouteImport } from './routes/parties.pledge.$id'
 
 const VotesRoute = VotesRouteImport.update({
   id: '/votes',
@@ -340,6 +341,11 @@ const ApiAcobaRoute = ApiAcobaRouteImport.update({
   path: '/api/acoba',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartiesPledgeIdRoute = PartiesPledgeIdRouteImport.update({
+  id: '/pledge/$id',
+  path: '/pledge/$id',
+  getParentRoute: () => PartiesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -360,7 +366,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
-  '/parties': typeof PartiesRoute
+  '/parties': typeof PartiesRouteWithChildren
   '/petitions': typeof PetitionsRoute
   '/projects': typeof ProjectsRoute
   '/sanctions': typeof SanctionsRoute
@@ -397,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
   '/issues/': typeof IssuesIndexRoute
+  '/parties/pledge/$id': typeof PartiesPledgeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -417,7 +424,7 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
-  '/parties': typeof PartiesRoute
+  '/parties': typeof PartiesRouteWithChildren
   '/petitions': typeof PetitionsRoute
   '/projects': typeof ProjectsRoute
   '/sanctions': typeof SanctionsRoute
@@ -454,6 +461,7 @@ export interface FileRoutesByTo {
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
   '/issues': typeof IssuesIndexRoute
+  '/parties/pledge/$id': typeof PartiesPledgeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -475,7 +483,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/nhs': typeof NhsRoute
   '/parliament': typeof ParliamentRoute
-  '/parties': typeof PartiesRoute
+  '/parties': typeof PartiesRouteWithChildren
   '/petitions': typeof PetitionsRoute
   '/projects': typeof ProjectsRoute
   '/sanctions': typeof SanctionsRoute
@@ -512,6 +520,7 @@ export interface FileRoutesById {
   '/api/votes': typeof ApiVotesRoute
   '/issues/$issue': typeof IssuesIssueRoute
   '/issues/': typeof IssuesIndexRoute
+  '/parties/pledge/$id': typeof PartiesPledgeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -571,6 +580,7 @@ export interface FileRouteTypes {
     | '/api/votes'
     | '/issues/$issue'
     | '/issues/'
+    | '/parties/pledge/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -628,6 +638,7 @@ export interface FileRouteTypes {
     | '/api/votes'
     | '/issues/$issue'
     | '/issues'
+    | '/parties/pledge/$id'
   id:
     | '__root__'
     | '/'
@@ -685,6 +696,7 @@ export interface FileRouteTypes {
     | '/api/votes'
     | '/issues/$issue'
     | '/issues/'
+    | '/parties/pledge/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -706,7 +718,7 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRoute
   NhsRoute: typeof NhsRoute
   ParliamentRoute: typeof ParliamentRoute
-  PartiesRoute: typeof PartiesRoute
+  PartiesRoute: typeof PartiesRouteWithChildren
   PetitionsRoute: typeof PetitionsRoute
   ProjectsRoute: typeof ProjectsRoute
   SanctionsRoute: typeof SanctionsRoute
@@ -1132,8 +1144,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAcobaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/parties/pledge/$id': {
+      id: '/parties/pledge/$id'
+      path: '/pledge/$id'
+      fullPath: '/parties/pledge/$id'
+      preLoaderRoute: typeof PartiesPledgeIdRouteImport
+      parentRoute: typeof PartiesRoute
+    }
   }
 }
+
+interface PartiesRouteChildren {
+  PartiesPledgeIdRoute: typeof PartiesPledgeIdRoute
+}
+
+const PartiesRouteChildren: PartiesRouteChildren = {
+  PartiesPledgeIdRoute: PartiesPledgeIdRoute,
+}
+
+const PartiesRouteWithChildren =
+  PartiesRoute._addFileChildren(PartiesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -1154,7 +1184,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRoute,
   NhsRoute: NhsRoute,
   ParliamentRoute: ParliamentRoute,
-  PartiesRoute: PartiesRoute,
+  PartiesRoute: PartiesRouteWithChildren,
   PetitionsRoute: PetitionsRoute,
   ProjectsRoute: ProjectsRoute,
   SanctionsRoute: SanctionsRoute,

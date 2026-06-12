@@ -12,7 +12,26 @@ import {
   Skeleton,
 } from "@/components/primitives";
 import { fmtNumber, getJSON } from "@/lib/api";
+import { toPledgeStatus } from "@/data/parties";
 import type { Issue, Party, PartyPromise, PromiseStatus } from "@/data/parties";
+import { PLEDGE_STATUS_META } from "@/contract/pledges";
+
+const slugIssue = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+/**
+ * Recompute a pledge's stable permalink id from the party's full (unfiltered)
+ * pledge list, matching the scheme in data/parties.ts ALL_PLEDGES.
+ */
+function pledgeId(partyId: string, fullList: PartyPromise[], pledge: PartyPromise): string {
+  const idx = fullList.indexOf(pledge);
+  let n = 0;
+  for (let i = 0; i <= idx; i++) if (fullList[i].issue === pledge.issue) n++;
+  return `${partyId}-${slugIssue(pledge.issue)}-${n}`;
+}
 
 export const Route = createFileRoute("/parties")({
   head: () => ({
@@ -371,37 +390,56 @@ function PartiesPage() {
 
                 {/* Promises */}
                 <div className="space-y-2">
-                  {filtered.map((pledge, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-wrap items-start gap-2 py-2.5 border-t border-border first:border-0"
-                    >
-                      <FlagPill variant={statusVariant(pledge.status)}>
-                        {statusLabel(pledge.status)}
-                      </FlagPill>
-                      <span className="label-mono text-[10px] uppercase tracking-wider text-amber shrink-0 mt-0.5">
-                        {pledge.issue}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium leading-snug">{pledge.promise}</p>
-                        {pledge.detail && (
-                          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                            {pledge.detail}
-                          </p>
-                        )}
-                        {pledge.sourceUrl && (
-                          <a
-                            href={pledge.sourceUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 hover:text-amber mt-0.5 inline-block"
+                  {filtered.map((pledge) => {
+                    const pid = pledgeId(party.id, partyPledges, pledge);
+                    const meta = PLEDGE_STATUS_META[toPledgeStatus(pledge.status)];
+                    return (
+                      <div
+                        key={pid}
+                        className="flex flex-wrap items-start gap-2 py-2.5 border-t border-border first:border-0"
+                      >
+                        <FlagPill variant={meta.tone}>
+                          <span aria-hidden="true">{meta.icon}</span> {meta.label}
+                        </FlagPill>
+                        <span className="label-mono text-[10px] uppercase tracking-wider text-amber shrink-0 mt-0.5">
+                          {pledge.issue}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <Link
+                            to="/parties/pledge/$id"
+                            params={{ id: pid }}
+                            className="text-sm font-medium leading-snug hover:text-amber transition-colors"
                           >
-                            Source: {pledge.sourceLabel ?? "Gov.uk"} →
-                          </a>
-                        )}
+                            {pledge.promise}
+                          </Link>
+                          {pledge.detail && (
+                            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                              {pledge.detail}
+                            </p>
+                          )}
+                          <div className="flex flex-wrap items-center gap-3 mt-1">
+                            {pledge.sourceUrl && (
+                              <a
+                                href={pledge.sourceUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="label-mono text-[9px] uppercase tracking-wider text-muted-foreground/60 hover:text-amber inline-block"
+                              >
+                                Source: {pledge.sourceLabel ?? "official record"} ↗
+                              </a>
+                            )}
+                            <Link
+                              to="/parties/pledge/$id"
+                              params={{ id: pid }}
+                              className="label-mono text-[9px] uppercase tracking-wider text-amber/70 hover:text-amber inline-block"
+                            >
+                              Permalink →
+                            </Link>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </Card>
             );

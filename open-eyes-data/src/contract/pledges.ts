@@ -39,6 +39,22 @@ export const PLEDGE_STATUS_LABEL: Record<PledgeStatus, string> = {
   not_assessable: "Not yet assessable",
 };
 
+/**
+ * Display metadata for each status. Always rendered as icon + text + colour —
+ * never colour alone (accessibility). `tone` maps to the FlagPill variants.
+ */
+export const PLEDGE_STATUS_META: Record<
+  PledgeStatus,
+  { label: string; icon: string; tone: "ok" | "warn" | "direct" | "neutral" }
+> = {
+  delivered: { label: "Delivered", icon: "✓", tone: "ok" },
+  on_track: { label: "On track", icon: "↗", tone: "ok" },
+  in_progress: { label: "In progress", icon: "•", tone: "neutral" },
+  stalled: { label: "Stalled", icon: "‖", tone: "warn" },
+  off_track: { label: "Off track", icon: "✕", tone: "direct" },
+  not_assessable: { label: "Not yet assessable", icon: "?", tone: "neutral" },
+};
+
 export interface PledgeStatusChange {
   date: string; // ISO
   from: PledgeStatus;
