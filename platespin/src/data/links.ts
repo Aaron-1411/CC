@@ -55,5 +55,6 @@ export function buildPlaceLinks(
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(q)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(q)}`,
     website,
+    reserve: `https://www.opentable.com/s?term=${enc(q)}`,
   };
 }

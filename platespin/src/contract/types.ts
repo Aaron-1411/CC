@@ -98,6 +98,9 @@ export interface PlaceResult {
   priceLevel?: 1 | 2 | 3 | 4; // rarely present from OSM
   openNow?: boolean; // derived from opening_hours via opening_hours.js; may be undefined
   hours?: string; // raw OSM opening_hours string
+  phone?: string; // raw OSM phone / contact:phone — powers a "Call to book" tel: link
+  /** OSM `reservation` tag if present (advisory): whether the venue takes bookings. */
+  reservation?: "yes" | "no" | "required" | "recommended";
   /** Per-diet availability from OSM diet:* tags. Absent key = unknown, NOT "no". */
   diet?: Partial<Record<DietId, DietAvailability>>;
   dataQuality: DataQuality;
@@ -113,6 +116,9 @@ export interface PlaceLinks {
   instagramSearch: string;
   youtubeSearch: string; // free deep-link instead of quota-limited embed
   website?: string;
+  /** Find / make a reservation — OpenTable search deep-link keyed on name + locality.
+   *  Zero-API. Only set for table-service venues that don't explicitly say reservation=no. */
+  reserve?: string;
 }
 
 // ── Search ───────────────────────────────────────────────────────────────────

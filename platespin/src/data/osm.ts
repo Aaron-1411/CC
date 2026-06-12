@@ -114,7 +114,17 @@ function classifyQuality(tags: Record<string, string>, hasDiet: boolean): DataQu
 
 const enc = encodeURIComponent;
 
-function buildLinks(name: string, loc: LatLng, website?: string): PlaceLinks {
+/** OpenTable search deep-link — finds a reservation page for this venue. Zero-API. */
+function buildReserveUrl(name: string, locality: string): string {
+  const term = locality ? `${name} ${locality}` : name;
+  return `https://www.opentable.com/s?term=${enc(term)}`;
+}
+
+function buildLinks(
+  name: string,
+  loc: LatLng,
+  opts?: { website?: string; reserve?: string },
+): PlaceLinks {
   const q = `${name}`;
   const at = `${loc.lat},${loc.lng}`;
   return {
@@ -122,8 +132,18 @@ function buildLinks(name: string, loc: LatLng, website?: string): PlaceLinks {
     tiktokSearch: `https://www.tiktok.com/search?q=${enc(q)}`,
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(q)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(q)}`,
-    website,
+    website: opts?.website,
+    reserve: opts?.reserve,
   };
+}
+
+function normaliseReservation(
+  raw: string | undefined,
+): "yes" | "no" | "required" | "recommended" | undefined {
+  if (!raw) return undefined;
+  const v = raw.toLowerCase();
+  if (v === "yes" || v === "no" || v === "required" || v === "recommended") return v;
+  return undefined;
 }
 
 function buildAddress(tags: Record<string, string>): string | undefined {
@@ -162,6 +182,13 @@ export function normaliseOverpass(
     }
 
     const website = tags["website"] || tags["contact:website"] || undefined;
+    const phone = tags["phone"] || tags["contact:phone"] || undefined;
+    const reservation = normaliseReservation(tags["reservation"]);
+    const locality = tags["addr:city"] || tags["addr:suburb"] || "";
+    // "Book where possible": only offer a reservation link for table-service
+    // restaurants that don't explicitly say reservation=no (fast_food/cafe = walk-in).
+    const bookable = tags["amenity"] === "restaurant" && reservation !== "no";
+    const reserve = bookable ? buildReserveUrl(name, locality) : undefined;
 
     out.push({
       id: `${el.type}/${el.id}`,
@@ -172,9 +199,11 @@ export function normaliseOverpass(
       address: buildAddress(tags),
       openNow: undefined, // opening_hours parsing deferred to Phase 7 (opening_hours.js)
       hours: tags["opening_hours"],
+      phone,
+      reservation,
       diet,
       dataQuality: classifyQuality(tags, !!diet),
-      links: buildLinks(name, loc, website),
+      links: buildLinks(name, loc, { website, reserve }),
       videoSearchUrl: `https://www.youtube.com/results?search_query=${enc(name)}`,
       distanceMeters: haversineMeters(center, loc),
     });

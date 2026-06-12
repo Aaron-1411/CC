@@ -46,6 +46,11 @@ export function VenuePage() {
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     venue.name,
   )}%20${venue.location.lat},${venue.location.lng}`;
+  // Zero-API booking: OpenTable search keyed on name + locality. Honest deep-link —
+  // it finds a reservation page where one exists, never claims a guaranteed table.
+  const reserveUrl = `https://www.opentable.com/s?term=${encodeURIComponent(
+    `${venue.name} ${venue.address ?? ""}`.trim(),
+  )}`;
 
   return (
     <div className="flex flex-col gap-4">
@@ -79,22 +84,32 @@ export function VenuePage() {
           ) : null}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <Link
             to="/compose"
             state={{ venue }}
-            className="flex-1 rounded-xl bg-amber-300 py-2.5 text-center text-sm font-bold text-slate-900 transition active:scale-[0.98]"
+            className="flex min-h-[44px] items-center justify-center rounded-xl bg-amber-300 px-4 text-center text-sm font-bold text-slate-900 transition active:scale-[0.98]"
           >
             {user ? "I ate here" : "Sign in to review"}
           </Link>
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-xl border border-white/15 px-4 py-2.5 text-center text-sm font-semibold text-slate-300"
-          >
-            Map
-          </a>
+          <div className="flex gap-2">
+            <a
+              href={reserveUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-300 px-3 text-center text-sm font-bold text-slate-900 transition active:scale-[0.98]"
+            >
+              🍽️ Book a table
+            </a>
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/15 px-3 text-center text-sm font-semibold text-slate-300"
+            >
+              🗺️ Map
+            </a>
+          </div>
         </div>
       </header>
 
