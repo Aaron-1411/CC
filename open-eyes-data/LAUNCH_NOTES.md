@@ -36,7 +36,11 @@ D9 Anthropic-only.
    labels removed; unattributed commentary stripped.
 7. **WS7** — closed-book briefing grounded in cached issue stats + pledges; Anthropic-only
    (Lovable/Gemini removed); sources-list + verify disclaimer.
-8. **WS4 partial / D2** — polling widget removed; colour-only status copy fixed.
+8. **WS4** — polling widget removed (D2); per-pledge permalinks (`/parties/pledge/{id}`);
+   pledge rows render the six-status methodology vocabulary (icon+text+colour) via
+   `toPledgeStatus()`; stale pledge-detail numbers fixed; pledge text honestly labelled
+   "as tracked by transparenC". **Remaining:** sourcing verbatim manifesto quotes + metric
+   sparklines + status-history log (the contract supports all three).
 
 ## §14 Reviewer checklist — honest status
 **Accuracy & sourcing**
@@ -49,6 +53,8 @@ D9 Anthropic-only.
 - [x] `/methodology` live; six-status rubric; honesty statement; contest route
 - [x] No unattributed commentary (sanctions, ACOBA, news swept); D2 polling removed; D3 News reframed
 - [x] /about editorialise contradiction resolved; per-source licence table (Parliament = OPL)
+- [x] Per-pledge permalinks; pledge tracker speaks the methodology's six-status vocabulary
+- [~] Verbatim manifesto quotes not yet sourced — pledge text labelled "as tracked by transparenC" (honest interim)
 
 **Privacy & security**
 - [x] Postcode client-direct; copy matches code; no key client-side; briefing key server-only
@@ -66,11 +72,11 @@ D9 Anthropic-only.
 - [~] WCAG sweep — colour-only status copy fixed; full keyboard/contrast/aria audit remaining
 
 ## Remaining work (specs for a focused follow-up)
-1. **WS4 — flagship pledge tracker rebuild.** Migrate `/parties` onto the `Pledge` contract:
-   verbatim quote + `quoteSourceUrl` per pledge, metric mapping for measurable ones, six-status
-   chips (icon+text+colour), status-history expander, per-pledge permalink `/parties/pledge/{id}`,
-   two-click test. **Requires sourcing each manifesto quote — any unverifiable pledge must be
-   `not_assessable` + `unverified` (never guess).** The contract + methodology rubric are already in place.
+1. **WS4 finish — verbatim quotes + metrics + history.** Permalinks, six-status chips and the
+   methodology link are DONE. Remaining: replace each tracked summary with the verbatim manifesto
+   quote + `quoteSourceUrl` (any unverifiable pledge → `not_assessable` + `unverified`, never guess),
+   add the metric sparkline (current value vs required trajectory) for measurable pledges, and the
+   `statusHistory` expander. The `Pledge` contract already models all three.
 2. **WS5 — petitions loop.** Needs KV (WS3 infra) for `PetitionSnapshot` history → velocity views
    ("fastest-growing 24h", "recently crossed 10k/100k"), constituency relevance on My Area, and
    `PetitionOutcome` (link govt response/Hansard — link only, no editorialising).
