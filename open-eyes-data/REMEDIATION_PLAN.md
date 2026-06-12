@@ -8,6 +8,34 @@ Branch: `launch-remediation` (created, clean). Repo: `open-eyes-data/` inside th
 
 ---
 
+## 0. CONFIRMED DECISIONS (locked 2026-06-12)
+
+| # | Decision | Resolution |
+|---|---|---|
+| D1 | Custom domain | Domain TBD; code stays workers.dev-safe (no hard-coded host in OG/share). Non-blocking |
+| D2 | Polling widget | **REMOVE** from /parties |
+| D3 | News tab | **Reframe → "Coverage Tracker"** + review bias/lean table for neutrality |
+| D4 | Letter templates | **One generic data-backed template per tool page** |
+| D5 | Open-source | **DEFER to v1.1.** ⚠️ Repo is a monorepo with confidential client work — open-sourcing requires extracting transparenC to a standalone repo first. Not done during remediation |
+| D6 | "Who runs this" | Placeholder: *"Built and self-funded by one independent developer. No party affiliation, no donations, no ads."* — pending Aaron's final wording |
+| D7 | Email digest | **DEFER to v1.1** |
+| D8 | Postcode privacy | **Re-route client→postcodes.io directly** so the "never touches our servers" claim becomes true |
+| D9 | AI fallback | **Anthropic-only.** Remove Lovable/Gemini fallback path; fix provenance label |
+
+## 0b. VERIFIED FACTS (checked against source 2026-06-12)
+
+| Claim | Old copy | Verified | Source |
+|---|---|---|---|
+| Petition response threshold | "100 signatures gets a response" ❌ | **10,000 = govt response** | petition.parliament.uk/help |
+| Petition debate threshold | "100,000 triggers a debate" ❌ | **100,000 = "considered for debate, and are usually debated"** (not automatic) | petition.parliament.uk/help |
+| Contract publication threshold | "over £10k is public" ❌ | **£12,000 inc VAT central gov (incl NHS); £30,000 sub-central** (notifiable below-threshold Contract Details Notice) | gov.uk below-threshold guidance |
+| Net migration | "728,000 (latest)" ❌ **grossly stale** | **171,000 net** (YE Dec 2025; 813k in / 642k out; prior yr revised to 331k) | ONS LTIM YE Dec 2025 (pub 21 May 2026) |
+| Stop & search disparity | "7×" ❌ **~2× overstated** | **3.8×** (YE Mar 2025; 22.4 vs ~6 per 1,000). Trend: 5.5→4.8→4.1→3.7→3.8 | gov.uk Ethnicity facts & figures |
+| Sewage 2024 EDM hours | "3.6 million hours" | **CORRECT — 3,614,427 hours** (2024) | EA storm overflow EDM 2024 |
+| "MP letter always gets a reply" | "always gets a reply" ❌ | Convention, not legal duty → "almost always" | — |
+
+---
+
 ## 1. Architecture map
 
 | Aspect | Finding | Implication |
