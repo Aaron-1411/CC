@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VotesRouteImport } from './routes/votes'
+import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TakeActionRouteImport } from './routes/take-action'
 import { Route as StopSearchRouteImport } from './routes/stop-search'
 import { Route as SpendingRouteImport } from './routes/spending'
@@ -71,6 +72,11 @@ import { Route as PartiesPledgeIdRouteImport } from './routes/parties.pledge.$id
 const VotesRoute = VotesRouteImport.update({
   id: '/votes',
   path: '/votes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TakeActionRoute = TakeActionRouteImport.update({
@@ -387,6 +393,7 @@ export interface FileRoutesByFullPath {
   '/spending': typeof SpendingRoute
   '/stop-search': typeof StopSearchRoute
   '/take-action': typeof TakeActionRoute
+  '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
@@ -447,6 +454,7 @@ export interface FileRoutesByTo {
   '/spending': typeof SpendingRoute
   '/stop-search': typeof StopSearchRoute
   '/take-action': typeof TakeActionRoute
+  '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
@@ -508,6 +516,7 @@ export interface FileRoutesById {
   '/spending': typeof SpendingRoute
   '/stop-search': typeof StopSearchRoute
   '/take-action': typeof TakeActionRoute
+  '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bills': typeof ApiBillsRoute
@@ -570,6 +579,7 @@ export interface FileRouteTypes {
     | '/spending'
     | '/stop-search'
     | '/take-action'
+    | '/tools'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
@@ -630,6 +640,7 @@ export interface FileRouteTypes {
     | '/spending'
     | '/stop-search'
     | '/take-action'
+    | '/tools'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
@@ -690,6 +701,7 @@ export interface FileRouteTypes {
     | '/spending'
     | '/stop-search'
     | '/take-action'
+    | '/tools'
     | '/votes'
     | '/api/acoba'
     | '/api/bills'
@@ -751,6 +763,7 @@ export interface RootRouteChildren {
   SpendingRoute: typeof SpendingRoute
   StopSearchRoute: typeof StopSearchRoute
   TakeActionRoute: typeof TakeActionRoute
+  ToolsRoute: typeof ToolsRoute
   VotesRoute: typeof VotesRoute
   ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBillsRoute: typeof ApiBillsRoute
@@ -789,6 +802,13 @@ declare module '@tanstack/react-router' {
       path: '/votes'
       fullPath: '/votes'
       preLoaderRoute: typeof VotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/take-action': {
@@ -1242,6 +1262,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpendingRoute: SpendingRoute,
   StopSearchRoute: StopSearchRoute,
   TakeActionRoute: TakeActionRoute,
+  ToolsRoute: ToolsRoute,
   VotesRoute: VotesRoute,
   ApiAcobaRoute: ApiAcobaRoute,
   ApiBillsRoute: ApiBillsRoute,
