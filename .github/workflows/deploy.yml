@@ -6,16 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-dashboard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: a1a1276a1a278339d95c187e0bf6de47
-          command: pages deploy dashboard --project-name=aaron-projects-hub --branch=main
-
+  # NOTE: deploy-dashboard removed — the hub (aaron-projects-hub Pages project)
+  # now deploys from its own repo Aaron-1411/cc-hub. See dashboard/README.md.
   deploy-get-settld:
     runs-on: ubuntu-latest
     steps:

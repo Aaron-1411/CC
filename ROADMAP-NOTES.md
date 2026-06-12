@@ -229,3 +229,22 @@ build step, no new runtime deps, no client-side API key.
   `~/Downloads/MASTER-BUILD (2).md` (untracked). Decide whether to commit a copy
   into the repo (e.g. `dashboard/MASTER-BUILD.md`) as the authoritative build plan,
   or keep it external. Pending Aaron's call.
+
+## Phase R — Hub extracted to its own repo (2026-06)
+
+- **The hub left the monorepo.** Everything that was under `dashboard/` —
+  `workspace.html`, `HubStore.js`, `seed.js`, `functions/`, the hub's
+  `ROADMAP.md` / `ROADMAP-NOTES.md` / `ARCHITECTURE.md` / `CLAUDE.md` /
+  `BUILD-STATE.md`, etc. — now lives in its own private repo
+  **`Aaron-1411/cc-hub`**, with full git history preserved (extracted via
+  `git filter-repo --path dashboard/ --path-rename dashboard/:`).
+- **Deploy moved with it.** The hub's Cloudflare Pages project
+  (`aaron-projects-hub`, live at `/workspace`) now deploys from the new repo's
+  own `.github/workflows/deploy.yml` (deploys `.` from repo root, which fixes the
+  old wrangler functions-directory trap so `functions/` ships). The
+  `deploy-dashboard` job was surgically removed from THIS monorepo's shared
+  `deploy.yml`; the other 15 project deploy jobs are untouched.
+- **What stays here:** only `dashboard/README.md`, a pointer to the new repo.
+  This monorepo's history is NOT rewritten — extraction output went only to the
+  new repo; nothing here changed except this note, the pointer README, and the
+  one removed deploy job.
