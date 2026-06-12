@@ -65,13 +65,33 @@ export const Route = createFileRoute("/api/briefing")({
     handlers: {
       POST: async ({ request }) => {
         try {
+          const { topic } = (await request.json()) as { topic?: string };
+          if (!topic || topic.trim().length < 2) return errorResponse("topic is required", 400);
+
+          // No API key configured → degrade gracefully (free mode). Return a friendly
+          // "not enabled" briefing instead of an error, and skip the rate limit/LLM call.
+          if (!process.env.ANTHROPIC_API_KEY) {
+            return jsonResponse(
+              envelope(
+                {
+                  topic: topic.trim(),
+                  disabled: true,
+                  markdown:
+                    `### AI briefings aren't switched on for this site yet\n\n` +
+                    `Everything else on transparenC works without it. To research **${topic.trim()}** right now, head to the relevant data tools — for example **Issues**, **Parties**, **Petitions**, **Contracts** or **NHS** — where every figure links to its official source.`,
+                },
+                "AI briefing not enabled",
+                "https://www.transparenc.uk",
+                "Feature disabled — no AI key configured",
+              ),
+            );
+          }
+
           // Abuse/cost guard: this endpoint triggers a paid LLM call. Limit per IP.
           // (Per-isolate; a global KV/DO limiter is a documented launch-config task.)
           if (!rateLimit(`briefing:${clientKey(request)}`, 8, 60_000)) {
             return errorResponse("Too many briefings — please wait a minute and try again.", 429);
           }
-          const { topic } = (await request.json()) as { topic?: string };
-          if (!topic || topic.trim().length < 2) return errorResponse("topic is required", 400);
 
           const context = buildContext();
           const { content } = await callAI({
