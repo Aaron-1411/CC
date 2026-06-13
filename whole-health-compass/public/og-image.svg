@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Whole Health Compass — general education, not a medical device">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#235a4d"/>
+      <stop offset="1" stop-color="#1d4d42"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="8" fill="#c2703d"/>
+  <rect x="0" y="622" width="1200" height="8" fill="#c2703d"/>
+  <g transform="translate(600,182)">
+    <circle cx="0" cy="0" r="80" fill="none" stroke="#e9d8a6" stroke-width="8"/>
+    <path d="M0 -72 L22 0 L0 72 L-22 0 Z" fill="#e9d8a6"/>
+    <circle cx="0" cy="0" r="10" fill="#1d4d42"/>
+  </g>
+  <text x="600" y="372" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="82" font-weight="600" fill="#f4ecd8">Whole Health Compass</text>
+  <text x="600" y="430" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="30" fill="#cfe0d8">Understand your health from every angle.</text>
+  <g transform="translate(600,512)">
+    <rect x="-300" y="-29" width="600" height="58" rx="29" fill="#e9d8a6"/>
+    <text x="0" y="8" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="700" fill="#1d4d42">General education — not a medical device</text>
+  </g>
+</svg>

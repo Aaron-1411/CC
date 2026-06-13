@@ -21,6 +21,15 @@ export type ClinicConfig = {
   clinicId: string;
   /** Which curated content pack this clinic shows. See src/data/packs/. */
   contentPackId: string;
+  /** Canonical origin for this deployment, no trailing slash (e.g.
+   *  "https://clinic.example"). Drives canonical URLs, og:url, the social-share
+   *  card URL and the generated sitemap/robots. Override when white-labelling
+   *  onto a custom domain. */
+  siteUrl: string;
+  /** Optional social-share (Open Graph) image — an absolute path from the site
+   *  root (e.g. "/og-image.svg") or a full URL. Defaults to the built-in branded
+   *  card. Crawlers want an absolute URL; the prerender composes siteUrl + path. */
+  ogImagePath: string;
   name: string;
   logoText: string;
   logoUrl: string;
@@ -44,6 +53,8 @@ export type ClinicConfig = {
 export const clinicConfig: ClinicConfig = {
   clinicId: "demo",
   contentPackId: "integrative",
+  siteUrl: "https://whole-health-compass.pages.dev",
+  ogImagePath: "/og-image.svg",
   name: "Whole Health Compass",
   logoText: "Whole Health Compass",
   logoUrl: "",
