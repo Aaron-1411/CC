@@ -125,9 +125,9 @@ export function LocationInput({ value, onSet }: LocationInputProps) {
                       e.preventDefault();
                       pick(s);
                     }}
-                    className="block w-full truncate px-3.5 py-2 text-left text-sm text-slate-200 hover:bg-white/10"
+                    className="flex min-h-[44px] w-full items-center px-3.5 text-left text-sm text-slate-200 hover:bg-white/10"
                   >
-                    {s.label}
+                    <span className="min-w-0 flex-1 truncate">{s.label}</span>
                   </button>
                 </li>
               ))}
