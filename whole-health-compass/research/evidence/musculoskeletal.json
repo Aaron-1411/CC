@@ -1,0 +1,4326 @@
+{
+  "disclaimer": "Editorial back-office literature map. NOT patient-facing, NEVER imported into the app, NEVER linted as patient content. The presence of a study here is NOT a claim that any approach treats, cures, or works, NOT a statement of safety, and NOT a ranking of one tradition over another — many listed reviews report null, mixed or negative findings. For the clinic's human content team only; any patient-facing use requires separate, named-clinician review.",
+  "pack": "musculoskeletal",
+  "generatedAt": "2026-06-13T09:25:45.655Z",
+  "sources": [
+    "Europe PMC REST",
+    "OpenAlex"
+  ],
+  "perQuery": 10,
+  "concerns": [
+    {
+      "concernId": "low-back-pain",
+      "label": "Low back pain",
+      "condition": "low back pain",
+      "queries": [
+        {
+          "query": "low back pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "low back pain",
+          "source": "openalex",
+          "returned": 10
+        },
+        {
+          "query": "acupuncture — low back pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "acupuncture — low back pain",
+          "source": "openalex",
+          "returned": 10
+        },
+        {
+          "query": "spinal manipulation — low back pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "spinal manipulation — low back pain",
+          "source": "openalex",
+          "returned": 10
+        },
+        {
+          "query": "exercise therapy — low back pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "exercise therapy — low back pain",
+          "source": "openalex",
+          "returned": 10
+        }
+      ],
+      "evidenceCount": 75,
+      "evidence": [
+        {
+          "title": "Prevalence of serious spinal pathologies and nonspinal conditions in low back pain: a systematic review and meta-analysis",
+          "authors": [
+            "Reginato LS",
+            "Machado GC",
+            "Maher CG",
+            "Grande GHD",
+            "Vidal RVC",
+            "Oliveira CB"
+          ],
+          "year": 2026,
+          "venue": "Pain medicine (Malden, Mass.)",
+          "type": "meta-analysis",
+          "doi": "10.1093/pm/pnaf078",
+          "url": "https://doi.org/10.1093/pm/pnaf078",
+          "openAccess": false,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Spinal manipulative therapy for adults with chronic low back pain",
+          "authors": [
+            "de Zoete A",
+            "Innocenti T",
+            "Petrozzi MJ",
+            "van Middelkoop M",
+            "Assendelft WJ",
+            "de Boer MR",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "The Cochrane database of systematic reviews",
+          "type": "meta-analysis",
+          "doi": "10.1002/14651858.cd008112.pub3",
+          "url": "https://doi.org/10.1002/14651858.cd008112.pub3",
+          "openAccess": false,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Effectiveness of adding manual therapy to exercise for pain and disability in chronic non-specific low back pain: A systematic review and meta-analysis",
+          "authors": [
+            "Dos Santos ECS",
+            "Dos Santos AT",
+            "da Silva NA",
+            "Carneiro SR",
+            "Rampazo ÉP",
+            "Magalhães MO"
+          ],
+          "year": 2026,
+          "venue": "Musculoskeletal science & practice",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.msksp.2026.103508",
+          "url": "https://doi.org/10.1016/j.msksp.2026.103508",
+          "openAccess": false,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Evaluation of the Efficacy of Transdermal Buprenorphine in Chronic Low Back Pain: A Meta-Analysis of Randomized Clinical Trials",
+          "authors": [
+            "do Nascimento Souza AK",
+            "Barreto ESR",
+            "Antunes Júnior CR",
+            "Piñeiro GTO",
+            "Kraychete DC"
+          ],
+          "year": 2026,
+          "venue": "Pain practice : the official journal of World Institute of Pain",
+          "type": "meta-analysis",
+          "doi": "10.1111/papr.70155",
+          "url": "https://doi.org/10.1111/papr.70155",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Efficacy of botulinum toxin type a for treating chronic low back pain: a systematic review and metanalysis",
+          "authors": [
+            "G BK",
+            "Jain M",
+            "Meher BR",
+            "Padhy BM",
+            "Sakale H",
+            "Kumar S"
+          ],
+          "year": 2026,
+          "venue": "European journal of clinical pharmacology",
+          "type": "meta-analysis",
+          "doi": "10.1007/s00228-026-04073-z",
+          "url": "https://doi.org/10.1007/s00228-026-04073-z",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Is there an association between diabetes and neck and back pain? An updated systematic review with meta-analyses",
+          "authors": [
+            "Dale H",
+            "Pozzobon D",
+            "Fernandez M",
+            "Dale R",
+            "Scott I",
+            "Gholami SK",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Chiropractic & manual therapies",
+          "type": "meta-analysis",
+          "doi": "10.1186/s12998-026-00650-2",
+          "url": "https://doi.org/10.1186/s12998-026-00650-2",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Antibiotic treatment for low back pain, radicular pain, or both",
+          "authors": [
+            "Liu C",
+            "Abdel Shaheed C",
+            "Braten LC",
+            "Hancock MJ",
+            "Underwood M",
+            "Jarvik JG",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "The Cochrane database of systematic reviews",
+          "type": "meta-analysis",
+          "doi": "10.1002/14651858.cd014221.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd014221.pub2",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Tuina for chronic non-specific low back pain: A systematic review and meta-analysis of randomized controlled trials",
+          "authors": [
+            "Huang B",
+            "Xie H",
+            "Duan M",
+            "Chen Y",
+            "Mu P",
+            "Li W",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Complementary therapies in medicine",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.ctim.2026.103381",
+          "url": "https://doi.org/10.1016/j.ctim.2026.103381",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain",
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Effectiveness of kinesio tape in people with low back pain. A systematic review with meta-analysis",
+          "authors": [
+            "Inostroza-Quiroz J",
+            "Solano-López R",
+            "Bascour-Sandoval C",
+            "Buitrago-García D",
+            "Salazar J",
+            "Huaiquilaf-Jorquera S",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "European journal of physical and rehabilitation medicine",
+          "type": "meta-analysis",
+          "doi": "10.23736/s1973-9087.26.09064-7",
+          "url": "https://doi.org/10.23736/s1973-9087.26.09064-7",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Stabilization Exercises for Enhancing Balance in Adults With Non-Specific Chronic Lumbopelvic Pain: A Systematic Review and Meta-Analysis",
+          "authors": [
+            "Alkhameys FA",
+            "Cheng K",
+            "Huang CK",
+            "Kawtharany H",
+            "Sharma NK"
+          ],
+          "year": 2026,
+          "venue": "Physiotherapy research international : the journal for researchers and clinicians in physical therapy",
+          "type": "meta-analysis",
+          "doi": "10.1002/pri.70200",
+          "url": "https://doi.org/10.1002/pri.70200",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Comparative effectiveness of non-pharmacological interventions for depression and anxiety in chronic low back pain: a Bayesian network meta-analysis of randomized controlled trials",
+          "authors": [
+            "Chen L",
+            "Zeng L",
+            "Lai YT",
+            "Li W",
+            "Li JS"
+          ],
+          "year": 2026,
+          "venue": "Frontiers in public health",
+          "type": "meta-analysis",
+          "doi": "10.3389/fpubh.2026.1765762",
+          "url": "https://doi.org/10.3389/fpubh.2026.1765762",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain",
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Interventions to enhance work participation in people with chronic pain: A systematic review and meta-analysis including analysis of complex psychological intervention components",
+          "authors": [
+            "McParland J",
+            "Booth L",
+            "Dibben G",
+            "Abaraogu U",
+            "Wainwright E",
+            "Demou E",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "British journal of health psychology",
+          "type": "meta-analysis",
+          "doi": "10.1111/bjhp.70077",
+          "url": "https://doi.org/10.1111/bjhp.70077",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Core acupoint selection strategies and multifactorial analysis for acute musculoskeletal pain",
+          "authors": [
+            "Fang Y",
+            "Xiao R",
+            "Kang Y",
+            "Chen C",
+            "Bian Z",
+            "Xue R",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Frontiers in medicine",
+          "type": "systematic-review",
+          "doi": "10.3389/fmed.2026.1805633",
+          "url": "https://doi.org/10.3389/fmed.2026.1805633",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "A meta-analysis of neuroimaging evidence for acupuncture-mediated modulation of altered central pain processing in patients with chronic pain",
+          "authors": [
+            "Ma X",
+            "Wang X",
+            "Zhang W",
+            "Liu Y",
+            "Yang J",
+            "Wang Z"
+          ],
+          "year": 2026,
+          "venue": "Frontiers in neurology",
+          "type": "systematic-review",
+          "doi": "10.3389/fneur.2026.1809628",
+          "url": "https://doi.org/10.3389/fneur.2026.1809628",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Hot topics and trends in acupuncture for herpes zoster from 2015 to 2025: a bibliometric and knowledge graph analysis",
+          "authors": [
+            "Xi Z",
+            "Zhu L",
+            "Peng X"
+          ],
+          "year": 2026,
+          "venue": "Frontiers in medicine",
+          "type": "systematic-review",
+          "doi": "10.3389/fmed.2026.1748878",
+          "url": "https://doi.org/10.3389/fmed.2026.1748878",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Adverse events among older adults receiving chiropractic spinal manipulation and related treatments: an updated systematic review",
+          "authors": [
+            "Daniels CJ",
+            "Farabaugh RJ",
+            "Salsbury SA",
+            "Anderson KR",
+            "Kleppe MJ",
+            "Whalen WM",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Chiropractic & manual therapies",
+          "type": "systematic-review",
+          "doi": "10.1186/s12998-026-00633-3",
+          "url": "https://doi.org/10.1186/s12998-026-00633-3",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "The effects of exercise therapy on lumbar muscle structure in low back pain: A systematic review and meta-analysis",
+          "authors": [
+            "Karagiannopoulou V",
+            "Meirezonne H",
+            "De Greef I",
+            "Van Oosterwijck J",
+            "Matheve T",
+            "Danneels L",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Annals of physical and rehabilitation medicine",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.rehab.2025.101988",
+          "url": "https://doi.org/10.1016/j.rehab.2025.101988",
+          "openAccess": false,
+          "citedByCount": 3,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Does the addition of manual therapy to exercise therapy improve pain and disability outcomes in chronic low back pain: A systematic review",
+          "authors": [
+            "Narenthiran P",
+            "Granville Smith I",
+            "Williams FMK"
+          ],
+          "year": 2025,
+          "venue": "Journal of bodywork and movement therapies",
+          "type": "systematic-review",
+          "doi": "10.1016/j.jbmt.2024.12.004",
+          "url": "https://doi.org/10.1016/j.jbmt.2024.12.004",
+          "openAccess": false,
+          "citedByCount": 3,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Neuroimaging evidence for central mechanisms of acupuncture in non-specific low back pain: a systematic review and meta-analysis",
+          "authors": [
+            "Huang FF",
+            "Liu J",
+            "Lu M",
+            "Wu Y",
+            "Zhen S",
+            "Cai Y",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Frontiers in medicine",
+          "type": "systematic-review",
+          "doi": "10.3389/fmed.2025.1657241",
+          "url": "https://doi.org/10.3389/fmed.2025.1657241",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Systematic review on biomechanical effects of high-velocity, low amplitude spinal manipulation",
+          "authors": [
+            "Langenfeld A",
+            "Baechler M",
+            "Swanenburg J",
+            "Mühlemann M",
+            "Nyirö L",
+            "Streuli D",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "PloS one",
+          "type": "systematic-review",
+          "doi": "10.1371/journal.pone.0328048",
+          "url": "https://doi.org/10.1371/journal.pone.0328048",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Exercise Therapy Versus Manual Therapy for the Management of Pain Intensity, Disability, and Physical Function in People With Chronic Low Back Pain: A Systematic Review With Meta-Analysis and Meta-Regression",
+          "authors": [
+            "González-Gómez L",
+            "Moral-Munoz JA",
+            "Rosales-Tristancho A",
+            "Cuevas-Moreno A",
+            "Cardellat-González M",
+            "Rodríguez-Domínguez ÁJ"
+          ],
+          "year": 2025,
+          "venue": "European journal of pain (London, England)",
+          "type": "meta-analysis",
+          "doi": "10.1002/ejp.70090",
+          "url": "https://doi.org/10.1002/ejp.70090",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Visual analysis of research hotspots and trends of external therapies in traditional Chinese medicine for chronic pain",
+          "authors": [
+            "Kong L",
+            "Wang X",
+            "Zhao J",
+            "Chai L",
+            "Hu Y",
+            "Wang F"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in medicine",
+          "type": "systematic-review",
+          "doi": "10.3389/fmed.2025.1712013",
+          "url": "https://doi.org/10.3389/fmed.2025.1712013",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture for the treatment of pregnancy-related low back pain: A systematic review and network meta-analysis",
+          "authors": [
+            "Li M",
+            "Xiao Z",
+            "Tan D",
+            "Tang X",
+            "Zhao D",
+            "Chen Q"
+          ],
+          "year": 2025,
+          "venue": "Journal of back and musculoskeletal rehabilitation",
+          "type": "meta-analysis",
+          "doi": "10.1177/10538127241301682",
+          "url": "https://doi.org/10.1177/10538127241301682",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Integrating machine learning into acupuncture research: a scoping review",
+          "authors": [
+            "Chan W",
+            "Huang GJ",
+            "Huang CC",
+            "Chen YH"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in neurology",
+          "type": "systematic-review",
+          "doi": "10.3389/fneur.2025.1689061",
+          "url": "https://doi.org/10.3389/fneur.2025.1689061",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Various acupuncture therapies for managing nonspecific low back pain: a network Meta-analysis",
+          "authors": [
+            "Jixing G",
+            "Changchun JI",
+            "Chaoju X",
+            "Xiang R",
+            "Zhangyin S",
+            "Yu X",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Journal of traditional Chinese medicine = Chung i tsa chih ying wen pan",
+          "type": "meta-analysis",
+          "doi": "10.19852/j.cnki.jtcm.2025.05.002",
+          "url": "https://doi.org/10.19852/j.cnki.jtcm.2025.05.002",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Cost-effectiveness of spinal manipulation, exercise, and self-management for spinal pain",
+          "authors": [
+            "Leininger BD",
+            "Kuntz KM",
+            "Hodges JS",
+            "Evans R",
+            "Enns E",
+            "Johnson PJ",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Chiropractic & manual therapies",
+          "type": "meta-analysis",
+          "doi": "10.1186/s12998-025-00599-8",
+          "url": "https://doi.org/10.1186/s12998-025-00599-8",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Brain functional changes following spinal manipulation therapy in patients with lumbar disc herniation and chronic low back pain: a scoping review",
+          "authors": [
+            "Cao L",
+            "Shu J",
+            "Li B"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in neurology",
+          "type": "systematic-review",
+          "doi": "10.3389/fneur.2025.1712320",
+          "url": "https://doi.org/10.3389/fneur.2025.1712320",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Efficacy of exercise therapy in adolescent idiopathic scoliosis: A meta-analysis",
+          "authors": [
+            "Ma Z",
+            "Wang S",
+            "Zhang S"
+          ],
+          "year": 2025,
+          "venue": "The Journal of international medical research",
+          "type": "meta-analysis",
+          "doi": "10.1177/03000605251389744",
+          "url": "https://doi.org/10.1177/03000605251389744",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Transcranial direct current stimulation combined with exercise therapy for chronic low back pain: a systematic review and meta-analysis",
+          "authors": [
+            "Xia R",
+            "Lu S",
+            "Zhao L"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in human neuroscience",
+          "type": "systematic-review",
+          "doi": "10.3389/fnhum.2025.1721182",
+          "url": "https://doi.org/10.3389/fnhum.2025.1721182",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Benefits and harms of exercise therapy and physical activity for low back pain: An umbrella review",
+          "authors": [
+            "Comachio J",
+            "Beckenkamp PR",
+            "Ho EK",
+            "Shaheed CA",
+            "Stamatakis E",
+            "Ferreira ML",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Journal of sport and health science",
+          "type": "systematic-review",
+          "doi": "10.1016/j.jshs.2025.101038",
+          "url": "https://doi.org/10.1016/j.jshs.2025.101038",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Spinal manipulation and mobilisation in paediatrics - an international evidence-based position statement for physiotherapists",
+          "authors": [
+            "Gross AR",
+            "Olson KA",
+            "Pool J",
+            "Basson A",
+            "Clewley D",
+            "Dice JL",
+            "et al."
+          ],
+          "year": 2024,
+          "venue": "The Journal of manual & manipulative therapy",
+          "type": "guideline",
+          "doi": "10.1080/10669817.2024.2332026",
+          "url": "https://doi.org/10.1080/10669817.2024.2332026",
+          "openAccess": true,
+          "citedByCount": 9,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "The impact of contextual effects in exercise therapy for low back pain: a systematic review and meta-analysis",
+          "authors": [
+            "de Roode A",
+            "Heymans MW",
+            "van Lankveld W",
+            "Staal JB"
+          ],
+          "year": 2024,
+          "venue": "BMC medicine",
+          "type": "meta-analysis",
+          "doi": "10.1186/s12916-024-03679-3",
+          "url": "https://doi.org/10.1186/s12916-024-03679-3",
+          "openAccess": true,
+          "citedByCount": 7,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Exercise Therapy for Treatment of Acute Non-specific Low Back Pain: A Cochrane Systematic Review and Meta-analysis of Randomized Controlled Trials",
+          "authors": [
+            "IJzelenberg W",
+            "Oosterhuis T",
+            "Hayden JA",
+            "Koes BW",
+            "van Tulder MW",
+            "Rubinstein SM",
+            "et al."
+          ],
+          "year": 2024,
+          "venue": "Archives of physical medicine and rehabilitation",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.apmr.2024.02.732",
+          "url": "https://doi.org/10.1016/j.apmr.2024.02.732",
+          "openAccess": false,
+          "citedByCount": 7,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Mechanisms of manipulation: a systematic review of the literature on immediate anatomical structural or positional changes in response to manually delivered high-velocity, low-amplitude spinal manipulation",
+          "authors": [
+            "Young KJ",
+            "Leboeuf-Yde C",
+            "Gorrell L",
+            "Bergström C",
+            "Evans DW",
+            "Axén I",
+            "et al."
+          ],
+          "year": 2024,
+          "venue": "Chiropractic & manual therapies",
+          "type": "systematic-review",
+          "doi": "10.1186/s12998-024-00549-w",
+          "url": "https://doi.org/10.1186/s12998-024-00549-w",
+          "openAccess": true,
+          "citedByCount": 5,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Aerobic exercise therapy for chronic low back pain",
+          "authors": [
+            "de Zoete A",
+            "IJzelenberg W",
+            "Ostelo RW",
+            "Hayden JA",
+            "Rubinstein SM"
+          ],
+          "year": 2024,
+          "venue": "The Cochrane database of systematic reviews",
+          "type": "systematic-review",
+          "doi": "10.1002/14651858.cd015503",
+          "url": "https://doi.org/10.1002/14651858.cd015503",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Exercise therapy for treatment of acute non-specific low back pain",
+          "authors": [
+            "IJzelenberg W",
+            "Oosterhuis T",
+            "Hayden JA",
+            "Koes BW",
+            "van Tulder MW",
+            "Rubinstein SM",
+            "et al."
+          ],
+          "year": 2023,
+          "venue": "The Cochrane database of systematic reviews",
+          "type": "systematic-review",
+          "doi": "10.1002/14651858.cd009365.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd009365.pub2",
+          "openAccess": false,
+          "citedByCount": 15,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Reporting of adverse events associated with spinal manipulation in randomised clinical trials: an updated systematic review",
+          "authors": [
+            "Gorrell LM",
+            "Brown BT",
+            "Engel R",
+            "Lystad RP"
+          ],
+          "year": 2023,
+          "venue": "BMJ open",
+          "type": "systematic-review",
+          "doi": "10.1136/bmjopen-2022-067526",
+          "url": "https://doi.org/10.1136/bmjopen-2022-067526",
+          "openAccess": true,
+          "citedByCount": 5,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Impact of audible pops associated with spinal manipulation on perceived pain: a systematic review",
+          "authors": [
+            "Moorman AC",
+            "Newell D"
+          ],
+          "year": 2022,
+          "venue": "Chiropractic & manual therapies",
+          "type": "systematic-review",
+          "doi": "10.1186/s12998-022-00454-0",
+          "url": "https://doi.org/10.1186/s12998-022-00454-0",
+          "openAccess": true,
+          "citedByCount": 7,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Low back pain",
+          "authors": [
+            "Nebojša Nick Knežević",
+            "Kenneth D. Candido",
+            "Johan W.S. Vlaeyen",
+            "Jan Van Zundert",
+            "Steven P. Cohen"
+          ],
+          "year": 2021,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(21)00733-9",
+          "url": "https://doi.org/10.1016/s0140-6736(21)00733-9",
+          "openAccess": null,
+          "citedByCount": 1249,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "What low back pain is and why we need to pay attention",
+          "authors": [
+            "Jan Hartvigsen",
+            "Mark J. Hancock",
+            "Alice Kongsted",
+            "Quinette Louw",
+            "Manuela L. Ferreira",
+            "Stéphane Genevay",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(18)30480-x",
+          "url": "https://doi.org/10.1016/s0140-6736(18)30480-x",
+          "openAccess": null,
+          "citedByCount": 4526,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Prevention and treatment of low back pain: evidence, challenges, and promising directions",
+          "authors": [
+            "Nadine E. Foster",
+            "Johannes R. Anema",
+            "Dan Cherkin",
+            "Roger Chou",
+            "Steven P. Cohen",
+            "Douglas P. Gross",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(18)30489-6",
+          "url": "https://doi.org/10.1016/s0140-6736(18)30489-6",
+          "openAccess": null,
+          "citedByCount": 2402,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Clinical practice guidelines for the management of non-specific low back pain in primary care: an updated overview",
+          "authors": [
+            "Crystian B. Oliveira",
+            "Christopher G. Maher",
+            "Rafael Zambelli Pinto",
+            "Adrian C. Traeger",
+            "Chung‐Wei Christine Lin",
+            "Jean‐François Chenot",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "European Spine Journal",
+          "type": "review",
+          "doi": "10.1007/s00586-018-5673-2",
+          "url": "https://doi.org/10.1007/s00586-018-5673-2",
+          "openAccess": null,
+          "citedByCount": 1618,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain",
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Cost-effectiveness of exercise therapy in the treatment of non-specific neck pain and low back pain: a systematic review with meta-analysis",
+          "authors": [
+            "Gisela Cristiane Miyamoto",
+            "Chung‐Wei Christine Lin",
+            "Cristina Maria Nunes Cabral",
+            "Johanna M. van Dongen",
+            "Maurits W. van Tulder"
+          ],
+          "year": 2018,
+          "venue": "British Journal of Sports Medicine",
+          "type": "review",
+          "doi": "10.1136/bjsports-2017-098765",
+          "url": "https://doi.org/10.1136/bjsports-2017-098765",
+          "openAccess": null,
+          "citedByCount": 160,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture and Neural Mechanism in the Management of Low Back Pain—An Update",
+          "authors": [
+            "Tiaw-Kee Lim",
+            "Yan Ma",
+            "Frédéric Berger",
+            "Gerhard Litscher"
+          ],
+          "year": 2018,
+          "venue": "Medicines",
+          "type": "review",
+          "doi": "10.3390/medicines5030063",
+          "url": "https://doi.org/10.3390/medicines5030063",
+          "openAccess": null,
+          "citedByCount": 133,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Low back pain in older adults: risk factors, management options and future directions",
+          "authors": [
+            "Arnold Yu Lok Wong",
+            "Jaro Karppinen",
+            "Dino Samartzis"
+          ],
+          "year": 2017,
+          "venue": "Scoliosis and Spinal Disorders",
+          "type": "review",
+          "doi": "10.1186/s13013-017-0121-3",
+          "url": "https://doi.org/10.1186/s13013-017-0121-3",
+          "openAccess": null,
+          "citedByCount": 460,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Non-specific low back pain",
+          "authors": [
+            "Christopher G. Maher",
+            "Martin Underwood",
+            "Rachelle Buchbinder"
+          ],
+          "year": 2016,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(16)30970-9",
+          "url": "https://doi.org/10.1016/s0140-6736(16)30970-9",
+          "openAccess": null,
+          "citedByCount": 2495,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture for Low Back Pain: An Overview of Systematic Reviews",
+          "authors": [
+            "Lizhou Liu",
+            "Margot Skinner",
+            "Suzanne McDonough",
+            "Leon Mabire",
+            "George David Baxter"
+          ],
+          "year": 2015,
+          "venue": "Evidence-based Complementary and Alternative Medicine",
+          "type": "review",
+          "doi": "10.1155/2015/328196",
+          "url": "https://doi.org/10.1155/2015/328196",
+          "openAccess": null,
+          "citedByCount": 122,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture for Acute Low Back Pain",
+          "authors": [
+            "Jun‐Hwan Lee",
+            "Tae‐Young Choi",
+            "Myeong Soo Lee",
+            "Hyejung Lee",
+            "Byung‐Cheul Shin",
+            "Hyangsook Lee"
+          ],
+          "year": 2012,
+          "venue": "Clinical Journal of Pain",
+          "type": "review",
+          "doi": "10.1097/ajp.0b013e31824909f9",
+          "url": "https://doi.org/10.1097/ajp.0b013e31824909f9",
+          "openAccess": null,
+          "citedByCount": 141,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Non-specific low back pain",
+          "authors": [
+            "Federico Balagué",
+            "Anne F. Mannion",
+            "Ferrán Pellisé",
+            "Christine Cedraschi"
+          ],
+          "year": 2011,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(11)60610-7",
+          "url": "https://doi.org/10.1016/s0140-6736(11)60610-7",
+          "openAccess": null,
+          "citedByCount": 1771,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Early Identification and Management of Psychological Risk Factors (“Yellow Flags”) in Patients With Low Back Pain: A Reappraisal",
+          "authors": [
+            "Michael K. Nicholas",
+            "Steven J. Linton",
+            "P. J. Watson",
+            "Chris J. Main"
+          ],
+          "year": 2011,
+          "venue": "Physical Therapy",
+          "type": "review",
+          "doi": "10.2522/ptj.20100224",
+          "url": "https://doi.org/10.2522/ptj.20100224",
+          "openAccess": null,
+          "citedByCount": 660,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "An updated overview of clinical guidelines for chronic low back pain management in primary care",
+          "authors": [
+            "Paolo Pillastrini",
+            "Ivan Gardenghi",
+            "Francesca Bonetti",
+            "Francesco Capra",
+            "Andrew A. Guccione",
+            "Raffaele Mugnai",
+            "et al."
+          ],
+          "year": 2011,
+          "venue": "Joint Bone Spine",
+          "type": "review",
+          "doi": "10.1016/j.jbspin.2011.03.019",
+          "url": "https://doi.org/10.1016/j.jbspin.2011.03.019",
+          "openAccess": null,
+          "citedByCount": 216,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "An updated overview of clinical guidelines for the management of non-specific low back pain in primary care",
+          "authors": [
+            "Bart W. Koes",
+            "Maurits W. van Tulder",
+            "Chung‐Wei Christine Lin",
+            "Luciana Macedo",
+            "James H. McAuley",
+            "Christopher G. Maher"
+          ],
+          "year": 2010,
+          "venue": "European Spine Journal",
+          "type": "review",
+          "doi": "10.1007/s00586-010-1502-y",
+          "url": "https://doi.org/10.1007/s00586-010-1502-y",
+          "openAccess": null,
+          "citedByCount": 1325,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain",
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Exercise therapy for chronic nonspecific low-back pain",
+          "authors": [
+            "Marienke van Middelkoop",
+            "Sidney M. Rubinstein",
+            "Arianne P. Verhagen",
+            "Raymond Ostelo",
+            "Bart W. Koes",
+            "Maurits W. van Tulder"
+          ],
+          "year": 2010,
+          "venue": "Best Practice & Research Clinical Rheumatology",
+          "type": "review",
+          "doi": "10.1016/j.berh.2010.01.002",
+          "url": "https://doi.org/10.1016/j.berh.2010.01.002",
+          "openAccess": null,
+          "citedByCount": 512,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture for Chronic Low Back Pain",
+          "authors": [
+            "Brian Berman",
+            "Hélène M. Langevin",
+            "Claudia M. Witt",
+            "Ronald Dubner"
+          ],
+          "year": 2010,
+          "venue": "New England Journal of Medicine",
+          "type": "review",
+          "doi": "10.1056/nejmct0806114",
+          "url": "https://doi.org/10.1056/nejmct0806114",
+          "openAccess": null,
+          "citedByCount": 271,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Evidence-informed management of chronic low back pain with spinal manipulation and mobilization",
+          "authors": [
+            "Gert Brønfort",
+            "Mitch Haas",
+            "Roni Evans",
+            "Greg Kawchuk",
+            "Simon Dagenais"
+          ],
+          "year": 2008,
+          "venue": "The Spine Journal",
+          "type": "review",
+          "doi": "10.1016/j.spinee.2007.10.023",
+          "url": "https://doi.org/10.1016/j.spinee.2007.10.023",
+          "openAccess": null,
+          "citedByCount": 181,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Effectiveness of Acupuncture for Low Back Pain",
+          "authors": [
+            "Jing Yuan",
+            "Nithima Purepong",
+            "Daniel Kerr",
+            "Jong‐Bae Park",
+            "Ian Bradbury",
+            "Suzanne McDonough"
+          ],
+          "year": 2008,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/brs.0b013e318186b276",
+          "url": "https://doi.org/10.1097/brs.0b013e318186b276",
+          "openAccess": null,
+          "citedByCount": 177,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Nonpharmacologic Therapies for Acute and Chronic Low Back Pain: A Review of the Evidence for an American Pain Society/American College of Physicians Clinical Practice Guideline",
+          "authors": [
+            "Roger Chou",
+            "Laurie Hoyt Huffman"
+          ],
+          "year": 2007,
+          "venue": "Annals of Internal Medicine",
+          "type": "review",
+          "doi": "10.7326/0003-4819-147-7-200710020-00007",
+          "url": "https://doi.org/10.7326/0003-4819-147-7-200710020-00007",
+          "openAccess": null,
+          "citedByCount": 1062,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain",
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Information and Low Back Pain Management",
+          "authors": [
+            "Yves Henrotin",
+            "Christine Cedraschi",
+            "Bernard Duplan",
+            "Thierry Bazin",
+            "B Duquesnoy"
+          ],
+          "year": 2006,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/01.brs.0000217620.85893.32",
+          "url": "https://doi.org/10.1097/01.brs.0000217620.85893.32",
+          "openAccess": null,
+          "citedByCount": 141,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Exercise therapy for treatment of non-specific low back pain",
+          "authors": [
+            "Jill A. Hayden",
+            "Maurits W. van Tulder",
+            "Antti Malmivaara",
+            "Bart W. Koes"
+          ],
+          "year": 2005,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd000335.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd000335.pub2",
+          "openAccess": null,
+          "citedByCount": 881,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Systematic Review: Strategies for Using Exercise Therapy To Improve Outcomes in Chronic Low Back Pain",
+          "authors": [
+            "Jill A. Hayden",
+            "Maurits W. van Tulder",
+            "George Tomlinson"
+          ],
+          "year": 2005,
+          "venue": "Annals of Internal Medicine",
+          "type": "review",
+          "doi": "10.7326/0003-4819-142-9-200505030-00014",
+          "url": "https://doi.org/10.7326/0003-4819-142-9-200505030-00014",
+          "openAccess": null,
+          "citedByCount": 849,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Meta-Analysis: Exercise Therapy for Nonspecific Low Back Pain",
+          "authors": [
+            "Jill A. Hayden",
+            "Maurits W. van Tulder",
+            "Antti Malmivaara",
+            "Bart W. Koes"
+          ],
+          "year": 2005,
+          "venue": "Annals of Internal Medicine",
+          "type": "review",
+          "doi": "10.7326/0003-4819-142-9-200505030-00013",
+          "url": "https://doi.org/10.7326/0003-4819-142-9-200505030-00013",
+          "openAccess": null,
+          "citedByCount": 616,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Meta-Analysis: Acupuncture for Low Back Pain",
+          "authors": [
+            "Eric Manheimer",
+            "Adrian White",
+            "Brian Berman",
+            "Kelly Forys",
+            "Edzard Ernst"
+          ],
+          "year": 2005,
+          "venue": "Annals of Internal Medicine",
+          "type": "review",
+          "doi": "10.7326/0003-4819-142-8-200504190-00014",
+          "url": "https://doi.org/10.7326/0003-4819-142-8-200504190-00014",
+          "openAccess": null,
+          "citedByCount": 514,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture and dry-needling for low back pain",
+          "authors": [
+            "Andrea D Furlan",
+            "Maurits W. van Tulder",
+            "Dan Cherkin",
+            "Hiroshi Tsukayama",
+            "Lixing Lao",
+            "Bart W. Koes",
+            "et al."
+          ],
+          "year": 2005,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd001351.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd001351.pub2",
+          "openAccess": null,
+          "citedByCount": 423,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture and Dry-Needling for Low Back Pain: An Updated Systematic Review Within the Framework of the Cochrane Collaboration",
+          "authors": [
+            "Andrea D Furlan",
+            "Maurits W. van Tulder",
+            "Dan Cherkin",
+            "Hiroshi Tsukayama",
+            "Lixing Lao",
+            "Bart W. Koes",
+            "et al."
+          ],
+          "year": 2005,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/01.brs.0000158941.21571.01",
+          "url": "https://doi.org/10.1097/01.brs.0000158941.21571.01",
+          "openAccess": null,
+          "citedByCount": 410,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Efficacy of spinal manipulation and mobilization for low back pain and neck pain: a systematic review and best evidence synthesis",
+          "authors": [
+            "Gert Brønfort",
+            "Mitchell Haas",
+            "Roni Evans",
+            "L.M. Bouter"
+          ],
+          "year": 2004,
+          "venue": "The Spine Journal",
+          "type": "review",
+          "doi": "10.1016/j.spinee.2003.06.002",
+          "url": "https://doi.org/10.1016/j.spinee.2003.06.002",
+          "openAccess": null,
+          "citedByCount": 560,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Spinal manipulative therapy for low-back pain",
+          "authors": [
+            "Willem JJ Assendelft",
+            "Sally C. Morton",
+            "Emily I Yu",
+            "Marika J Suttorp",
+            "Paul G Shekelle"
+          ],
+          "year": 2004,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd000447.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd000447.pub2",
+          "openAccess": null,
+          "citedByCount": 367,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Spinal Manipulative Therapy for Low Back Pain",
+          "authors": [
+            "Willem JJ Assendelft",
+            "Sally C. Morton",
+            "Emily I Yu",
+            "Marika J Suttorp",
+            "Paul G Shekelle"
+          ],
+          "year": 2003,
+          "venue": "Annals of Internal Medicine",
+          "type": "review",
+          "doi": "10.7326/0003-4819-138-11-200306030-00008",
+          "url": "https://doi.org/10.7326/0003-4819-138-11-200306030-00008",
+          "openAccess": null,
+          "citedByCount": 440,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Occupational health guidelines for the management of low back pain at work: evidence review",
+          "authors": [
+            "G Waddell"
+          ],
+          "year": 2001,
+          "venue": "Occupational Medicine",
+          "type": "review",
+          "doi": "10.1093/occmed/51.2.124",
+          "url": "https://doi.org/10.1093/occmed/51.2.124",
+          "openAccess": null,
+          "citedByCount": 606,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "low back pain"
+          ]
+        },
+        {
+          "title": "Exercise Therapy for Low Back Pain",
+          "authors": [
+            "Maurits W. van Tulder",
+            "Antti Malmivaara",
+            "Rosmin Esmail",
+            "Bart W. Koes"
+          ],
+          "year": 2000,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/00007632-200011010-00011",
+          "url": "https://doi.org/10.1097/00007632-200011010-00011",
+          "openAccess": null,
+          "citedByCount": 568,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "Exercise therapy for low-back pain",
+          "authors": [
+            "Maurits W. van Tulder",
+            "Antti Malmivaara",
+            "Rosmin Esmail",
+            "Bart W. Koes"
+          ],
+          "year": 2000,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd000335",
+          "url": "https://doi.org/10.1002/14651858.cd000335",
+          "openAccess": null,
+          "citedByCount": 240,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — low back pain"
+          ]
+        },
+        {
+          "title": "The Effectiveness of Acupuncture in the Management of Acute and Chronic Low Back Pain",
+          "authors": [
+            "Maurits W. van Tulder",
+            "Daniel C. Cherkin",
+            "Brian Berman",
+            "Lixing Lao",
+            "Bart W. Koes"
+          ],
+          "year": 1999,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/00007632-199906010-00011",
+          "url": "https://doi.org/10.1097/00007632-199906010-00011",
+          "openAccess": null,
+          "citedByCount": 268,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Acupuncture for low-back pain",
+          "authors": [
+            "MW van Tulder",
+            "D Cherkin",
+            "Brian Berman",
+            "Lixing Lao",
+            "Bart W. Koes"
+          ],
+          "year": 1999,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd001351",
+          "url": "https://doi.org/10.1002/14651858.cd001351",
+          "openAccess": null,
+          "citedByCount": 111,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "acupuncture — low back pain"
+          ]
+        },
+        {
+          "title": "Spinal Manipulation for Low Back Pain",
+          "authors": [
+            "Bart W. Koes",
+            "Willem JJ Assendelft",
+            "Geert J. M. G. van der Heijden",
+            "L.M. Bouter"
+          ],
+          "year": 1996,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/00007632-199612150-00013",
+          "url": "https://doi.org/10.1097/00007632-199612150-00013",
+          "openAccess": null,
+          "citedByCount": 279,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Exercise and Spinal Manipulation in the Treatment of Low Back Pain",
+          "authors": [
+            "Lance Twomey",
+            "James G. Taylor"
+          ],
+          "year": 1995,
+          "venue": "Spine",
+          "type": "review",
+          "doi": "10.1097/00007632-199503010-00021",
+          "url": "https://doi.org/10.1097/00007632-199503010-00021",
+          "openAccess": null,
+          "citedByCount": 59,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        },
+        {
+          "title": "Spinal Manipulation for Low-Back Pain",
+          "authors": [
+            "Paul G Shekelle",
+            "Alan H. Adams",
+            "Mark R. Chassin",
+            "Eric L. Hurwitz",
+            "Robert H. Brook"
+          ],
+          "year": 1992,
+          "venue": "Annals of Internal Medicine",
+          "type": "review",
+          "doi": "10.7326/0003-4819-117-7-590",
+          "url": "https://doi.org/10.7326/0003-4819-117-7-590",
+          "openAccess": null,
+          "citedByCount": 501,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "spinal manipulation — low back pain"
+          ]
+        }
+      ]
+    },
+    {
+      "concernId": "neck-shoulder",
+      "label": "Neck & shoulder pain",
+      "condition": "mechanical neck pain",
+      "queries": [
+        {
+          "query": "mechanical neck pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "mechanical neck pain",
+          "source": "openalex",
+          "returned": 10
+        },
+        {
+          "query": "manual therapy — mechanical neck pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "manual therapy — mechanical neck pain",
+          "source": "openalex",
+          "returned": 10
+        }
+      ],
+      "evidenceCount": 28,
+      "evidence": [
+        {
+          "title": "The immediate effects of thoracic spine manipulation in patients with neck pain: a meta-analysis of randomized controlled trials",
+          "authors": [
+            "Pan Y",
+            "Chen J",
+            "Liu Y",
+            "Chen Z",
+            "Liu J"
+          ],
+          "year": 2026,
+          "venue": "Frontiers in medicine",
+          "type": "systematic-review",
+          "doi": "10.3389/fmed.2026.1790614",
+          "url": "https://doi.org/10.3389/fmed.2026.1790614",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Nocebo effects in long-term health conditions: a systematic review of experimental studies",
+          "authors": [
+            "Church BA",
+            "Gupta P",
+            "Shivaram A",
+            "Jenkins S",
+            "Palmer EJ"
+          ],
+          "year": 2026,
+          "venue": "Frontiers in psychiatry",
+          "type": "systematic-review",
+          "doi": "10.3389/fpsyt.2026.1752434",
+          "url": "https://doi.org/10.3389/fpsyt.2026.1752434",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Comparison of clinical efficacy of different exercise therapies in the treatment of chronic nonspecific neck pain: a network meta-analysis",
+          "authors": [
+            "Huang M",
+            "Liu H",
+            "Chen J",
+            "Pan R"
+          ],
+          "year": 2026,
+          "venue": "Frontiers in neurology",
+          "type": "systematic-review",
+          "doi": "10.3389/fneur.2026.1781903",
+          "url": "https://doi.org/10.3389/fneur.2026.1781903",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Efficacy and safety of spinal manipulative therapy in the management of acute neck pain: a systematic review and meta-analysis",
+          "authors": [
+            "Diao Y",
+            "Liu Y",
+            "Pan J",
+            "Chen J",
+            "Pan J",
+            "Liao M",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Systematic reviews",
+          "type": "meta-analysis",
+          "doi": "10.1186/s13643-025-02855-7",
+          "url": "https://doi.org/10.1186/s13643-025-02855-7",
+          "openAccess": true,
+          "citedByCount": 3,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Systematic review on biomechanical effects of high-velocity, low amplitude spinal manipulation",
+          "authors": [
+            "Langenfeld A",
+            "Baechler M",
+            "Swanenburg J",
+            "Mühlemann M",
+            "Nyirö L",
+            "Streuli D",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "PloS one",
+          "type": "systematic-review",
+          "doi": "10.1371/journal.pone.0328048",
+          "url": "https://doi.org/10.1371/journal.pone.0328048",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "The effect of friction massage on pain intensity, PPT, and ROM in individuals with myofascial trigger points: a systematic review",
+          "authors": [
+            "Sadeghnia M",
+            "Kajbafvala M",
+            "Shadmehr A"
+          ],
+          "year": 2025,
+          "venue": "BMC musculoskeletal disorders",
+          "type": "systematic-review",
+          "doi": "10.1186/s12891-025-08372-x",
+          "url": "https://doi.org/10.1186/s12891-025-08372-x",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "The Effectiveness of Mulligan's Techniques in Non-Specific Neck Pain: A Systematic Review and Meta-Analysis",
+          "authors": [
+            "Barbosa-Silva J",
+            "Luc A",
+            "Sobral de Oliveira-Souza AI",
+            "Martins de Abreu R",
+            "Cipriano J",
+            "de Schaetzen M",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Physiotherapy research international : the journal for researchers and clinicians in physical therapy",
+          "type": "meta-analysis",
+          "doi": "10.1002/pri.70045",
+          "url": "https://doi.org/10.1002/pri.70045",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Durable Effect of Acupuncture for Chronic Neck Pain: A Systematic Review and Meta-Analysis",
+          "authors": [
+            "Fang J",
+            "Shi H",
+            "Wang W",
+            "Chen H",
+            "Yang M",
+            "Gao S",
+            "et al."
+          ],
+          "year": 2024,
+          "venue": "Current pain and headache reports",
+          "type": "meta-analysis",
+          "doi": "10.1007/s11916-024-01267-x",
+          "url": "https://doi.org/10.1007/s11916-024-01267-x",
+          "openAccess": true,
+          "citedByCount": 5,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Does manual therapy meaningfully change quantitative sensory testing and patient reported outcome measures in patients with musculoskeletal impairments related to the spine?: A 'trustworthy' systematic review and meta-analysis",
+          "authors": [
+            "Riley SP",
+            "Swanson BT",
+            "Shaffer SM",
+            "Flowers DW",
+            "Hofbauer MA",
+            "Liebano RE"
+          ],
+          "year": 2024,
+          "venue": "The Journal of manual & manipulative therapy",
+          "type": "meta-analysis",
+          "doi": "10.1080/10669817.2023.2247235",
+          "url": "https://doi.org/10.1080/10669817.2023.2247235",
+          "openAccess": false,
+          "citedByCount": 5,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "An overview of systematic reviews examining the quantitative sensory testing-derived hypoalgesic effects of manual therapy for musculoskeletal pain",
+          "authors": [
+            "Rodgers LJ",
+            "Bialosky JE",
+            "Minick SA",
+            "Coronado RA"
+          ],
+          "year": 2024,
+          "venue": "The Journal of manual & manipulative therapy",
+          "type": "meta-analysis",
+          "doi": "10.1080/10669817.2023.2267954",
+          "url": "https://doi.org/10.1080/10669817.2023.2267954",
+          "openAccess": false,
+          "citedByCount": 4,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Global trends and performance of dry needling from 2004 to 2024: a bibliometric analysis",
+          "authors": [
+            "Wang M",
+            "Zhao T",
+            "Liu J",
+            "Luo S"
+          ],
+          "year": 2024,
+          "venue": "Frontiers in neurology",
+          "type": "systematic-review",
+          "doi": "10.3389/fneur.2024.1465983",
+          "url": "https://doi.org/10.3389/fneur.2024.1465983",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "The combined effects of manual therapy and exercise on pain and related disability for individuals with nonspecific neck pain: A systematic review with meta-analysis",
+          "authors": [
+            "Wilhelm M",
+            "Cleland J",
+            "Carroll A",
+            "Marinch M",
+            "Imhoff M",
+            "Severini N",
+            "et al."
+          ],
+          "year": 2023,
+          "venue": "The Journal of manual & manipulative therapy",
+          "type": "meta-analysis",
+          "doi": "10.1080/10669817.2023.2202895",
+          "url": "https://doi.org/10.1080/10669817.2023.2202895",
+          "openAccess": false,
+          "citedByCount": 11,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Manual therapy for non-radicular cervical spine related impairments: establishing a 'Trustworthy' living systematic review and meta-analysis",
+          "authors": [
+            "Riley SP",
+            "Shaffer SM",
+            "Flowers DW",
+            "Hofbauer MA",
+            "Swanson BT"
+          ],
+          "year": 2023,
+          "venue": "The Journal of manual & manipulative therapy",
+          "type": "meta-analysis",
+          "doi": "10.1080/10669817.2023.2201917",
+          "url": "https://doi.org/10.1080/10669817.2023.2201917",
+          "openAccess": false,
+          "citedByCount": 4,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Low back pain",
+          "authors": [
+            "Nebojša Nick Knežević",
+            "Kenneth D. Candido",
+            "Johan W.S. Vlaeyen",
+            "Jan Van Zundert",
+            "Steven P. Cohen"
+          ],
+          "year": 2021,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(21)00733-9",
+          "url": "https://doi.org/10.1016/s0140-6736(21)00733-9",
+          "openAccess": null,
+          "citedByCount": 1249,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Thoracic spine manipulation for the management of mechanical neck pain: A systematic review and meta-analysis",
+          "authors": [
+            "Michael Masaracchio",
+            "Kaitlin Kirker",
+            "Rebecca A. States",
+            "William J. Hanney",
+            "Xinliang Liu",
+            "Morey J. Kolber"
+          ],
+          "year": 2019,
+          "venue": "PLoS ONE",
+          "type": "review",
+          "doi": "10.1371/journal.pone.0211877",
+          "url": "https://doi.org/10.1371/journal.pone.0211877",
+          "openAccess": null,
+          "citedByCount": 92,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "What low back pain is and why we need to pay attention",
+          "authors": [
+            "Jan Hartvigsen",
+            "Mark J. Hancock",
+            "Alice Kongsted",
+            "Quinette Louw",
+            "Manuela L. Ferreira",
+            "Stéphane Genevay",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(18)30480-x",
+          "url": "https://doi.org/10.1016/s0140-6736(18)30480-x",
+          "openAccess": null,
+          "citedByCount": 4526,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Chronic pain as a symptom or a disease: the IASP Classification of Chronic Pain for the International Classification of Diseases (ICD-11)",
+          "authors": [
+            "Rolf‐Detlef Treede",
+            "Winfried Rief",
+            "Antonia Barke",
+            "Qasim Aziz",
+            "Mike Bennett",
+            "Rafael Benoliel",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "Pain",
+          "type": "review",
+          "doi": "10.1097/j.pain.0000000000001384",
+          "url": "https://doi.org/10.1097/j.pain.0000000000001384",
+          "openAccess": null,
+          "citedByCount": 3234,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Neuropathic pain",
+          "authors": [
+            "Luana Colloca",
+            "Taylor Ludman",
+            "Didier Bouhassira",
+            "Ralf Baron",
+            "Anthony H. Dickenson",
+            "David Yarnitsky",
+            "et al."
+          ],
+          "year": 2017,
+          "venue": "Nature Reviews Disease Primers",
+          "type": "review",
+          "doi": "10.1038/nrdp.2017.2",
+          "url": "https://doi.org/10.1038/nrdp.2017.2",
+          "openAccess": null,
+          "citedByCount": 2000,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "The efficacy of manual therapy and exercise for treating non-specific neck pain: A systematic review",
+          "authors": [
+            "Benjamin Hidalgo",
+            "Toby Hall",
+            "Jean Bossert",
+            "Axel Dugeny",
+            "Barbara Cagnie",
+            "Laurent Pitance"
+          ],
+          "year": 2017,
+          "venue": "Journal of Back and Musculoskeletal Rehabilitation",
+          "type": "review",
+          "doi": "10.3233/bmr-169615",
+          "url": "https://doi.org/10.3233/bmr-169615",
+          "openAccess": null,
+          "citedByCount": 233,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Exercises for mechanical neck disorders",
+          "authors": [
+            "Anita Gross",
+            "Theresa Kay",
+            "Jean-Philippe Paquin",
+            "Samuel Blanchette",
+            "P. Lalonde",
+            "Trevor Christie",
+            "et al."
+          ],
+          "year": 2015,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd004250.pub5",
+          "url": "https://doi.org/10.1002/14651858.cd004250.pub5",
+          "openAccess": null,
+          "citedByCount": 600,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Guidance on the management of pain in older people",
+          "authors": [
+            "Aza Abdulla",
+            "Nicola Adams",
+            "Margaret Bone",
+            "Alison M. Elliott",
+            "Jean Gaffin",
+            "Derek Jones",
+            "et al."
+          ],
+          "year": 2013,
+          "venue": "Age and Ageing",
+          "type": "review",
+          "doi": "10.1093/ageing/afs200",
+          "url": "https://doi.org/10.1093/ageing/afs200",
+          "openAccess": null,
+          "citedByCount": 731,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Chronic Mechanical Neck Pain in Adults Treated by Manual Therapy: A Systematic Review of Change Scores in Randomized Controlled Trials of a Single Session",
+          "authors": [
+            "Howard Vernon",
+            "Barry Kim Humphreys"
+          ],
+          "year": 2008,
+          "venue": "Journal of Manual & Manipulative Therapy",
+          "type": "review",
+          "doi": "10.1179/jmt.2008.16.2.42e",
+          "url": "https://doi.org/10.1179/jmt.2008.16.2.42e",
+          "openAccess": null,
+          "citedByCount": 59,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Cervical spondylosis and neck pain",
+          "authors": [
+            "Allan Binder"
+          ],
+          "year": 2007,
+          "venue": "BMJ",
+          "type": "review",
+          "doi": "10.1136/bmj.39127.608299.80",
+          "url": "https://doi.org/10.1136/bmj.39127.608299.80",
+          "openAccess": null,
+          "citedByCount": 318,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Chronic Mechanical Neck Pain in Adults Treated by Manual Therapy: A Systematic Review of Change Scores in Randomized Clinical Trials",
+          "authors": [
+            "Howard Vernon",
+            "Kim Humphreys",
+            "Carol Hagino"
+          ],
+          "year": 2007,
+          "venue": "Journal of Manipulative and Physiological Therapeutics",
+          "type": "review",
+          "doi": "10.1016/j.jmpt.2007.01.014",
+          "url": "https://doi.org/10.1016/j.jmpt.2007.01.014",
+          "openAccess": null,
+          "citedByCount": 145,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Pain assessment",
+          "authors": [
+            "Mathias Haefeli",
+            "Achim Elfering"
+          ],
+          "year": 2005,
+          "venue": "European Spine Journal",
+          "type": "review",
+          "doi": "10.1007/s00586-005-1044-x",
+          "url": "https://doi.org/10.1007/s00586-005-1044-x",
+          "openAccess": null,
+          "citedByCount": 1188,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Exercise therapy for treatment of non-specific low back pain",
+          "authors": [
+            "Jill A. Hayden",
+            "Maurits W. van Tulder",
+            "Antti Malmivaara",
+            "Bart W. Koes"
+          ],
+          "year": 2005,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd000335.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd000335.pub2",
+          "openAccess": null,
+          "citedByCount": 881,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Efficacy of spinal manipulation and mobilization for low back pain and neck pain: a systematic review and best evidence synthesis",
+          "authors": [
+            "Gert Brønfort",
+            "Mitchell Haas",
+            "Roni Evans",
+            "L.M. Bouter"
+          ],
+          "year": 2004,
+          "venue": "The Spine Journal",
+          "type": "review",
+          "doi": "10.1016/j.spinee.2003.06.002",
+          "url": "https://doi.org/10.1016/j.spinee.2003.06.002",
+          "openAccess": null,
+          "citedByCount": 560,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "mechanical neck pain",
+            "manual therapy — mechanical neck pain"
+          ]
+        },
+        {
+          "title": "Manual therapy for mechanical neck disorders: a systematic review",
+          "authors": [
+            "Anita Gross",
+            "Theresa Kay",
+            "Maria Hondras",
+            "Charlie H. Goldsmith",
+            "Ted Haines",
+            "Paul M. Peloso",
+            "et al."
+          ],
+          "year": 2002,
+          "venue": "Manual Therapy",
+          "type": "review",
+          "doi": "10.1054/math.2002.0465",
+          "url": "https://doi.org/10.1054/math.2002.0465",
+          "openAccess": null,
+          "citedByCount": 208,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "manual therapy — mechanical neck pain"
+          ]
+        }
+      ]
+    },
+    {
+      "concernId": "knee-hip",
+      "label": "Knee or hip pain",
+      "condition": "knee osteoarthritis",
+      "queries": [
+        {
+          "query": "knee osteoarthritis",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "knee osteoarthritis",
+          "source": "openalex",
+          "returned": 10
+        },
+        {
+          "query": "exercise therapy — knee osteoarthritis",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "exercise therapy — knee osteoarthritis",
+          "source": "openalex",
+          "returned": 10
+        }
+      ],
+      "evidenceCount": 34,
+      "evidence": [
+        {
+          "title": "Efficacy and safety of genicular nerve ablation techniques for knee osteoarthritis: a systematic review and meta-analysis of sham-controlled randomized trials",
+          "authors": [
+            "Barreto RB",
+            "Barreto AJ",
+            "do Nascimento ALM",
+            "Carvalho DMB",
+            "Queiroz B"
+          ],
+          "year": 2026,
+          "venue": "Pain medicine (Malden, Mass.)",
+          "type": "meta-analysis",
+          "doi": "10.1093/pm/pnaf140",
+          "url": "https://doi.org/10.1093/pm/pnaf140",
+          "openAccess": false,
+          "citedByCount": 2,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Efficacy and safety of intra-articular mesenchymal stem cell-based therapies in knee osteoarthritis: A systematic review and meta-analysis of randomized controlled trials",
+          "authors": [
+            "Awad G",
+            "Saad JP",
+            "Hamyeh A",
+            "Boutros M"
+          ],
+          "year": 2026,
+          "venue": "Clinical rheumatology",
+          "type": "meta-analysis",
+          "doi": "10.1007/s10067-026-08042-w",
+          "url": "https://doi.org/10.1007/s10067-026-08042-w",
+          "openAccess": false,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Clinical efficacy and mechanisms of krill oil supplementation in knee osteoarthritis: meta-analysis and mechanistic insights",
+          "authors": [
+            "Kou H",
+            "Liu H",
+            "Lai L",
+            "Yang S",
+            "Zhang X",
+            "Sun Y",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Inflammopharmacology",
+          "type": "meta-analysis",
+          "doi": "10.1007/s10787-026-02234-1",
+          "url": "https://doi.org/10.1007/s10787-026-02234-1",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Efficacy and safety of resistance training for knee osteoarthritis and subsequent knee replacement: A systematic review and meta-analysis",
+          "authors": [
+            "Brown RCC",
+            "Mora-Traverso M",
+            "Fernández-González M",
+            "Perez de Arrilucea Le Floc'h UA",
+            "Molina-García C",
+            "Molina-Garcia P"
+          ],
+          "year": 2026,
+          "venue": "Annals of physical and rehabilitation medicine",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.rehab.2026.102122",
+          "url": "https://doi.org/10.1016/j.rehab.2026.102122",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis",
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Metformin for knee osteoarthritis in overweight and obese adults: a systematic review and meta-analysis of efficacy, safety, and disease-modifying anti-inflammatory potential",
+          "authors": [
+            "Chenchula S",
+            "Amerneni KC",
+            "Padmavathi R",
+            "Anitha K",
+            "Ghanta MK",
+            "Karunakaran S",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Inflammopharmacology",
+          "type": "meta-analysis",
+          "doi": "10.1007/s10787-026-02218-1",
+          "url": "https://doi.org/10.1007/s10787-026-02218-1",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Platelet-rich plasma plus hyaluronic acid vs platelet-rich plasma intra-articular injections for knee osteoarthritis: A systematic review and meta-analysis",
+          "authors": [
+            "Tomaszewski M",
+            "Smereka J",
+            "Al-Jeabory M",
+            "Fudalej P",
+            "Pruc M",
+            "Krupowies MW",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Advances in clinical and experimental medicine : official organ Wroclaw Medical University",
+          "type": "meta-analysis",
+          "doi": "10.17219/acem/209523",
+          "url": "https://doi.org/10.17219/acem/209523",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Neuromodulation through transcutaneous electrical nerve stimulation in knee osteoarthritis: A systematic review and meta-analysis of pain, function, and its role in multimodal rehabilitation",
+          "authors": [
+            "Peng Y",
+            "Wang F",
+            "Zhang K",
+            "Ma S",
+            "Ahmad MA",
+            "Qi Q"
+          ],
+          "year": 2026,
+          "venue": "Journal of bodywork and movement therapies",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.jbmt.2026.03.006",
+          "url": "https://doi.org/10.1016/j.jbmt.2026.03.006",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "The effectiveness of dry needling at myofascial trigger points for knee disorders: A quantitative synthesis of randomized controlled trials",
+          "authors": [
+            "Hu X",
+            "Lei T",
+            "Liu Z",
+            "Xu Z",
+            "Zhu G"
+          ],
+          "year": 2026,
+          "venue": "PloS one",
+          "type": "meta-analysis",
+          "doi": "10.1371/journal.pone.0346129",
+          "url": "https://doi.org/10.1371/journal.pone.0346129",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis",
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "The responsiveness of digital biomarkers as measurement tools in people with hip and knee osteoarthritis: A systematic review and meta-analysis",
+          "authors": [
+            "Zhu SJ",
+            "Siddiq MAB",
+            "Bowden JL",
+            "Venkatesha V",
+            "Hall M",
+            "Hunter DJ"
+          ],
+          "year": 2026,
+          "venue": "Osteoarthritis and cartilage",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.joca.2026.02.002",
+          "url": "https://doi.org/10.1016/j.joca.2026.02.002",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Risk Factors for Knee Osteoarthritis After Anterior Cruciate Ligament Reconstruction: A Systematic Review and Meta-analysis",
+          "authors": [
+            "Zhang L",
+            "Xu T",
+            "Xiong Q",
+            "Hu Y",
+            "Fan L",
+            "Fu W"
+          ],
+          "year": 2026,
+          "venue": "The American journal of sports medicine",
+          "type": "meta-analysis",
+          "doi": "10.1177/03635465251380285",
+          "url": "https://doi.org/10.1177/03635465251380285",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "The effect of exercise therapy on pain, fatigue, bone function and inflammatory biomarkers individuals with rheumatoid arthritis and knee osteoarthritis: a meta-research review of randomized controlled trials",
+          "authors": [
+            "Fu X",
+            "Zhang L",
+            "Wang C",
+            "Yue J",
+            "Zhu H"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in physiology",
+          "type": "systematic-review",
+          "doi": "10.3389/fphys.2025.1558214",
+          "url": "https://doi.org/10.3389/fphys.2025.1558214",
+          "openAccess": true,
+          "citedByCount": 2,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Effectiveness of combined regenerative medicine and exercise therapy for patients with knee osteoarthritis: a scoping review",
+          "authors": [
+            "Oka T",
+            "Suzuki K",
+            "Tanaka K",
+            "Okuyama K",
+            "Kitagawa T"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in rehabilitation sciences",
+          "type": "systematic-review",
+          "doi": "10.3389/fresc.2025.1612615",
+          "url": "https://doi.org/10.3389/fresc.2025.1612615",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Effectiveness of exercise therapy in patients with knee osteoarthritis: an overview of systematic reviews",
+          "authors": [
+            "Kitagawa T",
+            "Isaji Y",
+            "Sasaki D",
+            "Onishi K",
+            "Hayashi M",
+            "Okuyama W"
+          ],
+          "year": 2025,
+          "venue": "BMJ open",
+          "type": "systematic-review",
+          "doi": "10.1136/bmjopen-2024-093163",
+          "url": "https://doi.org/10.1136/bmjopen-2024-093163",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "The effect of adding neuromuscular electrical stimulation to exercise therapy on patellofemoral pain: A systematic review and meta-analysis",
+          "authors": [
+            "Zheng J",
+            "Wei Z",
+            "Zuo H",
+            "Wang K",
+            "Lin X",
+            "Chen J"
+          ],
+          "year": 2025,
+          "venue": "PloS one",
+          "type": "meta-analysis",
+          "doi": "10.1371/journal.pone.0326785",
+          "url": "https://doi.org/10.1371/journal.pone.0326785",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "The impact of exercise therapy on rehabilitation outcomes after anterior cruciate ligament reconstruction: a network meta-analysis",
+          "authors": [
+            "Zhong Z",
+            "Guo W",
+            "Gu Q",
+            "Pang T",
+            "Li L",
+            "Hao A"
+          ],
+          "year": 2025,
+          "venue": "BMC musculoskeletal disorders",
+          "type": "meta-analysis",
+          "doi": "10.1186/s12891-025-08876-6",
+          "url": "https://doi.org/10.1186/s12891-025-08876-6",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Exercises plus intra-articular injection for knee osteoarthritis: a systematic review with meta-analysis",
+          "authors": [
+            "Brumini C",
+            "Natour J",
+            "Adolph SMM",
+            "Furtado RNV",
+            "Jones A"
+          ],
+          "year": 2025,
+          "venue": "Advances in rheumatology (London, England)",
+          "type": "meta-analysis",
+          "doi": "10.1186/s42358-025-00458-3",
+          "url": "https://doi.org/10.1186/s42358-025-00458-3",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Comparative effectiveness of traditional Chinese exercises for knee osteoarthritis: a systematic review and Bayesian network meta-analysis",
+          "authors": [
+            "Li Y",
+            "Zhai Z",
+            "Guo B",
+            "Liu Y",
+            "An Z",
+            "Zhai Q"
+          ],
+          "year": 2025,
+          "venue": "Frontiers in public health",
+          "type": "meta-analysis",
+          "doi": "10.3389/fpubh.2025.1710610",
+          "url": "https://doi.org/10.3389/fpubh.2025.1710610",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Long-term effects of exercise therapy versus arthroscopic partial meniscectomy for degenerative meniscal tear: A meta-analysis of randomized controlled trials",
+          "authors": [
+            "Meng J",
+            "Tang H",
+            "Xiao Y",
+            "Liu W",
+            "Wu Y",
+            "Xiong Y",
+            "et al."
+          ],
+          "year": 2024,
+          "venue": "Asian journal of surgery",
+          "type": "meta-analysis",
+          "doi": "10.1016/j.asjsur.2024.03.091",
+          "url": "https://doi.org/10.1016/j.asjsur.2024.03.091",
+          "openAccess": false,
+          "citedByCount": 7,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Diagnosis and Treatment of Hip and Knee Osteoarthritis",
+          "authors": [
+            "Jeffrey N. Katz",
+            "Kaetlyn R. Arant",
+            "Richard F. Loeser"
+          ],
+          "year": 2021,
+          "venue": "JAMA",
+          "type": "review",
+          "doi": "10.1001/jama.2020.22171",
+          "url": "https://doi.org/10.1001/jama.2020.22171",
+          "openAccess": null,
+          "citedByCount": 2237,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Clinicians’ beliefs and attitudes to physical activity and exercise therapy as treatment for knee and/or hip osteoarthritis: a scoping review",
+          "authors": [
+            "Nis Nissen",
+            "Pætur Mikal Holm",
+            "Alessio Bricca",
+            "Mette Dideriksen",
+            "Lars Hermann Tang",
+            "Søren Thorgaard Skou"
+          ],
+          "year": 2021,
+          "venue": "Osteoarthritis and Cartilage",
+          "type": "review",
+          "doi": "10.1016/j.joca.2021.11.008",
+          "url": "https://doi.org/10.1016/j.joca.2021.11.008",
+          "openAccess": null,
+          "citedByCount": 280,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "2019 American College of Rheumatology/Arthritis Foundation Guideline for the Management of Osteoarthritis of the Hand, Hip, and Knee",
+          "authors": [
+            "Sharon L. Kolasinski",
+            "Tuhina Neogi",
+            "Marc C. Hochberg",
+            "Carol A. Oatis",
+            "Gordon Guyatt",
+            "Joel A. Block",
+            "et al."
+          ],
+          "year": 2020,
+          "venue": "Arthritis Care & Research",
+          "type": "review",
+          "doi": "10.1002/acr.24131",
+          "url": "https://doi.org/10.1002/acr.24131",
+          "openAccess": null,
+          "citedByCount": 2470,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis",
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Non-surgical management of knee osteoarthritis: comparison of ESCEO and OARSI 2019 guidelines",
+          "authors": [
+            "Nigel Arden",
+            "Thomas A. Perry",
+            "Raveendhara R. Bannuru",
+            "Olivier Bruyère",
+            "Cyrus Cooper",
+            "I.K. Haugen",
+            "et al."
+          ],
+          "year": 2020,
+          "venue": "Nature Reviews Rheumatology",
+          "type": "review",
+          "doi": "10.1038/s41584-020-00523-9",
+          "url": "https://doi.org/10.1038/s41584-020-00523-9",
+          "openAccess": null,
+          "citedByCount": 540,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "OARSI guidelines for the non-surgical management of knee, hip, and polyarticular osteoarthritis",
+          "authors": [
+            "Raveendhara R. Bannuru",
+            "Mikala C. Osani",
+            "Elizaveta E. Vaysbrot",
+            "N K Arden",
+            "Kim L. Bennell",
+            "S.M. Bierma-Zeinstra",
+            "et al."
+          ],
+          "year": 2019,
+          "venue": "Osteoarthritis and Cartilage",
+          "type": "review",
+          "doi": "10.1016/j.joca.2019.06.011",
+          "url": "https://doi.org/10.1016/j.joca.2019.06.011",
+          "openAccess": null,
+          "citedByCount": 3458,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "An updated algorithm recommendation for the management of knee osteoarthritis from the European Society for Clinical and Economic Aspects of Osteoporosis, Osteoarthritis and Musculoskeletal Diseases (ESCEO)",
+          "authors": [
+            "Olivier Bruyère",
+            "Germain Honvo",
+            "Nicola Veronese",
+            "Nigel Arden",
+            "Jaime Branco",
+            "Elizabeth Curtis",
+            "et al."
+          ],
+          "year": 2019,
+          "venue": "Seminars in Arthritis and Rheumatism",
+          "type": "review",
+          "doi": "10.1016/j.semarthrit.2019.04.008",
+          "url": "https://doi.org/10.1016/j.semarthrit.2019.04.008",
+          "openAccess": null,
+          "citedByCount": 680,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Efficacy and potential determinants of exercise therapy in knee and hip osteoarthritis: A systematic review and meta-analysis",
+          "authors": [
+            "Siew Li Goh",
+            "Monica S M Persson",
+            "Joanne Stocks",
+            "Yunfei Hou",
+            "Jianhao Lin",
+            "Michelle Hall",
+            "et al."
+          ],
+          "year": 2019,
+          "venue": "Annals of Physical and Rehabilitation Medicine",
+          "type": "review",
+          "doi": "10.1016/j.rehab.2019.04.006",
+          "url": "https://doi.org/10.1016/j.rehab.2019.04.006",
+          "openAccess": null,
+          "citedByCount": 458,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Exercise for osteoarthritis of the knee: a Cochrane systematic review",
+          "authors": [
+            "Marlene Fransen",
+            "Sara McConnell",
+            "Alison R. Harmer",
+            "M. van der Esch",
+            "Milena Simić",
+            "Kim L. Bennell"
+          ],
+          "year": 2015,
+          "venue": "British Journal of Sports Medicine",
+          "type": "review",
+          "doi": "10.1136/bjsports-2015-095424",
+          "url": "https://doi.org/10.1136/bjsports-2015-095424",
+          "openAccess": null,
+          "citedByCount": 900,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "EULAR recommendations for the non-pharmacological core management of hip and knee osteoarthritis",
+          "authors": [
+            "Linda Fernandes",
+            "Kåre Birger Hagen",
+            "J. W. J. Bijlsma",
+            "Øyvor Andreassen",
+            "P. Christensen",
+            "Philip G. Conaghan",
+            "et al."
+          ],
+          "year": 2013,
+          "venue": "Annals of the Rheumatic Diseases",
+          "type": "review",
+          "doi": "10.1136/annrheumdis-2012-202745",
+          "url": "https://doi.org/10.1136/annrheumdis-2012-202745",
+          "openAccess": null,
+          "citedByCount": 1371,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "American College of Rheumatology 2012 recommendations for the use of nonpharmacologic and pharmacologic therapies in osteoarthritis of the hand, hip, and knee",
+          "authors": [
+            "Marc C. Hochberg",
+            "Roy D. Altman",
+            "Karine Toupin‐April",
+            "Maria Benkhalti",
+            "Gordon Guyatt",
+            "Jessie McGowan",
+            "et al."
+          ],
+          "year": 2012,
+          "venue": "Arthritis Care & Research",
+          "type": "review",
+          "doi": "10.1002/acr.21596",
+          "url": "https://doi.org/10.1002/acr.21596",
+          "openAccess": null,
+          "citedByCount": 3080,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis",
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Strength training alone, exercise therapy alone, and exercise therapy with passive manual mobilisation each reduce pain and disability in people with knee osteoarthritis: a systematic review",
+          "authors": [
+            "M.J. Jansen",
+            "Wolfgang Viechtbauer",
+            "Antoine F. Lenssen",
+            "Erik Hendriks",
+            "Rob A. de Bie"
+          ],
+          "year": 2011,
+          "venue": "Journal of physiotherapy",
+          "type": "review",
+          "doi": "10.1016/s1836-9553(11)70002-9",
+          "url": "https://doi.org/10.1016/s1836-9553(11)70002-9",
+          "openAccess": null,
+          "citedByCount": 226,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "OARSI recommendations for the management of hip and knee osteoarthritis",
+          "authors": [
+            "Weiya Zhang",
+            "G. Nuki",
+            "Roland W. Moskowitz",
+            "Steven B. Abramson",
+            "Roy D. Altman",
+            "Nigel Arden",
+            "et al."
+          ],
+          "year": 2010,
+          "venue": "Osteoarthritis and Cartilage",
+          "type": "review",
+          "doi": "10.1016/j.joca.2010.01.013",
+          "url": "https://doi.org/10.1016/j.joca.2010.01.013",
+          "openAccess": null,
+          "citedByCount": 1654,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis",
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "OARSI recommendations for the management of hip and knee osteoarthritis, Part II: OARSI evidence-based, expert consensus guidelines",
+          "authors": [
+            "Weiya Zhang",
+            "Roland W. Moskowitz",
+            "G. Nuki",
+            "Steven B. Abramson",
+            "Roy D. Altman",
+            "Nigel Arden",
+            "et al."
+          ],
+          "year": 2008,
+          "venue": "Osteoarthritis and Cartilage",
+          "type": "review",
+          "doi": "10.1016/j.joca.2007.12.013",
+          "url": "https://doi.org/10.1016/j.joca.2007.12.013",
+          "openAccess": null,
+          "citedByCount": 2834,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis",
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Long‐Term effectiveness of exercise therapy in patients with osteoarthritis of the hip or knee: A systematic review",
+          "authors": [
+            "Martijn F. Pisters",
+            "Cindy Veenhof",
+            "N.L.U. van Meeteren",
+            "Raymond Ostelo",
+            "D.H. de Bakker",
+            "François Schellevis",
+            "et al."
+          ],
+          "year": 2007,
+          "venue": "Arthritis Care & Research",
+          "type": "review",
+          "doi": "10.1002/art.23009",
+          "url": "https://doi.org/10.1002/art.23009",
+          "openAccess": null,
+          "citedByCount": 258,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "EULAR Recommendations 2003: an evidence based approach to the management of knee osteoarthritis: Report of a Task Force of the Standing Committee for International Clinical Studies Including Therapeutic Trials (ESCISIT)",
+          "authors": [
+            "K M Jordan",
+            "N K Arden",
+            "M Doherty",
+            "B Bannwarth",
+            "J W J Bijlsma",
+            "P Dieppe",
+            "et al."
+          ],
+          "year": 2003,
+          "venue": "Annals of the Rheumatic Diseases",
+          "type": "review",
+          "doi": "10.1136/ard.2003.011742",
+          "url": "https://doi.org/10.1136/ard.2003.011742",
+          "openAccess": null,
+          "citedByCount": 2048,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "knee osteoarthritis"
+          ]
+        },
+        {
+          "title": "Effectiveness of exercise therapy in patients with osteoarthritis of the hip or knee: A systematic review of randomized clinical trials",
+          "authors": [
+            "Margriet E. van Baar",
+            "Willem JJ Assendelft",
+            "Joost Dekker",
+            "R.A.B. Oostendorp",
+            "J. W. J. Bijlsma"
+          ],
+          "year": 1999,
+          "venue": "Arthritis & Rheumatism",
+          "type": "review",
+          "doi": "10.1002/1529-0131(199907)42:7<1361::aid-anr9>3.0.co;2-9",
+          "url": "https://doi.org/10.1002/1529-0131(199907)42:7<1361::aid-anr9>3.0.co;2-9",
+          "openAccess": null,
+          "citedByCount": 439,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "exercise therapy — knee osteoarthritis"
+          ]
+        }
+      ]
+    },
+    {
+      "concernId": "recurrent-strain",
+      "label": "Recurrent strains & overuse",
+      "condition": "tendinopathy",
+      "queries": [
+        {
+          "query": "tendinopathy",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "tendinopathy",
+          "source": "openalex",
+          "returned": 10
+        }
+      ],
+      "evidenceCount": 20,
+      "evidence": [
+        {
+          "title": "Shockwave Therapy for Midportion and Insertional Achilles Tendinopathy: A Nail in the Coffin? A Systematic Review With Meta-Analysis",
+          "authors": [
+            "Korakakis V",
+            "Kotsifaki R",
+            "Sotiralis Y",
+            "Malliaras P"
+          ],
+          "year": 2026,
+          "venue": "The Journal of orthopaedic and sports physical therapy",
+          "type": "meta-analysis",
+          "doi": "10.2519/jospt.2026.13985",
+          "url": "https://doi.org/10.2519/jospt.2026.13985",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Efficacy of radiofrequency microdebridement (TOPAZ) in tendinopathy: a systematic review and meta-analysis of randomised clinical trials",
+          "authors": [
+            "Loh C",
+            "Polzer S",
+            "Millar N",
+            "Challoumas D"
+          ],
+          "year": 2026,
+          "venue": "Journal of orthopaedic surgery and research",
+          "type": "meta-analysis",
+          "doi": "10.1186/s13018-026-06827-y",
+          "url": "https://doi.org/10.1186/s13018-026-06827-y",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Efficacy of platelet-rich plasma as a conservative and surgical adjuvant treatment for chronic midportion Achilles tendinopathy: a systematic review and meta-analysis",
+          "authors": [
+            "He D",
+            "Chen Q",
+            "Zhou Y",
+            "Zheng C",
+            "Li F",
+            "Peng Y"
+          ],
+          "year": 2026,
+          "venue": "The Physician and sportsmedicine",
+          "type": "meta-analysis",
+          "doi": "10.1080/00913847.2026.2634611",
+          "url": "https://doi.org/10.1080/00913847.2026.2634611",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Efficacy of radial and focused shockwave therapy for tendinopathy: a systematic review and meta-analysis",
+          "authors": [
+            "Stania M",
+            "Pawłowski M",
+            "Benduch M",
+            "Dudon A",
+            "Hirjaková Z",
+            "Bzdúšková D",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "Scientific reports",
+          "type": "meta-analysis",
+          "doi": "10.1038/s41598-026-37160-3",
+          "url": "https://doi.org/10.1038/s41598-026-37160-3",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Fat pad debridement prolongs return-to-sport: A meta-analysis and meta-regression of surgical interventions for chronic patellar tendinopathy",
+          "authors": [
+            "Jolly A",
+            "Baumert P",
+            "Franco P",
+            "Arora G",
+            "Fink C"
+          ],
+          "year": 2026,
+          "venue": "Knee surgery, sports traumatology, arthroscopy : official journal of the ESSKA",
+          "type": "meta-analysis",
+          "doi": "10.1002/ksa.70284",
+          "url": "https://doi.org/10.1002/ksa.70284",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Extracorporeal shockwave therapy versus sham extracorporeal shockwave therapy for chronic Achilles tendinopathy: a meta-analysis of randomized controlled trials",
+          "authors": [
+            "Ni T",
+            "Zhao Y",
+            "Pang L",
+            "Fu W"
+          ],
+          "year": 2026,
+          "venue": "PeerJ",
+          "type": "meta-analysis",
+          "doi": "10.7717/peerj.20506",
+          "url": "https://doi.org/10.7717/peerj.20506",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "The effect of different non-drug therapies on Achilles tendinopathy: a systematic review and network meta-analysis",
+          "authors": [
+            "Yan S",
+            "Li W",
+            "Ding M",
+            "Jia N",
+            "Mao S"
+          ],
+          "year": 2026,
+          "venue": "EFORT open reviews",
+          "type": "systematic-review",
+          "doi": null,
+          "url": "https://europepmc.org/article/PMC/PMC13238968",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Effects of percutaneous platelet-rich plasma injection on return-to-play after acute hamstring muscle injury: a systematic review and meta-analysis",
+          "authors": [
+            "Nakagawa H",
+            "Krochmal P",
+            "Thomas I",
+            "Rabinowitz JB",
+            "Kruse RC",
+            "Bowers R",
+            "et al."
+          ],
+          "year": 2026,
+          "venue": "British journal of sports medicine",
+          "type": "meta-analysis",
+          "doi": "10.1136/bjsports-2025-110683",
+          "url": "https://doi.org/10.1136/bjsports-2025-110683",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Lived Experiences of People With Lower Limb Tendinopathy-A Systematic Review With Qualitative Evidence Synthesis",
+          "authors": [
+            "Hopes M",
+            "Stubbs P",
+            "Grimaldi A",
+            "Nasser A"
+          ],
+          "year": 2026,
+          "venue": "The Journal of orthopaedic and sports physical therapy",
+          "type": "systematic-review",
+          "doi": "10.2519/jospt.2026.13666",
+          "url": "https://doi.org/10.2519/jospt.2026.13666",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Differences in Psychological Factors Between People With Persistent Tendinopathy and Those Without Tendinopathy: A Systematic Review With Meta-Analysis",
+          "authors": [
+            "Mest J",
+            "Flood A",
+            "Toufexis C",
+            "Waddington G",
+            "Malliaras P",
+            "Fearon AM"
+          ],
+          "year": 2025,
+          "venue": "The Journal of orthopaedic and sports physical therapy",
+          "type": "meta-analysis",
+          "doi": "10.2519/jospt.2025.13307",
+          "url": "https://doi.org/10.2519/jospt.2025.13307",
+          "openAccess": false,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Tendinopathy",
+          "authors": [
+            "Neal L. Millar",
+            "Karin Grävare Silbernagel",
+            "Kristian Thorborg",
+            "Paul Kirwan",
+            "Leesa M. Galatz",
+            "Geoffrey D. Abrams",
+            "et al."
+          ],
+          "year": 2021,
+          "venue": "Nature Reviews Disease Primers",
+          "type": "review",
+          "doi": "10.1038/s41572-020-00234-1",
+          "url": "https://doi.org/10.1038/s41572-020-00234-1",
+          "openAccess": null,
+          "citedByCount": 776,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Current trends in tendinopathy management",
+          "authors": [
+            "Tanusha Cardoso",
+            "Tania Pizzari",
+            "Rita Kinsella",
+            "Danielle Hope",
+            "Jill Cook"
+          ],
+          "year": 2019,
+          "venue": "Best Practice & Research Clinical Rheumatology",
+          "type": "review",
+          "doi": "10.1016/j.berh.2019.02.001",
+          "url": "https://doi.org/10.1016/j.berh.2019.02.001",
+          "openAccess": null,
+          "citedByCount": 161,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Patellar Tendinopathy: Clinical Diagnosis, Load Management, and Advice for Challenging Case Presentations",
+          "authors": [
+            "Peter Malliaras",
+            "Jill Cook",
+            "Craig Purdam",
+            "Ebonie Rio"
+          ],
+          "year": 2015,
+          "venue": "Journal of Orthopaedic and Sports Physical Therapy",
+          "type": "review",
+          "doi": "10.2519/jospt.2015.5987",
+          "url": "https://doi.org/10.2519/jospt.2015.5987",
+          "openAccess": null,
+          "citedByCount": 327,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Efficacy and safety of corticosteroid injections and other injections for management of tendinopathy: a systematic review of randomised controlled trials",
+          "authors": [
+            "Brooke K. Coombes",
+            "Leanne Bisset",
+            "Bill Vicenzino"
+          ],
+          "year": 2010,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(10)61160-9",
+          "url": "https://doi.org/10.1016/s0140-6736(10)61160-9",
+          "openAccess": null,
+          "citedByCount": 843,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Long Head of the Biceps Tendinopathy: Diagnosis and Management",
+          "authors": [
+            "Shane J. Nho",
+            "Eric J. Strauss",
+            "Brett A. Lenart",
+            "Matthew T. Provencher",
+            "Augustus D. Mazzocca",
+            "Nikhil N. Verma",
+            "et al."
+          ],
+          "year": 2010,
+          "venue": "Journal of the American Academy of Orthopaedic Surgeons",
+          "type": "review",
+          "doi": "10.5435/00124635-201011000-00002",
+          "url": "https://doi.org/10.5435/00124635-201011000-00002",
+          "openAccess": null,
+          "citedByCount": 272,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Insertional Achilles Tendinopathy Management: A Systematic Review",
+          "authors": [
+            "Rebecca Kearney",
+            "Matthew L. Costa"
+          ],
+          "year": 2010,
+          "venue": "Foot & Ankle International",
+          "type": "review",
+          "doi": "10.3113/fai.2010.0689",
+          "url": "https://doi.org/10.3113/fai.2010.0689",
+          "openAccess": null,
+          "citedByCount": 121,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Tendon Injury and Tendinopathy",
+          "authors": [
+            "Pankaj Sharma",
+            "Nicola Maffulli"
+          ],
+          "year": 2005,
+          "venue": "Journal of Bone and Joint Surgery",
+          "type": "review",
+          "doi": "10.2106/jbjs.d.01850",
+          "url": "https://doi.org/10.2106/jbjs.d.01850",
+          "openAccess": null,
+          "citedByCount": 1064,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Achilles Tendinopathy: Aetiology and Management",
+          "authors": [
+            "Nicola Maffulli",
+            "Pankaj Sharma",
+            "Karen L Luscombe"
+          ],
+          "year": 2004,
+          "venue": "Journal of the Royal Society of Medicine",
+          "type": "review",
+          "doi": "10.1177/0141076809701004",
+          "url": "https://doi.org/10.1177/0141076809701004",
+          "openAccess": null,
+          "citedByCount": 297,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Achilles tendinopathy: some aspects of basic science and clinical management",
+          "authors": [
+            "Deiary F. Kader",
+            "Amol Saxena",
+            "Tomas Movin",
+            "Nicola Maffulli"
+          ],
+          "year": 2002,
+          "venue": "British Journal of Sports Medicine",
+          "type": "review",
+          "doi": "10.1136/bjsm.36.4.239",
+          "url": "https://doi.org/10.1136/bjsm.36.4.239",
+          "openAccess": null,
+          "citedByCount": 379,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        },
+        {
+          "title": "Patellar tendinopathy: some aspects of basic science and clinical management",
+          "authors": [
+            "K M Khan",
+            "Nicola Maffulli",
+            "Brett D. Coleman",
+            "Jill Cook",
+            "Jack Taunton"
+          ],
+          "year": 1998,
+          "venue": "British Journal of Sports Medicine",
+          "type": "review",
+          "doi": "10.1136/bjsm.32.4.346",
+          "url": "https://doi.org/10.1136/bjsm.32.4.346",
+          "openAccess": null,
+          "citedByCount": 516,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "tendinopathy"
+          ]
+        }
+      ]
+    },
+    {
+      "concernId": "desk-posture",
+      "label": "Desk & posture tension",
+      "condition": "work-related neck pain",
+      "queries": [
+        {
+          "query": "work-related neck pain",
+          "source": "europepmc",
+          "returned": 10
+        },
+        {
+          "query": "work-related neck pain",
+          "source": "openalex",
+          "returned": 10
+        }
+      ],
+      "evidenceCount": 20,
+      "evidence": [
+        {
+          "title": "Could work-related muscle activity explain sex differences in neck pain? A meta-analysis of a pooled dataset",
+          "authors": [
+            "Koch M",
+            "Lunde LK",
+            "Forsman M",
+            "Andersen LL",
+            "Jakobsen MD",
+            "Brandt M",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Scandinavian journal of work, environment & health",
+          "type": "meta-analysis",
+          "doi": "10.5271/sjweh.4227",
+          "url": "https://doi.org/10.5271/sjweh.4227",
+          "openAccess": true,
+          "citedByCount": 1,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "The Effectiveness of Mulligan's Techniques in Non-Specific Neck Pain: A Systematic Review and Meta-Analysis",
+          "authors": [
+            "Barbosa-Silva J",
+            "Luc A",
+            "Sobral de Oliveira-Souza AI",
+            "Martins de Abreu R",
+            "Cipriano J",
+            "de Schaetzen M",
+            "et al."
+          ],
+          "year": 2025,
+          "venue": "Physiotherapy research international : the journal for researchers and clinicians in physical therapy",
+          "type": "meta-analysis",
+          "doi": "10.1002/pri.70045",
+          "url": "https://doi.org/10.1002/pri.70045",
+          "openAccess": true,
+          "citedByCount": 0,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Work-related musculoskeletal disorders among various occupational workers in India: a systematic review and meta-analysis",
+          "authors": [
+            "Mishra S",
+            "Avinash G",
+            "Kundu MG",
+            "Verma J",
+            "Sheth A",
+            "Dutta A"
+          ],
+          "year": 2024,
+          "venue": "Journal of occupational health",
+          "type": "meta-analysis",
+          "doi": "10.1093/joccuh/uiae077",
+          "url": "https://doi.org/10.1093/joccuh/uiae077",
+          "openAccess": true,
+          "citedByCount": 9,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "The effects of exercise on neuromuscular function in people with chronic neck pain: A systematic review and meta-analysis",
+          "authors": [
+            "Dirito AM",
+            "Abichandani D",
+            "Jadhakhan F",
+            "Falla D"
+          ],
+          "year": 2024,
+          "venue": "PloS one",
+          "type": "meta-analysis",
+          "doi": "10.1371/journal.pone.0315817",
+          "url": "https://doi.org/10.1371/journal.pone.0315817",
+          "openAccess": true,
+          "citedByCount": 5,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "The association between psychosocial factors and mental health symptoms in cervical spine pain with or without radiculopathy on health outcomes: a systematic review",
+          "authors": [
+            "Mansfield M",
+            "Thacker M",
+            "Taylor JL",
+            "Bannister K",
+            "Spahr N",
+            "Jong ST",
+            "et al."
+          ],
+          "year": 2023,
+          "venue": "BMC musculoskeletal disorders",
+          "type": "systematic-review",
+          "doi": "10.1186/s12891-023-06343-8",
+          "url": "https://doi.org/10.1186/s12891-023-06343-8",
+          "openAccess": true,
+          "citedByCount": 9,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Physical exercise improved muscle strength and pain on neck and shoulder in military pilots",
+          "authors": [
+            "Heng W",
+            "Wei F",
+            "Liu Z",
+            "Yan X",
+            "Zhu K",
+            "Yang F",
+            "et al."
+          ],
+          "year": 2022,
+          "venue": "Frontiers in physiology",
+          "type": "systematic-review",
+          "doi": "10.3389/fphys.2022.973304",
+          "url": "https://doi.org/10.3389/fphys.2022.973304",
+          "openAccess": true,
+          "citedByCount": 9,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Attention to Progression Principles and Variables of Exercise Prescription in Workplace-Related Resistance Training Interventions: A Systematic Review of Controlled Trials",
+          "authors": [
+            "Stassen G",
+            "Baulig L",
+            "Müller O",
+            "Schaller A"
+          ],
+          "year": 2022,
+          "venue": "Frontiers in public health",
+          "type": "systematic-review",
+          "doi": "10.3389/fpubh.2022.832523",
+          "url": "https://doi.org/10.3389/fpubh.2022.832523",
+          "openAccess": true,
+          "citedByCount": 2,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Head and neck squamous cell carcinoma",
+          "authors": [
+            "Daniel E. Johnson",
+            "Barbara Burtness",
+            "C. René Leemans",
+            "Vivian Wai Yan Lui",
+            "Julie E. Bauman",
+            "Jennifer R. Grandis"
+          ],
+          "year": 2020,
+          "venue": "Nature Reviews Disease Primers",
+          "type": "review",
+          "doi": "10.1038/s41572-020-00224-3",
+          "url": "https://doi.org/10.1038/s41572-020-00224-3",
+          "openAccess": null,
+          "citedByCount": 4001,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "What low back pain is and why we need to pay attention",
+          "authors": [
+            "Jan Hartvigsen",
+            "Mark J. Hancock",
+            "Alice Kongsted",
+            "Quinette Louw",
+            "Manuela L. Ferreira",
+            "Stéphane Genevay",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(18)30480-x",
+          "url": "https://doi.org/10.1016/s0140-6736(18)30480-x",
+          "openAccess": null,
+          "citedByCount": 4526,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Chronic pain as a symptom or a disease: the IASP Classification of Chronic Pain for the International Classification of Diseases (ICD-11)",
+          "authors": [
+            "Rolf‐Detlef Treede",
+            "Winfried Rief",
+            "Antonia Barke",
+            "Qasim Aziz",
+            "Mike Bennett",
+            "Rafael Benoliel",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "Pain",
+          "type": "review",
+          "doi": "10.1097/j.pain.0000000000001384",
+          "url": "https://doi.org/10.1097/j.pain.0000000000001384",
+          "openAccess": null,
+          "citedByCount": 3234,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Prevention and treatment of low back pain: evidence, challenges, and promising directions",
+          "authors": [
+            "Nadine E. Foster",
+            "Johannes R. Anema",
+            "Dan Cherkin",
+            "Roger Chou",
+            "Steven P. Cohen",
+            "Douglas P. Gross",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "The Lancet",
+          "type": "review",
+          "doi": "10.1016/s0140-6736(18)30489-6",
+          "url": "https://doi.org/10.1016/s0140-6736(18)30489-6",
+          "openAccess": null,
+          "citedByCount": 2402,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Prevalence of Work-Related Musculoskeletal Disorders Among Surgeons and Interventionalists: A Systematic Review and Meta-analysis",
+          "authors": [
+            "Epstein S",
+            "Sparer EH",
+            "Tran BN",
+            "Ruan QZ",
+            "Dennerlein JT",
+            "Singhal D",
+            "et al."
+          ],
+          "year": 2018,
+          "venue": "JAMA surgery",
+          "type": "meta-analysis",
+          "doi": "10.1001/jamasurg.2017.4947",
+          "url": "https://doi.org/10.1001/jamasurg.2017.4947",
+          "openAccess": false,
+          "citedByCount": 319,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Neuropathic pain",
+          "authors": [
+            "Luana Colloca",
+            "Taylor Ludman",
+            "Didier Bouhassira",
+            "Ralf Baron",
+            "Anthony H. Dickenson",
+            "David Yarnitsky",
+            "et al."
+          ],
+          "year": 2017,
+          "venue": "Nature Reviews Disease Primers",
+          "type": "review",
+          "doi": "10.1038/nrdp.2017.2",
+          "url": "https://doi.org/10.1038/nrdp.2017.2",
+          "openAccess": null,
+          "citedByCount": 2000,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Physical risk factors for developing non-specific neck pain in office workers: a systematic review and meta-analysis",
+          "authors": [
+            "Jun D",
+            "Zoe M",
+            "Johnston V",
+            "O'Leary S"
+          ],
+          "year": 2017,
+          "venue": "International archives of occupational and environmental health",
+          "type": "meta-analysis",
+          "doi": "10.1007/s00420-017-1205-3",
+          "url": "https://doi.org/10.1007/s00420-017-1205-3",
+          "openAccess": false,
+          "citedByCount": 112,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "2015 American Thyroid Association Management Guidelines for Adult Patients with Thyroid Nodules and Differentiated Thyroid Cancer: The American Thyroid Association Guidelines Task Force on Thyroid Nodules and Differentiated Thyroid Cancer",
+          "authors": [
+            "Bryan R. Haugen",
+            "Erik K. Alexander",
+            "Keith C. Bible",
+            "Gerard M. Doherty",
+            "Susan J. Mandel",
+            "Yuri E. Nikiforov",
+            "et al."
+          ],
+          "year": 2015,
+          "venue": "Thyroid",
+          "type": "review",
+          "doi": "10.1089/thy.2015.0020",
+          "url": "https://doi.org/10.1089/thy.2015.0020",
+          "openAccess": null,
+          "citedByCount": 16359,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Conservative interventions for treating work-related complaints of the arm, neck or shoulder in adults",
+          "authors": [
+            "Verhagen AP",
+            "Bierma-Zeinstra SM",
+            "Burdorf A",
+            "Stynes SM",
+            "de Vet HC",
+            "Koes BW"
+          ],
+          "year": 2013,
+          "venue": "The Cochrane database of systematic reviews",
+          "type": "meta-analysis",
+          "doi": "10.1002/14651858.cd008742.pub2",
+          "url": "https://doi.org/10.1002/14651858.cd008742.pub2",
+          "openAccess": false,
+          "citedByCount": 41,
+          "sources": [
+            "europepmc"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Psychological therapies for the management of chronic pain (excluding headache) in adults",
+          "authors": [
+            "Amanda C de C Williams",
+            "Christopher Eccleston",
+            "Stephen Morley"
+          ],
+          "year": 2012,
+          "venue": "Cochrane Database of Systematic Reviews",
+          "type": "review",
+          "doi": "10.1002/14651858.cd007407.pub3",
+          "url": "https://doi.org/10.1002/14651858.cd007407.pub3",
+          "openAccess": null,
+          "citedByCount": 1501,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Depression and Pain Comorbidity",
+          "authors": [
+            "Matthew J. Bair",
+            "R.L. Robinson",
+            "Wayne Katon",
+            "Kurt Kroenke"
+          ],
+          "year": 2003,
+          "venue": "Archives of Internal Medicine",
+          "type": "review",
+          "doi": "10.1001/archinte.163.20.2433",
+          "url": "https://doi.org/10.1001/archinte.163.20.2433",
+          "openAccess": null,
+          "citedByCount": 3412,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "Chronic Pain as an Outcome of Surgery",
+          "authors": [
+            "Frederick M. Perkins",
+            "Henrik Kehlet"
+          ],
+          "year": 2000,
+          "venue": "Anesthesiology",
+          "type": "review",
+          "doi": "10.1097/00000542-200010000-00038",
+          "url": "https://doi.org/10.1097/00000542-200010000-00038",
+          "openAccess": null,
+          "citedByCount": 1338,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        },
+        {
+          "title": "A conceptual model for work-related neck and upper-limb musculoskeletal disorders",
+          "authors": [
+            "Thomas J. Armstrong",
+            "Peter Buckle",
+            "Lawrence J. Fine",
+            "Mats Hagberg",
+            "Bengt Gunnar Jonsson",
+            "Åsa Kilbom",
+            "et al."
+          ],
+          "year": 1993,
+          "venue": "Scandinavian Journal of Work Environment & Health",
+          "type": "review",
+          "doi": "10.5271/sjweh.1494",
+          "url": "https://doi.org/10.5271/sjweh.1494",
+          "openAccess": null,
+          "citedByCount": 727,
+          "sources": [
+            "openalex"
+          ],
+          "matchedQueries": [
+            "work-related neck pain"
+          ]
+        }
+      ]
+    }
+  ]
+}

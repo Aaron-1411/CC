@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-06-13T09:25:45.655Z",
+  "sources": [
+    "Europe PMC REST",
+    "OpenAlex"
+  ],
+  "perQuery": 10,
+  "packs": [
+    {
+      "pack": "integrative",
+      "file": "research/evidence/integrative.json",
+      "concerns": 8,
+      "studies": 352
+    },
+    {
+      "pack": "musculoskeletal",
+      "file": "research/evidence/musculoskeletal.json",
+      "concerns": 5,
+      "studies": 177
+    }
+  ]
+}

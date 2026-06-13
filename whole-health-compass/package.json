@@ -12,6 +12,7 @@
     "lint:content": "node scripts/lint-content.mjs",
     "guard:no-llm": "node scripts/guard-no-llm.mjs",
     "compliance": "npm run lint:content && npm run guard:no-llm",
+    "harvest:evidence": "node scripts/harvest-evidence.mjs",
     "pages:dev": "vite build && wrangler pages dev"
   },
   "dependencies": {
