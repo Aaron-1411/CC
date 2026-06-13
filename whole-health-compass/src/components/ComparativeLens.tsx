@@ -1,4 +1,5 @@
-import { Stethoscope, UserRound, ArrowRight, Clock, Scale, Handshake, Network, Route, BookOpen, Library } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Stethoscope, UserRound, ArrowRight, Clock, Scale, Handshake, Network, Route, BookOpen, Library, ShieldCheck } from "lucide-react";
 import type { Concern, TraditionMeta } from "@/data/types";
 import { traditions, LENS_SECTIONS, CLOSING_LINE } from "@/data/concerns";
 import { Card, type TabItem, Tabs } from "@/components/ui";
@@ -176,6 +177,17 @@ export function ComparativeLens({ concern, patientWords }: { concern: Concern; p
           the NHS, NICE and the US National Center for Complementary and Integrative Health (NCCIH), professional bodies,
           and each tradition's own descriptions — to explain how each tradition thinks, not whether an approach works.
         </span>
+      </p>
+
+      <p className="mt-3 border-t border-border/60 pt-3">
+        <Link
+          to="/compliance#registers"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-primary underline-offset-4 hover:underline"
+        >
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+          How to check a practitioner is registered
+          <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+        </Link>
       </p>
     </div>
   );

@@ -8,6 +8,7 @@ import { clinicConfig } from "@/config/clinic";
 import { CONSENT_VERSION, CONTACT_CONSENT, SUMMARY_CONSENT, fillConsent } from "@/config/consent";
 import { Eyebrow, Card, Pill, buttonClasses } from "@/components/ui";
 import { ContentGovernanceCard } from "@/components/ContentGovernance";
+import { RegistersExplainer } from "@/components/RegistersExplainer";
 import { trackOnce } from "@/lib/analytics";
 
 const DOES = [
@@ -156,6 +157,13 @@ export function Compliance() {
             </Card>
           ))}
         </div>
+      </section>
+
+      {/* How to check a practitioner is registered — the patient-facing literacy
+          behind "qualified, registered practitioner". Pack-aware; linked to from
+          the comparative lens via #registers. */}
+      <section className="container scroll-mt-24 py-10" id="registers">
+        <RegistersExplainer />
       </section>
 
       {/* Data handling */}

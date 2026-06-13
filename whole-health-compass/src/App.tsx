@@ -15,10 +15,21 @@ import { Learn } from "@/pages/Learn";
 import { LearnIssue } from "@/pages/LearnIssue";
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
+    // Hash-aware: an in-page anchor link (e.g. /compliance#registers from the
+    // comparative lens) should land on that section, not the page top. The
+    // target's scroll-mt-* clears the sticky header. Falls back to top-of-page
+    // for ordinary route changes.
+    if (hash) {
+      const el = document.getElementById(hash.slice(1));
+      if (el) {
+        el.scrollIntoView({ behavior: "instant" as ScrollBehavior, block: "start" });
+        return;
+      }
+    }
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [pathname]);
+  }, [pathname, hash]);
   return null;
 }
 
