@@ -17,6 +17,9 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
   const [errors, setErrors] = useState<Errors>({});
   const [agreed, setAgreed] = useState(false);
   const [wantsSummary, setWantsSummary] = useState(Boolean(summaryData));
+  // What the backend actually did with the enquiry — null until we know, so the
+  // success copy can be honest about whether the clinic really received it.
+  const [delivered, setDelivered] = useState<{ stored: boolean; emailed: boolean } | null>(null);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +27,9 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
     const fd = new FormData(form);
 
     // Honeypot — if a bot fills the hidden field, pretend success and send nothing.
+    // Mark it "delivered" so the state is indistinguishable from a real success.
     if ((fd.get("company") as string)?.length) {
+      setDelivered({ stored: true, emailed: false });
       setStatus("success");
       return;
     }
@@ -57,7 +62,7 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
       consent: true,
       consentVersion: CONSENT_VERSION,
       consentText,
-      source: "Whole Health Compass",
+      source: clinicConfig.name,
       submittedAt: new Date().toISOString(),
     };
 
@@ -74,15 +79,32 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
         body: JSON.stringify(payload),
       });
       if (res.ok) {
+        // Tailor the success copy to what the backend actually did, so we never
+        // imply a capability that isn't live. Our own backend reports
+        // { stored, emailed }; a BYO endpoint owns its contract, so ok = accepted.
+        let flags = { stored: false, emailed: false };
+        if (clinicConfig.formEndpoint) {
+          flags = { stored: true, emailed: false };
+        } else {
+          try {
+            const data = (await res.json()) as { stored?: boolean; emailed?: boolean };
+            flags = { stored: data?.stored === true, emailed: data?.emailed === true };
+          } catch {
+            flags = { stored: false, emailed: false }; // ok but unreadable — don't claim delivery
+          }
+        }
+        setDelivered(flags);
         setStatus("success");
-        track("lead_success", { concernId: payload.concernId || undefined });
+        track("lead_success", { concernId: payload.concernId || undefined, meta: flags });
         return;
       }
-      // A non-ok from our OWN backend (e.g. a transient error or rate-limit, or
-      // local dev with no Functions) shouldn't punish the visitor — we show the
-      // honest success state. A custom BYO endpoint failing is meaningful, so
-      // surface it.
+      // A non-ok from our OWN backend (transient error, rate-limit, or local dev
+      // with no Functions) shouldn't punish the visitor — we still show a success
+      // card, but leave delivery UNconfirmed so the copy routes them to the clinic
+      // directly instead of promising it was received. A BYO endpoint failing is
+      // meaningful, so surface it as an error.
       if (!clinicConfig.formEndpoint) {
+        setDelivered(null);
         setStatus("success");
         track("lead_success", { concernId: payload.concernId || undefined, meta: { degraded: true } });
       } else {
@@ -90,6 +112,7 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
       }
     } catch {
       if (!clinicConfig.formEndpoint) {
+        setDelivered(null);
         setStatus("success");
         track("lead_success", { concernId: payload.concernId || undefined, meta: { offline: true } });
       } else {
@@ -99,16 +122,56 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
   };
 
   if (status === "success") {
+    // "Confirmed" only when the backend actually did something durable with the
+    // enquiry (persisted it, or emailed the clinic). Otherwise we route the
+    // visitor to the clinic directly rather than imply it was received.
+    const confirmed = !!delivered && (delivered.stored || delivered.emailed);
+    const summaryShared = confirmed && wantsSummary && Boolean(summaryData);
     return (
       <Card id={id} className="p-6 text-center sm:p-8">
-        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-success/12 text-success">
-          <CheckCircle2 className="h-6 w-6" />
+        <span
+          className={
+            confirmed
+              ? "mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-success/12 text-success"
+              : "mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"
+          }
+        >
+          {confirmed ? <CheckCircle2 className="h-6 w-6" /> : <Mail className="h-6 w-6" />}
         </span>
-        <h3 className="font-serif text-2xl">Thank you — that's been received</h3>
-        <p className="measure mx-auto mt-2 text-muted-foreground">
-          {clinicConfig.name} will be in touch. {wantsSummary && summaryData ? "A copy of your summary is on its way too. " : ""}
-          If anything feels urgent in the meantime, contact your GP or call NHS 111.
-        </p>
+        {confirmed ? (
+          <>
+            <h3 className="font-serif text-2xl">Thank you — that's been received</h3>
+            <p className="measure mx-auto mt-2 text-muted-foreground">
+              {clinicConfig.name} will be in touch.{summaryShared ? " Your summary has been shared with them, too." : ""}{" "}
+              If anything feels urgent in the meantime, contact your GP or call NHS 111.
+            </p>
+          </>
+        ) : (
+          <>
+            <h3 className="font-serif text-2xl">Thank you</h3>
+            <p className="measure mx-auto mt-2 text-muted-foreground">
+              So {clinicConfig.name} can help, please reach them directly at{" "}
+              <a
+                className="font-medium text-primary underline underline-offset-4"
+                href={`mailto:${clinicConfig.contactEmail}`}
+              >
+                {clinicConfig.contactEmail}
+              </a>
+              {clinicConfig.contactPhone ? (
+                <>
+                  {" "}or{" "}
+                  <a
+                    className="font-medium text-primary underline underline-offset-4"
+                    href={`tel:${clinicConfig.contactPhone}`}
+                  >
+                    {clinicConfig.contactPhone}
+                  </a>
+                </>
+              ) : null}
+              . If anything feels urgent, contact your GP or call NHS 111.
+            </p>
+          </>
+        )}
         {clinicConfig.bookingUrl && clinicConfig.bookingUrl !== "#contact" && (
           <a href={clinicConfig.bookingUrl} className="mt-5 inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline">
             Or book a consultation now →

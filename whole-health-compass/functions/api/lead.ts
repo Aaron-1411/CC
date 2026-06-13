@@ -5,9 +5,11 @@
 //   • Persists the lead + an append-only consent audit row when D1 is bound.
 //   • Emails the clinic via Resend when RESEND_API_KEY/LEAD_FROM/LEAD_NOTIFY_TO
 //     are set. Email failure never fails the request (the lead is already saved).
-//   • With nothing configured, still returns ok so the UI shows its success
-//     state; the client also keeps a local mirror so no enquiry is ever lost
-//     before the operator finishes activation (see ACTIVATION.md).
+//   • The response reports what actually happened — { ok, stored, emailed } — so
+//     the client can be honest. With nothing configured it returns
+//     { ok: true, stored: false, emailed: false }; the form then routes the
+//     visitor to the clinic's own contact details rather than imply it was
+//     received. Health data is never mirrored in the browser (see ACTIVATION.md).
 
 import {
   type Env,

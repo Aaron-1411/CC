@@ -5,9 +5,9 @@ capability is off by default and the app degrades gracefully:
 
 | Capability | Off (default) behaviour | Turns on when… |
 | --- | --- | --- |
-| Lead capture persistence + clinic dashboard | Enquiries are kept in the visitor's browser (`localStorage`) and shown in the dashboard's "local" mode | a **D1** database is bound as `DB` |
+| Lead capture persistence | Enquiries are validated and emailed to the clinic (if email is on) but **not stored centrally**; nothing is ever mirrored in the visitor's browser. If durable receipt can't be confirmed, the form routes the visitor to the clinic's direct contact details | a **D1** database is bound as `DB` |
 | Lead notification emails | `/api/lead` accepts the enquiry, just doesn't email | `RESEND_API_KEY` + `LEAD_FROM` + `LEAD_NOTIFY_TO` are set |
-| Clinic dashboard auth | `/api/admin/*` returns `503 not configured`; dashboard shows the local mirror | `ADMIN_TOKEN` is set |
+| Clinic dashboard auth | `/api/admin/*` returns `503 not configured` and the dashboard **fails closed** — `/clinic` stays locked with a "not switched on yet" message (it never reads health data from the browser) | `ADMIN_TOKEN` is set |
 | Funnel analytics | `/api/event` accepts beacons, doesn't store them | a **D1** database is bound as `DB` |
 
 So CI stays green from the first push and there is **nothing to break**. The steps
@@ -39,8 +39,8 @@ database_name = "whole-health-compass"
 database_id = "PASTE_THE_ID_HERE"
 ```
 
-Commit + push — the next deploy picks up the binding. The dashboard switches from
-"locally-captured enquiries" to live, server-side storage and a real funnel.
+Commit + push — the next deploy picks up the binding. Enquiries are then persisted
+server-side and the dashboard shows live storage and a real funnel.
 
 (Schema is also idempotently ensured at runtime via `ensureSchema()`, so a fresh
 D1 with no tables still works — the `execute` step just makes that explicit.)
@@ -75,7 +75,8 @@ Add one more GitHub Actions secret:
 | `WHC_ADMIN_TOKEN` | the token clinics paste at `/clinic` to view enquiries + funnel |
 
 Pick a long random value, e.g. `openssl rand -hex 32`. Share it with the clinic.
-Until it's set, `/clinic` still works but shows the in-browser local mirror only.
+Until it's set, `/clinic` can't be unlocked — the dashboard fails closed and shows
+a "not switched on yet" message (it never reads enquiries from the browser).
 
 ---
 
