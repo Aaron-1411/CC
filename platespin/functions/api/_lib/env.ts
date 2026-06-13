@@ -4,7 +4,6 @@
 
 export interface Env {
   DB: D1Database;
-  MEDIA: R2Bucket;
   /** Public origin, e.g. https://platespin-app.pages.dev — for OAuth redirects. */
   SITE_ORIGIN?: string;
   /** "1" enables the no-OAuth email-only dev login. NEVER set in production. */

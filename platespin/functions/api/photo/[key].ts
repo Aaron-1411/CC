@@ -1,14 +1,22 @@
-// GET /api/photo/:key — stream a food photo back out of R2 (immutable, long cache).
+// GET /api/photo/:key — serve a food photo back out of D1 (immutable, long
+// cache). Stored as base64 TEXT; decode to bytes and stream with its content-type.
 import type { Env } from "../_lib/env";
+
+interface PhotoRow {
+  content_type: string;
+  data: string;
+}
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {
   const key = String(params.key);
-  const obj = await env.MEDIA.get(key);
-  if (!obj) return new Response("Not found", { status: 404 });
+  const row = await env.DB.prepare("SELECT content_type, data FROM photos WHERE key = ?")
+    .bind(key)
+    .first<PhotoRow>();
+  if (!row) return new Response("Not found", { status: 404 });
 
+  const bytes = Uint8Array.from(atob(row.data), (c) => c.charCodeAt(0));
   const headers = new Headers();
-  obj.writeHttpMetadata(headers);
-  headers.set("etag", obj.httpEtag);
+  headers.set("content-type", row.content_type || "application/octet-stream");
   headers.set("cache-control", "public, max-age=31536000, immutable");
-  return new Response(obj.body, { headers });
+  return new Response(bytes, { headers });
 };

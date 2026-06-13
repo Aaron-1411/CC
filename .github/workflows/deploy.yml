@@ -342,10 +342,11 @@ jobs:
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H "Content-Type: application/json" \
             -d '{"name":"platespin-app","production_branch":"main"}' || true
-      # ── v2 needs durable state. Provision D1 + R2 with the same token CI ──
-      # already uses for Pages. Runs BEFORE build/deploy so any permission gap
-      # fails here and the last good v1 deployment stays live (non-destructive).
-      - name: Provision D1 + R2 and wire bindings
+      # ── v2 needs durable state. Provision D1 with the same token CI already ──
+      # uses for Pages (photos live in D1 as base64 — no R2, so no card / no
+      # service to enable). Runs BEFORE build/deploy so any permission gap fails
+      # here and the last good v1 deployment stays live (non-destructive).
+      - name: Provision D1 and wire binding
         run: |
           set -euo pipefail
           API="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
@@ -365,20 +366,6 @@ jobs:
             DB_ID=$(echo "$D1_NEW" | jq -r '.result.uuid')
           fi
           echo "D1 database id: ${DB_ID}"
-
-          # R2: find-or-create the "platespin-media" bucket
-          R2_LIST=$(curl -s -H "$AUTH" "${API}/r2/buckets")
-          echo "$R2_LIST" | jq -e '.success == true' >/dev/null \
-            || { echo "::error::CF API token lacks R2 read scope"; echo "$R2_LIST"; exit 1; }
-          HAVE_R2=$(echo "$R2_LIST" | jq -r '.result.buckets[]? | select(.name=="platespin-media") | .name')
-          if [ "$HAVE_R2" != "platespin-media" ]; then
-            echo "Creating R2 bucket platespin-media…"
-            R2_NEW=$(curl -s -X POST -H "$AUTH" -H "Content-Type: application/json" \
-              -d '{"name":"platespin-media"}' "${API}/r2/buckets")
-            echo "$R2_NEW" | jq -e '.success == true' >/dev/null \
-              || { echo "::error::Failed to create R2 bucket (token lacks R2:Edit?)"; echo "$R2_NEW"; exit 1; }
-          fi
-          echo "R2 bucket ready: platespin-media"
 
           # Inject the live D1 id into wrangler.toml so pages deploy binds it
           sed -i "s|REPLACE_WITH_PROD_D1_ID|${DB_ID}|" platespin/wrangler.toml

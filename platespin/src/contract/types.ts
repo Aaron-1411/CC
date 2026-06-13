@@ -230,7 +230,7 @@ export interface CreateMealInput {
   dish: string;
   rating: Rating;
   note?: string;
-  photoKey?: string; // R2 key returned by /api/upload
+  photoKey?: string; // photo key returned by /api/upload (stored in D1)
   dietTags?: DietId[];
   eatenOn?: string;
 }

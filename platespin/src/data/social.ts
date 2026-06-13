@@ -1,4 +1,4 @@
-// Typed client for the v2 social API (Cloudflare Pages Functions backed by D1/R2).
+// Typed client for the v2 social API (Cloudflare Pages Functions backed by D1).
 // Same-origin → the httpOnly session cookie rides along automatically.
 import type {
   CreateMealInput,
@@ -100,8 +100,38 @@ export const getVenueStats = (ids: string[]) => {
 };
 
 // ── Photo upload ─────────────────────────────────────────────────────────────
+// Photos live in D1 (base64 TEXT), so we compress hard in the browser before
+// uploading: downscale to ≤1600px on the long edge and JPEG re-encode at ~0.82.
+// A typical phone photo (3–6 MB) drops to ~150–500 KB — well under the server's
+// 1.3 MB guard and D1's row-size limit. Falls back to the original on any failure.
+async function compressImage(file: File): Promise<Blob> {
+  if (!file.type.startsWith("image/")) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const MAX = 1600;
+    const scale = Math.min(1, MAX / Math.max(bitmap.width, bitmap.height));
+    const w = Math.round(bitmap.width * scale);
+    const h = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.82),
+    );
+    // Keep whichever is smaller — never upload something larger than the original.
+    return blob && blob.size > 0 && blob.size < file.size ? blob : file;
+  } catch {
+    return file;
+  }
+}
+
 export async function uploadPhoto(file: File): Promise<{ key: string; url: string }> {
+  const compressed = await compressImage(file);
   const form = new FormData();
-  form.append("file", file);
+  form.append("file", compressed, "photo.jpg");
   return req<{ key: string; url: string }>("/api/upload", { method: "POST", body: form });
 }

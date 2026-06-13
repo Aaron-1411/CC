@@ -6,15 +6,16 @@ pages_build_output_dir = "dist"
 # ── PlateSpin v2: social food platform ────────────────────────────────────────
 # v1 was a stateless SPA (Overpass/geocode proxies in /functions/api/*, no DB).
 # v2 adds accounts, follows, meal posts + ratings, and food photos. That needs
-# durable state, so we bind Cloudflare's $0-tier primitives:
-#   • D1  (SQLite)  → relational data (users, follows, venues, meals, likes)
-#   • R2  (objects) → food photos (served back through /api/photo/<key>)
+# durable state, so we bind Cloudflare's $0-tier primitive:
+#   • D1 (SQLite) → everything: users, follows, venues, meals, likes AND the
+#     food photos themselves (stored base64 in a `photos` table, served back
+#     through /api/photo/<key>). No R2 → no card, no service to enable, still $0.
 #
 # Public proxies (geocode, places) stay exactly as before — no secrets client-side.
 #
 # Local full-stack dev:
 #   bun run build && bunx wrangler pages dev dist
-#   wrangler auto-provisions a LOCAL D1 + R2; apply the schema with:
+#   wrangler auto-provisions a LOCAL D1; apply the schema with:
 #   bunx wrangler d1 migrations apply platespin --local
 # Put dev-only vars in `.dev.vars` (git-ignored), e.g.:
 #   ALLOW_DEV_LOGIN = "1"     # enables the no-OAuth email-only dev login
@@ -29,10 +30,6 @@ database_name = "platespin"
 # Left blank works for `wrangler pages dev` (local SQLite); prod deploy needs it.
 database_id = "REPLACE_WITH_PROD_D1_ID"
 migrations_dir = "migrations"
-
-[[r2_buckets]]
-binding = "MEDIA"
-bucket_name = "platespin-media"
 
 [vars]
 # Public site origin, used to build OAuth redirect URLs.

@@ -7,7 +7,8 @@
 --  • Venues are CACHED OSM records, keyed by the same id the Overpass proxy emits
 --    (e.g. "node/123456") so meal posts and the live wheel speak one id space.
 --  • Ratings are 0.5–5.0 in 0.5 steps, stored as REAL.
---  • Photos live in R2; meals store the R2 object key, served via /api/photo/<key>.
+--  • Photos live in D1 (base64 in the `photos` table, see 0002); meals store
+--    the photo key, served via /api/photo/<key>.
 --  • All timestamps are unix epoch seconds (INTEGER) for cheap ordering.
 
 PRAGMA foreign_keys = ON;
@@ -78,7 +79,7 @@ CREATE TABLE IF NOT EXISTS meals (
   dish        TEXT NOT NULL,                -- what they ate, e.g. "Margherita pizza"
   rating      REAL NOT NULL,                -- 0.5–5.0 in 0.5 steps
   note        TEXT,                         -- free text review
-  photo_key   TEXT,                         -- R2 object key (nullable)
+  photo_key   TEXT,                         -- key into the `photos` D1 table (nullable)
   diet_tags   TEXT,                         -- csv of DietId actually served (user-asserted)
   eaten_on    TEXT,                         -- optional ISO date (yyyy-mm-dd)
   created_at  INTEGER NOT NULL,
