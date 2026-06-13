@@ -41,7 +41,13 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) nextErrors.email = "Please add a valid email.";
     if (!agreed) nextErrors.consent = "Please tick the box so we can contact you.";
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) return;
+    if (Object.keys(nextErrors).length) {
+      // Send focus to the first field with a problem so keyboard and
+      // screen-reader users land on what needs fixing, not the page top.
+      const firstId = nextErrors.name ? "lf-name" : nextErrors.email ? "lf-email" : "lf-consent";
+      form.querySelector<HTMLElement>(`#${firstId}`)?.focus();
+      return;
+    }
 
     const includeSummary = wantsSummary && Boolean(summaryData);
     const consentText =
@@ -121,14 +127,30 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
     }
   };
 
+  // "Confirmed" only when the backend actually did something durable with the
+  // enquiry (persisted it, or emailed the clinic). Otherwise we route the
+  // visitor to the clinic directly rather than imply it was received.
+  const confirmed = !!delivered && (delivered.stored || delivered.emailed);
+
+  // Visually-hidden live region, rendered as the first child of the single Card
+  // this component always returns. That Card is reconciled as the same element
+  // across the form→success swap, so this <p> stays mounted and its text change
+  // (empty → outcome) is announced. A region that mounts already-filled is silent.
+  const live = (
+    <p className="sr-only" role="status" aria-live="polite">
+      {status === "success"
+        ? confirmed
+          ? `Thank you — ${clinicConfig.name} has received your enquiry.`
+          : `Thank you. To reach ${clinicConfig.name}, please contact them directly at ${clinicConfig.contactEmail}.`
+        : ""}
+    </p>
+  );
+
   if (status === "success") {
-    // "Confirmed" only when the backend actually did something durable with the
-    // enquiry (persisted it, or emailed the clinic). Otherwise we route the
-    // visitor to the clinic directly rather than imply it was received.
-    const confirmed = !!delivered && (delivered.stored || delivered.emailed);
     const summaryShared = confirmed && wantsSummary && Boolean(summaryData);
     return (
       <Card id={id} className="p-6 text-center sm:p-8">
+        {live}
         <span
           className={
             confirmed
@@ -183,6 +205,7 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
 
   return (
     <Card id={id} className="p-6 sm:p-8">
+      {live}
       <h3 className="font-serif text-2xl">Talk to a real practitioner</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">
         Leave your details and {clinicConfig.name} will reach out. No obligation.
@@ -195,13 +218,13 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="lf-name">Name</Label>
-            <Input id="lf-name" name="name" autoComplete="name" aria-invalid={!!errors.name} placeholder="Your name" />
-            {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
+            <Input id="lf-name" name="name" autoComplete="name" aria-invalid={!!errors.name} aria-describedby={errors.name ? "lf-name-error" : undefined} placeholder="Your name" />
+            {errors.name && <p id="lf-name-error" className="mt-1 text-xs text-destructive">{errors.name}</p>}
           </div>
           <div>
             <Label htmlFor="lf-email">Email</Label>
-            <Input id="lf-email" name="email" type="email" autoComplete="email" aria-invalid={!!errors.email} placeholder="you@email.com" />
-            {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
+            <Input id="lf-email" name="email" type="email" autoComplete="email" aria-invalid={!!errors.email} aria-describedby={errors.email ? "lf-email-error" : undefined} placeholder="you@email.com" />
+            {errors.email && <p id="lf-email-error" className="mt-1 text-xs text-destructive">{errors.email}</p>}
           </div>
         </div>
 
@@ -232,6 +255,7 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
         {/* Required, versioned consent — health data is special-category (UK GDPR Art. 9). */}
         <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-surface p-3.5 text-sm">
           <input
+            id="lf-consent"
             type="checkbox"
             checked={agreed}
             onChange={(e) => {
@@ -239,14 +263,15 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
               if (e.target.checked) setErrors((prev) => ({ ...prev, consent: undefined }));
             }}
             aria-invalid={!!errors.consent}
+            aria-describedby={errors.consent ? "lf-consent-error" : undefined}
             className="mt-0.5 h-4 w-4 shrink-0 accent-[hsl(var(--primary))]"
           />
           <span className="text-foreground/90">{fillConsent(CONTACT_CONSENT, clinicConfig.name)}</span>
         </label>
-        {errors.consent && <p className="-mt-2 text-xs text-destructive">{errors.consent}</p>}
+        {errors.consent && <p id="lf-consent-error" className="-mt-2 text-xs text-destructive">{errors.consent}</p>}
 
         {status === "error" && (
-          <p className="rounded-lg bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+          <p role="alert" className="rounded-lg bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
             Something went wrong sending that. You can email us directly at{" "}
             <a className="font-medium underline" href={`mailto:${clinicConfig.contactEmail}`}>{clinicConfig.contactEmail}</a>.
           </p>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { clinicConfig } from "@/config/clinic";
 import { applyClinicTheme } from "@/lib/theme";
@@ -16,19 +16,38 @@ import { LearnIssue } from "@/pages/LearnIssue";
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
+  const firstRun = useRef(true);
   useEffect(() => {
     // Hash-aware: an in-page anchor link (e.g. /compliance#registers from the
     // comparative lens) should land on that section, not the page top. The
     // target's scroll-mt-* clears the sticky header. Falls back to top-of-page
     // for ordinary route changes.
+    let target: HTMLElement | null = null;
     if (hash) {
       const el = document.getElementById(hash.slice(1));
       if (el) {
         el.scrollIntoView({ behavior: "instant" as ScrollBehavior, block: "start" });
-        return;
+        target = el;
       }
     }
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    if (!target) {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      target = document.getElementById("main");
+    }
+    // Move keyboard/screen-reader focus into the new content on client
+    // navigation, so it isn't stranded on a now-unmounted element at the top.
+    // Skip the very first paint (a direct/crawler load) — don't yank focus there.
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    if (target) {
+      // Make non-interactive targets (section headings, <main>) programmatically
+      // focusable. tabindex="-1" keeps them out of the Tab sequence; programmatic
+      // .focus() uses :focus (not :focus-visible), so no outline flashes.
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    }
   }, [pathname, hash]);
   return null;
 }
@@ -53,7 +72,7 @@ export default function App() {
       <a href="#main" className="skip-link">Skip to content</a>
       <div className="flex min-h-dvh flex-col">
         <SiteHeader />
-        <main id="main" className="flex-1">
+        <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/compass" element={<Compass />} />

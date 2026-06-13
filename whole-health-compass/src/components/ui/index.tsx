@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode, type ButtonHTMLAttributes } from "react";
+import { useId, useRef, useState, type ReactNode, type ButtonHTMLAttributes, type KeyboardEvent } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -160,19 +160,47 @@ export type TabItem = { key: string; label: ReactNode; content: ReactNode };
 
 export function Tabs({ items, ariaLabel }: { items: TabItem[]; ariaLabel?: string }) {
   const [active, setActive] = useState(items[0]?.key);
+  const baseId = useId();
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const ids = (key: string) => ({ tab: `${baseId}-tab-${key}`, panel: `${baseId}-panel-${key}` });
+
+  // Full ARIA tabs keyboard model: arrows wrap, Home/End jump to ends, and
+  // activation follows focus (automatic activation — the simplest correct
+  // pattern for lightweight panels with no async cost to switching).
+  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const last = items.length - 1;
+    let next = -1;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = index === last ? 0 : index + 1;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = index === 0 ? last : index - 1;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = last;
+    else return;
+    e.preventDefault();
+    setActive(items[next].key);
+    tabRefs.current[next]?.focus();
+  };
+
   return (
     <div>
       <div role="tablist" aria-label={ariaLabel} className="mb-4 flex gap-1.5 overflow-x-auto rounded-xl bg-muted p-1.5">
-        {items.map((it) => {
+        {items.map((it, i) => {
           const selected = it.key === active;
+          const id = ids(it.key);
           return (
             <button
               key={it.key}
+              ref={(el) => {
+                tabRefs.current[i] = el;
+              }}
               role="tab"
+              id={id.tab}
               aria-selected={selected}
+              aria-controls={id.panel}
+              tabIndex={selected ? 0 : -1}
               onClick={() => setActive(it.key)}
+              onKeyDown={(e) => onKeyDown(e, i)}
               className={cn(
-                "flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                "flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                 selected ? "bg-card text-foreground shadow-soft" : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -181,14 +209,23 @@ export function Tabs({ items, ariaLabel }: { items: TabItem[]; ariaLabel?: strin
           );
         })}
       </div>
-      {items.map(
-        (it) =>
+      {items.map((it) => {
+        const id = ids(it.key);
+        return (
           it.key === active && (
-            <div key={it.key} role="tabpanel" className="animate-fade-in">
+            <div
+              key={it.key}
+              role="tabpanel"
+              id={id.panel}
+              aria-labelledby={id.tab}
+              tabIndex={0}
+              className="animate-fade-in rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               {it.content}
             </div>
-          ),
-      )}
+          )
+        );
+      })}
     </div>
   );
 }
