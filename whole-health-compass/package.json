@@ -9,10 +9,11 @@
     "prerender": "node scripts/prerender.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p functions/tsconfig.json",
-    "lint:content": "node scripts/lint-content.mjs",
+    "lint:content": "node scripts/lint-content.mjs src/data/packs src/data/evidence-summary.ts",
     "guard:no-llm": "node scripts/guard-no-llm.mjs",
     "compliance": "npm run lint:content && npm run guard:no-llm",
     "harvest:evidence": "node scripts/harvest-evidence.mjs",
+    "derive:evidence": "node scripts/derive-evidence-summary.mjs",
     "pages:dev": "vite build && wrangler pages dev"
   },
   "dependencies": {

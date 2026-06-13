@@ -7,6 +7,7 @@ import { clinicConfig } from "@/config/clinic";
 import { Eyebrow, Card, Pill, buttonClasses } from "@/components/ui";
 import { ComparativeLens } from "@/components/ComparativeLens";
 import { RedFlags } from "@/components/SafetyPanel";
+import { EvidenceSignal } from "@/components/EvidenceSignal";
 import { ContentGovernanceLine } from "@/components/ContentGovernance";
 import { usePageMeta } from "@/lib/usePageMeta";
 import { track } from "@/lib/analytics";
@@ -123,6 +124,11 @@ export function LearnIssue() {
             <RedFlags items={concern.redFlags} />
           </section>
         )}
+
+        {/* The wider evidence base — compliance-safe aggregate (counts only) */}
+        <section className="mt-8">
+          <EvidenceSignal concernId={issue.concernId} />
+        </section>
 
         {/* Routes to a human */}
         <Card className="mt-10 p-6 text-center sm:p-8">
