@@ -28,8 +28,29 @@ export function Privacy() {
           <div>
             <h2 className="font-serif text-2xl">If you contact the clinic</h2>
             <p className="mt-2 text-muted-foreground">
-              When you send your details through the contact form, we use them for one purpose: so {clinicConfig.name}{" "}
-              can respond to you. We don't sell your data, and we don't share it elsewhere.
+              When you submit the contact form, the details you enter — your name, email, any phone number or message,
+              and (only if you tick the box) the health summary you prepared — are sent to {clinicConfig.name} and stored
+              in its systems so it can respond to you. Depending on how the clinic is set up, that means a secure database
+              and/or an email notification to the clinic. We use these details for that one purpose: we don't sell your
+              data, and we don't share it elsewhere.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              <strong>{clinicConfig.name}</strong> is the data controller for the information you send through this form,
+              and is responsible for how it's handled. The consent you give — including the version you agreed to — is
+              recorded alongside your enquiry.
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              Your details are kept only as long as needed to respond to you and to meet the clinic's own record-keeping
+              obligations, then deleted. For the clinic's specific retention period, or to ask for a copy of your data or
+              to have it corrected or removed, contact{" "}
+              {clinicConfig.contactEmail ? (
+                <a href={`mailto:${clinicConfig.contactEmail}`} className="font-medium text-primary hover:underline">
+                  {clinicConfig.contactEmail}
+                </a>
+              ) : (
+                <span>the clinic directly</span>
+              )}
+              .
             </p>
           </div>
 

@@ -64,16 +64,9 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
     setStatus("sending");
     track("lead_submit", { concernId: payload.concernId || undefined, meta: { includeSummary } });
 
-    // Always keep a local mirror first, so an enquiry is never lost even before
-    // the backend is fully activated (or while testing locally without Functions).
-    try {
-      const existing = JSON.parse(localStorage.getItem("whc_leads") || "[]");
-      existing.push(payload);
-      localStorage.setItem("whc_leads", JSON.stringify(existing));
-    } catch {
-      /* storage may be unavailable — not essential */
-    }
-
+    // Health data is special-category (UK GDPR Art. 9). It is sent straight to
+    // the clinic's backend and never persisted in the visitor's browser — no
+    // local mirror — so nothing sensitive lingers on a shared or public device.
     try {
       const res = await fetch(LEAD_ENDPOINT, {
         method: "POST",
@@ -85,10 +78,10 @@ export function LeadForm({ summaryData, id }: { summaryData?: IntakeData; id?: s
         track("lead_success", { concernId: payload.concernId || undefined });
         return;
       }
-      // A non-ok from our OWN backend (e.g. local dev with no Functions, or
-      // pre-activation) shouldn't punish the visitor — the lead is mirrored
-      // locally and the success state is honest. A custom BYO endpoint failing
-      // is meaningful, so surface it.
+      // A non-ok from our OWN backend (e.g. a transient error or rate-limit, or
+      // local dev with no Functions) shouldn't punish the visitor — we show the
+      // honest success state. A custom BYO endpoint failing is meaningful, so
+      // surface it.
       if (!clinicConfig.formEndpoint) {
         setStatus("success");
         track("lead_success", { concernId: payload.concernId || undefined, meta: { degraded: true } });

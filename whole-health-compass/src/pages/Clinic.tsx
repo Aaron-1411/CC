@@ -41,7 +41,8 @@ type Lead = {
   when: number | string;
 };
 
-// Normalise either a server row (snake_case) or a local-mirror payload (camelCase).
+// Normalise a server row (snake_case). Leads are read only from authenticated
+// server storage — never from the browser — so health data never lingers client-side.
 function normalizeLead(r: Record<string, unknown>): Lead {
   return {
     id: (r.id as string) || undefined,
@@ -55,16 +56,6 @@ function normalizeLead(r: Record<string, unknown>): Lead {
     consentedAt: (r.consented_at as string) || (r.submittedAt as string) || "",
     when: (r.ts as number) || (r.submittedAt as string) || Date.now(),
   };
-}
-
-function localLeads(): Lead[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem("whc_leads") || "[]");
-    if (!Array.isArray(raw)) return [];
-    return raw.map(normalizeLead).reverse();
-  } catch {
-    return [];
-  }
 }
 
 function fmtWhen(w: number | string): string {
@@ -120,7 +111,6 @@ export function Clinic() {
   const [notConfigured, setNotConfigured] = useState(false);
   const [stats, setStats] = useState<Stats | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [usingLocal, setUsingLocal] = useState(false);
 
   async function load(tok: string) {
     setLoading(true);
@@ -144,36 +134,40 @@ export function Clinic() {
         return;
       }
 
-      if (statsRes.status === 503) {
-        // Backend reachable but ADMIN_TOKEN not set yet — show the local mirror.
-        setAuthed(true);
-        setNotConfigured(true);
-        setUsingLocal(true);
-        setLeads(localLeads());
-        setStats(null);
+      // ADMIN_TOKEN isn't set server-side → the server can't verify any token.
+      // Fail CLOSED: never grant access (and never read browser-stored health
+      // data) just because auth is unconfigured.
+      if (statsRes.status === 503 || leadsRes.status === 503) {
+        setAuthed(false);
+        setError("This dashboard isn't switched on yet. Set an ADMIN_TOKEN secret (and bind a D1 database) on the deployment — see ACTIVATION.md.");
+        try {
+          sessionStorage.removeItem(TOKEN_KEY);
+        } catch {
+          /* ignore */
+        }
+        return;
+      }
+
+      if (!statsRes.ok || !leadsRes.ok) {
+        setAuthed(false);
+        setError("Couldn't reach the dashboard service. Please try again in a moment.");
         return;
       }
 
       const statsJson = (await statsRes.json()) as Stats;
       const leadsJson = (await leadsRes.json()) as { storage: boolean; leads: Record<string, unknown>[] };
 
+      // A 200 means the server verified the bearer token. Leads come ONLY from
+      // authenticated server storage — never the browser.
       setAuthed(true);
       setStats(statsJson);
-      const serverLeads = (leadsJson.leads || []).map(normalizeLead);
-      if (leadsJson.storage && serverLeads.length >= 0 && statsJson.storage) {
-        setUsingLocal(false);
-        setLeads(serverLeads);
-      } else {
-        // Auth OK but persistence not activated — fall back to the local mirror.
-        setUsingLocal(true);
-        setLeads(serverLeads.length ? serverLeads : localLeads());
-      }
+      setLeads((leadsJson.leads || []).map(normalizeLead));
+      // Authenticated but D1 may be unbound: honest empty state, not invented data.
+      setNotConfigured(!(leadsJson.storage && statsJson.storage));
     } catch {
-      // No backend reachable (e.g. local dev) — demonstrate with the local mirror.
-      setAuthed(true);
-      setUsingLocal(true);
-      setStats(null);
-      setLeads(localLeads());
+      // Network error / backend unreachable — fail CLOSED, do not authenticate.
+      setAuthed(false);
+      setError("Couldn't reach the dashboard service. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -257,16 +251,10 @@ export function Clinic() {
         </div>
 
         {notConfigured && (
-          <Callout tone="warning" icon={<AlertTriangle className="h-5 w-5" />} title="Live analytics aren't switched on yet" className="mt-6">
-            Set an <code className="rounded bg-muted px-1">ADMIN_TOKEN</code> secret (and bind a D1 database) on the Pages
-            project to unlock funnel stats and server-side lead storage. Until then you're seeing enquiries captured in
-            this browser. See <span className="font-medium">ACTIVATION.md</span>.
-          </Callout>
-        )}
-        {usingLocal && !notConfigured && (
-          <Callout tone="safe" icon={<ShieldCheck className="h-5 w-5" />} title="Showing locally-captured enquiries" className="mt-6">
-            Persistence isn't active on the server yet, so these are the enquiries captured in this browser. Bind a D1
-            database to store them centrally and see live funnel analytics.
+          <Callout tone="warning" icon={<AlertTriangle className="h-5 w-5" />} title="Central storage isn't switched on yet" className="mt-6">
+            You're signed in, but no <code className="rounded bg-muted px-1">D1</code> database is bound, so enquiries
+            aren't stored centrally and funnel analytics stay empty. Bind a D1 database on the Pages project to store
+            enquiries and unlock live stats. See <span className="font-medium">ACTIVATION.md</span>.
           </Callout>
         )}
 
