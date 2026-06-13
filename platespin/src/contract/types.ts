@@ -115,6 +115,9 @@ export interface PlaceLinks {
   tiktokSearch: string; // https://www.tiktok.com/search?q=...
   instagramSearch: string;
   youtubeSearch: string; // free deep-link instead of quota-limited embed
+  /** Generic web search (Google) for the place — surfaces ratings/reviews/menus from
+   *  Google/TripAdvisor/etc. The honest, zero-API stand-in for an inline rating. */
+  webSearch: string;
   website?: string;
   /** Find / make a reservation — OpenTable search deep-link keyed on name + locality.
    *  Zero-API. Only set for table-service venues that don't explicitly say reservation=no. */

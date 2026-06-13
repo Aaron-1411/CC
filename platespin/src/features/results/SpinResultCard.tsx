@@ -50,7 +50,8 @@ export function SpinResultCard({
         </p>
       )}
 
-      {/* Fallback search-out grid — only when there are no in-app place cards. */}
+      {/* Full search-out grid — when there are NO in-app place cards, this is the
+          primary way to act on the result. */}
       {!hasResults && (
         <div className="mt-4 grid grid-cols-2 gap-2">
           <a
@@ -77,6 +78,41 @@ export function SpinResultCard({
           >
             Instagram
           </a>
+        </div>
+      )}
+
+      {/* Generic search-out — ALWAYS available, even alongside in-app place cards.
+          Lets the user browse the wider web (Google / TikTok / Instagram) for this
+          cuisine near them, not just the specific venues we surface below. */}
+      {hasResults && (
+        <div className="mt-3">
+          <p className="text-[11px] uppercase tracking-wide text-slate-500">Or search the web</p>
+          <div className="mt-1.5 grid grid-cols-3 gap-2">
+            <a
+              href={links.googleMaps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-[44px] items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
+            >
+              🔎 Google
+            </a>
+            <a
+              href={links.tiktokSearch}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
+            >
+              TikTok
+            </a>
+            <a
+              href={links.instagramSearch}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-slate-200 hover:bg-white/10"
+            >
+              Instagram
+            </a>
+          </div>
         </div>
       )}
 

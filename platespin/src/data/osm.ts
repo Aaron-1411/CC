@@ -132,6 +132,7 @@ function buildLinks(
     tiktokSearch: `https://www.tiktok.com/search?q=${enc(q)}`,
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(q)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(q)}`,
+    webSearch: `https://www.google.com/search?q=${enc(q + " reviews")}`,
     website: opts?.website,
     reserve: opts?.reserve,
   };

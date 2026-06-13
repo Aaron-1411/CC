@@ -1,10 +1,13 @@
-import type { DietId, PlaceResult } from "@/contract/types";
+import type { DietId, PlaceResult, VenueStats } from "@/contract/types";
 import { CUISINE_BY_ID } from "@/data/cuisines";
 import { DIET_BY_ID } from "@/data/diets";
 
 interface PlaceCardProps {
   place: PlaceResult;
   diets: DietId[];
+  /** PlateSpin's own community rating for this venue, if anyone's reviewed it.
+   *  This is the reliable, $0 rating source (no card-backed Google/TripAdvisor key). */
+  stats?: VenueStats;
   liked: boolean;
   onToggleLike: (id: string) => void;
   onVisit: (id: string) => void;
@@ -58,11 +61,13 @@ const TONE_CLASS: Record<BadgeTone, string> = {
   muted: "border-white/10 bg-white/5 text-slate-400",
 };
 
-export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceCardProps) {
+export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }: PlaceCardProps) {
   const distance = formatDistance(place.distanceMeters);
   const cuisineLabels = place.cuisine.map((c) => CUISINE_BY_ID[c]?.label).filter(Boolean);
   const badges = diets.map((d) => dietBadge(place, d));
   const links = place.links;
+  const hasCommunityRating = !!stats && stats.count > 0;
+  const hasFriendRating = !!stats && (stats.friendCount ?? 0) > 0;
 
   return (
     <li className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
@@ -86,6 +91,39 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
           <span className={liked ? "text-rose-400" : "text-slate-500"}>{liked ? "♥" : "♡"}</span>
         </button>
       </div>
+
+      {/* Rating row. We only ever show a REAL number — PlateSpin's own community
+          rating (free, no card). We never fabricate a Google/TripAdvisor star count;
+          if no one's reviewed it here yet, we hand off to a Google search instead. */}
+      {hasCommunityRating ? (
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
+          <span className="font-semibold text-amber-200">
+            ★ {stats!.avg.toFixed(1)}
+            <span className="ml-1 font-normal text-slate-400">
+              · {stats!.count} {stats!.count === 1 ? "review" : "reviews"} on PlateSpin
+            </span>
+          </span>
+          {hasFriendRating && (
+            <span className="font-medium text-emerald-200">
+              ★ {stats!.friendAvg!.toFixed(1)}
+              <span className="ml-1 font-normal text-emerald-200/70">
+                from {stats!.friendCount} {stats!.friendCount === 1 ? "friend" : "friends"}
+              </span>
+            </span>
+          )}
+        </p>
+      ) : (
+        <a
+          href={links.webSearch}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => onVisit(place.id)}
+          className="mt-1.5 inline-flex items-center gap-1 text-xs text-slate-400 underline decoration-dotted underline-offset-2 hover:text-slate-200"
+          title="No PlateSpin reviews yet — check ratings on Google"
+        >
+          ★ No PlateSpin reviews yet — check Google
+        </a>
+      )}
 
       {place.address && <p className="mt-1 truncate text-xs text-slate-500">{place.address}</p>}
       {place.hours && (
@@ -149,6 +187,16 @@ export function PlaceCard({ place, diets, liked, onToggleLike, onVisit }: PlaceC
             📞 Call
           </a>
         )}
+        <a
+          href={links.webSearch}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => onVisit(place.id)}
+          className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+          title="Ratings & reviews on Google"
+        >
+          Reviews
+        </a>
         <a
           href={links.tiktokSearch}
           target="_blank"

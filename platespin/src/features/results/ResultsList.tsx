@@ -1,6 +1,7 @@
-import { useMemo } from "react";
-import type { CuisineId, DietId, PlaceResult } from "@/contract/types";
+import { useEffect, useMemo, useState } from "react";
+import type { CuisineId, DietId, PlaceResult, VenueStats } from "@/contract/types";
 import { CUISINE_BY_ID } from "@/data/cuisines";
+import { getVenueStats } from "@/data/social";
 import { PlaceCard } from "@/features/results/PlaceCard";
 
 interface ResultsListProps {
@@ -24,6 +25,28 @@ export function ResultsList({ cuisine, places, diets, likedIds, onToggleLike, on
     [places, cuisine],
   );
 
+  // Pull PlateSpin's OWN community ratings for the shown venues — the only rating
+  // source that's genuinely reliable AND $0 (no card-backed Google/TripAdvisor key).
+  const [statsById, setStatsById] = useState<Record<string, VenueStats>>({});
+  useEffect(() => {
+    const ids = matches.map((p) => p.id);
+    if (ids.length === 0) return;
+    let alive = true;
+    getVenueStats(ids)
+      .then((rows) => {
+        if (!alive) return;
+        const map: Record<string, VenueStats> = {};
+        for (const r of rows) map[r.id] = r;
+        setStatsById(map);
+      })
+      .catch(() => {
+        /* ratings are additive — a failed fetch just means no community badge */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [matches]);
+
   const c = CUISINE_BY_ID[cuisine];
   if (matches.length === 0) return null;
 
@@ -46,6 +69,7 @@ export function ResultsList({ cuisine, places, diets, likedIds, onToggleLike, on
             key={p.id}
             place={p}
             diets={diets}
+            stats={statsById[p.id]}
             liked={liked.has(p.id)}
             onToggleLike={onToggleLike}
             onVisit={onVisit}

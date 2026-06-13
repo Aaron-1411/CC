@@ -33,6 +33,7 @@ export function buildSearchLinks(
     tiktokSearch: `https://www.tiktok.com/search?q=${enc(tag + " " + localityLabel)}`,
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(tag + " " + localityLabel)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(tag + " " + localityLabel)}`,
+    webSearch: `https://www.google.com/search?q=${enc(q)}`,
   };
 }
 
@@ -54,6 +55,7 @@ export function buildPlaceLinks(
     tiktokSearch: `https://www.tiktok.com/search?q=${enc(q)}`,
     instagramSearch: `https://www.instagram.com/explore/search/keyword/?q=${enc(q)}`,
     youtubeSearch: `https://www.youtube.com/results?search_query=${enc(q)}`,
+    webSearch: `https://www.google.com/search?q=${enc(q + " reviews")}`,
     website,
     reserve: `https://www.opentable.com/s?term=${enc(q)}`,
   };
