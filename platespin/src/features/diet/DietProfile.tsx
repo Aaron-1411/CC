@@ -46,7 +46,7 @@ export function DietProfile({ profile, strictness, onToggle, onStrictness }: Die
                   onClick={() => onToggle(d.id)}
                   aria-pressed={on}
                   className={[
-                    "flex min-h-[40px] items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition active:scale-[0.97]",
+                    "flex min-h-[44px] items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-medium transition active:scale-[0.97]",
                     on
                       ? "border-emerald-300/60 bg-emerald-400/15 text-emerald-100"
                       : "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10",
@@ -70,7 +70,7 @@ export function DietProfile({ profile, strictness, onToggle, onStrictness }: Die
                     type="button"
                     onClick={() => onStrictness(s)}
                     className={[
-                      "px-2.5 py-1 font-medium transition",
+                      "flex min-h-[40px] items-center px-3 py-1.5 font-medium transition",
                       strictness === s
                         ? "bg-emerald-400/20 text-emerald-100"
                         : "text-slate-400 hover:bg-white/5",

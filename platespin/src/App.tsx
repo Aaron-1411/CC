@@ -20,7 +20,7 @@ function Home() {
 // renders its own header so pages stay self-contained.
 export default function App() {
   return (
-    <div className="mx-auto flex min-h-full max-w-md flex-col px-4 pb-24 pt-6">
+    <div className="mx-auto flex min-h-full max-w-md flex-col px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-6">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/feed" element={<FeedPage />} />

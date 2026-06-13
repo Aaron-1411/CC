@@ -107,7 +107,7 @@ export function LocationInput({ value, onSet }: LocationInputProps) {
             inputMode="text"
             autoComplete="off"
             placeholder="Where are you? e.g. Shoreditch, London"
-            className="min-h-[44px] w-full rounded-xl border border-white/10 bg-white/5 px-3.5 text-base text-slate-100 placeholder:text-slate-500 focus:border-amber-300/50 focus:outline-none"
+            className="min-h-[44px] w-full rounded-xl border border-white/10 bg-white/5 px-3.5 text-base text-slate-100 placeholder:text-slate-500 focus:outline-none focus-visible:border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300/40"
           />
           {loading && (
             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">

@@ -120,14 +120,14 @@ export function SpinResultCard({
         <button
           type="button"
           onClick={onRespin}
-          className="rounded-lg px-3 py-1.5 font-medium text-slate-300 hover:bg-white/5"
+          className="flex min-h-[44px] items-center rounded-lg px-3 py-1.5 font-medium text-slate-300 hover:bg-white/5"
         >
           ↻ Spin again
         </button>
         <button
           type="button"
           onClick={onRespinWithout}
-          className="rounded-lg px-3 py-1.5 font-medium text-slate-300 hover:bg-white/5"
+          className="flex min-h-[44px] items-center rounded-lg px-3 py-1.5 font-medium text-slate-300 hover:bg-white/5"
         >
           ✕ Not {cuisine?.label}
         </button>

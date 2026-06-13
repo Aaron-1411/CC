@@ -12,6 +12,21 @@ body,
   height: 100%;
 }
 
+/* Kill the grey tap-flash on mobile Safari/Chrome — we supply our own press
+   feedback (active:scale + state colours), so the default flash just looks
+   broken against the dark theme. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Visible keyboard-focus ring everywhere, in the amber accent. Scoped to
+   :focus-visible so it only shows for keyboard / assistive-tech users, never on
+   mouse or touch. Modern browsers follow each element's border-radius. */
+:focus-visible {
+  outline: 2px solid rgba(251, 191, 36, 0.7);
+  outline-offset: 2px;
+}
+
 body {
   margin: 0;
   background:

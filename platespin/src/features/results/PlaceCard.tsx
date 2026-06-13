@@ -85,7 +85,7 @@ export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }:
           onClick={() => onToggleLike(place.id)}
           aria-pressed={liked}
           aria-label={liked ? "Remove from saved" : "Save place"}
-          className="shrink-0 rounded-lg px-2 py-1 text-lg leading-none transition active:scale-90"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-lg leading-none transition active:scale-90"
           title={liked ? "Saved" : "Save"}
         >
           <span className={liked ? "text-rose-400" : "text-slate-500"}>{liked ? "♥" : "♡"}</span>
@@ -181,7 +181,7 @@ export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }:
           <a
             href={`tel:${place.phone.replace(/\s+/g, "")}`}
             onClick={() => onVisit(place.id)}
-            className="flex min-h-[40px] flex-1 items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+            className="flex min-h-[44px] flex-1 items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
             title={`Call to book — ${place.phone}`}
           >
             📞 Call
@@ -192,7 +192,7 @@ export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }:
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+          className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
           title="Ratings & reviews on Google"
         >
           Reviews
@@ -202,7 +202,7 @@ export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }:
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+          className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
           title="Search on TikTok"
         >
           TikTok
@@ -212,7 +212,7 @@ export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }:
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => onVisit(place.id)}
-          className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+          className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
           title="Search on Instagram"
         >
           IG
@@ -223,7 +223,7 @@ export function PlaceCard({ place, diets, stats, liked, onToggleLike, onVisit }:
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onVisit(place.id)}
-            className="flex min-h-[40px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
+            className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-medium text-slate-200 hover:bg-white/10"
             title="Visit website"
           >
             Site
