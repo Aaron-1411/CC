@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p functions/tsconfig.json",
+    "lint:content": "node scripts/lint-content.mjs",
+    "guard:no-llm": "node scripts/guard-no-llm.mjs",
+    "compliance": "npm run lint:content && npm run guard:no-llm",
     "pages:dev": "vite build && wrangler pages dev"
   },
   "dependencies": {

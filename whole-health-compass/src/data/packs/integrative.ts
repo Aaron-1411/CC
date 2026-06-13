@@ -27,6 +27,11 @@ const traditions: TraditionMeta[] = [
       "An NHS GP appointment is usually around 10 minutes and free at the point of use; private GP or specialist visits are longer and paid. Expect questions about your history and symptoms, an examination where relevant, and sometimes tests or a referral.",
     evidenceAndRegulation:
       "Doctors in the UK are regulated by the General Medical Council, and care is shaped by national guidance (such as NICE) and peer-reviewed research. As with any approach, ask your clinician what the current evidence suggests for your situation.",
+    provenance: {
+      label: "NHS · NICE · GMC",
+      detail:
+        "Summarised from the NHS, NICE guidance and the General Medical Council's standards — describing how conventional medicine frames and assesses this, not whether any treatment works.",
+    },
   },
   {
     key: "tcm",
@@ -37,6 +42,11 @@ const traditions: TraditionMeta[] = [
       "A first TCM consultation is often 45–90 minutes and privately paid. Expect detailed questions about your health, sleep, digestion and lifestyle, plus observation such as tongue and pulse, to build an individual picture.",
     evidenceAndRegulation:
       "Acupuncture and TCM are voluntarily self-regulated in the UK — for acupuncture, look for membership of the British Acupuncture Council. If Chinese herbal medicine is ever suggested, use a registered practitioner and tell your GP and pharmacist what you are taking. The evidence base varies by use; a registered practitioner can discuss it honestly and tell you when to see your GP.",
+    provenance: {
+      label: "NHS · NCCIH · British Acupuncture Council",
+      detail:
+        "Summarised from the NHS, the US National Center for Complementary and Integrative Health (NCCIH) and the British Acupuncture Council — describing how this tradition thinks, not whether any approach works.",
+    },
   },
   {
     key: "ayurveda",
@@ -47,6 +57,11 @@ const traditions: TraditionMeta[] = [
       "A first Ayurvedic consultation is typically 60–90 minutes and privately paid. Expect a wide-ranging conversation about your constitution, routine, digestion and sleep, so the practitioner can understand your whole picture.",
     evidenceAndRegulation:
       "Ayurveda is not statutorily regulated in the UK, so credentials vary — look for a practitioner registered with a recognised professional association. Some traditional Ayurvedic products, particularly herbal-mineral preparations, have been found to contain heavy metals such as lead, mercury or arsenic, so use only a qualified practitioner and tell your GP and pharmacist about anything you take. Discuss the evidence for anything suggested, especially alongside conventional care.",
+    provenance: {
+      label: "NHS · NCCIH · professional associations",
+      detail:
+        "Summarised from the NHS, the US National Center for Complementary and Integrative Health (NCCIH) and recognised Ayurvedic professional associations — describing how this tradition thinks, not whether any approach works.",
+    },
   },
 ];
 

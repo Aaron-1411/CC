@@ -114,6 +114,19 @@ export type KnowledgeBase = {
   issues: IssueGuide[];
 };
 
+/** Where a tradition's lens content was summarised from — a small, honest
+ *  source badge shown on every panel. NEVER an efficacy claim or endorsement;
+ *  it names the public sources the worldview/education draws on, so a reader
+ *  can see the content is curated and attributable, not invented. Complements
+ *  (never duplicates) the comparative footer's combined source line. */
+export type Provenance = {
+  /** Short, scannable source list for the badge, e.g. "NHS · NICE · NCCIH". */
+  label: string;
+  /** Longer tooltip/aria detail: what the sources cover and, explicitly, that
+   *  they explain how the tradition thinks — not whether an approach works. */
+  detail: string;
+};
+
 export type TraditionMeta = {
   key: TraditionKey;
   label: string;
@@ -128,6 +141,9 @@ export type TraditionMeta = {
   /** Tradition-level neutral note on UK regulation and how to weigh evidence.
    *  Never asserts efficacy — points the reader to a qualified human. Optional. */
   evidenceAndRegulation?: string;
+  /** Where this tradition's lens content is summarised from — renders as a
+   *  small per-panel source badge. Optional so packs can adopt it gradually. */
+  provenance?: Provenance;
 };
 
 /** Provenance for the curated content — turns "static copy" into an auditable,

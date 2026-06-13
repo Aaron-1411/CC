@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { clinicConfig } from "@/config/clinic";
-import { getConcern } from "@/data/concerns";
+import { getConcern, traditions } from "@/data/concerns";
 import { PractitionerSummary } from "@/components/PractitionerSummary";
 import { ComparativeLens } from "@/components/ComparativeLens";
 import { Eyebrow, Pill, buttonClasses } from "@/components/ui";
@@ -58,10 +58,16 @@ export function SampleJourney() {
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
         {/* Faux app chrome to signal "this is the real, live tool" */}
         <div className="flex items-center gap-2 border-b border-border bg-surface px-4 py-2.5">
+          {/* Faux traffic-light dots tinted from the active pack's traditions,
+              so the chrome re-skins with the pack instead of hard-coding hues. */}
           <span className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-tcm/50" />
-            <span className="h-2.5 w-2.5 rounded-full bg-ayur/50" />
-            <span className="h-2.5 w-2.5 rounded-full bg-west/50" />
+            {traditions.map((t) => (
+              <span
+                key={t.key}
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: `hsl(${t.tint} / 0.5)` }}
+              />
+            ))}
           </span>
           <span className="ml-2 truncate text-xs text-muted-foreground">A real example — no sign-up needed</span>
         </div>

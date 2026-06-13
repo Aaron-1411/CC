@@ -1,4 +1,4 @@
-import { Stethoscope, UserRound, ArrowRight, Clock, Scale, Handshake, Network, Route, BookOpen } from "lucide-react";
+import { Stethoscope, UserRound, ArrowRight, Clock, Scale, Handshake, Network, Route, BookOpen, Library } from "lucide-react";
 import type { Concern, TraditionMeta } from "@/data/types";
 import { traditions, LENS_SECTIONS, CLOSING_LINE } from "@/data/concerns";
 import { Card, type TabItem, Tabs } from "@/components/ui";
@@ -62,6 +62,23 @@ function LensPanel({ concern, t }: { concern: Concern; t: TraditionMeta }) {
         <Section label={LENS_SECTIONS.evidenceAndRegulation} icon={<Scale className="h-3.5 w-3.5" />}>
           {t.evidenceAndRegulation}
         </Section>
+      )}
+
+      {/* Honest, per-panel source badge — names where this lens is summarised
+          from (never an efficacy claim). Detail (how the tradition thinks, not
+          whether it works) is exposed to hover + screen readers. Complements,
+          never duplicates, the comparative footer's combined source line. */}
+      {t.provenance && (
+        <p
+          className="mt-3 flex items-center gap-1.5 border-t border-border/60 pt-2.5 text-[0.7rem] leading-relaxed text-muted-foreground/80"
+          title={t.provenance.detail}
+          aria-label={`Sources for this panel: ${t.provenance.label}. ${t.provenance.detail}`}
+        >
+          <Library aria-hidden className="h-3 w-3 shrink-0" />
+          <span>
+            <span className="font-medium">Sources:</span> {t.provenance.label}
+          </span>
+        </p>
       )}
 
       <div className="mt-4 flex items-start gap-2 rounded-lg bg-muted/60 p-3 text-xs leading-relaxed text-muted-foreground">

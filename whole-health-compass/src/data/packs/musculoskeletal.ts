@@ -27,6 +27,11 @@ const traditions: TraditionMeta[] = [
       "Physiotherapy may follow a GP referral or self-referral; NHS physio is free, private is paid and often 30–45 minutes. Expect questions about the problem and how it limits you, a movement assessment, and a plan you take an active part in.",
     evidenceAndRegulation:
       "Physiotherapists are regulated by the Health and Care Professions Council (HCPC) and doctors by the GMC. Care is guided by national guidance and research — ask what the current evidence suggests for your situation.",
+    provenance: {
+      label: "NHS · NICE · CSP / HCPC",
+      detail:
+        "Summarised from the NHS, NICE guidance and the Chartered Society of Physiotherapy and HCPC standards — describing how physiotherapy frames and assesses this, not whether any treatment works.",
+    },
   },
   {
     key: "osteopathy",
@@ -37,6 +42,11 @@ const traditions: TraditionMeta[] = [
       "A first osteopathy appointment is usually 45–60 minutes and privately paid. Expect a detailed history, a physical and movement assessment, and a discussion of what the osteopath observes about how your body moves.",
     evidenceAndRegulation:
       "Osteopaths are statutorily regulated in the UK — by law they must be registered with the General Osteopathic Council (GOsC). The evidence base varies by use; a registered osteopath can discuss it and refer you on where appropriate.",
+    provenance: {
+      label: "NHS · GOsC",
+      detail:
+        "Summarised from the NHS and the General Osteopathic Council — describing how osteopathy thinks about this, not whether any approach works.",
+    },
   },
   {
     key: "tcm-acu",
@@ -47,6 +57,11 @@ const traditions: TraditionMeta[] = [
       "A first acupuncture/TCM consultation is often 60–90 minutes and privately paid. Expect detailed questions and observation, such as tongue and pulse, to build an individual picture.",
     evidenceAndRegulation:
       "Acupuncture and TCM are voluntarily self-regulated in the UK — look for British Acupuncture Council membership. The evidence base varies by use; a registered practitioner can discuss it honestly and tell you when to see your GP.",
+    provenance: {
+      label: "NHS · NCCIH · British Acupuncture Council",
+      detail:
+        "Summarised from the NHS, the US National Center for Complementary and Integrative Health (NCCIH) and the British Acupuncture Council — describing how acupuncture and TCM think, not whether any approach works.",
+    },
   },
 ];
 

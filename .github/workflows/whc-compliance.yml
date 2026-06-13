@@ -1,0 +1,45 @@
+# Compliance gate for Whole Health Compass.
+#
+# Separate from deploy.yml on purpose: that workflow deploys every project on
+# push to master; this one only *checks* WHC and never deploys. Path-scoped so
+# it stays quiet for every other project in the monorepo.
+#
+# The two content guards encode WHC's untradeable rules:
+#   - lint:content  → no remedy/herb/dose/efficacy/cure language in the packs
+#   - guard:no-llm  → no AI SDK or model endpoint reaches a patient surface
+# typecheck + build are the usual "does it actually ship" gates.
+name: WHC Compliance
+
+on:
+  push:
+    branches: [master, launch-remediation]
+    paths:
+      - "whole-health-compass/**"
+      - ".github/workflows/whc-compliance.yml"
+  pull_request:
+    paths:
+      - "whole-health-compass/**"
+      - ".github/workflows/whc-compliance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: whole-health-compass
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Typecheck
+        run: bun run typecheck
+      - name: Content compliance (no remedy/dose/efficacy claims)
+        run: bun run lint:content
+      - name: No-LLM guard (no AI on patient surfaces)
+        run: bun run guard:no-llm
+      - name: Build
+        run: bun run build

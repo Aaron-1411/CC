@@ -1,0 +1,11 @@
+# Allowlist — exact phrases stripped from string content BEFORE the compliance
+# patterns run, to suppress known-benign collocations that would otherwise trip a
+# rule. One phrase per line; # and blank lines ignored; case-insensitive.
+#
+# Keep this list tiny and justified. Every entry is a phrase that appears inside
+# the packs' OWN description of the compliance rules (meta-copy about what the
+# content must never do), not a real remedy/efficacy claim about a patient.
+
+# musculoskeletal.ts review/meta copy: "...no named treatment or
+# technique-as-cure, no efficacy or ranking claims..." — describes the rule.
+technique-as-cure

@@ -1,0 +1,41 @@
+# Banned named remedies — compliance principle #2 ("never name a remedy/herb/
+# formula/supplement/dose"). One term per line. Lines starting with # and blank
+# lines are ignored. Matching is case-insensitive and boundary-aware, so e.g.
+# "CBD-rich" and "omega-3" still match, and a term never matches inside a longer
+# word. Multi-word terms tolerate any run of whitespace between words.
+#
+# These are NAMED substances a patient surface must never recommend. The content
+# packs are worldview/education only, so a clean run is the expected state — this
+# list is a regression net against a future edit slipping a named remedy in.
+#
+# DELIBERATELY EXCLUDED (do NOT add): diagnostic markers and category words that
+# the education content legitimately discusses as things a *practitioner* checks
+# or that name a field of care, never as a remedy the app recommends —
+#   iron, ferritin, thyroid, vitamin D, B12, magnesium, calcium, blood sugar,
+#   hormones, cortisol, ginger, probiotics, fibre.
+# Adding those would flag honest "what a practitioner looks at" education.
+
+ashwagandha
+turmeric
+curcumin
+ginkgo
+ginseng
+valerian
+melatonin
+echinacea
+rhodiola
+st john's wort
+st. john's wort
+milk thistle
+saw palmetto
+black cohosh
+evening primrose
+feverfew
+kava
+chamomile
+peppermint
+lavender
+cbd
+cannabidiol
+fish oil
+omega-3
