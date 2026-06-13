@@ -106,7 +106,7 @@ export function ComposePage() {
           <button
             type="button"
             onClick={() => setVenue(null)}
-            className="shrink-0 text-xs font-semibold text-amber-200 underline"
+            className="inline-flex min-h-[44px] shrink-0 items-center text-xs font-semibold text-amber-200 underline"
           >
             Change
           </button>
@@ -133,7 +133,7 @@ export function ComposePage() {
               onChange={(e) => setDish(e.target.value)}
               placeholder="e.g. Margherita pizza"
               maxLength={140}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-base text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none"
             />
           </div>
 
@@ -153,7 +153,7 @@ export function ComposePage() {
               placeholder="How was it? Worth going back?"
               rows={3}
               maxLength={2000}
-              className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none"
+              className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-base text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none"
             />
           </div>
 
@@ -165,7 +165,7 @@ export function ComposePage() {
                 <button
                   type="button"
                   onClick={() => onFile(null)}
-                  className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-1 text-xs text-white"
+                  className="absolute right-2 top-2 inline-flex min-h-[44px] items-center rounded-full bg-black/60 px-3 text-xs text-white"
                 >
                   Remove
                 </button>
@@ -197,8 +197,8 @@ export function ComposePage() {
                     onClick={() => toggleDiet(d.id)}
                     className={
                       on
-                        ? "rounded-full bg-emerald-300/20 px-3 py-1 text-xs font-medium text-emerald-100"
-                        : "rounded-full border border-white/10 px-3 py-1 text-xs text-slate-400"
+                        ? "inline-flex min-h-[44px] items-center rounded-full bg-emerald-300/20 px-3 text-xs font-medium text-emerald-100"
+                        : "inline-flex min-h-[44px] items-center rounded-full border border-white/10 px-3 text-xs text-slate-400"
                     }
                   >
                     {d.emoji} {d.label}
@@ -215,7 +215,7 @@ export function ComposePage() {
               value={eatenOn}
               max={today()}
               onChange={(e) => setEatenOn(e.target.value)}
-              className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-slate-100 focus:border-amber-300/40 focus:outline-none"
+              className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-base text-slate-100 focus:border-amber-300/40 focus:outline-none"
             />
           </div>
 

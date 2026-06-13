@@ -53,7 +53,7 @@ export function LoginPage() {
   };
 
   const inputClass =
-    "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none";
+    "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-base text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none";
 
   return (
     <div className="flex flex-col gap-6 pt-8">
@@ -92,7 +92,7 @@ export function LoginPage() {
             setMode("signin");
             setErr(null);
           }}
-          className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
+          className={`flex min-h-[44px] flex-1 items-center justify-center rounded-lg text-sm font-semibold transition ${
             mode === "signin" ? "bg-amber-300 text-slate-900" : "text-slate-400"
           }`}
         >
@@ -104,7 +104,7 @@ export function LoginPage() {
             setMode("signup");
             setErr(null);
           }}
-          className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
+          className={`flex min-h-[44px] flex-1 items-center justify-center rounded-lg text-sm font-semibold transition ${
             mode === "signup" ? "bg-amber-300 text-slate-900" : "text-slate-400"
           }`}
         >
@@ -154,7 +154,7 @@ export function LoginPage() {
                 value={handle}
                 onChange={(e) => setHandle(cleanHandle(e.target.value))}
                 placeholder="handle"
-                className="w-full bg-transparent px-1.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none"
+                className="w-full bg-transparent px-1.5 py-2.5 text-base text-slate-100 placeholder:text-slate-600 focus:outline-none"
               />
             </div>
             <p className="-mt-1 px-1 text-[11px] text-slate-500">

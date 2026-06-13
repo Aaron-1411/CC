@@ -35,8 +35,8 @@ export function FollowButton({
       disabled={busy}
       className={
         following
-          ? "rounded-full border border-white/15 px-4 py-1.5 text-sm font-semibold text-slate-300 transition active:scale-95 disabled:opacity-50"
-          : "rounded-full bg-amber-300 px-4 py-1.5 text-sm font-semibold text-slate-900 transition active:scale-95 disabled:opacity-50"
+          ? "inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 text-sm font-semibold text-slate-300 transition active:scale-95 disabled:opacity-50"
+          : "inline-flex min-h-[44px] items-center rounded-full bg-amber-300 px-4 text-sm font-semibold text-slate-900 transition active:scale-95 disabled:opacity-50"
       }
     >
       {following ? "Following" : "Follow"}

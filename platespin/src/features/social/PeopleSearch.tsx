@@ -45,7 +45,7 @@ export function PeopleSearch() {
         }}
         onFocus={() => setOpen(true)}
         placeholder="Find people by name or @handle"
-        className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none"
+        className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-base text-slate-100 placeholder:text-slate-600 focus:border-amber-300/40 focus:outline-none"
       />
       {open && results.length > 0 && (
         <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-white/10 bg-[#11161f] shadow-xl">

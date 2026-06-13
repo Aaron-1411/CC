@@ -34,7 +34,7 @@ export function FeedPage() {
   );
 
   const tabClass = (s: FeedScope) =>
-    `rounded-full px-3 py-1 text-sm font-semibold transition ${
+    `inline-flex min-h-[44px] items-center rounded-full px-3 text-sm font-semibold transition ${
       scope === s ? "bg-amber-300 text-slate-900" : "text-slate-400"
     }`;
 
@@ -47,7 +47,7 @@ export function FeedPage() {
         {!user && (
           <Link
             to="/login"
-            className="rounded-full bg-amber-300 px-4 py-1.5 text-sm font-semibold text-slate-900"
+            className="inline-flex min-h-[44px] items-center rounded-full bg-amber-300 px-4 text-sm font-semibold text-slate-900"
           >
             Sign in
           </Link>
@@ -87,13 +87,13 @@ export function FeedPage() {
           <div className="mt-4 flex justify-center gap-2">
             <Link
               to="/compose"
-              className="rounded-full bg-amber-300 px-4 py-1.5 text-sm font-semibold text-slate-900"
+              className="inline-flex min-h-[44px] items-center rounded-full bg-amber-300 px-4 text-sm font-semibold text-slate-900"
             >
               Post a meal
             </Link>
             <Link
               to="/discover"
-              className="rounded-full border border-white/15 px-4 py-1.5 text-sm font-semibold text-slate-300"
+              className="inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 text-sm font-semibold text-slate-300"
             >
               Spin the wheel
             </Link>

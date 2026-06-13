@@ -70,7 +70,7 @@ export function ProfilePage() {
             <button
               type="button"
               onClick={() => void signOut()}
-              className="rounded-full border border-white/15 px-4 py-1.5 text-sm font-semibold text-slate-300"
+              className="inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 text-sm font-semibold text-slate-300"
             >
               Sign out
             </button>
@@ -79,7 +79,7 @@ export function ProfilePage() {
           ) : (
             <Link
               to="/login"
-              className="rounded-full bg-amber-300 px-4 py-1.5 text-sm font-semibold text-slate-900"
+              className="inline-flex min-h-[44px] items-center rounded-full bg-amber-300 px-4 text-sm font-semibold text-slate-900"
             >
               Follow
             </Link>
