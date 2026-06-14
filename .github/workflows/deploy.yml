@@ -467,7 +467,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: a1a1276a1a278339d95c187e0bf6de47
-          workingDirectory: business-interpreter/dist/server
+          workingDirectory: business-interpreter
           command: deploy
       # Self-healing runtime secrets: set AFTER the Worker script exists. Each is
       # skipped when its GitHub secret is unset, so CI stays green and the app
