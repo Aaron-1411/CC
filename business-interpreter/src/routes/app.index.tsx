@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { createJob, listJobs, deleteJob } from "@/lib/jobs.functions";
-import { FileSpreadsheet, Search, Plus, Trash2 } from "lucide-react";
+import { FileSpreadsheet, Search, Plus, Trash2, Table2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/app/")({
@@ -32,14 +32,14 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Jobs</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Each job is one workbook or research run with its own chat history.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={newSpreadsheetJob}
             className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
@@ -51,6 +51,12 @@ function Dashboard() {
             className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent"
           >
             <Search className="h-4 w-4" /> New research
+          </Link>
+          <Link
+            to="/app/reporting"
+            className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent"
+          >
+            <Table2 className="h-4 w-4" /> Reporting
           </Link>
         </div>
       </div>

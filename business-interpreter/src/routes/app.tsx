@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Workflow, FileSpreadsheet, Search, ListChecks, Microscope } from "lucide-react";
+import { LogOut, Workflow, FileSpreadsheet, Search, ListChecks, Microscope, Table2 } from "lucide-react";
 
 export const Route = createFileRoute("/app")({
   ssr: false,
@@ -50,6 +50,11 @@ function AuthenticatedLayout() {
             to="/app/analyzer"
             icon={<Microscope className="h-4 w-4" />}
             label="Sheet analyzer"
+          />
+          <NavLink
+            to="/app/reporting"
+            icon={<Table2 className="h-4 w-4" />}
+            label="Reporting"
           />
         </nav>
         <button

@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppReportingRouteImport } from './routes/app.reporting'
 import { Route as AppProcessesIndexRouteImport } from './routes/app.processes.index'
 import { Route as AppAnalyzerIndexRouteImport } from './routes/app.analyzer.index'
 import { Route as AppRunsIdRouteImport } from './routes/app.runs.$id'
@@ -40,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportingRoute = AppReportingRouteImport.update({
+  id: '/reporting',
+  path: '/reporting',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProcessesIndexRoute = AppProcessesIndexRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/app/reporting': typeof AppReportingRoute
   '/app/': typeof AppIndexRoute
   '/app/analyzer/$id': typeof AppAnalyzerIdRoute
   '/app/jobs/$jobId': typeof AppJobsJobIdRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/app/reporting': typeof AppReportingRoute
   '/app': typeof AppIndexRoute
   '/app/analyzer/$id': typeof AppAnalyzerIdRoute
   '/app/jobs/$jobId': typeof AppJobsJobIdRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/app/reporting': typeof AppReportingRoute
   '/app/': typeof AppIndexRoute
   '/app/analyzer/$id': typeof AppAnalyzerIdRoute
   '/app/jobs/$jobId': typeof AppJobsJobIdRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/app/reporting'
     | '/app/'
     | '/app/analyzer/$id'
     | '/app/jobs/$jobId'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/app/reporting'
     | '/app'
     | '/app/analyzer/$id'
     | '/app/jobs/$jobId'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/app/reporting'
     | '/app/'
     | '/app/analyzer/$id'
     | '/app/jobs/$jobId'
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/reporting': {
+      id: '/app/reporting'
+      path: '/reporting'
+      fullPath: '/app/reporting'
+      preLoaderRoute: typeof AppReportingRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/processes/': {
@@ -265,6 +284,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppReportingRoute: typeof AppReportingRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAnalyzerIdRoute: typeof AppAnalyzerIdRoute
   AppJobsJobIdRoute: typeof AppJobsJobIdRoute
@@ -277,6 +297,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppReportingRoute: AppReportingRoute,
   AppIndexRoute: AppIndexRoute,
   AppAnalyzerIdRoute: AppAnalyzerIdRoute,
   AppJobsJobIdRoute: AppJobsJobIdRoute,
