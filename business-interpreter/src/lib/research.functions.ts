@@ -48,7 +48,7 @@ export const runResearch = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => ResearchInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { firecrawlSearch, firecrawlScrape, firecrawlMap, pMapLimit } = await import("./firecrawl.server");
     const { generateText, Output } = await import("ai");
     const {
@@ -103,7 +103,7 @@ export const runResearch = createServerFn({ method: "POST" })
       } catch { /* skip */ }
     }
 
-    const model = getLovableModel("google/gemini-3-flash-preview");
+    const model = getAiModel("google/gemini-3-flash-preview");
 
     // 3. Per competitor: map → bucketed scrape → reviews search → 4-axis extraction
     const profiles: Profile[] = [];

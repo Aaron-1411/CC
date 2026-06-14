@@ -231,7 +231,7 @@ export const askAnalyzerQuestions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { generateText, Output } = await import("ai");
 
     const [{ data: analysis }, { data: thread }] = await Promise.all([
@@ -257,7 +257,7 @@ export const askAnalyzerQuestions = createServerFn({ method: "POST" })
       .join("\n");
 
     const { output } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       output: Output.object({
         schema: z.object({
           done: z.boolean(),
@@ -304,7 +304,7 @@ export const finalizeAnalysis = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { generateText, Output } = await import("ai");
 
     await context.supabase.from("sheet_analyses").update({ status: "analyzing" }).eq("id", data.id);
@@ -336,7 +336,7 @@ export const finalizeAnalysis = createServerFn({ method: "POST" })
     }
 
     const { output: tabsOut } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       output: Output.object({
         schema: z.object({
           tabs: z.array(
@@ -369,7 +369,7 @@ ${threadText}`,
     });
 
     const { text: narrative } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       system:
         "Write a clear, structured plain-English explanation of what this spreadsheet does. Cover: overall purpose, how data flows tab to tab, key assumptions, main outputs, and any risks or fragile areas you noticed. Use headings and bullet points. 300-600 words.",
       prompt: `Workbook: ${analysis.name}

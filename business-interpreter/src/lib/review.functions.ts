@@ -122,7 +122,7 @@ export const draftCommentary = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const eng = await import("./spreadsheet/engine.server");
     const { generateText, Output } = await import("ai");
 
@@ -140,7 +140,7 @@ export const draftCommentary = createServerFn({ method: "POST" })
       (s) => `Sheet "${s.name}" (${s.rowCount}×${s.colCount}):\n${s.preview.slice(0, 15).map((r) => r.join("\t")).join("\n")}`,
     ).join("\n\n");
 
-    const model = getLovableModel("google/gemini-3-flash-preview");
+    const model = getAiModel("google/gemini-3-flash-preview");
     const CitationSchema = z.object({
       body_markdown: z.string(),
       citations: z.array(z.object({

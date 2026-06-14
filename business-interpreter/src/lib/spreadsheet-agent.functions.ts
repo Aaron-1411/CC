@@ -15,7 +15,7 @@ export const runInstruction = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     // Lazy-load server-only modules
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const eng = await import("./spreadsheet/engine.server");
     const { generateText, tool, stepCountIs } = await import("ai");
 
@@ -140,7 +140,7 @@ export const runInstruction = createServerFn({ method: "POST" })
     };
 
     // 4. Run the agent
-    const model = getLovableModel("google/gemini-3-flash-preview");
+    const model = getAiModel("google/gemini-3-flash-preview");
     const snap = eng.snapshot(workbook);
     const systemPrompt = `You are a precise spreadsheet automation agent. The user will describe a transformation in natural language. Execute it deterministically using the available tools.
 
@@ -268,7 +268,7 @@ export const generateCommentary = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const eng = await import("./spreadsheet/engine.server");
     const { generateText } = await import("ai");
 
@@ -285,7 +285,7 @@ export const generateCommentary = createServerFn({ method: "POST" })
     const focus = data.focusSheet ? snap.sheets.find((s) => s.name === data.focusSheet) : snap.sheets[snap.sheets.length - 1];
     if (!focus) throw new Error("Sheet not found for commentary");
 
-    const model = getLovableModel("google/gemini-3-flash-preview");
+    const model = getAiModel("google/gemini-3-flash-preview");
     const { text } = await generateText({
       model,
       system: `You are a senior financial/business analyst writing concise commentary (${data.tone ?? "neutral, professional"}). Highlight the headline numbers, biggest movers, anomalies, and any obvious risks. Keep it under 250 words. Use markdown.`,

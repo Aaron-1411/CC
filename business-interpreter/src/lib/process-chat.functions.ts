@@ -42,7 +42,7 @@ export const askClarifyingQuestions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ processId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { generateText, Output } = await import("ai");
 
     const [{ data: proc }, { data: thread }] = await Promise.all([
@@ -61,7 +61,7 @@ export const askClarifyingQuestions = createServerFn({ method: "POST" })
       .join("\n");
 
     const { output } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       output: Output.object({
         schema: z.object({
           done: z.boolean(),
@@ -119,7 +119,7 @@ export const refineSopFromThread = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ processId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { generateText } = await import("ai");
 
     const [{ data: proc }, { data: thread }] = await Promise.all([
@@ -137,7 +137,7 @@ export const refineSopFromThread = createServerFn({ method: "POST" })
       .join("\n");
 
     const { text } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       system:
         "Rewrite the SOP to incorporate every answer in the thread. Keep the user's voice. Add specifics, thresholds, and edge cases the answers reveal. Do not invent details. Output ONLY the new SOP text.",
       prompt: `Existing SOP:\n${proc.sop_text ?? ""}\n\nThread:\n${threadText}`,

@@ -476,11 +476,15 @@ jobs:
       # Self-healing runtime secrets: set AFTER the Worker script exists. Each is
       # skipped when its GitHub secret is unset, so CI stays green and the app
       # degrades gracefully — AI transforms + competitor research stay dormant
-      # until BI_LOVABLE_API_KEY / BI_FIRECRAWL_API_KEY are added.
+      # until BI_AI_GATEWAY_API_KEY / BI_FIRECRAWL_API_KEY are added. The gateway
+      # is provider-agnostic (OpenAI-compatible); BI_AI_GATEWAY_URL and
+      # BI_AI_DEFAULT_MODEL are optional overrides (default: OpenRouter).
       - name: Set Worker runtime secrets
         env:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          LOVABLE_API_KEY: ${{ secrets.BI_LOVABLE_API_KEY }}
+          AI_GATEWAY_API_KEY: ${{ secrets.BI_AI_GATEWAY_API_KEY }}
+          AI_GATEWAY_URL: ${{ secrets.BI_AI_GATEWAY_URL }}
+          AI_DEFAULT_MODEL: ${{ secrets.BI_AI_DEFAULT_MODEL }}
           FIRECRAWL_API_KEY: ${{ secrets.BI_FIRECRAWL_API_KEY }}
           SUPABASE_URL: ${{ secrets.BI_SUPABASE_URL }}
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.BI_SUPABASE_PUBLISHABLE_KEY }}
@@ -495,7 +499,9 @@ jobs:
               -d "{\"name\":\"$name\",\"text\":\"$val\",\"type\":\"secret_text\"}" >/dev/null \
               && echo "set $name" || echo "failed $name"
           }
-          set_secret LOVABLE_API_KEY "$LOVABLE_API_KEY"
+          set_secret AI_GATEWAY_API_KEY "$AI_GATEWAY_API_KEY"
+          set_secret AI_GATEWAY_URL "$AI_GATEWAY_URL"
+          set_secret AI_DEFAULT_MODEL "$AI_DEFAULT_MODEL"
           set_secret FIRECRAWL_API_KEY "$FIRECRAWL_API_KEY"
           set_secret SUPABASE_URL "$SUPABASE_URL"
           set_secret SUPABASE_PUBLISHABLE_KEY "$SUPABASE_PUBLISHABLE_KEY"

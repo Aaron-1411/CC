@@ -45,12 +45,12 @@ export const listDemonstrations = createServerFn({ method: "POST" })
     return { demos: rows ?? [] };
   });
 
-// Transcribe via Lovable AI multimodal, then outline into ProcessStep[].
+// Transcribe via the multimodal AI gateway, then outline into ProcessStep[].
 export const processDemonstration = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { generateText, Output } = await import("ai");
 
     const { data: demo, error } = await context.supabase
@@ -80,7 +80,7 @@ export const processDemonstration = createServerFn({ method: "POST" })
 
       // 1. Transcribe / describe
       const transcribe = await generateText({
-        model: getLovableModel("google/gemini-2.5-flash"),
+        model: getAiModel("google/gemini-2.5-flash"),
         system:
           "You are watching a screen recording of a person demonstrating a workflow. Transcribe their narration AND describe each on-screen action in chronological order. Be specific about clicks, files opened, sheets, columns, formulas typed, navigation paths, and any decisions they explain. Output a single chronological log.",
         messages: [
@@ -105,7 +105,7 @@ export const processDemonstration = createServerFn({ method: "POST" })
 
       // 2. Outline into structured steps
       const outline = await generateText({
-        model: getLovableModel(),
+        model: getAiModel(),
         output: Output.object({
           schema: z.object({
             steps: z

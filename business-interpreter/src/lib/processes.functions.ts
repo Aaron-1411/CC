@@ -158,7 +158,7 @@ export const parseSopToSteps = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const { generateText, Output } = await import("ai");
 
     const { data: proc } = await context.supabase
@@ -202,7 +202,7 @@ Prior corrections to respect:
 ${correctionsBlock || "(none yet)"}`;
 
     const { output } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       output: Output.object({
         schema: z.object({
           steps: z
@@ -290,11 +290,11 @@ async function aiCheckStep(
   step: ProcessStep,
   contextBlob: Record<string, unknown>,
 ): Promise<{ pass: boolean; issues: string[]; summary: string }> {
-  const { getLovableModel } = await import("./ai-gateway.server");
+  const { getAiModel } = await import("./ai-gateway.server");
   const { generateText, Output } = await import("ai");
 
   const { output } = await generateText({
-    model: getLovableModel(),
+    model: getAiModel(),
     output: Output.object({
       schema: z.object({
         pass: z.boolean(),

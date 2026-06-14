@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Workflow } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
@@ -50,15 +49,12 @@ function AuthPage() {
 
   async function handleGoogle() {
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/app",
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/app" },
     });
-    if (result.error) {
-      setError(result.error.message ?? "Google sign-in failed");
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/app" });
+    if (error) setError(error.message ?? "Google sign-in failed");
+    // On success Supabase performs a full-page redirect to Google.
   }
 
   return (

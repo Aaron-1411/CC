@@ -21,7 +21,7 @@ export const planTransformation = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => PlanInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { getLovableModel } = await import("./ai-gateway.server");
+    const { getAiModel } = await import("./ai-gateway.server");
     const eng = await import("./spreadsheet/engine.server");
     const { generateText, Output } = await import("ai");
 
@@ -44,7 +44,7 @@ export const planTransformation = createServerFn({ method: "POST" })
       .join("\n");
 
     const { output } = await generateText({
-      model: getLovableModel(),
+      model: getAiModel(),
       output: Output.object({ schema: TransformPlanSchema }),
       system: `You translate a natural-language spreadsheet task into a TYPED transformation plan that a deterministic executor will run. Always start with load_sheet for every input sheet you read. Use intermediate table names (e.g. "raw", "clean", "by_region"). Only use the supported ops. Never invent columns — use the exact header strings from row 1. End with write_sheet (or write_formula/fill_down_formula) so the user sees output.
 

@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportError } from "../lib/error-reporting";
 
 function NotFoundComponent() {
   return (
@@ -38,7 +38,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -77,18 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Data Navigator Pro automates data reporting, transformation, and analysis for business insights." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Data Navigator Pro automates data reporting, transformation, and analysis for business insights." },
+      { title: "Workbench" },
+      { name: "description", content: "Workbench automates spreadsheet reporting, plain-English transformations, and competitor research for business insights." },
+      { name: "author", content: "Workbench" },
+      { property: "og:title", content: "Workbench" },
+      { property: "og:description", content: "Workbench automates spreadsheet reporting, plain-English transformations, and competitor research for business insights." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Data Navigator Pro automates data reporting, transformation, and analysis for business insights." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6d879039-24a6-4eb5-abd4-db57a5a104bb/id-preview-f66a4531--571b49ea-fe95-43ae-9f88-30996f54a7ab.lovable.app-1781026792951.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6d879039-24a6-4eb5-abd4-db57a5a104bb/id-preview-f66a4531--571b49ea-fe95-43ae-9f88-30996f54a7ab.lovable.app-1781026792951.png" },
+      { name: "twitter:title", content: "Workbench" },
+      { name: "twitter:description", content: "Workbench automates spreadsheet reporting, plain-English transformations, and competitor research for business insights." },
     ],
     links: [
       {
