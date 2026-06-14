@@ -76,7 +76,6 @@ export const processDemonstration = createServerFn({ method: "POST" })
       const b64 = Buffer.from(ab).toString("base64");
       const mime = demo.mime_type || "video/mp4";
       const dataUrl = `data:${mime};base64,${b64}`;
-      const isAudio = mime.startsWith("audio/");
 
       // 1. Transcribe / describe
       const transcribe = await generateText({
@@ -88,9 +87,7 @@ export const processDemonstration = createServerFn({ method: "POST" })
             role: "user",
             content: [
               { type: "text", text: "Produce a detailed action+narration log of this recording." },
-              isAudio
-                ? { type: "file", data: dataUrl, mediaType: mime }
-                : { type: "file", data: dataUrl, mediaType: mime },
+              { type: "file", data: dataUrl, mediaType: mime },
             ] as any,
           },
         ],
