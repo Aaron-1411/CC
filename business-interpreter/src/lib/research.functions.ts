@@ -48,6 +48,18 @@ export const runResearch = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => ResearchInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    // Fail fast (before any DB write or dynamic import) if the optional
+    // services this pipeline depends on aren't configured on this deployment.
+    // Otherwise we'd insert an orphan user-message row and then throw a raw 500
+    // mid-pipeline when the first Firecrawl/AI call hits a missing key.
+    if (!process.env.FIRECRAWL_API_KEY) {
+      throw new Error("Competitor research isn't enabled on this deployment (missing FIRECRAWL_API_KEY).");
+    }
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      throw new Error("AI isn't enabled on this deployment (missing AI_GATEWAY_API_KEY), so competitor research can't run.");
+    }
+
     const { getAiModel } = await import("./ai-gateway.server");
     const { firecrawlSearch, firecrawlScrape, firecrawlMap, pMapLimit } = await import("./firecrawl.server");
     const { generateText, Output } = await import("ai");

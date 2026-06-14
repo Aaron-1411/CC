@@ -80,9 +80,10 @@ export const editCellAndRevalidate = createServerFn({ method: "POST" })
     // Save as new output workbook revision
     const outBuf = await eng.workbookToBuffer(workbook);
     const outPath = `${userId}/${data.jobId}/edit-${Date.now()}.xlsx`;
-    await supabase.storage.from("workbooks").upload(outPath, outBuf, {
+    const { error: upErr } = await supabase.storage.from("workbooks").upload(outPath, outBuf, {
       contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
+    if (upErr) throw new Error(`Failed to save edited workbook: ${upErr.message}`);
     const snap = eng.snapshot(workbook);
     const { data: newWb } = await supabase.from("workbooks").insert({
       user_id: userId,
@@ -155,7 +156,7 @@ export const draftCommentary = createServerFn({ method: "POST" })
       model,
       experimental_output: Output.object({ schema: CitationSchema }),
       system: `You are a senior business analyst. Write concise commentary (${data.tone ?? "neutral, professional"}, under 350 words, markdown). Cite each headline number with [sheet!cell]. Use validation report context to flag mismatches & anomalies.`,
-      prompt: `Validation scorecard: ${JSON.stringify(vr.scorecard)}\nReconciliation issues: ${JSON.stringify((vr.reconciliation as unknown[]).slice(0, 10))}\nAnomalies: ${JSON.stringify((vr.anomalies as unknown[]).slice(0, 10))}\n\nWorkbook preview:\n${summaryPreviews}`,
+      prompt: `Validation scorecard: ${JSON.stringify(vr.scorecard)}\nReconciliation issues: ${JSON.stringify(((vr.reconciliation ?? []) as unknown[]).slice(0, 10))}\nAnomalies: ${JSON.stringify(((vr.anomalies ?? []) as unknown[]).slice(0, 10))}\n\nWorkbook preview:\n${summaryPreviews}`,
     });
 
     const out = experimental_output as z.infer<typeof CitationSchema>;
