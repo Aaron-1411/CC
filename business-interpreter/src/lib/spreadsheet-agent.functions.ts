@@ -14,6 +14,14 @@ export const runInstruction = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
+    // Fail fast before any DB write if AI isn't configured, so a missing key
+    // can't orphan a user-message row and surface as a raw 500.
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      throw new Error(
+        "AI isn't enabled on this deployment (missing AI_GATEWAY_API_KEY), so this instruction can't run.",
+      );
+    }
+
     // Lazy-load server-only modules
     const { getAiModel } = await import("./ai-gateway.server");
     const eng = await import("./spreadsheet/engine.server");

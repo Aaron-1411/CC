@@ -248,7 +248,7 @@ export const askAnalyzerQuestions = createServerFn({ method: "POST" })
     const tabSummary = (analysis.tab_map as TabMapEntry[] | null)
       ?.map(
         (t) =>
-          `- ${t.name}: ${t.rows}r × ${t.cols}c, ${t.formula_count} formulas, ${t.hardcoded_input_count} inputs${t.external_links ? `, ${t.external_links} external links` : ""}. Headers: [${t.sample_headers.slice(0, 8).join(", ")}]`,
+          `- ${t.name}: ${t.rows}r × ${t.cols}c, ${t.formula_count} formulas, ${t.hardcoded_input_count} inputs${t.external_links ? `, ${t.external_links} external links` : ""}. Headers: [${(t.sample_headers ?? []).slice(0, 8).join(", ")}]`,
       )
       .join("\n");
 
