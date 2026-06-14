@@ -468,6 +468,10 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: a1a1276a1a278339d95c187e0bf6de47
           workingDirectory: business-interpreter
+          # Pin to a v4 wrangler: the action's npx --no-install probe can't see
+          # bun's node_modules, so it otherwise falls back to wrangler 3.90.0,
+          # which predates wrangler.jsonc auto-discovery and drops main/assets.
+          wranglerVersion: "4.95.0"
           command: deploy
       # Self-healing runtime secrets: set AFTER the Worker script exists. Each is
       # skipped when its GitHub secret is unset, so CI stays green and the app
