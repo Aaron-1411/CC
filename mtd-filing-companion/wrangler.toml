@@ -1,0 +1,18 @@
+name = "mtd-filing-companion"
+compatibility_date = "2026-06-01"
+pages_build_output_dir = "dist"
+
+# Cloudflare Pages Functions run on the Workers runtime.
+# Local dev secrets live in `.dev.vars` (gitignored). Production secrets are set
+# in the Cloudflare dashboard / `wrangler pages secret put`, never committed.
+#
+# Non-secret vars can be declared here; secrets (HMRC_CLIENT_SECRET,
+# TOKEN_ENCRYPTION_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_JWT_SECRET) must NOT
+# be — keep them in .dev.vars / dashboard.
+[vars]
+HMRC_API_BASE_URL = "https://test-api.service.hmrc.gov.uk"
+HMRC_OAUTH_BASE_URL = "https://test-api.service.hmrc.gov.uk"
+GOV_VENDOR_PRODUCT_NAME = "MTD Filing Companion"
+GOV_VENDOR_VERSION = "mtd-filing-companion=0.0.0"
+HMRC_SCOPE = "read:self-assessment write:self-assessment"
+HMRC_PING_PATH = "/hello/user"

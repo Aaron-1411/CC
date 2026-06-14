@@ -381,3 +381,69 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           workingDirectory: platespin
           command: pages deploy dist --project-name=platespin-app --branch=main
+
+  deploy-mtd-filing-companion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"mtd-filing-companion-app","production_branch":"main"}' || true
+      # Server-side secrets for the Pages Functions (HMRC OAuth + Supabase token store).
+      # All optional: when a secret is unset the functions degrade gracefully (the
+      # HMRC chain reports "not configured"), so CI is green from the first push.
+      # Add the GitHub secrets below and re-run to light up the live backend.
+      - name: Set CF Pages environment variables
+        run: |
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/mtd-filing-companion-app" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_configs": {
+                "production": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "HMRC_CLIENT_ID": {"value": "${{ secrets.MTD_HMRC_CLIENT_ID }}", "type": "secret_text"},
+                    "HMRC_CLIENT_SECRET": {"value": "${{ secrets.MTD_HMRC_CLIENT_SECRET }}", "type": "secret_text"},
+                    "HMRC_REDIRECT_URI": {"value": "https://mtd-filing-companion-app.pages.dev/api/hmrc/callback", "type": "plain_text"},
+                    "TOKEN_ENCRYPTION_KEY": {"value": "${{ secrets.MTD_TOKEN_ENCRYPTION_KEY }}", "type": "secret_text"},
+                    "SUPABASE_URL": {"value": "${{ secrets.MTD_SUPABASE_URL }}", "type": "plain_text"},
+                    "SUPABASE_SERVICE_ROLE_KEY": {"value": "${{ secrets.MTD_SUPABASE_SERVICE_ROLE_KEY }}", "type": "secret_text"},
+                    "SUPABASE_JWT_SECRET": {"value": "${{ secrets.MTD_SUPABASE_JWT_SECRET }}", "type": "secret_text"}
+                  }
+                },
+                "preview": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27"
+                }
+              }
+            }' || true
+      # Self-healing build: with no Supabase creds we ship the honest, banner-labelled
+      # UI preview (VITE_PREVIEW=1). The moment MTD_SUPABASE_URL is set, the next
+      # deploy automatically switches to the live authenticated app.
+      - name: Install and build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.MTD_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.MTD_SUPABASE_ANON_KEY }}
+        run: |
+          cd mtd-filing-companion
+          bun install
+          if [ -z "$VITE_SUPABASE_URL" ]; then
+            echo "No Supabase creds present — building viewable UI preview (VITE_PREVIEW=1)."
+            VITE_PREVIEW=1 bun run build
+          else
+            echo "Supabase creds present — building live authenticated app."
+            bun run build
+          fi
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: mtd-filing-companion
+          command: pages deploy dist --project-name=mtd-filing-companion-app --branch=main
