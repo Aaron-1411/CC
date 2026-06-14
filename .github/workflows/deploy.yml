@@ -447,3 +447,51 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           workingDirectory: mtd-filing-companion
           command: pages deploy dist --project-name=mtd-filing-companion-app --branch=main
+
+  deploy-business-interpreter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      # Build-time PUBLIC config. Supabase URL + publishable key ship to the
+      # browser by design, so they live as GitHub secrets purely to bake the
+      # live client. The build still succeeds if unset (client init is lazy) —
+      # the deployed UI just can't reach Supabase until they're present.
+      - name: Install and build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.BI_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.BI_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.BI_SUPABASE_PROJECT_ID }}
+        run: cd business-interpreter && bun install && bun run build && rm -rf .wrangler
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: business-interpreter/dist/server
+          command: deploy
+      # Self-healing runtime secrets: set AFTER the Worker script exists. Each is
+      # skipped when its GitHub secret is unset, so CI stays green and the app
+      # degrades gracefully — AI transforms + competitor research stay dormant
+      # until BI_LOVABLE_API_KEY / BI_FIRECRAWL_API_KEY are added.
+      - name: Set Worker runtime secrets
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          LOVABLE_API_KEY: ${{ secrets.BI_LOVABLE_API_KEY }}
+          FIRECRAWL_API_KEY: ${{ secrets.BI_FIRECRAWL_API_KEY }}
+          SUPABASE_URL: ${{ secrets.BI_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.BI_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          set_secret() {
+            local name="$1"; local val="$2"
+            if [ -z "$val" ]; then echo "skip $name (unset)"; return 0; fi
+            curl -s -X PUT \
+              "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/workers/scripts/business-interpreter-app/secrets" \
+              -H "Authorization: Bearer $CF_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"name\":\"$name\",\"text\":\"$val\",\"type\":\"secret_text\"}" >/dev/null \
+              && echo "set $name" || echo "failed $name"
+          }
+          set_secret LOVABLE_API_KEY "$LOVABLE_API_KEY"
+          set_secret FIRECRAWL_API_KEY "$FIRECRAWL_API_KEY"
+          set_secret SUPABASE_URL "$SUPABASE_URL"
+          set_secret SUPABASE_PUBLISHABLE_KEY "$SUPABASE_PUBLISHABLE_KEY"
