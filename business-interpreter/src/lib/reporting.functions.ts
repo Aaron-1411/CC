@@ -138,6 +138,13 @@ const TransformSchema = z.discriminatedUnion("op", [
       onError: z.enum(["null", "keep"]).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("trim"),
+    params: z.object({
+      columns: z.array(z.string()).max(200).optional(),
+      collapse: z.boolean().optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

@@ -24,6 +24,7 @@ import {
   CopyMinus,
   ArrowDownToLine,
   Hash,
+  Eraser,
   Plus,
   X,
 } from "lucide-react";
@@ -48,7 +49,8 @@ type Op =
   | "rename"
   | "dedupe"
   | "fillDown"
-  | "castNumber";
+  | "castNumber"
+  | "trim";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -144,6 +146,8 @@ function ReportingPage() {
   const [fillDownColumns, setFillDownColumns] = useState<string[]>([]);
   const [castColumns, setCastColumns] = useState<string[]>([]);
   const [castOnError, setCastOnError] = useState<"null" | "keep">("null");
+  const [trimColumns, setTrimColumns] = useState<string[]>([]);
+  const [trimCollapse, setTrimCollapse] = useState(false);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -237,6 +241,14 @@ function ReportingPage() {
         op: "castNumber",
         params: { columns: castColumns, onError: castOnError },
       } as const;
+    if (op === "trim")
+      return {
+        op: "trim",
+        params: {
+          ...(trimColumns.length ? { columns: trimColumns } : {}),
+          ...(trimCollapse ? { collapse: true } : {}),
+        },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -307,6 +319,8 @@ function ReportingPage() {
     setFillDownColumns([]);
     setCastColumns([]);
     setCastOnError("null");
+    setTrimColumns([]);
+    setTrimCollapse(false);
   }
 
   async function addStep() {
@@ -394,6 +408,12 @@ function ReportingPage() {
           : "Fill down empty cells";
       case "castNumber":
         return `Convert ${spec.params.columns.join(", ")} to number`;
+      case "trim":
+        return (
+          (spec.params.columns?.length
+            ? `Trim ${spec.params.columns.join(", ")}`
+            : "Trim whitespace") + (spec.params.collapse ? " (collapse spaces)" : "")
+        );
       default:
         return "Pass-through";
     }
@@ -458,6 +478,8 @@ function ReportingPage() {
         return true;
       case "castNumber":
         return castColumns.length > 0;
+      case "trim":
+        return true;
       default:
         return true;
     }
@@ -469,7 +491,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -590,6 +612,7 @@ function ReportingPage() {
           <OpTab active={op === "dedupe"} onClick={() => setOp("dedupe")} icon={<CopyMinus className="h-4 w-4" />} label="Dedupe" />
           <OpTab active={op === "fillDown"} onClick={() => setOp("fillDown")} icon={<ArrowDownToLine className="h-4 w-4" />} label="Fill down" />
           <OpTab active={op === "castNumber"} onClick={() => setOp("castNumber")} icon={<Hash className="h-4 w-4" />} label="To number" />
+          <OpTab active={op === "trim"} onClick={() => setOp("trim")} icon={<Eraser className="h-4 w-4" />} label="Trim" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1075,6 +1098,69 @@ function ReportingPage() {
                   }`}
                 >
                   Keep original text
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {op === "trim" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Strip stray spaces around values — fixes &quot;North &quot; vs &quot;North&quot; that
+              silently split group by, dedupe, and joins. Leave every column unselected to clean the
+              whole table; only text cells are touched.
+            </p>
+            {sourceColumns.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sourceColumns.map((c) => {
+                  const on = trimColumns.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      onClick={() =>
+                        setTrimColumns((prev) =>
+                          prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                        )
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        on
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose columns, or run with none selected to clean every column.
+              </p>
+            )}
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Inner whitespace</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setTrimCollapse(false)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    !trimCollapse
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Edges only
+                </button>
+                <button
+                  onClick={() => setTrimCollapse(true)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    trimCollapse
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Collapse inner runs
                 </button>
               </div>
             </div>

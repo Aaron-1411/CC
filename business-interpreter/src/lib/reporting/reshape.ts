@@ -758,6 +758,43 @@ export function castNumber(t: Table, params: CastNumberParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* trim (clean leading/trailing/internal whitespace on text columns)   */
+/* ------------------------------------------------------------------ */
+
+export type TrimParams = {
+  columns?: string[]; // columns to clean (omitted/empty = all columns)
+  collapse?: boolean; // also collapse internal whitespace runs to a single space
+};
+
+/**
+ * Strip leading/trailing whitespace from string cells in the selected columns
+ * (or every column when none are named — trimming never destroys data).
+ * Optionally collapse internal whitespace runs to a single space. Numbers,
+ * booleans, and nulls pass through untouched. Useful before group by / dedupe /
+ * joins, where stray spaces ("North " vs "North") otherwise split values.
+ */
+export function trim(t: Table, params: TrimParams = {}): Table {
+  const cols = (params.columns ?? []).filter((c) => c.trim() !== "");
+  const targets = cols.length
+    ? new Set(requireCols(t.columns, cols, "trim.columns"))
+    : new Set(t.columns.map((_, i) => i));
+  const collapse = params.collapse ?? false;
+  const rows: Cell[][] = t.rows.map((r) => {
+    const out = r.slice();
+    for (const i of targets) {
+      const v = out[i];
+      if (typeof v === "string") {
+        let s = v.trim();
+        if (collapse) s = s.replace(/\s+/g, " ");
+        out[i] = s;
+      }
+    }
+    return out;
+  });
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -775,7 +812,8 @@ export type TransformSpec =
   | { op: "rename"; params: RenameParams }
   | { op: "dedupe"; params: DedupeParams }
   | { op: "fillDown"; params: FillDownParams }
-  | { op: "castNumber"; params: CastNumberParams };
+  | { op: "castNumber"; params: CastNumberParams }
+  | { op: "trim"; params: TrimParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -807,6 +845,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return fillDown(t, spec.params);
     case "castNumber":
       return castNumber(t, spec.params);
+    case "trim":
+      return trim(t, spec.params);
     default:
       return t;
   }

@@ -18,6 +18,7 @@ import {
   dedupe,
   fillDown,
   castNumber,
+  trim,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -954,6 +955,93 @@ describe("castNumber", () => {
     ]);
     // 1234.5 + 45 + (-1000) + (-12) = 267.5 ; blanks/unparseable ignored by sum
     expect(out.rows[0]).toEqual([267.5]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* trim                                                                */
+/* ------------------------------------------------------------------ */
+
+describe("trim", () => {
+  const t: Table = {
+    columns: ["region", "city", "n"],
+    rows: [
+      ["  North ", "  Leeds", 1],
+      ["North", "York  ", 2],
+      [" South\t", "Hull", 3],
+    ],
+  };
+
+  test("strips leading and trailing whitespace on all columns by default", () => {
+    const out = trim(t);
+    expect(out.rows).toEqual([
+      ["North", "Leeds", 1],
+      ["North", "York", 2],
+      ["South", "Hull", 3],
+    ]);
+  });
+
+  test("omitted columns equals empty columns equals all columns", () => {
+    expect(trim(t).rows).toEqual(trim(t, { columns: [] }).rows);
+  });
+
+  test("restricts to a subset of columns when given", () => {
+    const out = trim(t, { columns: ["region"] });
+    // city left untouched
+    expect(out.rows).toEqual([
+      ["North", "  Leeds", 1],
+      ["North", "York  ", 2],
+      ["South", "Hull", 3],
+    ]);
+  });
+
+  test("collapse reduces internal whitespace runs to a single space", () => {
+    const inner: Table = {
+      columns: ["x"],
+      rows: [["  a   b\t\tc  "], ["one    two"]],
+    };
+    const out = trim(inner, { collapse: true });
+    expect(out.rows).toEqual([["a b c"], ["one two"]]);
+  });
+
+  test("default (no collapse) leaves internal whitespace intact", () => {
+    const inner: Table = { columns: ["x"], rows: [["  a   b  "]] };
+    expect(trim(inner).rows).toEqual([["a   b"]]);
+  });
+
+  test("leaves numbers, booleans and null untouched", () => {
+    const mixed: Table = {
+      columns: ["a", "b", "c"],
+      rows: [[42, true, null]],
+    };
+    const out = trim(mixed);
+    expect(out.rows).toEqual([[42, true, null]]);
+  });
+
+  test("does not mutate the source table", () => {
+    const snapshot = JSON.stringify(t);
+    trim(t, { collapse: true });
+    expect(JSON.stringify(t)).toEqual(snapshot);
+  });
+
+  test("throws on a missing subset column", () => {
+    expect(() => trim(t, { columns: ["nope"] })).toThrow(/not found/);
+  });
+
+  test("chains through applyPipeline to merge ' North ' and 'North' in group by", () => {
+    const out = applyPipeline(t, [
+      { op: "trim", params: { columns: ["region"] } },
+      {
+        op: "groupBy",
+        params: {
+          groupColumns: ["region"],
+          aggregations: [{ column: "n", agg: "sum", as: "total" }],
+        },
+      },
+    ]);
+    // "  North " + "North" collapse to one group summing 1 + 2 = 3
+    const north = out.rows.find((r) => r[0] === "North");
+    expect(north).toEqual(["North", 3]);
   });
 });
 
