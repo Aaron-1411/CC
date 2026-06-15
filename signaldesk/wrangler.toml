@@ -1,0 +1,22 @@
+name = "signaldesk"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-11-27"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 (persistence) — OFF by default so the app deploys with ZERO config and
+# degrades to demo data (the access gate is closed in production until you set
+# APP_SHARED_SECRET, so API routes return 401 and the UI shows bundled demo
+# signals). To turn persistence on, follow README step 3:
+#   wrangler d1 create signaldesk
+#   wrangler d1 execute signaldesk --remote --file=./schema.sql
+# then UNCOMMENT the block below and paste the returned database_id:
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "signaldesk"
+# database_id = "REPLACE_WITH_ID_FROM_CREATE"
+
+# Secrets are NOT stored here. Set them in Cloudflare Pages → Settings →
+# Environment variables (production + preview), or locally in .dev.vars:
+#   DISCORD_BOT_TOKEN, DISCORD_CHANNEL_ID, ANTHROPIC_API_KEY,
+#   TWELVEDATA_API_KEY, FINNHUB_API_KEY (optional), APP_SHARED_SECRET

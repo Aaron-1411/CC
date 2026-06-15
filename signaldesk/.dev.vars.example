@@ -1,0 +1,21 @@
+# Copy to `.dev.vars` for local `wrangler pages dev`. Never commit `.dev.vars`.
+# Every var is optional — the app degrades gracefully when one is missing
+# (see README "Degradation matrix").
+
+# Access gate (Phase 0). If unset, the gate is OPEN in local dev only and
+# CLOSED (401) in production. Set a long random string for the deployed site
+# if you are not using Cloudflare Access.
+APP_SHARED_SECRET=
+
+# Discord sync (Phase 2a). Bot must have View Channel + Read Message History.
+DISCORD_BOT_TOKEN=
+DISCORD_CHANNEL_ID=
+
+# Signal parsing (Phase 2). If unset, parse.ts uses a local heuristic parser.
+ANTHROPIC_API_KEY=
+
+# Candles (Phase 3). Stocks/forex via Twelve Data; crypto uses keyless Binance.
+TWELVEDATA_API_KEY=
+
+# Optional: live quote + symbol search only. Not on the critical path.
+FINNHUB_API_KEY=

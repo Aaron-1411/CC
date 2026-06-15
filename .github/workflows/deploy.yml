@@ -505,3 +505,62 @@ jobs:
           set_secret FIRECRAWL_API_KEY "$FIRECRAWL_API_KEY"
           set_secret SUPABASE_URL "$SUPABASE_URL"
           set_secret SUPABASE_PUBLISHABLE_KEY "$SUPABASE_PUBLISHABLE_KEY"
+
+  deploy-signaldesk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"signaldesk-app","production_branch":"main"}' || true
+      # Backend secrets — ALL optional. With none set, the access gate is closed
+      # in production (APP_SHARED_SECRET empty) so every /api route returns 401 and
+      # the UI renders bundled demo signals (honest "demo data" badge). CI is green
+      # from the first push. Activate by adding the GitHub secrets below + creating
+      # D1 (see signaldesk/README.md), then re-run. ANTHROPIC_API_KEY is the shared
+      # account key; the rest are SignalDesk-scoped.
+      - name: Set CF Pages environment variables
+        run: |
+          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects/signaldesk-app" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deployment_configs": {
+                "production": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "APP_SHARED_SECRET": {"value": "${{ secrets.SIGNALDESK_APP_SHARED_SECRET }}", "type": "secret_text"},
+                    "DISCORD_BOT_TOKEN": {"value": "${{ secrets.SIGNALDESK_DISCORD_BOT_TOKEN }}", "type": "secret_text"},
+                    "DISCORD_CHANNEL_ID": {"value": "${{ secrets.SIGNALDESK_DISCORD_CHANNEL_ID }}", "type": "plain_text"},
+                    "ANTHROPIC_API_KEY": {"value": "${{ secrets.ANTHROPIC_API_KEY }}", "type": "secret_text"},
+                    "TWELVEDATA_API_KEY": {"value": "${{ secrets.SIGNALDESK_TWELVEDATA_API_KEY }}", "type": "secret_text"},
+                    "FINNHUB_API_KEY": {"value": "${{ secrets.SIGNALDESK_FINNHUB_API_KEY }}", "type": "secret_text"}
+                  }
+                },
+                "preview": {
+                  "compatibility_flags": ["nodejs_compat"],
+                  "compatibility_date": "2024-11-27",
+                  "env_vars": {
+                    "APP_SHARED_SECRET": {"value": "${{ secrets.SIGNALDESK_APP_SHARED_SECRET }}", "type": "secret_text"},
+                    "DISCORD_BOT_TOKEN": {"value": "${{ secrets.SIGNALDESK_DISCORD_BOT_TOKEN }}", "type": "secret_text"},
+                    "DISCORD_CHANNEL_ID": {"value": "${{ secrets.SIGNALDESK_DISCORD_CHANNEL_ID }}", "type": "plain_text"},
+                    "ANTHROPIC_API_KEY": {"value": "${{ secrets.ANTHROPIC_API_KEY }}", "type": "secret_text"},
+                    "TWELVEDATA_API_KEY": {"value": "${{ secrets.SIGNALDESK_TWELVEDATA_API_KEY }}", "type": "secret_text"},
+                    "FINNHUB_API_KEY": {"value": "${{ secrets.SIGNALDESK_FINNHUB_API_KEY }}", "type": "secret_text"}
+                  }
+                }
+              }
+            }' || true
+      - run: cd signaldesk && bun install && bun run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          workingDirectory: signaldesk
+          command: pages deploy dist --project-name=signaldesk-app --branch=main
