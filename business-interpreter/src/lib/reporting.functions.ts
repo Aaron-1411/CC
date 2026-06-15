@@ -131,6 +131,13 @@ const TransformSchema = z.discriminatedUnion("op", [
       columns: z.array(z.string()).max(200).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("castNumber"),
+    params: z.object({
+      columns: z.array(z.string()).min(1).max(200),
+      onError: z.enum(["null", "keep"]).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

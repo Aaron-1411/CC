@@ -17,6 +17,7 @@ import {
   rename,
   dedupe,
   fillDown,
+  castNumber,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -860,6 +861,99 @@ describe("fillDown", () => {
       ["South", "Widget", 7],
       ["South", "Gadget", 2],
     ]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* castNumber                                                          */
+/* ------------------------------------------------------------------ */
+
+describe("castNumber", () => {
+  const t: Table = {
+    columns: ["label", "amount"],
+    rows: [
+      ["A", "$1,234.50"],
+      ["B", "45%"],
+      ["C", "(1,000)"],
+      ["D", "-12"],
+      ["E", ""],
+      ["F", "n/a"],
+    ],
+  };
+
+  test("strips currency symbols and thousands commas", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.rows[0]).toEqual(["A", 1234.5]);
+  });
+
+  test("strips a trailing percent sign to a bare number", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.rows[1]).toEqual(["B", 45]);
+  });
+
+  test("treats accounting parentheses as negative", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.rows[2]).toEqual(["C", -1000]);
+  });
+
+  test("parses a leading minus sign", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.rows[3]).toEqual(["D", -12]);
+  });
+
+  test("blank cells become null", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.rows[4]).toEqual(["E", null]);
+  });
+
+  test("unparseable cells become null by default", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.rows[5]).toEqual(["F", null]);
+  });
+
+  test("unparseable cells are kept when onError is 'keep'", () => {
+    const out = castNumber(t, { columns: ["amount"], onError: "keep" });
+    expect(out.rows[5]).toEqual(["F", "n/a"]);
+  });
+
+  test("only converts the selected columns, leaving others untouched", () => {
+    const out = castNumber(t, { columns: ["amount"] });
+    expect(out.columns).toEqual(["label", "amount"]);
+    expect(out.rows.map((r) => r[0])).toEqual(["A", "B", "C", "D", "E", "F"]);
+  });
+
+  test("booleans become null", () => {
+    const bt: Table = { columns: ["x"], rows: [[true], [false]] };
+    const out = castNumber(bt, { columns: ["x"] });
+    expect(out.rows).toEqual([[null], [null]]);
+  });
+
+  test("passes through values that are already numbers", () => {
+    const nt: Table = { columns: ["x"], rows: [[10], [3.5]] };
+    const out = castNumber(nt, { columns: ["x"] });
+    expect(out.rows).toEqual([[10], [3.5]]);
+  });
+
+  test("does not mutate the source rows", () => {
+    const snapshot = JSON.parse(JSON.stringify(t.rows));
+    castNumber(t, { columns: ["amount"] });
+    expect(t.rows).toEqual(snapshot);
+  });
+
+  test("throws when a column is missing", () => {
+    expect(() => castNumber(t, { columns: ["nope"] })).toThrow(/not found/);
+  });
+
+  test("chains through applyPipeline (cast then sum)", () => {
+    const out = applyPipeline(t, [
+      { op: "castNumber", params: { columns: ["amount"], onError: "null" } },
+      {
+        op: "groupBy",
+        params: { groupColumns: [], aggregations: [{ column: "amount", agg: "sum", as: "total" }] },
+      },
+    ]);
+    // 1234.5 + 45 + (-1000) + (-12) = 267.5 ; blanks/unparseable ignored by sum
+    expect(out.rows[0]).toEqual([267.5]);
   });
 });
 

@@ -23,6 +23,7 @@ import {
   TextCursorInput,
   CopyMinus,
   ArrowDownToLine,
+  Hash,
   Plus,
   X,
 } from "lucide-react";
@@ -46,7 +47,8 @@ type Op =
   | "limit"
   | "rename"
   | "dedupe"
-  | "fillDown";
+  | "fillDown"
+  | "castNumber";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -140,6 +142,8 @@ function ReportingPage() {
   const [renameTo, setRenameTo] = useState("");
   const [dedupeColumns, setDedupeColumns] = useState<string[]>([]);
   const [fillDownColumns, setFillDownColumns] = useState<string[]>([]);
+  const [castColumns, setCastColumns] = useState<string[]>([]);
+  const [castOnError, setCastOnError] = useState<"null" | "keep">("null");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -228,6 +232,11 @@ function ReportingPage() {
         op: "fillDown",
         params: fillDownColumns.length ? { columns: fillDownColumns } : {},
       } as const;
+    if (op === "castNumber")
+      return {
+        op: "castNumber",
+        params: { columns: castColumns, onError: castOnError },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -296,6 +305,8 @@ function ReportingPage() {
     setRenameTo("");
     setDedupeColumns([]);
     setFillDownColumns([]);
+    setCastColumns([]);
+    setCastOnError("null");
   }
 
   async function addStep() {
@@ -381,6 +392,8 @@ function ReportingPage() {
         return spec.params.columns?.length
           ? `Fill down ${spec.params.columns.join(", ")}`
           : "Fill down empty cells";
+      case "castNumber":
+        return `Convert ${spec.params.columns.join(", ")} to number`;
       default:
         return "Pass-through";
     }
@@ -443,10 +456,12 @@ function ReportingPage() {
         return true;
       case "fillDown":
         return true;
+      case "castNumber":
+        return castColumns.length > 0;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -454,7 +469,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -574,6 +589,7 @@ function ReportingPage() {
           <OpTab active={op === "rename"} onClick={() => setOp("rename")} icon={<TextCursorInput className="h-4 w-4" />} label="Rename col" />
           <OpTab active={op === "dedupe"} onClick={() => setOp("dedupe")} icon={<CopyMinus className="h-4 w-4" />} label="Dedupe" />
           <OpTab active={op === "fillDown"} onClick={() => setOp("fillDown")} icon={<ArrowDownToLine className="h-4 w-4" />} label="Fill down" />
+          <OpTab active={op === "castNumber"} onClick={() => setOp("castNumber")} icon={<Hash className="h-4 w-4" />} label="To number" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -997,6 +1013,71 @@ function ReportingPage() {
                 Load a source first to choose columns — or run as-is to fill every column.
               </p>
             )}
+          </div>
+        )}
+
+        {op === "castNumber" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Convert messy text — currency symbols, %, thousands commas, (accounting negatives) —
+              into real numbers so they can be aggregated, pivoted, or computed on. Pick the columns
+              to convert; label columns are left untouched.
+            </p>
+            {sourceColumns.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sourceColumns.map((c) => {
+                  const on = castColumns.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      onClick={() =>
+                        setCastColumns((prev) =>
+                          prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                        )
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        on
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose the columns to convert.
+              </p>
+            )}
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                When a value can&apos;t be parsed
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setCastOnError("null")}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    castOnError === "null"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Blank it out
+                </button>
+                <button
+                  onClick={() => setCastOnError("keep")}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    castOnError === "keep"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Keep original text
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

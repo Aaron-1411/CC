@@ -54,6 +54,41 @@ function toNumber(v: Cell): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * Parse a human-formatted value into a number, or null if it isn't numeric.
+ * Handles the messy real-world formats Excel/Tableau exports produce:
+ *   - currency symbols ($ £ € ¥ ₹) and thousands separators ("1,234")
+ *   - trailing/leading percent signs ("45%" → 45)
+ *   - accounting-style parentheses for negatives ("(1,234)" → -1234)
+ *   - leading minus / unicode minus
+ * Assumes US/UK convention (comma = thousands, dot = decimal). Blanks → null.
+ * Booleans are not treated as formatted numbers (→ null).
+ */
+function parseFormattedNumber(v: Cell): number | null {
+  if (v === null || v === "") return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  if (typeof v === "boolean") return null;
+  let s = String(v).trim();
+  if (s === "") return null;
+  let negative = false;
+  // Accounting-style parentheses: (1,234) → -1234
+  if (/^\(.*\)$/.test(s)) {
+    negative = true;
+    s = s.slice(1, -1).trim();
+  }
+  // Leading minus or unicode minus sign
+  if (/^[-−]/.test(s)) {
+    negative = !negative;
+    s = s.replace(/^[-−]/, "").trim();
+  }
+  // Strip currency symbols, thousands separators, percent, and whitespace.
+  s = s.replace(/[$£€¥₹%,\s]/g, "");
+  if (s === "") return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return null;
+  return negative ? -n : n;
+}
+
 /* ------------------------------------------------------------------ */
 /* CSV                                                                 */
 /* ------------------------------------------------------------------ */
@@ -685,6 +720,44 @@ export function fillDown(t: Table, params: FillDownParams = {}): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* castNumber (coerce formatted text columns to real numbers)          */
+/* ------------------------------------------------------------------ */
+
+export type CastNumberParams = {
+  columns: string[]; // columns to convert (required — converting all would clobber labels)
+  onError?: "null" | "keep"; // non-blank cells that don't parse: null (default) or keep original
+};
+
+/**
+ * Convert the selected columns from human-formatted text (currency, percent,
+ * thousands separators, accounting negatives) into real numbers so they can be
+ * aggregated, pivoted, or computed on. Blank cells become null. Cells that
+ * can't be parsed become null (default) or are left untouched (onError: "keep").
+ */
+export function castNumber(t: Table, params: CastNumberParams): Table {
+  const cols = (params.columns ?? []).filter((c) => c.trim() !== "");
+  const idx = requireCols(t.columns, cols, "castNumber.columns");
+  const onError = params.onError ?? "null";
+  const targets = new Set(idx);
+  const rows: Cell[][] = t.rows.map((r) => {
+    const out = r.slice();
+    for (const i of targets) {
+      const original = out[i];
+      const n = parseFormattedNumber(original);
+      if (n !== null) {
+        out[i] = n;
+      } else if (original === null || original === "") {
+        out[i] = null;
+      } else {
+        out[i] = onError === "keep" ? original : null;
+      }
+    }
+    return out;
+  });
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -701,7 +774,8 @@ export type TransformSpec =
   | { op: "limit"; params: LimitParams }
   | { op: "rename"; params: RenameParams }
   | { op: "dedupe"; params: DedupeParams }
-  | { op: "fillDown"; params: FillDownParams };
+  | { op: "fillDown"; params: FillDownParams }
+  | { op: "castNumber"; params: CastNumberParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -731,6 +805,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return dedupe(t, spec.params);
     case "fillDown":
       return fillDown(t, spec.params);
+    case "castNumber":
+      return castNumber(t, spec.params);
     default:
       return t;
   }
