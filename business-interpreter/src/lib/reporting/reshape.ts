@@ -284,6 +284,66 @@ export function pivot(t: Table, params: PivotParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* Group by (summarise rows into per-group aggregates)                 */
+/* ------------------------------------------------------------------ */
+
+export type AggSpec = {
+  column: string;
+  agg: Agg;
+  as?: string; // output column name; defaults to `${agg}_${column}`
+};
+
+export type GroupByParams = {
+  groupColumns: string[];
+  aggregations: AggSpec[];
+};
+
+/**
+ * SQL-style GROUP BY / summarise. Rows sharing the same tuple of
+ * `groupColumns` values collapse into one output row; each aggregation
+ * computes over its source column within the group. Groups are emitted in
+ * first-seen order (deterministic). Distinct from pivot: this reduces rows
+ * without spreading a category across columns.
+ */
+export function groupBy(t: Table, params: GroupByParams): Table {
+  const groupIdx = requireCols(t.columns, params.groupColumns, "groupBy.groupColumns");
+  if (params.aggregations.length === 0)
+    throw new Error("groupBy.aggregations: at least one aggregation is required");
+  const aggIdx = params.aggregations.map(
+    (a) => requireCols(t.columns, [a.column], "groupBy.aggregations")[0],
+  );
+
+  const order: string[] = [];
+  const groups = new Map<string, { keyVals: Cell[]; buckets: Cell[][] }>();
+
+  for (const row of t.rows) {
+    const keyVals = groupIdx.map((i) => row[i] ?? null);
+    const key = JSON.stringify(keyVals);
+    let g = groups.get(key);
+    if (!g) {
+      g = { keyVals, buckets: params.aggregations.map(() => []) };
+      groups.set(key, g);
+      order.push(key);
+    }
+    for (let k = 0; k < aggIdx.length; k++) g.buckets[k].push(row[aggIdx[k]] ?? null);
+  }
+
+  const aggNames = params.aggregations.map(
+    (a) => a.as?.trim() || `${a.agg}_${a.column}`,
+  );
+  const columns = [...params.groupColumns, ...aggNames];
+  const rows: Cell[][] = order.map((key) => {
+    const g = groups.get(key)!;
+    const out: Cell[] = [...g.keyVals];
+    for (let k = 0; k < params.aggregations.length; k++) {
+      out.push(aggregate(g.buckets[k], params.aggregations[k].agg));
+    }
+    return out;
+  });
+  return { columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Filter (row subset by a single-column condition)                    */
 /* ------------------------------------------------------------------ */
 
@@ -441,6 +501,7 @@ export type TransformSpec =
   | { op: "transpose" }
   | { op: "unpivot"; params: UnpivotParams }
   | { op: "pivot"; params: PivotParams }
+  | { op: "groupBy"; params: GroupByParams }
   | { op: "filter"; params: FilterParams }
   | { op: "sort"; params: SortParams }
   | { op: "select"; params: SelectParams };
@@ -455,6 +516,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return unpivot(t, spec.params);
     case "pivot":
       return pivot(t, spec.params);
+    case "groupBy":
+      return groupBy(t, spec.params);
     case "filter":
       return filter(t, spec.params);
     case "sort":

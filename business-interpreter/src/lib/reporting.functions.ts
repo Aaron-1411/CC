@@ -45,6 +45,21 @@ const TransformSchema = z.discriminatedUnion("op", [
     }),
   }),
   z.object({
+    op: z.literal("groupBy"),
+    params: z.object({
+      groupColumns: z.array(z.string()).min(1),
+      aggregations: z
+        .array(
+          z.object({
+            column: z.string().min(1),
+            agg: z.enum(["sum", "count", "mean", "min", "max", "first"]),
+            as: z.string().optional(),
+          }),
+        )
+        .min(1),
+    }),
+  }),
+  z.object({
     op: z.literal("filter"),
     params: z.object({
       column: z.string().min(1),

@@ -8,6 +8,7 @@ import {
   transpose,
   unpivot,
   pivot,
+  groupBy,
   filter,
   sort,
   select,
@@ -220,6 +221,89 @@ describe("pivot", () => {
       agg: "first",
     });
     expect(first.rows[0]).toEqual(["North", 10, 20]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* groupBy (summarise)                                                 */
+/* ------------------------------------------------------------------ */
+
+describe("groupBy", () => {
+  const t: Table = {
+    columns: ["region", "rep", "sales"],
+    rows: [
+      ["North", "A", 10],
+      ["South", "C", 5],
+      ["North", "B", 40],
+      ["South", "D", 50],
+      ["North", "A", 3],
+    ],
+  };
+
+  test("sums per group in first-seen order with default column names", () => {
+    const out = groupBy(t, {
+      groupColumns: ["region"],
+      aggregations: [{ column: "sales", agg: "sum" }],
+    });
+    expect(out.columns).toEqual(["region", "sum_sales"]);
+    expect(out.rows).toEqual([
+      ["North", 53], // 10 + 40 + 3
+      ["South", 55], // 5 + 50
+    ]);
+  });
+
+  test("multiple aggregations and a custom output name", () => {
+    const out = groupBy(t, {
+      groupColumns: ["region"],
+      aggregations: [
+        { column: "sales", agg: "sum", as: "total" },
+        { column: "sales", agg: "count" },
+        { column: "sales", agg: "mean" },
+        { column: "rep", agg: "first" },
+      ],
+    });
+    expect(out.columns).toEqual(["region", "total", "count_sales", "mean_sales", "first_rep"]);
+    expect(out.rows).toEqual([
+      ["North", 53, 3, 53 / 3, "A"],
+      ["South", 55, 2, 27.5, "C"],
+    ]);
+  });
+
+  test("groups by a tuple of columns", () => {
+    const out = groupBy(t, {
+      groupColumns: ["region", "rep"],
+      aggregations: [{ column: "sales", agg: "sum" }],
+    });
+    expect(out.columns).toEqual(["region", "rep", "sum_sales"]);
+    expect(out.rows).toEqual([
+      ["North", "A", 13], // 10 + 3
+      ["South", "C", 5],
+      ["North", "B", 40],
+      ["South", "D", 50],
+    ]);
+  });
+
+  test("min / max aggregations", () => {
+    const out = groupBy(t, {
+      groupColumns: ["region"],
+      aggregations: [
+        { column: "sales", agg: "min" },
+        { column: "sales", agg: "max" },
+      ],
+    });
+    expect(out.rows).toEqual([
+      ["North", 3, 40],
+      ["South", 5, 50],
+    ]);
+  });
+
+  test("throws for an unknown group or aggregation column", () => {
+    expect(() =>
+      groupBy(t, { groupColumns: ["nope"], aggregations: [{ column: "sales", agg: "sum" }] }),
+    ).toThrow(/column "nope" not found/);
+    expect(() =>
+      groupBy(t, { groupColumns: ["region"], aggregations: [{ column: "nope", agg: "sum" }] }),
+    ).toThrow(/column "nope" not found/);
   });
 });
 

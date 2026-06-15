@@ -17,6 +17,9 @@ import {
   Filter,
   ArrowDownUp,
   ListChecks,
+  Sigma,
+  Plus,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/reporting")({
@@ -25,8 +28,9 @@ export const Route = createFileRoute("/app/reporting")({
 });
 
 type SourceKind = "csv-text" | "csv-url" | "tableau-vds";
-type Op = "none" | "transpose" | "unpivot" | "pivot" | "filter" | "sort" | "select";
+type Op = "none" | "transpose" | "unpivot" | "pivot" | "groupBy" | "filter" | "sort" | "select";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first";
+type AggRow = { column: string; agg: Agg; as: string };
 type FilterOp =
   | "eq"
   | "ne"
@@ -85,6 +89,8 @@ function ReportingPage() {
   const [sortColumn, setSortColumn] = useState("");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [selectColumns, setSelectColumns] = useState<string[]>([]);
+  const [groupColumns, setGroupColumns] = useState<string[]>([]);
+  const [aggRows, setAggRows] = useState<AggRow[]>([{ column: "", agg: "sum", as: "" }]);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -112,6 +118,16 @@ function ReportingPage() {
       return {
         op: "pivot",
         params: { indexColumns: idColumns, pivotColumn, valueColumn, agg },
+      } as const;
+    if (op === "groupBy")
+      return {
+        op: "groupBy",
+        params: {
+          groupColumns,
+          aggregations: aggRows
+            .filter((r) => r.column)
+            .map((r) => ({ column: r.column, agg: r.agg, ...(r.as.trim() ? { as: r.as.trim() } : {}) })),
+        },
       } as const;
     if (op === "filter")
       return {
@@ -194,6 +210,8 @@ function ReportingPage() {
         return idColumns.length > 0 && !!pivotColumn && !!valueColumn;
       case "unpivot":
         return idColumns.length > 0;
+      case "groupBy":
+        return groupColumns.length > 0 && aggRows.some((r) => r.column);
       case "filter":
         return !!filterColumn && (valuelessFilter || filterValue.trim().length > 0);
       case "sort":
@@ -203,7 +221,7 @@ function ReportingPage() {
       default:
         return true;
     }
-  }, [op, idColumns, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -211,8 +229,8 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot) with a deterministic engine, then view it here and store it locally as CSV or
-          XLSX.
+          unpivot, group by) with a deterministic engine, then view it here and store it locally as
+          CSV or XLSX.
         </p>
       </div>
 
@@ -279,6 +297,7 @@ function ReportingPage() {
           <OpTab active={op === "transpose"} onClick={() => setOp("transpose")} icon={<ArrowLeftRight className="h-4 w-4" />} label="Transpose" />
           <OpTab active={op === "unpivot"} onClick={() => setOp("unpivot")} icon={<Rows3 className="h-4 w-4" />} label="Unpivot" />
           <OpTab active={op === "pivot"} onClick={() => setOp("pivot")} icon={<Columns3 className="h-4 w-4" />} label="Pivot" />
+          <OpTab active={op === "groupBy"} onClick={() => setOp("groupBy")} icon={<Sigma className="h-4 w-4" />} label="Group by" />
           <OpTab active={op === "filter"} onClick={() => setOp("filter")} icon={<Filter className="h-4 w-4" />} label="Filter" />
           <OpTab active={op === "sort"} onClick={() => setOp("sort")} icon={<ArrowDownUp className="h-4 w-4" />} label="Sort" />
           <OpTab active={op === "select"} onClick={() => setOp("select")} icon={<ListChecks className="h-4 w-4" />} label="Select cols" />
@@ -345,6 +364,100 @@ function ReportingPage() {
                 </Field>
               </div>
             )}
+          </div>
+        )}
+
+        {op === "groupBy" && sourceColumns.length === 0 && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Load a source first to choose columns.
+          </p>
+        )}
+
+        {op === "groupBy" && sourceColumns.length > 0 && (
+          <div className="mt-4 space-y-4">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">
+                Group-by columns (one output row per unique combination)
+              </label>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {sourceColumns.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() =>
+                      setGroupColumns((prev) =>
+                        prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs ${
+                      groupColumns.includes(c)
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border hover:bg-accent"
+                    }`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Aggregations</label>
+              <div className="mt-2 space-y-2">
+                {aggRows.map((rowSpec, idx) => (
+                  <div key={idx} className="grid items-end gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]">
+                    <Field label="Column">
+                      <Select
+                        value={rowSpec.column}
+                        onChange={(v) =>
+                          setAggRows((prev) => prev.map((r, i) => (i === idx ? { ...r, column: v } : r)))
+                        }
+                        options={sourceColumns}
+                        placeholder="Choose…"
+                      />
+                    </Field>
+                    <Field label="Function">
+                      <Select
+                        value={rowSpec.agg}
+                        onChange={(v) =>
+                          setAggRows((prev) =>
+                            prev.map((r, i) => (i === idx ? { ...r, agg: v as Agg } : r)),
+                          )
+                        }
+                        options={["sum", "count", "mean", "min", "max", "first"]}
+                      />
+                    </Field>
+                    <Field label="Name (optional)">
+                      <input
+                        value={rowSpec.as}
+                        onChange={(e) =>
+                          setAggRows((prev) =>
+                            prev.map((r, i) => (i === idx ? { ...r, as: e.target.value } : r)),
+                          )
+                        }
+                        placeholder={rowSpec.column ? `${rowSpec.agg}_${rowSpec.column}` : "auto"}
+                        className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                      />
+                    </Field>
+                    <button
+                      onClick={() =>
+                        setAggRows((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== idx) : prev))
+                      }
+                      disabled={aggRows.length <= 1}
+                      aria-label="Remove aggregation"
+                      className="mb-1 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border hover:bg-accent disabled:opacity-40"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setAggRows((prev) => [...prev, { column: "", agg: "sum", as: "" }])}
+                className="mt-2 inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add aggregation
+              </button>
+            </div>
           </div>
         )}
 
