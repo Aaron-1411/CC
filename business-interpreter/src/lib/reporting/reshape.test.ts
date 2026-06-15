@@ -20,6 +20,7 @@ import {
   castNumber,
   trim,
   splitColumn,
+  mergeColumns,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1166,6 +1167,137 @@ describe("splitColumn", () => {
     ]);
     const north = out.rows.find((r) => r[0] === "North");
     expect(north).toEqual(["North", 22]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* mergeColumns                                                        */
+/* ------------------------------------------------------------------ */
+
+describe("mergeColumns", () => {
+  const t: Table = {
+    columns: ["first", "last", "age"],
+    rows: [
+      ["Aaron", "Manu", 30],
+      ["Jane", "Doe", 25],
+    ],
+  };
+
+  test("merges two columns into one at the first source position", () => {
+    const out = mergeColumns(t, { columns: ["first", "last"], separator: " ", into: "name" });
+    expect(out.columns).toEqual(["name", "age"]);
+    expect(out.rows).toEqual([
+      ["Aaron Manu", 30],
+      ["Jane Doe", 25],
+    ]);
+  });
+
+  test("stringifies numbers/booleans and treats null as empty", () => {
+    const nums: Table = {
+      columns: ["a", "b", "c"],
+      rows: [
+        ["x", 5, true],
+        ["y", null, false],
+      ],
+    };
+    const out = mergeColumns(nums, { columns: ["a", "b", "c"], separator: "-", into: "joined" });
+    expect(out.columns).toEqual(["joined"]);
+    expect(out.rows).toEqual([["x-5-true"], ["y--false"]]);
+  });
+
+  test("skipEmpty drops null/empty cells before joining", () => {
+    const nums: Table = {
+      columns: ["a", "b", "c"],
+      rows: [
+        ["x", 5, "z"],
+        ["y", null, ""],
+      ],
+    };
+    const out = mergeColumns(nums, {
+      columns: ["a", "b", "c"],
+      separator: "-",
+      into: "joined",
+      skipEmpty: true,
+    });
+    expect(out.rows).toEqual([["x-5-z"], ["y"]]);
+  });
+
+  test("keepOriginals preserves source columns alongside the merged result", () => {
+    const out = mergeColumns(t, {
+      columns: ["first", "last"],
+      separator: " ",
+      into: "name",
+      keepOriginals: true,
+    });
+    expect(out.columns).toEqual(["first", "name", "last", "age"]);
+    expect(out.rows[0]).toEqual(["Aaron", "Aaron Manu", "Manu", 30]);
+  });
+
+  test("an empty separator concatenates with no gap", () => {
+    const out = mergeColumns(t, { columns: ["first", "last"], separator: "", into: "name" });
+    expect(out.rows[0]).toEqual(["AaronManu", 30]);
+  });
+
+  test("joins in the given column order but inserts at the lowest source index", () => {
+    const out = mergeColumns(t, { columns: ["last", "first"], separator: ", ", into: "name" });
+    expect(out.columns).toEqual(["name", "age"]);
+    expect(out.rows[0]).toEqual(["Manu, Aaron", 30]);
+  });
+
+  test("merges three columns and keeps the rest", () => {
+    const addr: Table = {
+      columns: ["street", "city", "postcode", "country"],
+      rows: [["1 High St", "Leeds", "LS1", "UK"]],
+    };
+    const out = mergeColumns(addr, {
+      columns: ["street", "city", "postcode"],
+      separator: ", ",
+      into: "address",
+    });
+    expect(out.columns).toEqual(["address", "country"]);
+    expect(out.rows[0]).toEqual(["1 High St, Leeds, LS1", "UK"]);
+  });
+
+  test("throws on a missing column", () => {
+    expect(() => mergeColumns(t, { columns: ["first", "nope"], separator: " ", into: "x" })).toThrow(
+      /not found/,
+    );
+  });
+
+  test("throws when no columns are given", () => {
+    expect(() => mergeColumns(t, { columns: [], separator: " ", into: "x" })).toThrow(/at least one/);
+  });
+
+  test("does not mutate the source table", () => {
+    const snapshot = JSON.stringify(t);
+    mergeColumns(t, { columns: ["first", "last"], separator: " ", into: "name", keepOriginals: true });
+    expect(JSON.stringify(t)).toEqual(snapshot);
+  });
+
+  test("round-trips with splitColumn (merge → split back)", () => {
+    const out = applyPipeline(t, [
+      { op: "mergeColumns", params: { columns: ["first", "last"], separator: ", ", into: "name" } },
+      { op: "splitColumn", params: { column: "name", delimiter: ", ", into: ["first", "last"] } },
+    ]);
+    expect(out.columns).toEqual(["first", "last", "age"]);
+    expect(out.rows[0]).toEqual(["Aaron", "Manu", 30]);
+  });
+
+  test("chains through applyPipeline (merge → sort)", () => {
+    const sales: Table = {
+      columns: ["region", "rep", "amount"],
+      rows: [
+        ["South", "C", 7],
+        ["North", "B", 5],
+        ["North", "A", 10],
+      ],
+    };
+    const out = applyPipeline(sales, [
+      { op: "mergeColumns", params: { columns: ["region", "rep"], separator: " / ", into: "key" } },
+      { op: "sort", params: { column: "key", direction: "asc" } },
+    ]);
+    expect(out.columns).toEqual(["key", "amount"]);
+    expect(out.rows.map((r) => r[0])).toEqual(["North / A", "North / B", "South / C"]);
   });
 });
 

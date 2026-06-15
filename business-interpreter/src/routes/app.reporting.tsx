@@ -26,6 +26,7 @@ import {
   Hash,
   Eraser,
   TableColumnsSplit,
+  TableCellsMerge,
   Plus,
   X,
 } from "lucide-react";
@@ -52,7 +53,8 @@ type Op =
   | "fillDown"
   | "castNumber"
   | "trim"
-  | "splitColumn";
+  | "splitColumn"
+  | "mergeColumns";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -154,6 +156,11 @@ function ReportingPage() {
   const [splitDelimiter, setSplitDelimiter] = useState(", ");
   const [splitInto, setSplitInto] = useState("");
   const [splitKeepOriginal, setSplitKeepOriginal] = useState(false);
+  const [mergeColumnsSel, setMergeColumnsSel] = useState<string[]>([]);
+  const [mergeSeparator, setMergeSeparator] = useState(" ");
+  const [mergeInto, setMergeInto] = useState("");
+  const [mergeKeepOriginals, setMergeKeepOriginals] = useState(false);
+  const [mergeSkipEmpty, setMergeSkipEmpty] = useState(false);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -270,6 +277,17 @@ function ReportingPage() {
         },
       } as const;
     }
+    if (op === "mergeColumns")
+      return {
+        op: "mergeColumns",
+        params: {
+          columns: mergeColumnsSel,
+          separator: mergeSeparator,
+          into: mergeInto.trim(),
+          ...(mergeKeepOriginals ? { keepOriginals: true } : {}),
+          ...(mergeSkipEmpty ? { skipEmpty: true } : {}),
+        },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -346,6 +364,11 @@ function ReportingPage() {
     setSplitDelimiter(", ");
     setSplitInto("");
     setSplitKeepOriginal(false);
+    setMergeColumnsSel([]);
+    setMergeSeparator(" ");
+    setMergeInto("");
+    setMergeKeepOriginals(false);
+    setMergeSkipEmpty(false);
   }
 
   async function addStep() {
@@ -444,6 +467,8 @@ function ReportingPage() {
           `Split ${spec.params.column} by "${spec.params.delimiter}"` +
           (spec.params.into?.length ? ` → ${spec.params.into.join(", ")}` : "")
         );
+      case "mergeColumns":
+        return `Merge ${spec.params.columns.join(" + ")} → ${spec.params.into}`;
       default:
         return "Pass-through";
     }
@@ -512,10 +537,12 @@ function ReportingPage() {
         return true;
       case "splitColumn":
         return !!splitCol && splitDelimiter.length > 0;
+      case "mergeColumns":
+        return mergeColumnsSel.length >= 2 && !!mergeInto.trim();
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -523,7 +550,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -646,6 +673,7 @@ function ReportingPage() {
           <OpTab active={op === "castNumber"} onClick={() => setOp("castNumber")} icon={<Hash className="h-4 w-4" />} label="To number" />
           <OpTab active={op === "trim"} onClick={() => setOp("trim")} icon={<Eraser className="h-4 w-4" />} label="Trim" />
           <OpTab active={op === "splitColumn"} onClick={() => setOp("splitColumn")} icon={<TableColumnsSplit className="h-4 w-4" />} label="Split col" />
+          <OpTab active={op === "mergeColumns"} onClick={() => setOp("mergeColumns")} icon={<TableCellsMerge className="h-4 w-4" />} label="Merge cols" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1265,6 +1293,120 @@ function ReportingPage() {
             ) : (
               <p className="text-xs text-muted-foreground">
                 Load a source first to choose a column to split.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "mergeColumns" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Concatenate several columns into one — first + last into a full name, year + quarter
+              into &quot;2024-Q3&quot;, address parts into a single line. The inverse of split column.
+              Click columns in the order you want them joined.
+            </p>
+            {sourceColumns.length > 0 ? (
+              <>
+                <div>
+                  <p className="mb-1 text-xs font-medium text-muted-foreground">
+                    Columns to merge (in click order)
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {sourceColumns.map((c) => {
+                      const pos = mergeColumnsSel.indexOf(c);
+                      const on = pos >= 0;
+                      return (
+                        <button
+                          key={c}
+                          onClick={() =>
+                            setMergeColumnsSel((prev) =>
+                              prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                            )
+                          }
+                          className={`rounded-full border px-3 py-1 text-xs ${
+                            on
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border hover:bg-accent"
+                          }`}
+                        >
+                          {on ? `${pos + 1}. ${c}` : c}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Separator">
+                    <input
+                      value={mergeSeparator}
+                      onChange={(e) => setMergeSeparator(e.target.value)}
+                      placeholder='e.g. " " or ", " or "-"'
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                    />
+                  </Field>
+                  <Field label="New column name">
+                    <input
+                      value={mergeInto}
+                      onChange={(e) => setMergeInto(e.target.value)}
+                      placeholder="e.g. Full name"
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                    />
+                  </Field>
+                </div>
+                <div>
+                  <p className="mb-1 text-xs font-medium text-muted-foreground">Source columns</p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setMergeKeepOriginals(false)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        !mergeKeepOriginals
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      Replace
+                    </button>
+                    <button
+                      onClick={() => setMergeKeepOriginals(true)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        mergeKeepOriginals
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      Keep originals
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-1 text-xs font-medium text-muted-foreground">Empty cells</p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setMergeSkipEmpty(false)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        !mergeSkipEmpty
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      Keep gaps
+                    </button>
+                    <button
+                      onClick={() => setMergeSkipEmpty(true)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        mergeSkipEmpty
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      Skip empty
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose columns to merge.
               </p>
             )}
           </div>

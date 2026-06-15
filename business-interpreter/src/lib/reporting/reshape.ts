@@ -864,6 +864,81 @@ export function splitColumn(t: Table, params: SplitColumnParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* mergeColumns (concatenate several columns into one)                 */
+/* ------------------------------------------------------------------ */
+
+export type MergeColumnsParams = {
+  columns: string[]; // the columns to concatenate, in the given order
+  separator: string; // literal joiner, e.g. " ", ", ", "-", or "" for no gap
+  into: string; // name of the resulting column
+  keepOriginals?: boolean; // keep the source columns too (default: replace them)
+  skipEmpty?: boolean; // drop null/empty cells before joining (default: false)
+};
+
+/**
+ * Concatenate several columns into one — the inverse of splitColumn.
+ * "Aaron" + "Manu" → "Aaron Manu", year + quarter → "2024-Q3",
+ * street + city + postcode → a single address line. Cells are stringified
+ * (numbers/booleans via String(); null/undefined become ""). The merged
+ * column is spliced in at the position of the first source column.
+ *
+ * With `skipEmpty`, null/empty cells are dropped before joining so you get
+ * "a, c" instead of "a, , c". When `keepOriginals` is true the source columns
+ * are preserved alongside the merged result; otherwise they are removed.
+ */
+export function mergeColumns(t: Table, params: MergeColumnsParams): Table {
+  if (!params.columns.length) throw new Error("mergeColumns: provide at least one column.");
+  const idxs = requireCols(t.columns, params.columns, "mergeColumns.columns");
+  const sep = params.separator;
+  const keep = params.keepOriginals ?? false;
+  const skipEmpty = params.skipEmpty ?? false;
+  const into = params.into;
+
+  const insertAt = Math.min(...idxs); // merged column takes the first source slot
+  const mergeSet = new Set(idxs);
+
+  const merged: Cell[] = t.rows.map((r) => {
+    const pieces: string[] = [];
+    for (const i of idxs) {
+      const v = r[i];
+      const s = v === null || v === undefined ? "" : typeof v === "string" ? v : String(v);
+      if (skipEmpty && s === "") continue;
+      pieces.push(s);
+    }
+    return pieces.join(sep);
+  });
+
+  const columns: string[] = [];
+  t.columns.forEach((c, i) => {
+    if (i === insertAt) {
+      if (keep) columns.push(c);
+      columns.push(into);
+    } else if (mergeSet.has(i)) {
+      if (keep) columns.push(c);
+    } else {
+      columns.push(c);
+    }
+  });
+
+  const rows: Cell[][] = t.rows.map((r, ri) => {
+    const out: Cell[] = [];
+    r.forEach((cell, i) => {
+      if (i === insertAt) {
+        if (keep) out.push(cell);
+        out.push(merged[ri]);
+      } else if (mergeSet.has(i)) {
+        if (keep) out.push(cell);
+      } else {
+        out.push(cell);
+      }
+    });
+    return out;
+  });
+
+  return { columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -883,7 +958,8 @@ export type TransformSpec =
   | { op: "fillDown"; params: FillDownParams }
   | { op: "castNumber"; params: CastNumberParams }
   | { op: "trim"; params: TrimParams }
-  | { op: "splitColumn"; params: SplitColumnParams };
+  | { op: "splitColumn"; params: SplitColumnParams }
+  | { op: "mergeColumns"; params: MergeColumnsParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -919,6 +995,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return trim(t, spec.params);
     case "splitColumn":
       return splitColumn(t, spec.params);
+    case "mergeColumns":
+      return mergeColumns(t, spec.params);
     default:
       return t;
   }

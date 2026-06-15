@@ -154,6 +154,16 @@ const TransformSchema = z.discriminatedUnion("op", [
       keepOriginal: z.boolean().optional(),
     }),
   }),
+  z.object({
+    op: z.literal("mergeColumns"),
+    params: z.object({
+      columns: z.array(z.string().min(1)).min(2).max(200),
+      separator: z.string().max(20),
+      into: z.string().min(1),
+      keepOriginals: z.boolean().optional(),
+      skipEmpty: z.boolean().optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
