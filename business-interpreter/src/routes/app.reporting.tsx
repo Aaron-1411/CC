@@ -39,7 +39,19 @@ type Op =
   | "sort"
   | "select"
   | "derive";
-type Agg = "sum" | "count" | "mean" | "min" | "max" | "first";
+type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
+
+const AGG_OPTIONS: Agg[] = [
+  "sum",
+  "count",
+  "mean",
+  "min",
+  "max",
+  "first",
+  "last",
+  "median",
+  "countDistinct",
+];
 type AggRow = { column: string; agg: Agg; as: string };
 type DeriveOperator = "+" | "-" | "*" | "/";
 
@@ -539,7 +551,7 @@ function ReportingPage() {
                   <Select
                     value={agg}
                     onChange={(v) => setAgg(v as Agg)}
-                    options={["sum", "count", "mean", "min", "max", "first"]}
+                    options={AGG_OPTIONS}
                   />
                 </Field>
               </div>
@@ -614,7 +626,7 @@ function ReportingPage() {
                             prev.map((r, i) => (i === idx ? { ...r, agg: v as Agg } : r)),
                           )
                         }
-                        options={["sum", "count", "mean", "min", "max", "first"]}
+                        options={AGG_OPTIONS}
                       />
                     </Field>
                     <Field label="Name (optional)">

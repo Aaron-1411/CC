@@ -41,7 +41,9 @@ const TransformSchema = z.discriminatedUnion("op", [
       indexColumns: z.array(z.string()).min(1),
       pivotColumn: z.string().min(1),
       valueColumn: z.string().min(1),
-      agg: z.enum(["sum", "count", "mean", "min", "max", "first"]).optional(),
+      agg: z
+        .enum(["sum", "count", "mean", "min", "max", "first", "last", "median", "countDistinct"])
+        .optional(),
     }),
   }),
   z.object({
@@ -52,7 +54,7 @@ const TransformSchema = z.discriminatedUnion("op", [
         .array(
           z.object({
             column: z.string().min(1),
-            agg: z.enum(["sum", "count", "mean", "min", "max", "first"]),
+            agg: z.enum(["sum", "count", "mean", "min", "max", "first", "last", "median", "countDistinct"]),
             as: z.string().optional(),
           }),
         )

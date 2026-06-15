@@ -7,9 +7,28 @@
 export type Cell = string | number | boolean | null;
 export type Table = { columns: string[]; rows: Cell[][] };
 
-export type Agg = "sum" | "count" | "mean" | "min" | "max" | "first";
+export type Agg =
+  | "sum"
+  | "count"
+  | "mean"
+  | "min"
+  | "max"
+  | "first"
+  | "last"
+  | "median"
+  | "countDistinct";
 
-const AGGS: Agg[] = ["sum", "count", "mean", "min", "max", "first"];
+const AGGS: Agg[] = [
+  "sum",
+  "count",
+  "mean",
+  "min",
+  "max",
+  "first",
+  "last",
+  "median",
+  "countDistinct",
+];
 export function isAgg(x: unknown): x is Agg {
   return typeof x === "string" && (AGGS as string[]).includes(x);
 }
@@ -219,6 +238,16 @@ export type PivotParams = {
 function aggregate(values: Cell[], agg: Agg): Cell {
   if (agg === "count") return values.length;
   if (agg === "first") return values.length ? values[0] : null;
+  if (agg === "last") return values.length ? values[values.length - 1] : null;
+  if (agg === "countDistinct") {
+    // SQL COUNT(DISTINCT) semantics: distinct non-empty values only.
+    const seen = new Set<string>();
+    for (const v of values) {
+      if (v === null || v === "") continue;
+      seen.add(typeof v === "string" ? `s:${v}` : JSON.stringify(v));
+    }
+    return seen.size;
+  }
   const nums = values.map(toNumber).filter((x): x is number => x !== null);
   if (nums.length === 0) return null;
   switch (agg) {
@@ -226,6 +255,11 @@ function aggregate(values: Cell[], agg: Agg): Cell {
       return nums.reduce((a, b) => a + b, 0);
     case "mean":
       return nums.reduce((a, b) => a + b, 0) / nums.length;
+    case "median": {
+      const sorted = [...nums].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+    }
     case "min":
       return Math.min(...nums);
     case "max":

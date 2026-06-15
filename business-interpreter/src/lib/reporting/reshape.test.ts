@@ -298,6 +298,22 @@ describe("groupBy", () => {
     ]);
   });
 
+  test("median / last / countDistinct aggregations", () => {
+    const out = groupBy(t, {
+      groupColumns: ["region"],
+      aggregations: [
+        { column: "sales", agg: "median" },
+        { column: "rep", agg: "last" },
+        { column: "rep", agg: "countDistinct", as: "distinct_reps" },
+      ],
+    });
+    expect(out.columns).toEqual(["region", "median_sales", "last_rep", "distinct_reps"]);
+    expect(out.rows).toEqual([
+      ["North", 10, "A", 2], // sales [10,40,3] → median 10; reps A,B,A → last A, distinct 2
+      ["South", 27.5, "D", 2], // sales [5,50] → mean of middles 27.5; reps C,D → last D, distinct 2
+    ]);
+  });
+
   test("throws for an unknown group or aggregation column", () => {
     expect(() =>
       groupBy(t, { groupColumns: ["nope"], aggregations: [{ column: "sales", agg: "sum" }] }),
@@ -598,7 +614,9 @@ describe("applyTransform / applyPipeline", () => {
 describe("guards & preview", () => {
   test("isAgg / isFilterOp recognise valid tokens only", () => {
     expect(isAgg("sum")).toBe(true);
-    expect(isAgg("median")).toBe(false);
+    expect(isAgg("median")).toBe(true);
+    expect(isAgg("countDistinct")).toBe(true);
+    expect(isAgg("stddev")).toBe(false);
     expect(isFilterOp("contains")).toBe(true);
     expect(isFilterOp("matches")).toBe(false);
   });
