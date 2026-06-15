@@ -373,6 +373,9 @@ export function filter(t: Table, params: FilterParams): Table {
       case "gte":
       case "lt":
       case "lte": {
+        // Empty cells are "unknown" and satisfy no ordered comparison
+        // (SQL-NULL semantics); use isEmpty/notEmpty to select blanks.
+        if (empty) return false;
         const cn = toNumber(cell);
         if (cn !== null && target !== null) {
           return passesCmp(op, cn < target ? -1 : cn > target ? 1 : 0);
