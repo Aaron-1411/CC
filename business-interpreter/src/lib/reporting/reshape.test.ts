@@ -19,6 +19,7 @@ import {
   fillDown,
   castNumber,
   trim,
+  splitColumn,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1042,6 +1043,129 @@ describe("trim", () => {
     // "  North " + "North" collapse to one group summing 1 + 2 = 3
     const north = out.rows.find((r) => r[0] === "North");
     expect(north).toEqual(["North", 3]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* splitColumn                                                         */
+/* ------------------------------------------------------------------ */
+
+describe("splitColumn", () => {
+  const t: Table = {
+    columns: ["id", "place"],
+    rows: [
+      [1, "Leeds, West Yorkshire"],
+      [2, "York, North Yorkshire"],
+    ],
+  };
+
+  test("auto-names columns to the widest row and splits on the literal delimiter", () => {
+    const out = splitColumn(t, { column: "place", delimiter: ", " });
+    expect(out.columns).toEqual(["id", "place 1", "place 2"]);
+    expect(out.rows).toEqual([
+      [1, "Leeds", "West Yorkshire"],
+      [2, "York", "North Yorkshire"],
+    ]);
+  });
+
+  test("splices new columns in at the source column's position", () => {
+    const wide: Table = {
+      columns: ["a", "place", "z"],
+      rows: [["x", "Leeds-LS1", "y"]],
+    };
+    const out = splitColumn(wide, { column: "place", delimiter: "-" });
+    expect(out.columns).toEqual(["a", "place 1", "place 2", "z"]);
+    expect(out.rows).toEqual([["x", "Leeds", "LS1", "y"]]);
+  });
+
+  test("auto-naming pads short rows with null up to the widest row", () => {
+    const ragged: Table = {
+      columns: ["v"],
+      rows: [["a-b-c"], ["d-e"], ["f"]],
+    };
+    const out = splitColumn(ragged, { column: "v", delimiter: "-" });
+    expect(out.columns).toEqual(["v 1", "v 2", "v 3"]);
+    expect(out.rows).toEqual([
+      ["a", "b", "c"],
+      ["d", "e", null],
+      ["f", null, null],
+    ]);
+  });
+
+  test("explicit `into` pins the column count and pads short rows with null", () => {
+    const ragged: Table = { columns: ["v"], rows: [["a-b"], ["c"]] };
+    const out = splitColumn(ragged, { column: "v", delimiter: "-", into: ["first", "second"] });
+    expect(out.columns).toEqual(["first", "second"]);
+    expect(out.rows).toEqual([
+      ["a", "b"],
+      ["c", null],
+    ]);
+  });
+
+  test("explicit `into` rejoins overflow parts into the last named column", () => {
+    const t2: Table = { columns: ["name"], rows: [["Doe, John, Q."]] };
+    const out = splitColumn(t2, { column: "name", delimiter: ", ", into: ["last", "rest"] });
+    expect(out.columns).toEqual(["last", "rest"]);
+    expect(out.rows).toEqual([["Doe", "John, Q."]]);
+  });
+
+  test("non-string cells keep their value in the first slot with nulls elsewhere", () => {
+    const mixed: Table = {
+      columns: ["v"],
+      rows: [["a-b"], [42], [true], [null]],
+    };
+    const out = splitColumn(mixed, { column: "v", delimiter: "-" });
+    expect(out.columns).toEqual(["v 1", "v 2"]);
+    expect(out.rows).toEqual([
+      ["a", "b"],
+      [42, null],
+      [true, null],
+      [null, null],
+    ]);
+  });
+
+  test("keepOriginal keeps the source column alongside the new ones", () => {
+    const out = splitColumn(t, { column: "place", delimiter: ", ", keepOriginal: true });
+    expect(out.columns).toEqual(["id", "place", "place 1", "place 2"]);
+    expect(out.rows[0]).toEqual([1, "Leeds, West Yorkshire", "Leeds", "West Yorkshire"]);
+  });
+
+  test("throws on an empty delimiter", () => {
+    expect(() => splitColumn(t, { column: "place", delimiter: "" })).toThrow(/delimiter/);
+  });
+
+  test("throws on a missing column", () => {
+    expect(() => splitColumn(t, { column: "nope", delimiter: "," })).toThrow(/not found/);
+  });
+
+  test("does not mutate the source table", () => {
+    const snapshot = JSON.stringify(t);
+    splitColumn(t, { column: "place", delimiter: ", ", keepOriginal: true });
+    expect(JSON.stringify(t)).toEqual(snapshot);
+  });
+
+  test("chains through applyPipeline (split → trim → groupBy)", () => {
+    const sales: Table = {
+      columns: ["place", "amount"],
+      rows: [
+        ["Leeds , North", 10],
+        ["York , North", 5],
+        ["Hull , North", 7],
+      ],
+    };
+    const out = applyPipeline(sales, [
+      { op: "splitColumn", params: { column: "place", delimiter: ",", into: ["city", "region"] } },
+      { op: "trim", params: { columns: ["region"] } },
+      {
+        op: "groupBy",
+        params: {
+          groupColumns: ["region"],
+          aggregations: [{ column: "amount", agg: "sum", as: "total" }],
+        },
+      },
+    ]);
+    const north = out.rows.find((r) => r[0] === "North");
+    expect(north).toEqual(["North", 22]);
   });
 });
 

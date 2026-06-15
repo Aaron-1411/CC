@@ -145,6 +145,15 @@ const TransformSchema = z.discriminatedUnion("op", [
       collapse: z.boolean().optional(),
     }),
   }),
+  z.object({
+    op: z.literal("splitColumn"),
+    params: z.object({
+      column: z.string().min(1),
+      delimiter: z.string().min(1).max(20),
+      into: z.array(z.string().min(1)).max(200).optional(),
+      keepOriginal: z.boolean().optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

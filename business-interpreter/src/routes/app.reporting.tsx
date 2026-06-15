@@ -25,6 +25,7 @@ import {
   ArrowDownToLine,
   Hash,
   Eraser,
+  TableColumnsSplit,
   Plus,
   X,
 } from "lucide-react";
@@ -50,7 +51,8 @@ type Op =
   | "dedupe"
   | "fillDown"
   | "castNumber"
-  | "trim";
+  | "trim"
+  | "splitColumn";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -148,6 +150,10 @@ function ReportingPage() {
   const [castOnError, setCastOnError] = useState<"null" | "keep">("null");
   const [trimColumns, setTrimColumns] = useState<string[]>([]);
   const [trimCollapse, setTrimCollapse] = useState(false);
+  const [splitCol, setSplitCol] = useState("");
+  const [splitDelimiter, setSplitDelimiter] = useState(", ");
+  const [splitInto, setSplitInto] = useState("");
+  const [splitKeepOriginal, setSplitKeepOriginal] = useState(false);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -249,6 +255,21 @@ function ReportingPage() {
           ...(trimCollapse ? { collapse: true } : {}),
         },
       } as const;
+    if (op === "splitColumn") {
+      const intoNames = splitInto
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      return {
+        op: "splitColumn",
+        params: {
+          column: splitCol,
+          delimiter: splitDelimiter,
+          ...(intoNames.length ? { into: intoNames } : {}),
+          ...(splitKeepOriginal ? { keepOriginal: true } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -321,6 +342,10 @@ function ReportingPage() {
     setCastOnError("null");
     setTrimColumns([]);
     setTrimCollapse(false);
+    setSplitCol("");
+    setSplitDelimiter(", ");
+    setSplitInto("");
+    setSplitKeepOriginal(false);
   }
 
   async function addStep() {
@@ -414,6 +439,11 @@ function ReportingPage() {
             ? `Trim ${spec.params.columns.join(", ")}`
             : "Trim whitespace") + (spec.params.collapse ? " (collapse spaces)" : "")
         );
+      case "splitColumn":
+        return (
+          `Split ${spec.params.column} by "${spec.params.delimiter}"` +
+          (spec.params.into?.length ? ` → ${spec.params.into.join(", ")}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -480,10 +510,12 @@ function ReportingPage() {
         return castColumns.length > 0;
       case "trim":
         return true;
+      case "splitColumn":
+        return !!splitCol && splitDelimiter.length > 0;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -491,7 +523,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -613,6 +645,7 @@ function ReportingPage() {
           <OpTab active={op === "fillDown"} onClick={() => setOp("fillDown")} icon={<ArrowDownToLine className="h-4 w-4" />} label="Fill down" />
           <OpTab active={op === "castNumber"} onClick={() => setOp("castNumber")} icon={<Hash className="h-4 w-4" />} label="To number" />
           <OpTab active={op === "trim"} onClick={() => setOp("trim")} icon={<Eraser className="h-4 w-4" />} label="Trim" />
+          <OpTab active={op === "splitColumn"} onClick={() => setOp("splitColumn")} icon={<TableColumnsSplit className="h-4 w-4" />} label="Split col" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1164,6 +1197,76 @@ function ReportingPage() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {op === "splitColumn" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Split one compound text column into several — &quot;Leeds, West Yorkshire&quot; into city
+              + region, &quot;2024-Q3&quot; into year + quarter. Only text cells are split. Leave the
+              output names blank to auto-name them; name them to pin the column count (extra parts fold
+              into the last column).
+            </p>
+            {sourceColumns.length > 0 ? (
+              <>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Column to split">
+                    <Select
+                      value={splitCol}
+                      onChange={setSplitCol}
+                      options={sourceColumns}
+                      placeholder="Choose…"
+                    />
+                  </Field>
+                  <Field label="Delimiter">
+                    <input
+                      value={splitDelimiter}
+                      onChange={(e) => setSplitDelimiter(e.target.value)}
+                      placeholder='e.g. ", " or "-" or "|"'
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                    />
+                  </Field>
+                </div>
+                <Field label="Output names (optional, comma-separated)">
+                  <input
+                    value={splitInto}
+                    onChange={(e) => setSplitInto(e.target.value)}
+                    placeholder="e.g. City, Region"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                  />
+                </Field>
+                <div>
+                  <p className="mb-1 text-xs font-medium text-muted-foreground">Source column</p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setSplitKeepOriginal(false)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        !splitKeepOriginal
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      Replace
+                    </button>
+                    <button
+                      onClick={() => setSplitKeepOriginal(true)}
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        splitKeepOriginal
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      Keep original
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose a column to split.
+              </p>
+            )}
           </div>
         )}
 

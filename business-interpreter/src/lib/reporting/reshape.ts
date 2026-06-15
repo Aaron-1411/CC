@@ -795,6 +795,75 @@ export function trim(t: Table, params: TrimParams = {}): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* splitColumn (split a compound text column into several columns)      */
+/* ------------------------------------------------------------------ */
+
+export type SplitColumnParams = {
+  column: string; // the column to split
+  delimiter: string; // literal separator, e.g. ", " or "-" or "|"
+  into?: string[]; // explicit output names; omitted = auto "${column} 1..N"
+  keepOriginal?: boolean; // keep the source column too (default: replace it in place)
+};
+
+/**
+ * Split one compound text column into several columns on a literal delimiter —
+ * "Leeds, West Yorkshire" → city + region, "2024-Q3" → year + quarter,
+ * "Manu, Aaron" → last + first. Only string cells are split; numbers, booleans
+ * and nulls keep their value in the first slot (nulls elsewhere) so no data is
+ * lost. The new columns are spliced in at the source column's position.
+ *
+ * When `into` is omitted, the engine produces as many columns as the widest row
+ * needs (named "${column} 1", "${column} 2", …). When `into` is given, it pins
+ * the output to exactly those names: short rows pad with null, and any overflow
+ * parts are rejoined (with the delimiter) into the last named column so nothing
+ * is dropped.
+ */
+export function splitColumn(t: Table, params: SplitColumnParams): Table {
+  const [idx] = requireCols(t.columns, [params.column], "splitColumn.column");
+  const delim = params.delimiter;
+  if (delim === "") throw new Error("splitColumn: delimiter must not be empty.");
+  const keep = params.keepOriginal ?? false;
+  const explicit = params.into && params.into.length ? params.into : null;
+
+  // Split each row's source cell into parts (only strings are actually split).
+  const parts: Cell[][] = t.rows.map((r) => {
+    const v = r[idx];
+    return typeof v === "string" ? (v.split(delim) as Cell[]) : [v];
+  });
+
+  const maxParts = parts.reduce((m, p) => Math.max(m, p.length), 1);
+  const names = explicit ?? Array.from({ length: maxParts }, (_, i) => `${params.column} ${i + 1}`);
+  const n = names.length;
+
+  const cells: Cell[][] = parts.map((p) => {
+    const slots: Cell[] = new Array(n).fill(null);
+    const upper = explicit ? n : p.length;
+    for (let i = 0; i < upper; i++) {
+      if (i >= p.length) break;
+      slots[i] =
+        explicit && i === n - 1 && p.length > n
+          ? (p.slice(n - 1) as string[]).join(delim) // rejoin overflow into the last column
+          : p[i];
+    }
+    return slots;
+  });
+
+  const before = t.columns.slice(0, idx);
+  const after = t.columns.slice(idx + 1);
+  const columns = keep
+    ? [...before, t.columns[idx], ...names, ...after]
+    : [...before, ...names, ...after];
+
+  const rows: Cell[][] = t.rows.map((r, ri) => {
+    const head = r.slice(0, idx);
+    const tail = r.slice(idx + 1);
+    return keep ? [...head, r[idx], ...cells[ri], ...tail] : [...head, ...cells[ri], ...tail];
+  });
+
+  return { columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -813,7 +882,8 @@ export type TransformSpec =
   | { op: "dedupe"; params: DedupeParams }
   | { op: "fillDown"; params: FillDownParams }
   | { op: "castNumber"; params: CastNumberParams }
-  | { op: "trim"; params: TrimParams };
+  | { op: "trim"; params: TrimParams }
+  | { op: "splitColumn"; params: SplitColumnParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -847,6 +917,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return castNumber(t, spec.params);
     case "trim":
       return trim(t, spec.params);
+    case "splitColumn":
+      return splitColumn(t, spec.params);
     default:
       return t;
   }
