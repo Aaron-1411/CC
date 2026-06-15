@@ -14,6 +14,9 @@ import {
   ArrowLeftRight,
   Rows3,
   Columns3,
+  Filter,
+  ArrowDownUp,
+  ListChecks,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/reporting")({
@@ -22,8 +25,32 @@ export const Route = createFileRoute("/app/reporting")({
 });
 
 type SourceKind = "csv-text" | "csv-url" | "tableau-vds";
-type Op = "none" | "transpose" | "unpivot" | "pivot";
+type Op = "none" | "transpose" | "unpivot" | "pivot" | "filter" | "sort" | "select";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first";
+type FilterOp =
+  | "eq"
+  | "ne"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "contains"
+  | "notContains"
+  | "isEmpty"
+  | "notEmpty";
+
+const FILTER_OP_LABELS: Record<FilterOp, string> = {
+  eq: "= equals",
+  ne: "≠ not equal",
+  gt: "> greater than",
+  gte: "≥ greater or equal",
+  lt: "< less than",
+  lte: "≤ less or equal",
+  contains: "contains",
+  notContains: "does not contain",
+  isEmpty: "is empty",
+  notEmpty: "is not empty",
+};
 
 type RunResult = {
   table: Table;
@@ -52,6 +79,12 @@ function ReportingPage() {
   const [agg, setAgg] = useState<Agg>("sum");
   const [varName, setVarName] = useState("variable");
   const [valueName, setValueName] = useState("value");
+  const [filterColumn, setFilterColumn] = useState("");
+  const [filterOp, setFilterOp] = useState<FilterOp>("eq");
+  const [filterValue, setFilterValue] = useState("");
+  const [sortColumn, setSortColumn] = useState("");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [selectColumns, setSelectColumns] = useState<string[]>([]);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -75,10 +108,22 @@ function ReportingPage() {
         op: "unpivot",
         params: { idColumns, varName, valueName },
       } as const;
-    return {
-      op: "pivot",
-      params: { indexColumns: idColumns, pivotColumn, valueColumn, agg },
-    } as const;
+    if (op === "pivot")
+      return {
+        op: "pivot",
+        params: { indexColumns: idColumns, pivotColumn, valueColumn, agg },
+      } as const;
+    if (op === "filter")
+      return {
+        op: "filter",
+        params: { column: filterColumn, op: filterOp, value: filterValue },
+      } as const;
+    if (op === "sort")
+      return {
+        op: "sort",
+        params: { column: sortColumn, direction: sortDir },
+      } as const;
+    return { op: "select", params: { columns: selectColumns } } as const;
   }
 
   async function loadColumns() {
@@ -141,13 +186,33 @@ function ReportingPage() {
     return luid.trim().length > 0;
   }, [kind, csvText, csvUrl, luid]);
 
+  const valuelessFilter = filterOp === "isEmpty" || filterOp === "notEmpty";
+
+  const transformReady = useMemo(() => {
+    switch (op) {
+      case "pivot":
+        return idColumns.length > 0 && !!pivotColumn && !!valueColumn;
+      case "unpivot":
+        return idColumns.length > 0;
+      case "filter":
+        return !!filterColumn && (valuelessFilter || filterValue.trim().length > 0);
+      case "sort":
+        return !!sortColumn;
+      case "select":
+        return selectColumns.length > 0;
+      default:
+        return true;
+    }
+  }, [op, idColumns, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns]);
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pull a dataset from a connector, reshape it (transpose / pivot / unpivot) with a
-          deterministic engine, then view it here and store it locally as CSV or XLSX.
+          Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
+          unpivot) with a deterministic engine, then view it here and store it locally as CSV or
+          XLSX.
         </p>
       </div>
 
@@ -214,6 +279,9 @@ function ReportingPage() {
           <OpTab active={op === "transpose"} onClick={() => setOp("transpose")} icon={<ArrowLeftRight className="h-4 w-4" />} label="Transpose" />
           <OpTab active={op === "unpivot"} onClick={() => setOp("unpivot")} icon={<Rows3 className="h-4 w-4" />} label="Unpivot" />
           <OpTab active={op === "pivot"} onClick={() => setOp("pivot")} icon={<Columns3 className="h-4 w-4" />} label="Pivot" />
+          <OpTab active={op === "filter"} onClick={() => setOp("filter")} icon={<Filter className="h-4 w-4" />} label="Filter" />
+          <OpTab active={op === "sort"} onClick={() => setOp("sort")} icon={<ArrowDownUp className="h-4 w-4" />} label="Sort" />
+          <OpTab active={op === "select"} onClick={() => setOp("select")} icon={<ListChecks className="h-4 w-4" />} label="Select cols" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -280,9 +348,87 @@ function ReportingPage() {
           </div>
         )}
 
+        {(op === "filter" || op === "sort" || op === "select") && sourceColumns.length === 0 && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Load a source first to choose columns.
+          </p>
+        )}
+
+        {op === "filter" && sourceColumns.length > 0 && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <Field label="Column">
+              <Select value={filterColumn} onChange={setFilterColumn} options={sourceColumns} placeholder="Choose…" />
+            </Field>
+            <Field label="Condition">
+              <Select
+                value={filterOp}
+                onChange={(v) => setFilterOp(v as FilterOp)}
+                options={Object.keys(FILTER_OP_LABELS)}
+                labels={FILTER_OP_LABELS}
+              />
+            </Field>
+            {!valuelessFilter && (
+              <Field label="Value">
+                <input
+                  value={filterValue}
+                  onChange={(e) => setFilterValue(e.target.value)}
+                  placeholder="e.g. North or 100"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                />
+              </Field>
+            )}
+          </div>
+        )}
+
+        {op === "sort" && sourceColumns.length > 0 && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Field label="Column">
+              <Select value={sortColumn} onChange={setSortColumn} options={sourceColumns} placeholder="Choose…" />
+            </Field>
+            <Field label="Direction">
+              <Select
+                value={sortDir}
+                onChange={(v) => setSortDir(v as "asc" | "desc")}
+                options={["asc", "desc"]}
+                labels={{ asc: "Ascending (A→Z, 0→9)", desc: "Descending (Z→A, 9→0)" }}
+              />
+            </Field>
+          </div>
+        )}
+
+        {op === "select" && sourceColumns.length > 0 && (
+          <div className="mt-4">
+            <label className="text-xs font-medium text-muted-foreground">
+              Columns to keep (click order = output order)
+            </label>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {sourceColumns.map((c) => {
+                const pos = selectColumns.indexOf(c);
+                return (
+                  <button
+                    key={c}
+                    onClick={() =>
+                      setSelectColumns((prev) =>
+                        prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs ${
+                      pos >= 0
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border hover:bg-accent"
+                    }`}
+                  >
+                    {pos >= 0 ? `${pos + 1}. ${c}` : c}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <button
           onClick={runTransform}
-          disabled={!canRun || loading}
+          disabled={!canRun || loading || !transformReady}
           className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
@@ -403,11 +549,13 @@ function Select({
   onChange,
   options,
   placeholder,
+  labels,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: string[];
   placeholder?: string;
+  labels?: Record<string, string>;
 }) {
   return (
     <select
@@ -418,7 +566,7 @@ function Select({
       {placeholder && <option value="">{placeholder}</option>}
       {options.map((o) => (
         <option key={o} value={o}>
-          {o}
+          {labels?.[o] ?? o}
         </option>
       ))}
     </select>

@@ -44,6 +44,38 @@ const TransformSchema = z.discriminatedUnion("op", [
       agg: z.enum(["sum", "count", "mean", "min", "max", "first"]).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("filter"),
+    params: z.object({
+      column: z.string().min(1),
+      op: z.enum([
+        "eq",
+        "ne",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "contains",
+        "notContains",
+        "isEmpty",
+        "notEmpty",
+      ]),
+      value: z.string().optional(),
+    }),
+  }),
+  z.object({
+    op: z.literal("sort"),
+    params: z.object({
+      column: z.string().min(1),
+      direction: z.enum(["asc", "desc"]).optional(),
+    }),
+  }),
+  z.object({
+    op: z.literal("select"),
+    params: z.object({
+      columns: z.array(z.string()).min(1),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

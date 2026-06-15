@@ -284,6 +284,152 @@ export function pivot(t: Table, params: PivotParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* Filter (row subset by a single-column condition)                    */
+/* ------------------------------------------------------------------ */
+
+export type FilterOp =
+  | "eq"
+  | "ne"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "contains"
+  | "notContains"
+  | "isEmpty"
+  | "notEmpty";
+
+const FILTER_OPS: FilterOp[] = [
+  "eq",
+  "ne",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+  "contains",
+  "notContains",
+  "isEmpty",
+  "notEmpty",
+];
+export function isFilterOp(x: unknown): x is FilterOp {
+  return typeof x === "string" && (FILTER_OPS as string[]).includes(x);
+}
+
+export type FilterParams = {
+  column: string;
+  op: FilterOp;
+  value?: string;
+};
+
+function passesCmp(op: FilterOp, cmp: number): boolean {
+  switch (op) {
+    case "gt":
+      return cmp > 0;
+    case "gte":
+      return cmp >= 0;
+    case "lt":
+      return cmp < 0;
+    case "lte":
+      return cmp <= 0;
+    default:
+      return false;
+  }
+}
+
+/**
+ * Keep rows whose value in `column` satisfies the condition. Numeric
+ * comparisons run when both sides parse as numbers; otherwise a
+ * case-insensitive string comparison is used. Deterministic, no I/O.
+ */
+export function filter(t: Table, params: FilterParams): Table {
+  const [idx] = requireCols(t.columns, [params.column], "filter.column");
+  const op = params.op;
+  const raw = params.value ?? "";
+  const target = toNumber(raw);
+  const rawLower = raw.toLowerCase();
+
+  const rows = t.rows.filter((row) => {
+    const cell = row[idx] ?? null;
+    const empty = cell === null || cell === "";
+    switch (op) {
+      case "isEmpty":
+        return empty;
+      case "notEmpty":
+        return !empty;
+      case "contains":
+        return !empty && String(cell).toLowerCase().includes(rawLower);
+      case "notContains":
+        return empty || !String(cell).toLowerCase().includes(rawLower);
+      case "eq":
+      case "ne": {
+        const cn = toNumber(cell);
+        const equal =
+          cn !== null && target !== null
+            ? cn === target
+            : String(cell ?? "") === raw;
+        return op === "eq" ? equal : !equal;
+      }
+      case "gt":
+      case "gte":
+      case "lt":
+      case "lte": {
+        const cn = toNumber(cell);
+        if (cn !== null && target !== null) {
+          return passesCmp(op, cn < target ? -1 : cn > target ? 1 : 0);
+        }
+        const cs = String(cell ?? "");
+        return passesCmp(op, cs < raw ? -1 : cs > raw ? 1 : 0);
+      }
+      default:
+        return true;
+    }
+  });
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
+/* Sort (order rows by a single column; nulls last)                    */
+/* ------------------------------------------------------------------ */
+
+export type SortParams = {
+  column: string;
+  direction?: "asc" | "desc";
+};
+
+export function sort(t: Table, params: SortParams): Table {
+  const [idx] = requireCols(t.columns, [params.column], "sort.column");
+  const dir = params.direction === "desc" ? -1 : 1;
+  const rows = [...t.rows].sort((a, b) => {
+    const av = a[idx] ?? null;
+    const bv = b[idx] ?? null;
+    const aEmpty = av === null || av === "";
+    const bEmpty = bv === null || bv === "";
+    // Empties always sort last, regardless of direction.
+    if (aEmpty || bEmpty) return aEmpty === bEmpty ? 0 : aEmpty ? 1 : -1;
+    const an = toNumber(av);
+    const bn = toNumber(bv);
+    if (an !== null && bn !== null) return (an < bn ? -1 : an > bn ? 1 : 0) * dir;
+    return String(av).localeCompare(String(bv), undefined, { numeric: true, sensitivity: "base" }) * dir;
+  });
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
+/* Select (keep / reorder a subset of columns)                         */
+/* ------------------------------------------------------------------ */
+
+export type SelectParams = {
+  columns: string[]; // ordered subset to keep
+};
+
+export function select(t: Table, params: SelectParams): Table {
+  const idx = requireCols(t.columns, params.columns, "select.columns");
+  const columns = params.columns.slice();
+  const rows = t.rows.map((r) => idx.map((i) => r[i] ?? null));
+  return { columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -291,7 +437,10 @@ export type TransformSpec =
   | { op: "none" }
   | { op: "transpose" }
   | { op: "unpivot"; params: UnpivotParams }
-  | { op: "pivot"; params: PivotParams };
+  | { op: "pivot"; params: PivotParams }
+  | { op: "filter"; params: FilterParams }
+  | { op: "sort"; params: SortParams }
+  | { op: "select"; params: SelectParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -303,9 +452,20 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return unpivot(t, spec.params);
     case "pivot":
       return pivot(t, spec.params);
+    case "filter":
+      return filter(t, spec.params);
+    case "sort":
+      return sort(t, spec.params);
+    case "select":
+      return select(t, spec.params);
     default:
       return t;
   }
+}
+
+/** Apply an ordered list of transforms left-to-right (e.g. filter → sort → pivot). */
+export function applyPipeline(t: Table, specs: TransformSpec[]): Table {
+  return specs.reduce((acc, spec) => applyTransform(acc, spec), t);
 }
 
 /** Cap a table to a preview window for shipping to the client. */
