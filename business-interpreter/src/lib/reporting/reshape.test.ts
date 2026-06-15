@@ -15,6 +15,7 @@ import {
   derive,
   limit,
   rename,
+  dedupe,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -677,6 +678,89 @@ describe("rename", () => {
       { op: "rename", params: { renames: [{ from: "score", to: "points" }] } },
     ]);
     expect(out.columns).toEqual(["name", "points"]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* dedupe                                                              */
+/* ------------------------------------------------------------------ */
+
+describe("dedupe", () => {
+  const t: Table = {
+    columns: ["region", "product", "units"],
+    rows: [
+      ["North", "Widget", 10],
+      ["North", "Widget", 10],
+      ["South", "Widget", 10],
+      ["North", "Gadget", 5],
+      ["South", "Widget", 10],
+    ],
+  };
+
+  test("drops fully-duplicate rows, keeping the first occurrence and order", () => {
+    const out = dedupe(t, {});
+    expect(out.columns).toEqual(["region", "product", "units"]);
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["South", "Widget", 10],
+      ["North", "Gadget", 5],
+    ]);
+  });
+
+  test("treats omitted columns the same as whole-row dedupe", () => {
+    expect(dedupe(t).rows).toEqual(dedupe(t, { columns: [] }).rows);
+  });
+
+  test("dedupes on a subset of columns only", () => {
+    const out = dedupe(t, { columns: ["region"] });
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["South", "Widget", 10],
+    ]);
+  });
+
+  test("dedupes on multiple subset columns", () => {
+    const out = dedupe(t, { columns: ["region", "product"] });
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["South", "Widget", 10],
+      ["North", "Gadget", 5],
+    ]);
+  });
+
+  test("ignores blank/whitespace column names in the subset", () => {
+    const out = dedupe(t, { columns: ["region", "  "] });
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["South", "Widget", 10],
+    ]);
+  });
+
+  test("does not collapse distinct types (number 1 vs string '1')", () => {
+    const typed: Table = {
+      columns: ["v"],
+      rows: [[1], ["1"], [1], [null]],
+    };
+    const out = dedupe(typed, {});
+    expect(out.rows).toEqual([[1], ["1"], [null]]);
+  });
+
+  test("does not mutate the source rows", () => {
+    const before = t.rows.length;
+    dedupe(t, {});
+    expect(t.rows.length).toBe(before);
+  });
+
+  test("throws when a subset column is missing", () => {
+    expect(() => dedupe(t, { columns: ["nope"] })).toThrow(/not found/);
+  });
+
+  test("chains through applyPipeline", () => {
+    const out = applyPipeline(t, [{ op: "dedupe", params: { columns: ["region"] } }]);
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["South", "Widget", 10],
+    ]);
   });
 });
 

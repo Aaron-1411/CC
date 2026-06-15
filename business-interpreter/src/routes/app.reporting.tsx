@@ -21,6 +21,7 @@ import {
   Calculator,
   Scissors,
   TextCursorInput,
+  CopyMinus,
   Plus,
   X,
 } from "lucide-react";
@@ -42,7 +43,8 @@ type Op =
   | "select"
   | "derive"
   | "limit"
-  | "rename";
+  | "rename"
+  | "dedupe";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -134,6 +136,7 @@ function ReportingPage() {
   const [limitOffset, setLimitOffset] = useState("0");
   const [renameFrom, setRenameFrom] = useState("");
   const [renameTo, setRenameTo] = useState("");
+  const [dedupeColumns, setDedupeColumns] = useState<string[]>([]);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -212,6 +215,11 @@ function ReportingPage() {
         op: "rename",
         params: { renames: [{ from: renameFrom, to: renameTo.trim() }] },
       } as const;
+    if (op === "dedupe")
+      return {
+        op: "dedupe",
+        params: dedupeColumns.length ? { columns: dedupeColumns } : {},
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -278,6 +286,7 @@ function ReportingPage() {
     setLimitOffset("0");
     setRenameFrom("");
     setRenameTo("");
+    setDedupeColumns([]);
   }
 
   async function addStep() {
@@ -355,6 +364,10 @@ function ReportingPage() {
         }`;
       case "rename":
         return `Rename ${spec.params.renames.map((r) => `${r.from} → ${r.to}`).join(", ")}`;
+      case "dedupe":
+        return spec.params.columns?.length
+          ? `Dedupe on ${spec.params.columns.join(", ")}`
+          : "Dedupe rows";
       default:
         return "Pass-through";
     }
@@ -413,6 +426,8 @@ function ReportingPage() {
         return Number.isFinite(Number(limitCount)) && Number(limitCount) >= 0 && limitCount.trim() !== "";
       case "rename":
         return !!renameFrom && !!renameTo.trim();
+      case "dedupe":
+        return true;
       default:
         return true;
     }
@@ -424,7 +439,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -542,6 +557,7 @@ function ReportingPage() {
           <OpTab active={op === "derive"} onClick={() => setOp("derive")} icon={<Calculator className="h-4 w-4" />} label="Compute col" />
           <OpTab active={op === "limit"} onClick={() => setOp("limit")} icon={<Scissors className="h-4 w-4" />} label="Limit rows" />
           <OpTab active={op === "rename"} onClick={() => setOp("rename")} icon={<TextCursorInput className="h-4 w-4" />} label="Rename col" />
+          <OpTab active={op === "dedupe"} onClick={() => setOp("dedupe")} icon={<CopyMinus className="h-4 w-4" />} label="Dedupe" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -890,6 +906,43 @@ function ReportingPage() {
                 />
               </Field>
             </div>
+          </div>
+        )}
+
+        {op === "dedupe" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Remove duplicate rows, keeping the first occurrence and the original order. Pick
+              columns to dedupe on — leave all unselected to match on the whole row.
+            </p>
+            {sourceColumns.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sourceColumns.map((c) => {
+                  const on = dedupeColumns.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      onClick={() =>
+                        setDedupeColumns((prev) =>
+                          prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                        )
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        on
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose columns — or run as-is to dedupe whole rows.
+              </p>
+            )}
           </div>
         )}
 

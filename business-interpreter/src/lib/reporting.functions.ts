@@ -119,6 +119,12 @@ const TransformSchema = z.discriminatedUnion("op", [
         .max(200),
     }),
   }),
+  z.object({
+    op: z.literal("dedupe"),
+    params: z.object({
+      columns: z.array(z.string()).max(200).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

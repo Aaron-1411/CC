@@ -623,6 +623,31 @@ export function rename(t: Table, params: RenameParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* Dedupe (drop duplicate rows, keeping first occurrence)              */
+/* ------------------------------------------------------------------ */
+
+export type DedupeParams = {
+  columns?: string[]; // subset to compare on; empty/omitted = whole row
+};
+
+export function dedupe(t: Table, params: DedupeParams = {}): Table {
+  const subset = (params.columns ?? []).filter((c) => c.trim() !== "");
+  const idx = subset.length
+    ? requireCols(t.columns, subset, "dedupe.columns")
+    : t.columns.map((_, i) => i);
+  const seen = new Set<string>();
+  const rows: Cell[][] = [];
+  for (const r of t.rows) {
+    // JSON encoding keeps types distinct (number 1 ≠ string "1" ≠ null).
+    const key = JSON.stringify(idx.map((i) => r[i] ?? null));
+    if (seen.has(key)) continue;
+    seen.add(key);
+    rows.push(r);
+  }
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -637,7 +662,8 @@ export type TransformSpec =
   | { op: "select"; params: SelectParams }
   | { op: "derive"; params: DeriveParams }
   | { op: "limit"; params: LimitParams }
-  | { op: "rename"; params: RenameParams };
+  | { op: "rename"; params: RenameParams }
+  | { op: "dedupe"; params: DedupeParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -663,6 +689,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return limit(t, spec.params);
     case "rename":
       return rename(t, spec.params);
+    case "dedupe":
+      return dedupe(t, spec.params);
     default:
       return t;
   }
