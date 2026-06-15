@@ -3,7 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import {
   parseCsv,
-  applyTransform,
+  applyPipeline,
   previewTable,
   type Table,
   type TransformSpec,
@@ -105,7 +105,8 @@ const TransformSchema = z.discriminatedUnion("op", [
 
 const RunReportInput = z.object({
   source: SourceSchema,
-  transform: TransformSchema,
+  transform: TransformSchema.optional(),
+  transforms: z.array(TransformSchema).max(20).optional(),
 });
 
 // Hard cap on what we ship back so a runaway dataset can't blow the Worker
@@ -226,7 +227,11 @@ export const runReport = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => RunReportInput.parse(d))
   .handler(async ({ data }) => {
     const input = await loadSource(data.source);
-    const result = applyTransform(input, data.transform as TransformSpec);
+    const specs: TransformSpec[] =
+      data.transforms && data.transforms.length
+        ? (data.transforms as TransformSpec[])
+        : [(data.transform ?? { op: "none" }) as TransformSpec];
+    const result = applyPipeline(input, specs);
 
     const truncated = result.rows.length > MAX_RETURN_ROWS;
     const table: Table = truncated

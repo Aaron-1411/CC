@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { runReport, exportXlsx } from "@/lib/reporting.functions";
-import { toCsv, type Table } from "@/lib/reporting/reshape";
+import { toCsv, type Table, type TransformSpec } from "@/lib/reporting/reshape";
 import {
   Database,
   Link2,
@@ -121,7 +121,13 @@ function ReportingPage() {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sourceColumns = result?.sourceColumns ?? columns;
+  const [steps, setSteps] = useState<TransformSpec[]>([]);
+  const [pipelineColumns, setPipelineColumns] = useState<string[]>([]);
+
+  // Columns offered to the draft builder: once a pipeline exists, the next step
+  // works against the columns produced by the steps so far, not the raw source.
+  const baseColumns = result?.sourceColumns ?? columns;
+  const sourceColumns = steps.length > 0 ? pipelineColumns : baseColumns;
 
   function buildSource() {
     if (kind === "csv-text") return { kind, text: csvText } as const;
@@ -184,6 +190,8 @@ function ReportingPage() {
       const r = (await run({ data: { source: buildSource(), transform: { op: "none" } } })) as RunResult;
       setResult(r);
       setColumns(r.sourceColumns);
+      setSteps([]);
+      setPipelineColumns([]);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -195,13 +203,117 @@ function ReportingPage() {
     setError(null);
     setLoading(true);
     try {
-      const r = (await run({ data: { source: buildSource(), transform: buildTransform() } })) as RunResult;
+      const draft = buildTransform() as TransformSpec;
+      const includeDraft = op !== "none" && transformReady;
+      const specs: TransformSpec[] = includeDraft ? [...steps, draft] : steps;
+      const r = (await run({
+        data: specs.length
+          ? { source: buildSource(), transforms: specs }
+          : { source: buildSource(), transform: { op: "none" } },
+      })) as RunResult;
       setResult(r);
       if (r.sourceColumns.length) setColumns(r.sourceColumns);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  function resetDraft() {
+    setOp("none");
+    setIdColumns([]);
+    setPivotColumn("");
+    setValueColumn("");
+    setAgg("sum");
+    setVarName("variable");
+    setValueName("value");
+    setFilterColumn("");
+    setFilterOp("eq");
+    setFilterValue("");
+    setSortColumn("");
+    setSortDir("asc");
+    setSelectColumns([]);
+    setGroupColumns([]);
+    setAggRows([{ column: "", agg: "sum", as: "" }]);
+    setDeriveAs("");
+    setDeriveLeft("");
+    setDeriveOperator("+");
+    setDeriveRightKind("column");
+    setDeriveRight("");
+  }
+
+  async function addStep() {
+    if (op === "none" || !transformReady) return;
+    const nextSteps = [...steps, buildTransform() as TransformSpec];
+    setError(null);
+    setLoading(true);
+    try {
+      const r = (await run({
+        data: { source: buildSource(), transforms: nextSteps },
+      })) as RunResult;
+      setSteps(nextSteps);
+      setResult(r);
+      if (r.sourceColumns.length) setColumns(r.sourceColumns);
+      setPipelineColumns(r.table.columns);
+      resetDraft();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function applyPipelineSteps(nextSteps: TransformSpec[]) {
+    setError(null);
+    setLoading(true);
+    try {
+      const r = (await run({
+        data: nextSteps.length
+          ? { source: buildSource(), transforms: nextSteps }
+          : { source: buildSource(), transform: { op: "none" } },
+      })) as RunResult;
+      setSteps(nextSteps);
+      setResult(r);
+      if (r.sourceColumns.length) setColumns(r.sourceColumns);
+      setPipelineColumns(nextSteps.length ? r.table.columns : []);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function removeStep(idx: number) {
+    void applyPipelineSteps(steps.filter((_, i) => i !== idx));
+  }
+
+  function clearPipeline() {
+    void applyPipelineSteps([]);
+  }
+
+  function describeStep(spec: TransformSpec): string {
+    switch (spec.op) {
+      case "transpose":
+        return "Transpose";
+      case "unpivot":
+        return `Unpivot · keep ${spec.params.idColumns.join(", ")}`;
+      case "pivot":
+        return `Pivot ${spec.params.pivotColumn} → ${spec.params.valueColumn} (${spec.params.agg ?? "sum"})`;
+      case "groupBy":
+        return `Group by ${spec.params.groupColumns.join(", ")}`;
+      case "filter":
+        return `Filter ${spec.params.column} ${spec.params.op}${
+          spec.params.value ? ` ${spec.params.value}` : ""
+        }`;
+      case "sort":
+        return `Sort ${spec.params.column} ${spec.params.direction ?? "asc"}`;
+      case "select":
+        return `Select ${spec.params.columns.join(", ")}`;
+      case "derive":
+        return `Compute ${spec.params.as} = ${spec.params.left} ${spec.params.operator} ${spec.params.right}`;
+      default:
+        return "Pass-through";
     }
   }
 
@@ -265,8 +377,8 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column) with a deterministic engine, then view it here and
-          store it locally as CSV or XLSX.
+          unpivot, group by, compute column) with a deterministic engine — chain several steps into
+          a pipeline that runs in order — then view it here and store it locally as CSV or XLSX.
         </p>
       </div>
 
@@ -328,6 +440,48 @@ function ReportingPage() {
       {/* Transform */}
       <section className="mt-6 rounded-xl border border-border bg-card p-5">
         <h2 className="text-sm font-semibold">2. Transform</h2>
+
+        {steps.length > 0 && (
+          <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                Pipeline · {steps.length} step{steps.length > 1 ? "s" : ""} (runs in order)
+              </span>
+              <button
+                onClick={clearPipeline}
+                disabled={loading}
+                className="text-xs font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+              >
+                Clear all
+              </button>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {steps.map((s, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs"
+                >
+                  <span className="font-mono text-muted-foreground">{i + 1}</span>
+                  {describeStep(s)}
+                  <button
+                    onClick={() => removeStep(i)}
+                    disabled={loading}
+                    aria-label={`Remove step ${i + 1}`}
+                    className="text-muted-foreground hover:text-destructive disabled:opacity-50"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="mt-3 text-xs text-muted-foreground">
+          {steps.length > 0
+            ? "Add another step to keep chaining, or run the report to apply the whole pipeline."
+            : "Configure a transform, then add it as a pipeline step or run it directly."}
+        </p>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           <OpTab active={op === "none"} onClick={() => setOp("none")} icon={<Rows3 className="h-4 w-4" />} label="None" />
           <OpTab active={op === "transpose"} onClick={() => setOp("transpose")} icon={<ArrowLeftRight className="h-4 w-4" />} label="Transpose" />
@@ -633,14 +787,23 @@ function ReportingPage() {
           </div>
         )}
 
-        <button
-          onClick={runTransform}
-          disabled={!canRun || loading || !transformReady}
-          className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-        >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-          Run report
-        </button>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <button
+            onClick={addStep}
+            disabled={!canRun || loading || op === "none" || !transformReady}
+            className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
+          >
+            <Plus className="h-4 w-4" /> Add as step
+          </button>
+          <button
+            onClick={runTransform}
+            disabled={!canRun || loading || (steps.length === 0 && !transformReady)}
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+            Run report
+          </button>
+        </div>
       </section>
 
       {error && (

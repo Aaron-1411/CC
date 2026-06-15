@@ -570,6 +570,25 @@ describe("applyTransform / applyPipeline", () => {
   test("empty pipeline returns the input unchanged", () => {
     expect(applyPipeline(t, [])).toEqual(t);
   });
+
+  test("chains derive → groupBy → sort with default agg naming", () => {
+    const out = applyPipeline(t, [
+      { op: "derive", params: { as: "net", left: "sales", operator: "*", rightKind: "const", right: "2" } },
+      {
+        op: "groupBy",
+        params: {
+          groupColumns: ["region"],
+          aggregations: [{ column: "net", agg: "sum" }],
+        },
+      },
+      { op: "sort", params: { column: "sum_net", direction: "desc" } },
+    ]);
+    expect(out.columns).toEqual(["region", "sum_net"]);
+    expect(out.rows).toEqual([
+      ["South", 110],
+      ["North", 100],
+    ]);
+  });
 });
 
 /* ------------------------------------------------------------------ */
