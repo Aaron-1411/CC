@@ -22,6 +22,7 @@ import {
   Scissors,
   TextCursorInput,
   CopyMinus,
+  ArrowDownToLine,
   Plus,
   X,
 } from "lucide-react";
@@ -44,7 +45,8 @@ type Op =
   | "derive"
   | "limit"
   | "rename"
-  | "dedupe";
+  | "dedupe"
+  | "fillDown";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -137,6 +139,7 @@ function ReportingPage() {
   const [renameFrom, setRenameFrom] = useState("");
   const [renameTo, setRenameTo] = useState("");
   const [dedupeColumns, setDedupeColumns] = useState<string[]>([]);
+  const [fillDownColumns, setFillDownColumns] = useState<string[]>([]);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -220,6 +223,11 @@ function ReportingPage() {
         op: "dedupe",
         params: dedupeColumns.length ? { columns: dedupeColumns } : {},
       } as const;
+    if (op === "fillDown")
+      return {
+        op: "fillDown",
+        params: fillDownColumns.length ? { columns: fillDownColumns } : {},
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -287,6 +295,7 @@ function ReportingPage() {
     setRenameFrom("");
     setRenameTo("");
     setDedupeColumns([]);
+    setFillDownColumns([]);
   }
 
   async function addStep() {
@@ -368,6 +377,10 @@ function ReportingPage() {
         return spec.params.columns?.length
           ? `Dedupe on ${spec.params.columns.join(", ")}`
           : "Dedupe rows";
+      case "fillDown":
+        return spec.params.columns?.length
+          ? `Fill down ${spec.params.columns.join(", ")}`
+          : "Fill down empty cells";
       default:
         return "Pass-through";
     }
@@ -428,6 +441,8 @@ function ReportingPage() {
         return !!renameFrom && !!renameTo.trim();
       case "dedupe":
         return true;
+      case "fillDown":
+        return true;
       default:
         return true;
     }
@@ -439,7 +454,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -558,6 +573,7 @@ function ReportingPage() {
           <OpTab active={op === "limit"} onClick={() => setOp("limit")} icon={<Scissors className="h-4 w-4" />} label="Limit rows" />
           <OpTab active={op === "rename"} onClick={() => setOp("rename")} icon={<TextCursorInput className="h-4 w-4" />} label="Rename col" />
           <OpTab active={op === "dedupe"} onClick={() => setOp("dedupe")} icon={<CopyMinus className="h-4 w-4" />} label="Dedupe" />
+          <OpTab active={op === "fillDown"} onClick={() => setOp("fillDown")} icon={<ArrowDownToLine className="h-4 w-4" />} label="Fill down" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -941,6 +957,44 @@ function ReportingPage() {
             ) : (
               <p className="text-xs text-muted-foreground">
                 Load a source first to choose columns — or run as-is to dedupe whole rows.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "fillDown" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Forward-fill blank cells (empty or null) with the last value above them, per column.
+              Useful for crosstab exports where group labels only appear on the first row of each
+              block. Leave all unselected to fill every column; leading blanks stay blank.
+            </p>
+            {sourceColumns.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sourceColumns.map((c) => {
+                  const on = fillDownColumns.includes(c);
+                  return (
+                    <button
+                      key={c}
+                      onClick={() =>
+                        setFillDownColumns((prev) =>
+                          prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                        )
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs ${
+                        on
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:bg-accent"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose columns — or run as-is to fill every column.
               </p>
             )}
           </div>

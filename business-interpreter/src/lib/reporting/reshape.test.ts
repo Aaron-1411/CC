@@ -16,6 +16,7 @@ import {
   limit,
   rename,
   dedupe,
+  fillDown,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -760,6 +761,104 @@ describe("dedupe", () => {
     expect(out.rows).toEqual([
       ["North", "Widget", 10],
       ["South", "Widget", 10],
+    ]);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* fillDown                                                            */
+/* ------------------------------------------------------------------ */
+
+describe("fillDown", () => {
+  const t: Table = {
+    columns: ["region", "product", "units"],
+    rows: [
+      ["North", "Widget", 10],
+      ["", "Gadget", 5],
+      [null, "Gizmo", 3],
+      ["South", "Widget", 7],
+      ["", "Gadget", 2],
+    ],
+  };
+
+  test("forward-fills blank and null cells with the value above, keeping order", () => {
+    const out = fillDown(t, {});
+    expect(out.columns).toEqual(["region", "product", "units"]);
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["North", "Gadget", 5],
+      ["North", "Gizmo", 3],
+      ["South", "Widget", 7],
+      ["South", "Gadget", 2],
+    ]);
+  });
+
+  test("treats omitted columns the same as filling every column", () => {
+    expect(fillDown(t).rows).toEqual(fillDown(t, { columns: [] }).rows);
+  });
+
+  test("fills only the selected subset of columns", () => {
+    const partial: Table = {
+      columns: ["a", "b"],
+      rows: [
+        ["x", "1"],
+        ["", ""],
+        ["y", ""],
+      ],
+    };
+    const out = fillDown(partial, { columns: ["a"] });
+    expect(out.rows).toEqual([
+      ["x", "1"],
+      ["x", ""],
+      ["y", ""],
+    ]);
+  });
+
+  test("leaves leading blanks blank when nothing is above", () => {
+    const leading: Table = {
+      columns: ["a"],
+      rows: [[""], [null], ["v"], [""]],
+    };
+    const out = fillDown(leading, {});
+    expect(out.rows).toEqual([[""], [null], ["v"], ["v"]]);
+  });
+
+  test("treats both empty string and null as blank", () => {
+    const mixed: Table = {
+      columns: ["a"],
+      rows: [["v"], [""], [null], ["w"]],
+    };
+    const out = fillDown(mixed, {});
+    expect(out.rows).toEqual([["v"], ["v"], ["v"], ["w"]]);
+  });
+
+  test("does not treat 0 or false as blank", () => {
+    const falsy: Table = {
+      columns: ["a"],
+      rows: [[0], [""], [false], [null]],
+    };
+    const out = fillDown(falsy, {});
+    expect(out.rows).toEqual([[0], [0], [false], [false]]);
+  });
+
+  test("does not mutate the source rows", () => {
+    const snapshot = JSON.parse(JSON.stringify(t.rows));
+    fillDown(t, {});
+    expect(t.rows).toEqual(snapshot);
+  });
+
+  test("throws when a subset column is missing", () => {
+    expect(() => fillDown(t, { columns: ["nope"] })).toThrow(/not found/);
+  });
+
+  test("chains through applyPipeline", () => {
+    const out = applyPipeline(t, [{ op: "fillDown", params: { columns: ["region"] } }]);
+    expect(out.rows).toEqual([
+      ["North", "Widget", 10],
+      ["North", "Gadget", 5],
+      ["North", "Gizmo", 3],
+      ["South", "Widget", 7],
+      ["South", "Gadget", 2],
     ]);
   });
 });

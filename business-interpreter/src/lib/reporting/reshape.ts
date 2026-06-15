@@ -648,6 +648,43 @@ export function dedupe(t: Table, params: DedupeParams = {}): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* fillDown                                                            */
+/* ------------------------------------------------------------------ */
+
+export type FillDownParams = {
+  columns?: string[]; // subset to fill; empty/omitted = all columns
+};
+
+/**
+ * Forward-fill empty cells (null or "") with the last non-empty value
+ * above them, per column. Common for crosstab/pivot exports where group
+ * labels only appear on the first row of each block. Leading blanks (with
+ * no value above) are left as-is.
+ */
+export function fillDown(t: Table, params: FillDownParams = {}): Table {
+  const subset = (params.columns ?? []).filter((c) => c.trim() !== "");
+  const idx = subset.length
+    ? requireCols(t.columns, subset, "fillDown.columns")
+    : t.columns.map((_, i) => i);
+  const last: Cell[] = new Array(t.columns.length).fill(null);
+  const haveLast: boolean[] = new Array(t.columns.length).fill(false);
+  const rows: Cell[][] = t.rows.map((r) => {
+    const out = r.slice();
+    for (const i of idx) {
+      const v = out[i];
+      if (v === null || v === "") {
+        if (haveLast[i]) out[i] = last[i];
+      } else {
+        last[i] = v;
+        haveLast[i] = true;
+      }
+    }
+    return out;
+  });
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -663,7 +700,8 @@ export type TransformSpec =
   | { op: "derive"; params: DeriveParams }
   | { op: "limit"; params: LimitParams }
   | { op: "rename"; params: RenameParams }
-  | { op: "dedupe"; params: DedupeParams };
+  | { op: "dedupe"; params: DedupeParams }
+  | { op: "fillDown"; params: FillDownParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -691,6 +729,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return rename(t, spec.params);
     case "dedupe":
       return dedupe(t, spec.params);
+    case "fillDown":
+      return fillDown(t, spec.params);
     default:
       return t;
   }

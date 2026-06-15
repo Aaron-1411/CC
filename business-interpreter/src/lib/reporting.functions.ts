@@ -125,6 +125,12 @@ const TransformSchema = z.discriminatedUnion("op", [
       columns: z.array(z.string()).max(200).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("fillDown"),
+    params: z.object({
+      columns: z.array(z.string()).max(200).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
