@@ -20,6 +20,7 @@ import {
   Sigma,
   Calculator,
   Scissors,
+  TextCursorInput,
   Plus,
   X,
 } from "lucide-react";
@@ -40,7 +41,8 @@ type Op =
   | "sort"
   | "select"
   | "derive"
-  | "limit";
+  | "limit"
+  | "rename";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -130,6 +132,8 @@ function ReportingPage() {
   const [deriveRight, setDeriveRight] = useState("");
   const [limitCount, setLimitCount] = useState("10");
   const [limitOffset, setLimitOffset] = useState("0");
+  const [renameFrom, setRenameFrom] = useState("");
+  const [renameTo, setRenameTo] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -203,6 +207,11 @@ function ReportingPage() {
         params: offset > 0 ? { count, offset } : { count },
       } as const;
     }
+    if (op === "rename")
+      return {
+        op: "rename",
+        params: { renames: [{ from: renameFrom, to: renameTo.trim() }] },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -267,6 +276,8 @@ function ReportingPage() {
     setDeriveRight("");
     setLimitCount("10");
     setLimitOffset("0");
+    setRenameFrom("");
+    setRenameTo("");
   }
 
   async function addStep() {
@@ -342,6 +353,8 @@ function ReportingPage() {
         return `Limit ${spec.params.count} rows${
           spec.params.offset ? ` (skip ${spec.params.offset})` : ""
         }`;
+      case "rename":
+        return `Rename ${spec.params.renames.map((r) => `${r.from} → ${r.to}`).join(", ")}`;
       default:
         return "Pass-through";
     }
@@ -398,10 +411,12 @@ function ReportingPage() {
         return !!deriveAs.trim() && !!deriveLeft && !!deriveRight.trim();
       case "limit":
         return Number.isFinite(Number(limitCount)) && Number(limitCount) >= 0 && limitCount.trim() !== "";
+      case "rename":
+        return !!renameFrom && !!renameTo.trim();
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -409,7 +424,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -526,6 +541,7 @@ function ReportingPage() {
           <OpTab active={op === "select"} onClick={() => setOp("select")} icon={<ListChecks className="h-4 w-4" />} label="Select cols" />
           <OpTab active={op === "derive"} onClick={() => setOp("derive")} icon={<Calculator className="h-4 w-4" />} label="Compute col" />
           <OpTab active={op === "limit"} onClick={() => setOp("limit")} icon={<Scissors className="h-4 w-4" />} label="Limit rows" />
+          <OpTab active={op === "rename"} onClick={() => setOp("rename")} icon={<TextCursorInput className="h-4 w-4" />} label="Rename col" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -686,7 +702,7 @@ function ReportingPage() {
           </div>
         )}
 
-        {(op === "filter" || op === "sort" || op === "select" || op === "derive") &&
+        {(op === "filter" || op === "sort" || op === "select" || op === "derive" || op === "rename") &&
           sourceColumns.length === 0 && (
             <p className="mt-4 text-sm text-muted-foreground">
               Load a source first to choose columns.
@@ -843,6 +859,33 @@ function ReportingPage() {
                   onChange={(e) => setLimitOffset(e.target.value)}
                   placeholder="0"
                   inputMode="numeric"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                />
+              </Field>
+            </div>
+          </div>
+        )}
+
+        {op === "rename" && sourceColumns.length > 0 && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Give a column a clearer name — handy for tidying headers before export or after a
+              pivot/compute step.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Column to rename">
+                <Select
+                  value={renameFrom}
+                  onChange={setRenameFrom}
+                  options={sourceColumns}
+                  placeholder="Choose…"
+                />
+              </Field>
+              <Field label="New name">
+                <input
+                  value={renameTo}
+                  onChange={(e) => setRenameTo(e.target.value)}
+                  placeholder="e.g. Revenue"
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
                 />
               </Field>

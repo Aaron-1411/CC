@@ -14,6 +14,7 @@ import {
   select,
   derive,
   limit,
+  rename,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -616,6 +617,66 @@ describe("limit", () => {
 
   test("throws for a negative count", () => {
     expect(() => limit(t, { count: -1 })).toThrow(/non-negative/);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* rename                                                              */
+/* ------------------------------------------------------------------ */
+
+describe("rename", () => {
+  const t: Table = {
+    columns: ["name", "score"],
+    rows: [
+      ["A", 10],
+      ["B", 20],
+    ],
+  };
+
+  test("renames a single column and leaves rows untouched", () => {
+    const out = rename(t, { renames: [{ from: "score", to: "points" }] });
+    expect(out.columns).toEqual(["name", "points"]);
+    expect(out.rows).toEqual(t.rows);
+  });
+
+  test("renames several columns in one pass", () => {
+    const out = rename(t, {
+      renames: [
+        { from: "name", to: "player" },
+        { from: "score", to: "points" },
+      ],
+    });
+    expect(out.columns).toEqual(["player", "points"]);
+  });
+
+  test("trims whitespace from the new name", () => {
+    const out = rename(t, { renames: [{ from: "score", to: "  points  " }] });
+    expect(out.columns).toEqual(["name", "points"]);
+  });
+
+  test("does not mutate the source columns", () => {
+    rename(t, { renames: [{ from: "score", to: "points" }] });
+    expect(t.columns).toEqual(["name", "score"]);
+  });
+
+  test("returns the table unchanged when there are no renames", () => {
+    const out = rename(t, { renames: [] });
+    expect(out).toBe(t);
+  });
+
+  test("throws when the source column is missing", () => {
+    expect(() => rename(t, { renames: [{ from: "nope", to: "x" }] })).toThrow(/not found/);
+  });
+
+  test("throws when the new name is blank", () => {
+    expect(() => rename(t, { renames: [{ from: "score", to: "   " }] })).toThrow(/new column name/);
+  });
+
+  test("chains through applyPipeline after a compute step", () => {
+    const out = applyPipeline(t, [
+      { op: "rename", params: { renames: [{ from: "score", to: "points" }] } },
+    ]);
+    expect(out.columns).toEqual(["name", "points"]);
   });
 });
 

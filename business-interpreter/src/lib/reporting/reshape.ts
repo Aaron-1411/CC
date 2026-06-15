@@ -602,6 +602,27 @@ export function limit(t: Table, params: LimitParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* Rename (relabel one or more columns; values untouched)              */
+/* ------------------------------------------------------------------ */
+
+export type RenameParams = {
+  renames: { from: string; to: string }[];
+};
+
+export function rename(t: Table, params: RenameParams): Table {
+  if (!params.renames.length) return t;
+  const columns = t.columns.slice();
+  for (const { from, to } of params.renames) {
+    const idx = colIndex(columns, from);
+    if (idx < 0) throw new Error(`rename.from: column "${from}" not found`);
+    const next = to.trim();
+    if (!next) throw new Error("rename.to: a new column name is required");
+    columns[idx] = next;
+  }
+  return { columns, rows: t.rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -615,7 +636,8 @@ export type TransformSpec =
   | { op: "sort"; params: SortParams }
   | { op: "select"; params: SelectParams }
   | { op: "derive"; params: DeriveParams }
-  | { op: "limit"; params: LimitParams };
+  | { op: "limit"; params: LimitParams }
+  | { op: "rename"; params: RenameParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -639,6 +661,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return derive(t, spec.params);
     case "limit":
       return limit(t, spec.params);
+    case "rename":
+      return rename(t, spec.params);
     default:
       return t;
   }
