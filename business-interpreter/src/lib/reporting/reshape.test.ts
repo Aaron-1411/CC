@@ -12,6 +12,7 @@ import {
   filter,
   sort,
   select,
+  derive,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -445,6 +446,91 @@ describe("select", () => {
 
   test("throws a helpful error for an unknown column", () => {
     expect(() => select(t, { columns: ["nope"] })).toThrow(/column "nope" not found/);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* derive                                                              */
+/* ------------------------------------------------------------------ */
+
+describe("derive", () => {
+  const t: Table = {
+    columns: ["product", "revenue", "cost"],
+    rows: [
+      ["A", 100, 60],
+      ["B", 50, 50],
+      ["C", "n/a", 10],
+    ],
+  };
+
+  test("subtracts one column from another into a new column", () => {
+    const out = derive(t, {
+      as: "margin",
+      left: "revenue",
+      operator: "-",
+      rightKind: "column",
+      right: "cost",
+    });
+    expect(out.columns).toEqual(["product", "revenue", "cost", "margin"]);
+    expect(out.rows).toEqual([
+      ["A", 100, 60, 40],
+      ["B", 50, 50, 0],
+      ["C", "n/a", 10, null], // non-numeric left → null
+    ]);
+  });
+
+  test("scales by a constant", () => {
+    const out = derive(t, {
+      as: "rev_pct",
+      left: "revenue",
+      operator: "*",
+      rightKind: "const",
+      right: "100",
+    });
+    expect(out.rows.map((r) => r[3])).toEqual([10000, 5000, null]);
+  });
+
+  test("divide-by-zero yields null, normal division works", () => {
+    const d: Table = {
+      columns: ["a", "b"],
+      rows: [
+        [10, 2],
+        [10, 0],
+      ],
+    };
+    const out = derive(d, { as: "ratio", left: "a", operator: "/", rightKind: "column", right: "b" });
+    expect(out.rows.map((r) => r[2])).toEqual([5, null]);
+  });
+
+  test("overwrites an existing column when `as` matches", () => {
+    const out = derive(t, {
+      as: "cost",
+      left: "cost",
+      operator: "+",
+      rightKind: "const",
+      right: "5",
+    });
+    expect(out.columns).toEqual(["product", "revenue", "cost"]);
+    expect(out.rows).toEqual([
+      ["A", 100, 65],
+      ["B", 50, 55],
+      ["C", "n/a", 15],
+    ]);
+  });
+
+  test("throws for unknown columns, an empty name, or a non-numeric constant", () => {
+    expect(() =>
+      derive(t, { as: "x", left: "nope", operator: "+", rightKind: "const", right: "1" }),
+    ).toThrow(/column "nope" not found/);
+    expect(() =>
+      derive(t, { as: "x", left: "revenue", operator: "+", rightKind: "column", right: "nope" }),
+    ).toThrow(/column "nope" not found/);
+    expect(() =>
+      derive(t, { as: "  ", left: "revenue", operator: "+", rightKind: "const", right: "1" }),
+    ).toThrow(/output column name is required/);
+    expect(() =>
+      derive(t, { as: "x", left: "revenue", operator: "+", rightKind: "const", right: "abc" }),
+    ).toThrow(/is not a number/);
   });
 });
 

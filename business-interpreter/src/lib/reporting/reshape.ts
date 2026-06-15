@@ -493,6 +493,63 @@ export function select(t: Table, params: SelectParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* Derive (computed column from arithmetic)                            */
+/* ------------------------------------------------------------------ */
+
+export type DeriveOperator = "+" | "-" | "*" | "/";
+
+export type DeriveParams = {
+  as: string; // output column name (appended, or overwritten if it already exists)
+  left: string; // source column
+  operator: DeriveOperator;
+  rightKind: "column" | "const";
+  right: string; // column name when rightKind="column"; numeric literal when "const"
+};
+
+export function derive(t: Table, params: DeriveParams): Table {
+  const as = params.as.trim();
+  if (!as) throw new Error("derive.as: an output column name is required");
+  const [leftIdx] = requireCols(t.columns, [params.left], "derive.left");
+
+  let rightIdx = -1;
+  let constVal: number | null = null;
+  if (params.rightKind === "column") {
+    rightIdx = requireCols(t.columns, [params.right], "derive.right")[0];
+  } else {
+    constVal = toNumber(params.right);
+    if (constVal === null) throw new Error(`derive.right: "${params.right}" is not a number`);
+  }
+
+  const apply = (a: number, b: number): number | null => {
+    switch (params.operator) {
+      case "+":
+        return a + b;
+      case "-":
+        return a - b;
+      case "*":
+        return a * b;
+      case "/":
+        return b === 0 ? null : a / b;
+    }
+  };
+
+  const existingIdx = colIndex(t.columns, as);
+  const columns = existingIdx >= 0 ? t.columns.slice() : [...t.columns, as];
+  const rows = t.rows.map((r) => {
+    const a = toNumber(r[leftIdx] ?? null);
+    const b = params.rightKind === "column" ? toNumber(r[rightIdx] ?? null) : constVal;
+    const out: Cell = a === null || b === null ? null : apply(a, b);
+    if (existingIdx >= 0) {
+      const row = r.slice();
+      row[existingIdx] = out;
+      return row;
+    }
+    return [...r, out];
+  });
+  return { columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -504,7 +561,8 @@ export type TransformSpec =
   | { op: "groupBy"; params: GroupByParams }
   | { op: "filter"; params: FilterParams }
   | { op: "sort"; params: SortParams }
-  | { op: "select"; params: SelectParams };
+  | { op: "select"; params: SelectParams }
+  | { op: "derive"; params: DeriveParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -524,6 +582,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return sort(t, spec.params);
     case "select":
       return select(t, spec.params);
+    case "derive":
+      return derive(t, spec.params);
     default:
       return t;
   }

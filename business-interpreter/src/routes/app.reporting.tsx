@@ -18,6 +18,7 @@ import {
   ArrowDownUp,
   ListChecks,
   Sigma,
+  Calculator,
   Plus,
   X,
 } from "lucide-react";
@@ -28,9 +29,26 @@ export const Route = createFileRoute("/app/reporting")({
 });
 
 type SourceKind = "csv-text" | "csv-url" | "tableau-vds";
-type Op = "none" | "transpose" | "unpivot" | "pivot" | "groupBy" | "filter" | "sort" | "select";
+type Op =
+  | "none"
+  | "transpose"
+  | "unpivot"
+  | "pivot"
+  | "groupBy"
+  | "filter"
+  | "sort"
+  | "select"
+  | "derive";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first";
 type AggRow = { column: string; agg: Agg; as: string };
+type DeriveOperator = "+" | "-" | "*" | "/";
+
+const DERIVE_OP_LABELS: Record<DeriveOperator, string> = {
+  "+": "+ add",
+  "-": "− subtract",
+  "*": "× multiply",
+  "/": "÷ divide",
+};
 type FilterOp =
   | "eq"
   | "ne"
@@ -91,6 +109,11 @@ function ReportingPage() {
   const [selectColumns, setSelectColumns] = useState<string[]>([]);
   const [groupColumns, setGroupColumns] = useState<string[]>([]);
   const [aggRows, setAggRows] = useState<AggRow[]>([{ column: "", agg: "sum", as: "" }]);
+  const [deriveAs, setDeriveAs] = useState("");
+  const [deriveLeft, setDeriveLeft] = useState("");
+  const [deriveOperator, setDeriveOperator] = useState<DeriveOperator>("+");
+  const [deriveRightKind, setDeriveRightKind] = useState<"column" | "const">("column");
+  const [deriveRight, setDeriveRight] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -138,6 +161,17 @@ function ReportingPage() {
       return {
         op: "sort",
         params: { column: sortColumn, direction: sortDir },
+      } as const;
+    if (op === "derive")
+      return {
+        op: "derive",
+        params: {
+          as: deriveAs.trim(),
+          left: deriveLeft,
+          operator: deriveOperator,
+          rightKind: deriveRightKind,
+          right: deriveRight.trim(),
+        },
       } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
@@ -218,10 +252,12 @@ function ReportingPage() {
         return !!sortColumn;
       case "select":
         return selectColumns.length > 0;
+      case "derive":
+        return !!deriveAs.trim() && !!deriveLeft && !!deriveRight.trim();
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -229,8 +265,8 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by) with a deterministic engine, then view it here and store it locally as
-          CSV or XLSX.
+          unpivot, group by, compute column) with a deterministic engine, then view it here and
+          store it locally as CSV or XLSX.
         </p>
       </div>
 
@@ -301,6 +337,7 @@ function ReportingPage() {
           <OpTab active={op === "filter"} onClick={() => setOp("filter")} icon={<Filter className="h-4 w-4" />} label="Filter" />
           <OpTab active={op === "sort"} onClick={() => setOp("sort")} icon={<ArrowDownUp className="h-4 w-4" />} label="Sort" />
           <OpTab active={op === "select"} onClick={() => setOp("select")} icon={<ListChecks className="h-4 w-4" />} label="Select cols" />
+          <OpTab active={op === "derive"} onClick={() => setOp("derive")} icon={<Calculator className="h-4 w-4" />} label="Compute col" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -461,11 +498,12 @@ function ReportingPage() {
           </div>
         )}
 
-        {(op === "filter" || op === "sort" || op === "select") && sourceColumns.length === 0 && (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Load a source first to choose columns.
-          </p>
-        )}
+        {(op === "filter" || op === "sort" || op === "select" || op === "derive") &&
+          sourceColumns.length === 0 && (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Load a source first to choose columns.
+            </p>
+          )}
 
         {op === "filter" && sourceColumns.length > 0 && (
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -536,6 +574,62 @@ function ReportingPage() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {op === "derive" && sourceColumns.length > 0 && (
+          <div className="mt-4 space-y-4">
+            <p className="text-xs text-muted-foreground">
+              Build a new column from arithmetic on existing columns. Non-numeric or empty values
+              produce a blank result; dividing by zero is blank too.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Left column">
+                <Select value={deriveLeft} onChange={setDeriveLeft} options={sourceColumns} placeholder="Choose…" />
+              </Field>
+              <Field label="Operator">
+                <Select
+                  value={deriveOperator}
+                  onChange={(v) => setDeriveOperator(v as DeriveOperator)}
+                  options={Object.keys(DERIVE_OP_LABELS)}
+                  labels={DERIVE_OP_LABELS}
+                />
+              </Field>
+              <Field label="Right operand">
+                <Select
+                  value={deriveRightKind}
+                  onChange={(v) => {
+                    setDeriveRightKind(v as "column" | "const");
+                    setDeriveRight("");
+                  }}
+                  options={["column", "const"]}
+                  labels={{ column: "Another column", const: "Constant number" }}
+                />
+              </Field>
+              {deriveRightKind === "column" ? (
+                <Field label="Right column">
+                  <Select value={deriveRight} onChange={setDeriveRight} options={sourceColumns} placeholder="Choose…" />
+                </Field>
+              ) : (
+                <Field label="Constant value">
+                  <input
+                    value={deriveRight}
+                    onChange={(e) => setDeriveRight(e.target.value)}
+                    placeholder="e.g. 100 or 1.2"
+                    inputMode="decimal"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                  />
+                </Field>
+              )}
+            </div>
+            <Field label="New column name (overwrites if it matches an existing column)">
+              <input
+                value={deriveAs}
+                onChange={(e) => setDeriveAs(e.target.value)}
+                placeholder="e.g. margin"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
           </div>
         )}
 

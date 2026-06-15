@@ -91,6 +91,16 @@ const TransformSchema = z.discriminatedUnion("op", [
       columns: z.array(z.string()).min(1),
     }),
   }),
+  z.object({
+    op: z.literal("derive"),
+    params: z.object({
+      as: z.string().min(1),
+      left: z.string().min(1),
+      operator: z.enum(["+", "-", "*", "/"]),
+      rightKind: z.enum(["column", "const"]),
+      right: z.string().min(1),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
