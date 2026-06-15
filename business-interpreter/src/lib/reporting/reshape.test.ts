@@ -13,6 +13,7 @@ import {
   sort,
   select,
   derive,
+  limit,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -547,6 +548,74 @@ describe("derive", () => {
     expect(() =>
       derive(t, { as: "x", left: "revenue", operator: "+", rightKind: "const", right: "abc" }),
     ).toThrow(/is not a number/);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* limit                                                               */
+/* ------------------------------------------------------------------ */
+
+describe("limit", () => {
+  const t: Table = {
+    columns: ["name", "score"],
+    rows: [
+      ["A", 10],
+      ["B", 20],
+      ["C", 30],
+      ["D", 40],
+    ],
+  };
+
+  test("keeps the first N rows", () => {
+    const out = limit(t, { count: 2 });
+    expect(out.columns).toEqual(["name", "score"]);
+    expect(out.rows).toEqual([
+      ["A", 10],
+      ["B", 20],
+    ]);
+  });
+
+  test("count larger than the table keeps every row", () => {
+    expect(limit(t, { count: 99 }).rows).toEqual(t.rows);
+  });
+
+  test("count 0 keeps no rows but preserves columns", () => {
+    const out = limit(t, { count: 0 });
+    expect(out.columns).toEqual(["name", "score"]);
+    expect(out.rows).toEqual([]);
+  });
+
+  test("offset skips rows from the top before keeping", () => {
+    const out = limit(t, { count: 2, offset: 1 });
+    expect(out.rows).toEqual([
+      ["B", 20],
+      ["C", 30],
+    ]);
+  });
+
+  test("offset past the end yields no rows", () => {
+    expect(limit(t, { count: 5, offset: 10 }).rows).toEqual([]);
+  });
+
+  test("does not mutate the source rows", () => {
+    const before = t.rows.length;
+    limit(t, { count: 1 });
+    expect(t.rows.length).toBe(before);
+  });
+
+  test("pairs with sort for a top-N report", () => {
+    const out = applyPipeline(t, [
+      { op: "sort", params: { column: "score", direction: "desc" } },
+      { op: "limit", params: { count: 2 } },
+    ]);
+    expect(out.rows).toEqual([
+      ["D", 40],
+      ["C", 30],
+    ]);
+  });
+
+  test("throws for a negative count", () => {
+    expect(() => limit(t, { count: -1 })).toThrow(/non-negative/);
   });
 });
 

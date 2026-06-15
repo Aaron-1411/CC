@@ -584,6 +584,24 @@ export function derive(t: Table, params: DeriveParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* Limit (keep the first N rows; optionally skip the first M)          */
+/* ------------------------------------------------------------------ */
+
+export type LimitParams = {
+  count: number; // number of rows to keep (top-N)
+  offset?: number; // rows to skip from the top before keeping (default 0)
+};
+
+export function limit(t: Table, params: LimitParams): Table {
+  const count = Math.floor(params.count);
+  if (!Number.isFinite(count) || count < 0)
+    throw new Error("limit.count: a non-negative row count is required");
+  const offset = Math.max(0, Math.floor(params.offset ?? 0));
+  const rows = t.rows.slice(offset, offset + count);
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -596,7 +614,8 @@ export type TransformSpec =
   | { op: "filter"; params: FilterParams }
   | { op: "sort"; params: SortParams }
   | { op: "select"; params: SelectParams }
-  | { op: "derive"; params: DeriveParams };
+  | { op: "derive"; params: DeriveParams }
+  | { op: "limit"; params: LimitParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -618,6 +637,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return select(t, spec.params);
     case "derive":
       return derive(t, spec.params);
+    case "limit":
+      return limit(t, spec.params);
     default:
       return t;
   }

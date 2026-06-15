@@ -19,6 +19,7 @@ import {
   ListChecks,
   Sigma,
   Calculator,
+  Scissors,
   Plus,
   X,
 } from "lucide-react";
@@ -38,7 +39,8 @@ type Op =
   | "filter"
   | "sort"
   | "select"
-  | "derive";
+  | "derive"
+  | "limit";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -126,6 +128,8 @@ function ReportingPage() {
   const [deriveOperator, setDeriveOperator] = useState<DeriveOperator>("+");
   const [deriveRightKind, setDeriveRightKind] = useState<"column" | "const">("column");
   const [deriveRight, setDeriveRight] = useState("");
+  const [limitCount, setLimitCount] = useState("10");
+  const [limitOffset, setLimitOffset] = useState("0");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -191,6 +195,14 @@ function ReportingPage() {
           right: deriveRight.trim(),
         },
       } as const;
+    if (op === "limit") {
+      const count = Math.max(0, Math.floor(Number(limitCount) || 0));
+      const offset = Math.max(0, Math.floor(Number(limitOffset) || 0));
+      return {
+        op: "limit",
+        params: offset > 0 ? { count, offset } : { count },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -253,6 +265,8 @@ function ReportingPage() {
     setDeriveOperator("+");
     setDeriveRightKind("column");
     setDeriveRight("");
+    setLimitCount("10");
+    setLimitOffset("0");
   }
 
   async function addStep() {
@@ -324,6 +338,10 @@ function ReportingPage() {
         return `Select ${spec.params.columns.join(", ")}`;
       case "derive":
         return `Compute ${spec.params.as} = ${spec.params.left} ${spec.params.operator} ${spec.params.right}`;
+      case "limit":
+        return `Limit ${spec.params.count} rows${
+          spec.params.offset ? ` (skip ${spec.params.offset})` : ""
+        }`;
       default:
         return "Pass-through";
     }
@@ -378,10 +396,12 @@ function ReportingPage() {
         return selectColumns.length > 0;
       case "derive":
         return !!deriveAs.trim() && !!deriveLeft && !!deriveRight.trim();
+      case "limit":
+        return Number.isFinite(Number(limitCount)) && Number(limitCount) >= 0 && limitCount.trim() !== "";
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -389,8 +409,9 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column) with a deterministic engine — chain several steps into
-          a pipeline that runs in order — then view it here and store it locally as CSV or XLSX.
+          unpivot, group by, compute column, limit rows) with a deterministic engine — chain several
+          steps into a pipeline that runs in order — then view it here and store it locally as CSV or
+          XLSX.
         </p>
       </div>
 
@@ -504,6 +525,7 @@ function ReportingPage() {
           <OpTab active={op === "sort"} onClick={() => setOp("sort")} icon={<ArrowDownUp className="h-4 w-4" />} label="Sort" />
           <OpTab active={op === "select"} onClick={() => setOp("select")} icon={<ListChecks className="h-4 w-4" />} label="Select cols" />
           <OpTab active={op === "derive"} onClick={() => setOp("derive")} icon={<Calculator className="h-4 w-4" />} label="Compute col" />
+          <OpTab active={op === "limit"} onClick={() => setOp("limit")} icon={<Scissors className="h-4 w-4" />} label="Limit rows" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -796,6 +818,35 @@ function ReportingPage() {
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
               />
             </Field>
+          </div>
+        )}
+
+        {op === "limit" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Keep only the first N rows — chain it after a Sort step for a “top 10” report. Use
+              Skip to page past the first rows.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Keep first N rows">
+                <input
+                  value={limitCount}
+                  onChange={(e) => setLimitCount(e.target.value)}
+                  placeholder="e.g. 10"
+                  inputMode="numeric"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                />
+              </Field>
+              <Field label="Skip rows from top (optional)">
+                <input
+                  value={limitOffset}
+                  onChange={(e) => setLimitOffset(e.target.value)}
+                  placeholder="0"
+                  inputMode="numeric"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                />
+              </Field>
+            </div>
           </div>
         )}
 

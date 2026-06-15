@@ -103,6 +103,13 @@ const TransformSchema = z.discriminatedUnion("op", [
       right: z.string().min(1),
     }),
   }),
+  z.object({
+    op: z.literal("limit"),
+    params: z.object({
+      count: z.number().int().nonnegative().max(20_000_000),
+      offset: z.number().int().nonnegative().max(20_000_000).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
