@@ -1,5 +1,13 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { ArrowRight, FileSpreadsheet, Search, Sparkles, Workflow } from "lucide-react";
+import {
+  ArrowRight,
+  FileSpreadsheet,
+  Search,
+  Table2,
+  Microscope,
+  ShieldCheck,
+  Workflow,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -32,13 +40,15 @@ function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <Workflow className="h-5 w-5 text-primary" />
-            <span className="font-semibold">Workbench</span>
-          </div>
+          <span className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <Workflow className="h-4 w-4" />
+            </span>
+            <span className="font-semibold tracking-tight">Workbench</span>
+          </span>
           <Link
             to="/auth"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Sign in
           </Link>
@@ -47,45 +57,74 @@ function Landing() {
 
       <main className="mx-auto max-w-6xl px-6 py-20">
         <section className="text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-            <Sparkles className="h-3 w-3" /> Instructable reporting & research
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Numbers computed by code, not guessed by a model
           </span>
-          <h1 className="mt-6 text-5xl font-semibold tracking-tight">
-            Tell it what to do.
-            <br />
-            <span className="text-muted-foreground">Get the workbook back done.</span>
+          <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
+            The workbench for spreadsheets you can actually trust.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Drop in an Excel export. Type instructions like &ldquo;copy Raw A1:H500 to Working,
-            VLOOKUP region from Lookups, summarize totals into Master.&rdquo; Watch every step run
-            with live formulas, then download the result.
+            Reshape exports with 26 plain-English transforms, run live formulas, map any workbook,
+            and compile sourced competitor research — every step logged, reproducible, and verifiable.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/auth"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Start working <ArrowRight className="h-4 w-4" />
+              Get started <ArrowRight className="h-4 w-4" />
             </Link>
+            <a
+              href="#capabilities"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-3 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              See what it does
+            </a>
           </div>
         </section>
 
-        <section className="mt-24 grid gap-6 md:grid-cols-2">
+        <section id="capabilities" className="mt-24 grid gap-5 sm:grid-cols-2">
+          <FeatureCard
+            icon={<Table2 className="h-5 w-5" />}
+            title="Plain-English reporting"
+            body="Transpose, pivot, group, bin, rank, running totals and 20 more transforms — chained into a pipeline. The deterministic engine is exhaustively unit-tested, so the figures are exact every time."
+          />
           <FeatureCard
             icon={<FileSpreadsheet className="h-5 w-5" />}
             title="Spreadsheet automation"
-            body="Upload .xlsx, drive it with plain English: copy ranges, write formulas, fill down across sheets, build a master summary, generate commentary. Every step is logged and reproducible."
+            body="Upload .xlsx and drive it in plain English: copy ranges, write formulas, fill down across sheets, build a master summary. Every step is logged and reproducible."
+          />
+          <FeatureCard
+            icon={<Microscope className="h-5 w-5" />}
+            title="Sheet analyzer"
+            body="Hand it any workbook and it maps every tab, traces data lineage, asks the context questions it needs, and writes a plain-English explainer of how the model works."
           />
           <FeatureCard
             icon={<Search className="h-5 w-5" />}
             title="Deep competitor research"
-            body="Point it at your business. It scrapes competitor sites for pricing, plans, incentives, and positioning, and gives you a structured comparison with sources and confidence scores."
+            body="Point it at your business. It searches the web, scrapes competitor sites for pricing and positioning, and returns a structured comparison with sources and confidence scores."
           />
+        </section>
+
+        <section className="mt-24 rounded-2xl border border-border bg-card px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Reusable processes, not one-off prompts
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            Author a standard operating procedure once — say, your monthly board pack — and the agent
+            runs it the same way every time, with review gates and AI checks at each step.
+          </p>
+          <Link
+            to="/auth"
+            className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Start working <ArrowRight className="h-4 w-4" />
+          </Link>
         </section>
       </main>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        Workbench
+        Workbench — spreadsheet automation & competitor research
       </footer>
     </div>
   );
@@ -101,7 +140,7 @@ function FeatureCard({
   body: string;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
+    <div className="rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/40">
       <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
         {icon}
       </div>
