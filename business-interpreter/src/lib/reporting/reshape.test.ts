@@ -21,6 +21,7 @@ import {
   trim,
   splitColumn,
   mergeColumns,
+  replace,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1298,6 +1299,111 @@ describe("mergeColumns", () => {
     ]);
     expect(out.columns).toEqual(["key", "amount"]);
     expect(out.rows.map((r) => r[0])).toEqual(["North / A", "North / B", "South / C"]);
+  });
+});
+
+describe("replace", () => {
+  const t: Table = {
+    columns: ["country", "note", "amount"],
+    rows: [
+      ["USA", "n/a", 10],
+      ["usa", "N/A", 20],
+      ["Canada", "ok", 30],
+    ],
+  };
+
+  test("substring replace is case-insensitive by default", () => {
+    const out = replace(t, { columns: ["country"], find: "usa", replace: "United States" });
+    expect(out.columns).toEqual(["country", "note", "amount"]);
+    expect(out.rows.map((r) => r[0])).toEqual(["United States", "United States", "Canada"]);
+    // other columns untouched
+    expect(out.rows.map((r) => r[1])).toEqual(["n/a", "N/A", "ok"]);
+  });
+
+  test("matchCase only replaces exact-case occurrences", () => {
+    const out = replace(t, { columns: ["country"], find: "usa", replace: "X", matchCase: true });
+    expect(out.rows.map((r) => r[0])).toEqual(["USA", "X", "Canada"]);
+  });
+
+  test("wholeCell replaces only when the whole cell matches (case-insensitive)", () => {
+    const data: Table = {
+      columns: ["c"],
+      rows: [["N/A"], ["n/a"], ["see N/A note"], ["ok"]],
+    };
+    const out = replace(data, { find: "n/a", replace: "", wholeCell: true });
+    expect(out.rows.map((r) => r[0])).toEqual(["", "", "see N/A note", "ok"]);
+  });
+
+  test("wholeCell honours matchCase", () => {
+    const data: Table = { columns: ["c"], rows: [["N/A"], ["n/a"]] };
+    const out = replace(data, { find: "N/A", replace: "", wholeCell: true, matchCase: true });
+    expect(out.rows.map((r) => r[0])).toEqual(["", "n/a"]);
+  });
+
+  test("replace defaults to empty string (deletes the match)", () => {
+    const data: Table = { columns: ["c"], rows: [["foo-bar"], ["bar"]] };
+    const out = replace(data, { find: "bar" });
+    expect(out.rows.map((r) => r[0])).toEqual(["foo-", ""]);
+  });
+
+  test("only string cells are touched; numbers/booleans/nulls pass through", () => {
+    const data: Table = {
+      columns: ["a"],
+      rows: [["10"], [10], [true], [null]],
+    };
+    const out = replace(data, { find: "10", replace: "X" });
+    expect(out.rows.map((r) => r[0])).toEqual(["X", 10, true, null]);
+  });
+
+  test("omitting columns applies to every column", () => {
+    const data: Table = {
+      columns: ["a", "b"],
+      rows: [
+        ["x", "x"],
+        ["y", "x"],
+      ],
+    };
+    const out = replace(data, { find: "x", replace: "Z" });
+    expect(out.rows).toEqual([
+      ["Z", "Z"],
+      ["y", "Z"],
+    ]);
+  });
+
+  test("find is treated literally — regex-special characters are escaped", () => {
+    const data: Table = { columns: ["c"], rows: [["a.b.c"], ["axbxc"]] };
+    const out = replace(data, { find: ".", replace: "-" });
+    expect(out.rows.map((r) => r[0])).toEqual(["a-b-c", "axbxc"]);
+  });
+
+  test("replacement text is literal — $& and $1 are not expanded", () => {
+    const data: Table = { columns: ["c"], rows: [["hello"]] };
+    const out = replace(data, { find: "hello", replace: "$& $1 done" });
+    expect(out.rows.map((r) => r[0])).toEqual(["$& $1 done"]);
+  });
+
+  test("empty find throws", () => {
+    expect(() => replace(t, { find: "" })).toThrow(/provide text to find/);
+  });
+
+  test("unknown column throws", () => {
+    expect(() => replace(t, { columns: ["nope"], find: "x" })).toThrow(/not found/);
+  });
+
+  test("does not mutate the input table", () => {
+    const data: Table = { columns: ["c"], rows: [["x"]] };
+    const snapshot = JSON.parse(JSON.stringify(data));
+    replace(data, { find: "x", replace: "y" });
+    expect(data).toEqual(snapshot);
+  });
+
+  test("chains through applyPipeline", () => {
+    const out = applyPipeline(t, [
+      { op: "replace", params: { columns: ["country"], find: "usa", replace: "US" } },
+      { op: "replace", params: { columns: ["note"], find: "n/a", replace: "", wholeCell: true } },
+    ]);
+    expect(out.rows.map((r) => r[0])).toEqual(["US", "US", "Canada"]);
+    expect(out.rows.map((r) => r[1])).toEqual(["", "", "ok"]);
   });
 });
 

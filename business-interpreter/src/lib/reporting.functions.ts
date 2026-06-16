@@ -164,6 +164,16 @@ const TransformSchema = z.discriminatedUnion("op", [
       skipEmpty: z.boolean().optional(),
     }),
   }),
+  z.object({
+    op: z.literal("replace"),
+    params: z.object({
+      columns: z.array(z.string()).max(200).optional(),
+      find: z.string().min(1).max(1000),
+      replace: z.string().max(1000).optional(),
+      matchCase: z.boolean().optional(),
+      wholeCell: z.boolean().optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

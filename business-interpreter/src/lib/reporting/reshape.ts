@@ -46,6 +46,11 @@ function requireCols(columns: string[], names: string[], label: string): number[
   });
 }
 
+/** Escape a literal string so it can be used safely inside a RegExp (no ReDoS). */
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function toNumber(v: Cell): number | null {
   if (v === null || v === "") return null;
   if (typeof v === "number") return Number.isFinite(v) ? v : null;
@@ -939,6 +944,66 @@ export function mergeColumns(t: Table, params: MergeColumnsParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* replace (literal find-and-replace within text columns)              */
+/* ------------------------------------------------------------------ */
+
+export type ReplaceParams = {
+  columns?: string[]; // columns to operate on (omitted/empty = every column)
+  find: string; // literal text to search for (must be non-empty)
+  replace?: string; // replacement text (default "" — i.e. delete the match)
+  matchCase?: boolean; // case-sensitive match (default false → case-insensitive)
+  wholeCell?: boolean; // replace only when the whole cell equals `find` (default false → substring)
+};
+
+/**
+ * Literal find-and-replace across string cells in the selected columns (or every
+ * column when none are named). Only string cells are searched — numbers, booleans
+ * and nulls pass through untouched, so no data is coerced. Case-insensitive by
+ * default; set `matchCase` to require an exact-case match. By default every
+ * occurrence of `find` inside a cell is replaced (substring mode); set `wholeCell`
+ * to replace only cells whose entire value equals `find`. The needle is matched
+ * literally (regex metacharacters in `find` and `replace` are treated as plain
+ * text), so it is safe for arbitrary user input. Useful for normalising labels
+ * ("U.S.A." → "USA"), fixing typos, or stripping noise before group by / dedupe /
+ * joins, where inconsistent spellings otherwise split values apart.
+ */
+export function replace(t: Table, params: ReplaceParams): Table {
+  if (params.find === "") throw new Error("replace: provide text to find.");
+  const cols = (params.columns ?? []).filter((c) => c.trim() !== "");
+  const targets = cols.length
+    ? new Set(requireCols(t.columns, cols, "replace.columns"))
+    : new Set(t.columns.map((_, i) => i));
+  const find = params.find;
+  const repl = params.replace ?? "";
+  const matchCase = params.matchCase ?? false;
+  const wholeCell = params.wholeCell ?? false;
+
+  // Escaped literal => the regex is a plain string matcher (no ReDoS, no $-refs).
+  const re = wholeCell ? null : new RegExp(escapeRegExp(find), matchCase ? "g" : "gi");
+  const cmpFind = matchCase ? find : find.toLowerCase();
+
+  const apply = (s: string): string => {
+    if (wholeCell) {
+      const cmp = matchCase ? s : s.toLowerCase();
+      return cmp === cmpFind ? repl : s;
+    }
+    // Function replacement keeps `repl` literal ($&, $1, … are not expanded).
+    return s.replace(re!, () => repl);
+  };
+
+  const rows: Cell[][] = t.rows.map((r) => {
+    const out = r.slice();
+    for (const idx of targets) {
+      const v = out[idx];
+      if (typeof v === "string") out[idx] = apply(v);
+    }
+    return out;
+  });
+
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -959,7 +1024,8 @@ export type TransformSpec =
   | { op: "castNumber"; params: CastNumberParams }
   | { op: "trim"; params: TrimParams }
   | { op: "splitColumn"; params: SplitColumnParams }
-  | { op: "mergeColumns"; params: MergeColumnsParams };
+  | { op: "mergeColumns"; params: MergeColumnsParams }
+  | { op: "replace"; params: ReplaceParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -997,6 +1063,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return splitColumn(t, spec.params);
     case "mergeColumns":
       return mergeColumns(t, spec.params);
+    case "replace":
+      return replace(t, spec.params);
     default:
       return t;
   }

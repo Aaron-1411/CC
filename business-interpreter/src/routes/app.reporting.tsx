@@ -27,6 +27,7 @@ import {
   Eraser,
   TableColumnsSplit,
   TableCellsMerge,
+  Replace,
   Plus,
   X,
 } from "lucide-react";
@@ -54,7 +55,8 @@ type Op =
   | "castNumber"
   | "trim"
   | "splitColumn"
-  | "mergeColumns";
+  | "mergeColumns"
+  | "replace";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -161,6 +163,11 @@ function ReportingPage() {
   const [mergeInto, setMergeInto] = useState("");
   const [mergeKeepOriginals, setMergeKeepOriginals] = useState(false);
   const [mergeSkipEmpty, setMergeSkipEmpty] = useState(false);
+  const [replaceColumns, setReplaceColumns] = useState<string[]>([]);
+  const [replaceFind, setReplaceFind] = useState("");
+  const [replaceWith, setReplaceWith] = useState("");
+  const [replaceMatchCase, setReplaceMatchCase] = useState(false);
+  const [replaceWholeCell, setReplaceWholeCell] = useState(false);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -288,6 +295,17 @@ function ReportingPage() {
           ...(mergeSkipEmpty ? { skipEmpty: true } : {}),
         },
       } as const;
+    if (op === "replace")
+      return {
+        op: "replace",
+        params: {
+          ...(replaceColumns.length ? { columns: replaceColumns } : {}),
+          find: replaceFind,
+          replace: replaceWith,
+          ...(replaceMatchCase ? { matchCase: true } : {}),
+          ...(replaceWholeCell ? { wholeCell: true } : {}),
+        },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -369,6 +387,11 @@ function ReportingPage() {
     setMergeInto("");
     setMergeKeepOriginals(false);
     setMergeSkipEmpty(false);
+    setReplaceColumns([]);
+    setReplaceFind("");
+    setReplaceWith("");
+    setReplaceMatchCase(false);
+    setReplaceWholeCell(false);
   }
 
   async function addStep() {
@@ -469,6 +492,11 @@ function ReportingPage() {
         );
       case "mergeColumns":
         return `Merge ${spec.params.columns.join(" + ")} → ${spec.params.into}`;
+      case "replace":
+        return (
+          `Replace "${spec.params.find}" → "${spec.params.replace ?? ""}"` +
+          (spec.params.columns?.length ? ` in ${spec.params.columns.join(", ")}` : " (all columns)")
+        );
       default:
         return "Pass-through";
     }
@@ -539,10 +567,12 @@ function ReportingPage() {
         return !!splitCol && splitDelimiter.length > 0;
       case "mergeColumns":
         return mergeColumnsSel.length >= 2 && !!mergeInto.trim();
+      case "replace":
+        return replaceFind.length > 0;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -550,7 +580,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -674,6 +704,7 @@ function ReportingPage() {
           <OpTab active={op === "trim"} onClick={() => setOp("trim")} icon={<Eraser className="h-4 w-4" />} label="Trim" />
           <OpTab active={op === "splitColumn"} onClick={() => setOp("splitColumn")} icon={<TableColumnsSplit className="h-4 w-4" />} label="Split col" />
           <OpTab active={op === "mergeColumns"} onClick={() => setOp("mergeColumns")} icon={<TableCellsMerge className="h-4 w-4" />} label="Merge cols" />
+          <OpTab active={op === "replace"} onClick={() => setOp("replace")} icon={<Replace className="h-4 w-4" />} label="Find & replace" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1407,6 +1438,118 @@ function ReportingPage() {
             ) : (
               <p className="text-xs text-muted-foreground">
                 Load a source first to choose columns to merge.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "replace" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Find and replace literal text inside cells — fix a recurring typo, blank out
+              &quot;N/A&quot;, or standardise &quot;USA&quot; to &quot;United States&quot;. Only text
+              cells are searched; numbers, booleans and blanks pass through untouched. Leave columns
+              unselected to apply to every column.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Find">
+                <input
+                  value={replaceFind}
+                  onChange={(e) => setReplaceFind(e.target.value)}
+                  placeholder="e.g. N/A"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                />
+              </Field>
+              <Field label="Replace with">
+                <input
+                  value={replaceWith}
+                  onChange={(e) => setReplaceWith(e.target.value)}
+                  placeholder="(leave blank to delete the match)"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+                />
+              </Field>
+            </div>
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Match case</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setReplaceMatchCase(false)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    !replaceMatchCase
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Ignore case
+                </button>
+                <button
+                  onClick={() => setReplaceMatchCase(true)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    replaceMatchCase
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Match case
+                </button>
+              </div>
+            </div>
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Match scope</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setReplaceWholeCell(false)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    !replaceWholeCell
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Anywhere in cell
+                </button>
+                <button
+                  onClick={() => setReplaceWholeCell(true)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    replaceWholeCell
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Whole cell only
+                </button>
+              </div>
+            </div>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Columns (none selected = all columns)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = replaceColumns.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setReplaceColumns((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to limit the replace to specific columns.
               </p>
             )}
           </div>
