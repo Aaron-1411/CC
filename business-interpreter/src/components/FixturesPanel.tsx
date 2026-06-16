@@ -8,6 +8,16 @@ import {
   deleteFixture,
 } from "@/lib/fixtures.functions";
 import { Play, Trash2, CheckCircle2, XCircle, AlertCircle, RefreshCw } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function FixturesPanel({ processId }: { processId: string }) {
   const list = useServerFn(listFixtures);
@@ -16,6 +26,8 @@ export function FixturesPanel({ processId }: { processId: string }) {
   const del = useServerFn(deleteFixture);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [allBusy, setAllBusy] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const { data, refetch, isLoading } = useQuery({
     queryKey: ["fixtures", processId],
@@ -40,10 +52,16 @@ export function FixturesPanel({ processId }: { processId: string }) {
       setAllBusy(false);
     }
   }
-  async function onDelete(id: string) {
-    if (!confirm("Delete this fixture?")) return;
-    await del({ data: { id } });
-    refetch();
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    try {
+      await del({ data: { id: pendingDelete.id } });
+      setPendingDelete(null);
+      refetch();
+    } finally {
+      setDeleting(false);
+    }
   }
 
   if (isLoading) return null;
@@ -109,7 +127,8 @@ export function FixturesPanel({ processId }: { processId: string }) {
                       {busyId === f.id ? "Running…" : "Run"}
                     </button>
                     <button
-                      onClick={() => onDelete(f.id)}
+                      onClick={() => setPendingDelete({ id: f.id, name: f.name })}
+                      aria-label={`Delete fixture ${f.name}`}
                       className="rounded border border-border p-1 text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -121,6 +140,35 @@ export function FixturesPanel({ processId }: { processId: string }) {
           })}
         </ul>
       )}
+
+      <AlertDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this fixture?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDelete
+                ? `"${pendingDelete.name}" and its saved plan and golden-file diff will be permanently removed. This can't be undone.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDelete();
+              }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting…" : "Delete fixture"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }
