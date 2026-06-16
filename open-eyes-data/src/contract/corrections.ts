@@ -71,4 +71,20 @@ export const CORRECTIONS: CorrectionEntry[] = [
     reason:
       "Incorrect threshold. Corrected against GOV.UK Procurement Act 2023 below-threshold guidance.",
   },
+  {
+    date: "2026-06-15",
+    page: "Issues — Economy",
+    wasWrong: "“Up from 1.1% in 2024” (the comparison year for UK GDP growth).",
+    nowSays: "Up from 1.0% in 2024, matching the latest ONS revision of 2024 GDP growth.",
+    reason:
+      "The 2024 comparator was slightly out of date after ONS revised annual GDP growth down to 1.0%. Corrected against ONS Quarterly National Accounts.",
+  },
+  {
+    date: "2026-06-15",
+    page: "Issues — Environment",
+    wasWrong: "“Each overflow operated on average around 32 times” in 2024.",
+    nowSays: "Each overflow operated on average 31.8 times in 2024 (the exact published figure).",
+    reason:
+      "Rounded “around 32” to the precise figure for accuracy. Derived from the Environment Agency 2024 storm-overflow EDM dataset (450,398 spills across 14,162 monitored overflows).",
+  },
 ];

@@ -37,7 +37,7 @@ export type IssueDef = {
   /**
    * Headline figure for the issue, rendered via <SourcedStat>. This replaces the
    * old free-text `keyFact` so every number on the hub carries a source + asOf.
-   * Verified against the cited source on 2026-06-12.
+   * Verified against the cited source on 2026-06-15.
    */
   headlineStat: SourcedStat;
   /** Short plain-English gloss on what the headline figure means (no bare stats). */
@@ -60,14 +60,14 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     mpTopic: "NHS waiting times and A&E performance",
     briefingTopic: "NHS England waiting list and A&E performance 2025",
     headlineStat: {
-      value: "76.9%",
+      value: "75.7%",
       label: "of A&E patients admitted, transferred or discharged within 4 hours",
       sourceId: "nhs-england",
       sourceUrl:
         "https://www.england.nhs.uk/statistics/statistical-work-areas/ae-waiting-times-and-activity/",
-      asOf: "2026-04-30",
+      asOf: "2026-05-31",
       methodologyNote:
-        "Against a 95% legal standard; NHS England works to an interim 78% goal. Live monthly figures on the NHS page.",
+        "All A&E types in May 2026, down from 76.9% in April. Against a 95% legal standard; NHS England works to an interim 78% goal. Major (Type 1) units perform lower (63.8% in April). Live monthly figures on the NHS page.",
     },
     keyFactContext:
       "The 95% four-hour standard was last met in July 2015. Current monthly performance is published by NHS England and shown live on the NHS data page.",
@@ -233,7 +233,7 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
         "A record total, 0.2% above 2023. Per-company, per-site hours on the Sewage page.",
     },
     keyFactContext:
-      "The Environment Agency's Event Duration Monitoring shows 2024 was a record for spill duration. Each overflow operated on average around 32 times; the Government's target is fewer than 10. Site-level data is on the Sewage page.",
+      "The Environment Agency's Event Duration Monitoring shows 2024 was a record for spill duration. Each overflow operated on average 31.8 times; the Government's target is fewer than 10. Site-level data is on the Sewage page.",
     relatedTools: [
       {
         to: "/sewage",
