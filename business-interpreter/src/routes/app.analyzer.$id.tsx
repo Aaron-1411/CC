@@ -12,6 +12,9 @@ import {
   type LineageNode,
 } from "@/lib/sheet-analyzer.functions";
 import { Play, Sparkles, FileText, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/app/analyzer/$id")({
   component: AnalyzerPage,
@@ -37,7 +40,21 @@ function AnalyzerPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
 
-  if (isLoading || !data) return <div className="p-6 text-sm text-muted-foreground">Loading…</div>;
+  if (isLoading || !data) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-6 p-6">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-6 w-64" />
+          <Skeleton className="h-3 w-40" />
+        </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <Skeleton className="h-64 lg:col-span-2" />
+          <Skeleton className="h-64" />
+        </div>
+      </div>
+    );
+  }
 
   const a = data.analysis as any;
   const tabs: TabMapEntry[] = (a.tab_map as TabMapEntry[]) ?? [];
@@ -80,29 +97,28 @@ function AnalyzerPage() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button
+            variant="outline"
             disabled={!!busy}
             onClick={() => run("scan", () => scan({ data: { id } }))}
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm hover:bg-accent disabled:opacity-50"
           >
             <Play className="h-4 w-4" /> {busy === "scan" ? "Scanning…" : "1. Scan workbook"}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             disabled={!!busy || tabs.length === 0}
             onClick={() => run("ask", () => ask({ data: { id } }))}
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm hover:bg-accent disabled:opacity-50"
           >
             <Sparkles className="h-4 w-4" />
             {busy === "ask" ? "Thinking…" : "2. Ask context questions"}
-          </button>
-          <button
+          </Button>
+          <Button
             disabled={!!busy || tabs.length === 0}
             onClick={() => run("final", () => finalize({ data: { id } }))}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
             <FileText className="h-4 w-4" />
             {busy === "final" ? "Writing…" : "3. Finalize narrative"}
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -211,19 +227,16 @@ function AnalyzerPage() {
             ))}
           </div>
           <div className="flex gap-2 border-t border-border p-2">
-            <input
+            <Input
               value={msg}
               onChange={(e) => setMsg(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder="Answer or add context…"
-              className="flex-1 rounded-md border border-border bg-background px-2 py-1.5 text-sm"
+              className="flex-1"
             />
-            <button
-              onClick={send}
-              className="rounded-md bg-primary px-2.5 py-1.5 text-primary-foreground"
-            >
+            <Button size="icon" onClick={send} disabled={!msg.trim()} aria-label="Send message">
               <Send className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </aside>
       </div>
