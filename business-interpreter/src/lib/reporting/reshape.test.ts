@@ -27,6 +27,7 @@ import {
   percentOfTotal,
   runningTotal,
   rank,
+  difference,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -2021,6 +2022,127 @@ describe("rank", () => {
     const viaDispatch = applyTransform(base, {
       op: "rank",
       params: { column: "Sales", groupColumns: ["Region"], method: "dense" },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("difference", () => {
+  const base: Table = {
+    columns: ["Month", "Sales"],
+    rows: [
+      ["Jan", 100],
+      ["Feb", 150],
+      ["Mar", 120],
+      ["Apr", 200],
+    ],
+  };
+
+  test("computes the change from the previous row by default", () => {
+    const out = difference(base, { column: "Sales" });
+    expect(out.columns).toEqual(["Month", "Sales", "Sales change"]);
+    expect(out.rows.map((r) => r[2])).toEqual([null, 50, -30, 80]);
+  });
+
+  test("appends exactly one column and preserves originals", () => {
+    const out = difference(base, { column: "Sales" });
+    expect(out.columns.length).toBe(base.columns.length + 1);
+    expect(out.rows[1].slice(0, 2)).toEqual(["Feb", 150]);
+  });
+
+  test("compares against a row further back with offset", () => {
+    const out = difference(base, { column: "Sales", offset: 2 });
+    expect(out.rows.map((r) => r[2])).toEqual([null, null, 20, 50]);
+  });
+
+  test("treats offset below 1 as 1", () => {
+    const out = difference(base, { column: "Sales", offset: 0 });
+    expect(out.rows.map((r) => r[2])).toEqual([null, 50, -30, 80]);
+  });
+
+  test("expresses the change as a percent of the prior value", () => {
+    const out = difference(base, { column: "Sales", asPercent: true, decimals: 2 });
+    expect(out.columns[out.columns.length - 1]).toBe("Sales % change");
+    expect(out.rows.map((r) => r[2])).toEqual([null, 50, -20, 66.67]);
+  });
+
+  test("blanks a percent change when the prior value is zero", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", 0], ["b", 50]] };
+    const out = difference(t, { column: "V", asPercent: true });
+    expect(out.rows.map((r) => r[2])).toEqual([null, null]);
+  });
+
+  test("restarts the comparison within each group (partitioned)", () => {
+    const t: Table = {
+      columns: ["Region", "Q", "Sales"],
+      rows: [
+        ["N", "Q1", 100],
+        ["N", "Q2", 130],
+        ["S", "Q1", 80],
+        ["S", "Q2", 90],
+      ],
+    };
+    const out = difference(t, { column: "Sales", groupColumns: ["Region"] });
+    expect(out.rows.map((r) => r[3])).toEqual([null, 30, null, 10]);
+  });
+
+  test("supports multi-column group keys", () => {
+    const t: Table = {
+      columns: ["Region", "Year", "Sales"],
+      rows: [
+        ["N", "2024", 10],
+        ["N", "2024", 15],
+        ["N", "2025", 40],
+        ["N", "2025", 55],
+      ],
+    };
+    const out = difference(t, { column: "Sales", groupColumns: ["Region", "Year"] });
+    expect(out.rows.map((r) => r[3])).toEqual([null, 5, null, 15]);
+  });
+
+  test("reads formatted numbers tolerantly", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", "$1,000"], ["b", "(500)"], ["c", "750"]] };
+    const out = difference(t, { column: "V" });
+    expect(out.rows.map((r) => r[2])).toEqual([null, -1500, 1250]);
+  });
+
+  test("blanks rows whose own or comparison value is non-numeric", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", 100], ["b", "n/a"], ["c", 50]] };
+    const out = difference(t, { column: "V" });
+    expect(out.rows.map((r) => r[2])).toEqual([null, null, null]);
+  });
+
+  test("uses a custom into name", () => {
+    const out = difference(base, { column: "Sales", into: "Delta" });
+    expect(out.columns[out.columns.length - 1]).toBe("Delta");
+  });
+
+  test("appends the column even when there are no rows", () => {
+    const t: Table = { columns: ["V"], rows: [] };
+    const out = difference(t, { column: "V" });
+    expect(out.columns).toEqual(["V", "V change"]);
+    expect(out.rows).toEqual([]);
+  });
+
+  test("does not mutate the input table", () => {
+    const snapshot = structuredClone(base);
+    difference(base, { column: "Sales" });
+    expect(base).toEqual(snapshot);
+  });
+
+  test("throws a friendly error for a missing value column", () => {
+    expect(() => difference(base, { column: "Nope" })).toThrow(/not found/);
+  });
+
+  test("throws a friendly error for a missing group column", () => {
+    expect(() => difference(base, { column: "Sales", groupColumns: ["Nope"] })).toThrow(/not found/);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = difference(base, { column: "Sales", asPercent: true, decimals: 1 });
+    const viaDispatch = applyTransform(base, {
+      op: "difference",
+      params: { column: "Sales", asPercent: true, decimals: 1 },
     });
     expect(viaDispatch).toEqual(direct);
   });

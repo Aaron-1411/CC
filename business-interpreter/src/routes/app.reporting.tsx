@@ -33,6 +33,7 @@ import {
   Percent,
   TrendingUp,
   ListOrdered,
+  GitCompare,
   Plus,
   X,
 } from "lucide-react";
@@ -66,7 +67,8 @@ type Op =
   | "round"
   | "percentOfTotal"
   | "runningTotal"
-  | "rank";
+  | "rank"
+  | "difference";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -197,6 +199,12 @@ function ReportingPage() {
   const [rankInto, setRankInto] = useState("");
   const [rankDescending, setRankDescending] = useState(true);
   const [rankMethod, setRankMethod] = useState<"competition" | "dense" | "ordinal">("competition");
+  const [differenceCol, setDifferenceCol] = useState("");
+  const [differenceGroupCols, setDifferenceGroupCols] = useState<string[]>([]);
+  const [differenceInto, setDifferenceInto] = useState("");
+  const [differenceOffset, setDifferenceOffset] = useState("");
+  const [differenceAsPercent, setDifferenceAsPercent] = useState(false);
+  const [differenceDecimals, setDifferenceDecimals] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -387,6 +395,21 @@ function ReportingPage() {
         },
       } as const;
     }
+    if (op === "difference") {
+      const off = Number.parseInt(differenceOffset, 10);
+      const dec = Number.parseInt(differenceDecimals, 10);
+      return {
+        op: "difference",
+        params: {
+          column: differenceCol,
+          ...(differenceGroupCols.length ? { groupColumns: differenceGroupCols } : {}),
+          ...(differenceInto.trim() ? { into: differenceInto.trim() } : {}),
+          ...(Number.isFinite(off) && off > 1 ? { offset: off } : {}),
+          ...(differenceAsPercent ? { asPercent: true } : {}),
+          ...(Number.isFinite(dec) ? { decimals: dec } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -492,6 +515,12 @@ function ReportingPage() {
     setRankInto("");
     setRankDescending(true);
     setRankMethod("competition");
+    setDifferenceCol("");
+    setDifferenceGroupCols([]);
+    setDifferenceInto("");
+    setDifferenceOffset("");
+    setDifferenceAsPercent(false);
+    setDifferenceDecimals("");
   }
 
   async function addStep() {
@@ -622,6 +651,12 @@ function ReportingPage() {
           `Rank by ${spec.params.column} (${spec.params.descending === false ? "ascending" : "descending"})` +
           (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
         );
+      case "difference":
+        return (
+          `${spec.params.asPercent ? "% change" : "Change"} of ${spec.params.column}` +
+          (spec.params.offset && spec.params.offset > 1 ? ` from ${spec.params.offset} rows back` : "") +
+          (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -704,10 +739,12 @@ function ReportingPage() {
         return !!runningTotalCol;
       case "rank":
         return !!rankCol;
+      case "difference":
+        return !!differenceCol;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -715,7 +752,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank, difference) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -845,6 +882,7 @@ function ReportingPage() {
           <OpTab active={op === "percentOfTotal"} onClick={() => setOp("percentOfTotal")} icon={<Percent className="h-4 w-4" />} label="% of total" />
           <OpTab active={op === "runningTotal"} onClick={() => setOp("runningTotal")} icon={<TrendingUp className="h-4 w-4" />} label="Running total" />
           <OpTab active={op === "rank"} onClick={() => setOp("rank")} icon={<ListOrdered className="h-4 w-4" />} label="Rank" />
+          <OpTab active={op === "difference"} onClick={() => setOp("difference")} icon={<GitCompare className="h-4 w-4" />} label="Difference" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -2037,6 +2075,107 @@ function ReportingPage() {
                         key={c}
                         onClick={() =>
                           setRankGroupCols((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose group-by columns.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "difference" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Compute the change in a numeric column from the previous row — Tableau's Difference From
+              Previous quick table calc. By default each row shows the absolute delta from the row
+              above; switch on "As percent" for percent change (a prior value of 0 yields a blank).
+              Increase the offset to compare against N rows back. Values are read tolerantly, so
+              "$1,234", "1,234" and 1234 all difference; rows whose own or comparison value isn't
+              numeric get a blank. Pick group-by columns to difference within each group (the
+              comparison restarts per partition); otherwise it runs down the whole column. The result
+              is appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={differenceCol}
+                onChange={setDifferenceCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <div className="flex items-center gap-2">
+              <input
+                id="difference-as-percent"
+                type="checkbox"
+                checked={differenceAsPercent}
+                onChange={(e) => setDifferenceAsPercent(e.target.checked)}
+                className="h-4 w-4 rounded border-border"
+              />
+              <label htmlFor="difference-as-percent" className="text-sm">
+                As percent — express change relative to the prior value
+              </label>
+            </div>
+            <Field label="Offset (rows back to compare, default 1)">
+              <input
+                type="number"
+                min={1}
+                value={differenceOffset}
+                onChange={(e) => setDifferenceOffset(e.target.value)}
+                placeholder="1"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="Decimals (optional)">
+              <input
+                type="number"
+                min={0}
+                value={differenceDecimals}
+                onChange={(e) => setDifferenceDecimals(e.target.value)}
+                placeholder="unrounded"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={differenceInto}
+                onChange={(e) => setDifferenceInto(e.target.value)}
+                placeholder={
+                  differenceCol
+                    ? `${differenceCol}${differenceAsPercent ? " % change" : " change"}`
+                    : "e.g. Change"
+                }
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Group by (optional — difference within each group)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = differenceGroupCols.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setDifferenceGroupCols((prev) =>
                             prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
                           )
                         }

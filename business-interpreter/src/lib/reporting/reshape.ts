@@ -1361,6 +1361,93 @@ export function rank(t: Table, params: RankParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* difference — change of a numeric column from a previous row          */
+/* ------------------------------------------------------------------ */
+
+export type DifferenceParams = {
+  /** Numeric column to difference. */
+  column: string;
+  /**
+   * Optional grouping columns. When given, the comparison restarts for each
+   * distinct group (a partitioned difference — e.g. month-over-month change
+   * computed independently per region); omitted = one sequence down the column.
+   */
+  groupColumns?: string[];
+  /** Output column name. Default `${column} change` (or `${column} % change` when asPercent). */
+  into?: string;
+  /** How many rows back to compare against (default 1). Values < 1 are treated as 1. */
+  offset?: number;
+  /** Express the change as a percent of the prior value instead of an absolute delta. */
+  asPercent?: boolean;
+  /** Optional decimal places to round the result to. Unrounded if omitted. */
+  decimals?: number;
+};
+
+/**
+ * Append a column holding each row's change from an earlier row — the
+ * "Difference From Previous" (and, with `asPercent`, "Percent Difference From
+ * Previous") quick table calc familiar from Tableau. By default each row is
+ * compared against the immediately preceding row (`offset` rows back) in row
+ * order. Values are read with the same tolerant parser used elsewhere, so
+ * "$1,234", "1,234" and 1234 all compare; a row whose own value or whose
+ * comparison value isn't numeric gets a blank result, as do the first `offset`
+ * rows that have nothing to compare against. With `groupColumns` the comparison
+ * restarts for each distinct group, so changes never cross a partition boundary.
+ * For `asPercent`, a prior value of 0 yields blank rather than Infinity/NaN. Row
+ * order is preserved exactly (sort first if you need a particular order). The new
+ * column is appended at the end of the table.
+ */
+export function difference(t: Table, params: DifferenceParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "difference.column");
+  const groupIdx =
+    params.groupColumns && params.groupColumns.length
+      ? requireCols(t.columns, params.groupColumns, "difference.groupColumns")
+      : [];
+  const asPercent = params.asPercent === true;
+  const into =
+    params.into && params.into.trim() !== ""
+      ? params.into
+      : `${params.column}${asPercent ? " % change" : " change"}`;
+  const offset = params.offset != null && params.offset >= 1 ? Math.floor(params.offset) : 1;
+  const decimals = params.decimals;
+
+  const keyOf = (r: Cell[]): string =>
+    groupIdx.length ? groupIdx.map((i) => String(r[i] ?? "")).join(" ") : "";
+
+  // Bucket original row positions by group, preserving first-seen order.
+  const groups = new Map<string, number[]>();
+  t.rows.forEach((r, i) => {
+    const k = keyOf(r);
+    const arr = groups.get(k);
+    if (arr) arr.push(i);
+    else groups.set(k, [i]);
+  });
+
+  const results = new Map<number, number>(); // rowIndex -> change (absent = blank)
+  for (const positions of groups.values()) {
+    positions.forEach((rowIdx, p) => {
+      const priorPos = p - offset;
+      if (priorPos < 0) return; // nothing to compare against -> blank
+      const cur = parseFormattedNumber(t.rows[rowIdx][valueIdx]);
+      const prev = parseFormattedNumber(t.rows[positions[priorPos]][valueIdx]);
+      if (cur === null || prev === null) return; // non-numeric -> blank
+      let out: number;
+      if (asPercent) {
+        if (prev === 0) return; // avoid divide-by-zero -> blank
+        out = ((cur - prev) / prev) * 100;
+      } else {
+        out = cur - prev;
+      }
+      results.set(rowIdx, decimals != null ? roundTo(out, decimals) : out);
+    });
+  }
+
+  const rows: Cell[][] = t.rows.map((r, i) => [...r, results.get(i) ?? null]);
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1387,7 +1474,8 @@ export type TransformSpec =
   | { op: "round"; params: RoundParams }
   | { op: "percentOfTotal"; params: PercentOfTotalParams }
   | { op: "runningTotal"; params: RunningTotalParams }
-  | { op: "rank"; params: RankParams };
+  | { op: "rank"; params: RankParams }
+  | { op: "difference"; params: DifferenceParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1437,6 +1525,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return runningTotal(t, spec.params);
     case "rank":
       return rank(t, spec.params);
+    case "difference":
+      return difference(t, spec.params);
     default:
       return t;
   }
