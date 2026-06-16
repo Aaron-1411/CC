@@ -8,17 +8,9 @@ on:
 jobs:
   # NOTE: deploy-dashboard removed — the hub (aaron-projects-hub Pages project)
   # now deploys from its own repo Aaron-1411/cc-hub. See dashboard/README.md.
-  deploy-get-settld:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: cd get-settld && bun install && bun run build
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: a1a1276a1a278339d95c187e0bf6de47
-          command: pages deploy get-settld/dist --project-name=get-settld-app --branch=main
+  # NOTE: deploy-get-settld removed — get-settld-app now deploys from its own
+  # repo Aaron-1411/get-settld (.github/workflows/deploy.yml, CLOUDFLARE_API_TOKEN
+  # set there). The monorepo no longer double-deploys it.
 
   deploy-wealth-companion:
     runs-on: ubuntu-latest
@@ -93,8 +85,8 @@ jobs:
           command: pages deploy tastybot/dist --project-name=tastybot-app --branch=main
 
   # isa-investment-platform is a local-only Prisma/SQLite dev tool — API routes
-  # cannot be statically exported to CF Pages. Excluded from CI until migrated
-  # to a runtime that supports server-side execution (e.g. CF Workers + D1).
+  # cannot be statically exported to CF Pages, so it was never deployed here. It
+  # now lives solely in its own repo Aaron-1411/isa-investment-platform.
 
   deploy-digital-depth-dive:
     runs-on: ubuntu-latest

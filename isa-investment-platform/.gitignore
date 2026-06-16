@@ -1,8 +1,0 @@
-node_modules
-.next
-out
-dev.db
-*.db
-tsconfig.tsbuildinfo
-.env
-.env.local
