@@ -191,6 +191,13 @@ const TransformSchema = z.discriminatedUnion("op", [
       keepOriginal: z.boolean().optional(),
     }),
   }),
+  z.object({
+    op: z.literal("round"),
+    params: z.object({
+      columns: z.array(z.string()).max(200).optional(),
+      decimals: z.number().int().min(-15).max(15).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

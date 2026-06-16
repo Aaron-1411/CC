@@ -1117,6 +1117,49 @@ export function dateExtract(t: Table, params: DateExtractParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* round — round numeric cells to N decimal places                    */
+/* ------------------------------------------------------------------ */
+
+export type RoundParams = {
+  /** Columns to round; if omitted/empty, every column is targeted. */
+  columns?: string[];
+  /** Decimal places. Negative rounds to tens/hundreds (e.g. -2 → nearest 100). Default 0. */
+  decimals?: number;
+};
+
+/**
+ * Round half away from zero (Excel ROUND semantics), not the banker's rounding
+ * JS `Math.round` does on negatives. We mitigate binary-float artifacts with the
+ * MDN exponential-notation trick: shift the decimal point via the number's string
+ * form rather than multiplying by 10**n, which avoids errors like 1.005*100 = 100.49…
+ * Genuinely non-representable values can still surprise (floats are floats), but the
+ * common reporting cases (currency, percentages) round as a user expects.
+ */
+function roundTo(value: number, decimals: number): number {
+  if (!Number.isFinite(value)) return value;
+  const sign = value < 0 ? -1 : 1;
+  const abs = Math.abs(value);
+  const shifted = Number(`${abs}e${decimals}`);
+  const rounded = Math.round(shifted);
+  return sign * Number(`${rounded}e${-decimals}`);
+}
+
+export function round(t: Table, params: RoundParams): Table {
+  const targets =
+    params.columns && params.columns.length
+      ? requireCols(t.columns, params.columns, "round.columns")
+      : t.columns.map((_, i) => i);
+  const targetSet = new Set(targets);
+  const decimals = params.decimals ?? 0;
+  const rows: Cell[][] = t.rows.map((r) =>
+    r.map((cell, ci) =>
+      targetSet.has(ci) && typeof cell === "number" ? roundTo(cell, decimals) : cell,
+    ),
+  );
+  return { columns: t.columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1139,7 +1182,8 @@ export type TransformSpec =
   | { op: "splitColumn"; params: SplitColumnParams }
   | { op: "mergeColumns"; params: MergeColumnsParams }
   | { op: "replace"; params: ReplaceParams }
-  | { op: "dateExtract"; params: DateExtractParams };
+  | { op: "dateExtract"; params: DateExtractParams }
+  | { op: "round"; params: RoundParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1181,6 +1225,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return replace(t, spec.params);
     case "dateExtract":
       return dateExtract(t, spec.params);
+    case "round":
+      return round(t, spec.params);
     default:
       return t;
   }

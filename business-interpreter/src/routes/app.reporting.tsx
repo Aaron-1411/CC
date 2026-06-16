@@ -29,6 +29,7 @@ import {
   TableCellsMerge,
   Replace,
   CalendarDays,
+  DecimalsArrowRight,
   Plus,
   X,
 } from "lucide-react";
@@ -58,7 +59,8 @@ type Op =
   | "splitColumn"
   | "mergeColumns"
   | "replace"
-  | "dateExtract";
+  | "dateExtract"
+  | "round";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -174,6 +176,8 @@ function ReportingPage() {
   const [dateExtractPart, setDateExtractPart] = useState<DatePart>("year");
   const [dateExtractInto, setDateExtractInto] = useState("");
   const [dateExtractKeepOriginal, setDateExtractKeepOriginal] = useState(true);
+  const [roundColumns, setRoundColumns] = useState<string[]>([]);
+  const [roundDecimals, setRoundDecimals] = useState("2");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -322,6 +326,14 @@ function ReportingPage() {
           ...(dateExtractKeepOriginal ? {} : { keepOriginal: false }),
         },
       } as const;
+    if (op === "round")
+      return {
+        op: "round",
+        params: {
+          ...(roundColumns.length ? { columns: roundColumns } : {}),
+          decimals: Number.parseInt(roundDecimals, 10) || 0,
+        },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -412,6 +424,8 @@ function ReportingPage() {
     setDateExtractPart("year");
     setDateExtractInto("");
     setDateExtractKeepOriginal(true);
+    setRoundColumns([]);
+    setRoundDecimals("2");
   }
 
   async function addStep() {
@@ -522,6 +536,11 @@ function ReportingPage() {
           `Extract ${spec.params.part} from ${spec.params.column}` +
           (spec.params.into ? ` → ${spec.params.into}` : "")
         );
+      case "round":
+        return (
+          `Round to ${spec.params.decimals ?? 0} dp` +
+          (spec.params.columns?.length ? ` in ${spec.params.columns.join(", ")}` : " (all columns)")
+        );
       default:
         return "Pass-through";
     }
@@ -596,6 +615,8 @@ function ReportingPage() {
         return replaceFind.length > 0;
       case "dateExtract":
         return !!dateExtractCol;
+      case "round":
+        return true;
       default:
         return true;
     }
@@ -607,7 +628,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -733,6 +754,7 @@ function ReportingPage() {
           <OpTab active={op === "mergeColumns"} onClick={() => setOp("mergeColumns")} icon={<TableCellsMerge className="h-4 w-4" />} label="Merge cols" />
           <OpTab active={op === "replace"} onClick={() => setOp("replace")} icon={<Replace className="h-4 w-4" />} label="Find & replace" />
           <OpTab active={op === "dateExtract"} onClick={() => setOp("dateExtract")} icon={<CalendarDays className="h-4 w-4" />} label="Date parts" />
+          <OpTab active={op === "round"} onClick={() => setOp("round")} icon={<DecimalsArrowRight className="h-4 w-4" />} label="Round" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1661,6 +1683,60 @@ function ReportingPage() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {op === "round" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Round numeric cells to a fixed number of decimal places — tidy up the long floats that
+              averages, medians and computed columns produce. Uses round-half-away-from-zero (so 2.5
+              → 3), matching spreadsheet ROUND. A negative decimal count rounds to tens, hundreds and
+              beyond (−2 → nearest 100). Text, booleans and blanks pass through untouched. Leave
+              columns unselected to round every numeric column.
+            </p>
+            <Field label="Decimal places">
+              <input
+                type="number"
+                value={roundDecimals}
+                onChange={(e) => setRoundDecimals(e.target.value)}
+                placeholder="2"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Columns (none selected = all columns)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = roundColumns.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setRoundColumns((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to limit rounding to specific columns.
+              </p>
+            )}
           </div>
         )}
 

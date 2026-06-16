@@ -23,6 +23,7 @@ import {
   mergeColumns,
   replace,
   dateExtract,
+  round,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1573,6 +1574,104 @@ describe("dateExtract", () => {
     const viaDispatch = applyTransform(base, {
       op: "dateExtract",
       params: { column: "Date", part: "quarter" },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("round", () => {
+  const base: Table = {
+    columns: ["Item", "Price", "Qty"],
+    rows: [
+      ["Widget", 3.14159, 10],
+      ["Gadget", 2.71828, 4],
+      ["Gizmo", 1.23456, 7],
+    ],
+  };
+
+  test("rounds a single column to 2 decimal places, leaving others untouched", () => {
+    const out = round(base, { columns: ["Price"], decimals: 2 });
+    expect(out.columns).toEqual(["Item", "Price", "Qty"]);
+    expect(out.rows.map((r) => r[1])).toEqual([3.14, 2.72, 1.23]);
+    expect(out.rows.map((r) => r[2])).toEqual([10, 4, 7]);
+  });
+
+  test("rounds to whole numbers with decimals: 0", () => {
+    const out = round(base, { columns: ["Price"], decimals: 0 });
+    expect(out.rows.map((r) => r[1])).toEqual([3, 3, 1]);
+  });
+
+  test("defaults to 0 decimal places when decimals is omitted", () => {
+    const out = round(base, { columns: ["Price"] });
+    expect(out.rows.map((r) => r[1])).toEqual([3, 3, 1]);
+  });
+
+  test("rounds half away from zero (spreadsheet ROUND, not banker's rounding)", () => {
+    const halves: Table = {
+      columns: ["N"],
+      rows: [[0.5], [-0.5], [1.5], [2.5], [-2.5]],
+    };
+    const out = round(halves, { columns: ["N"], decimals: 0 });
+    expect(out.rows.map((r) => r[0])).toEqual([1, -1, 2, 3, -3]);
+  });
+
+  test("supports negative decimals to round to tens/hundreds", () => {
+    const big: Table = {
+      columns: ["N"],
+      rows: [[1250], [1240], [1234], [1750]],
+    };
+    const out = round(big, { columns: ["N"], decimals: -2 });
+    expect(out.rows.map((r) => r[0])).toEqual([1300, 1200, 1200, 1800]);
+  });
+
+  test("with no columns selected, rounds every numeric column", () => {
+    const mixed: Table = {
+      columns: ["Item", "Price", "Qty"],
+      rows: [
+        ["Widget", 3.14159, 9.876],
+        ["Gadget", 2.71828, 4.5],
+      ],
+    };
+    const out = round(mixed, { decimals: 1 });
+    expect(out.rows[0]).toEqual(["Widget", 3.1, 9.9]);
+    expect(out.rows[1]).toEqual(["Gadget", 2.7, 4.5]);
+  });
+
+  test("passes non-numeric cells (text, boolean, null) through unchanged", () => {
+    const mixed: Table = {
+      columns: ["A"],
+      rows: [["text"], [true], [null], [3.14159]],
+    };
+    const out = round(mixed, { columns: ["A"], decimals: 2 });
+    expect(out.rows.map((r) => r[0])).toEqual(["text", true, null, 3.14]);
+  });
+
+  test("passes non-finite numbers (Infinity, -Infinity, NaN) through unchanged", () => {
+    const odd: Table = {
+      columns: ["N"],
+      rows: [[Infinity], [-Infinity], [NaN]],
+    };
+    const out = round(odd, { columns: ["N"], decimals: 2 });
+    expect(out.rows[0][0]).toBe(Infinity);
+    expect(out.rows[1][0]).toBe(-Infinity);
+    expect(Number.isNaN(out.rows[2][0])).toBe(true);
+  });
+
+  test("does not mutate the input table", () => {
+    const snapshot = structuredClone(base);
+    round(base, { columns: ["Price"], decimals: 2 });
+    expect(base).toEqual(snapshot);
+  });
+
+  test("throws a friendly error for a missing column", () => {
+    expect(() => round(base, { columns: ["Nope"], decimals: 2 })).toThrow(/not found/);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = round(base, { columns: ["Price"], decimals: 2 });
+    const viaDispatch = applyTransform(base, {
+      op: "round",
+      params: { columns: ["Price"], decimals: 2 },
     });
     expect(viaDispatch).toEqual(direct);
   });
