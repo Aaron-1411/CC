@@ -24,6 +24,7 @@ import {
   replace,
   dateExtract,
   round,
+  percentOfTotal,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1672,6 +1673,119 @@ describe("round", () => {
     const viaDispatch = applyTransform(base, {
       op: "round",
       params: { columns: ["Price"], decimals: 2 },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("percentOfTotal", () => {
+  const base: Table = {
+    columns: ["Region", "Sales"],
+    rows: [
+      ["North", 25],
+      ["South", 25],
+      ["East", 50],
+    ],
+  };
+
+  test("computes each value as a share of the grand total", () => {
+    const out = percentOfTotal(base, { column: "Sales" });
+    expect(out.columns).toEqual(["Region", "Sales", "Sales %"]);
+    expect(out.rows.map((r) => r[2])).toEqual([25, 25, 50]);
+  });
+
+  test("appends exactly one column and preserves originals", () => {
+    const out = percentOfTotal(base, { column: "Sales" });
+    expect(out.columns.length).toBe(base.columns.length + 1);
+    expect(out.rows[0].slice(0, 2)).toEqual(["North", 25]);
+  });
+
+  test("defaults to 2 decimal places", () => {
+    const t: Table = { columns: ["V"], rows: [[1], [1], [1]] };
+    const out = percentOfTotal(t, { column: "V" });
+    // 1/3 * 100 = 33.333... → 33.33
+    expect(out.rows[0][1]).toBe(33.33);
+  });
+
+  test("honours a custom decimal count", () => {
+    const t: Table = { columns: ["V"], rows: [[1], [1], [1]] };
+    const out = percentOfTotal(t, { column: "V", decimals: 4 });
+    expect(out.rows[0][1]).toBe(33.3333);
+  });
+
+  test("uses a custom output column name", () => {
+    const out = percentOfTotal(base, { column: "Sales", into: "Share" });
+    expect(out.columns).toEqual(["Region", "Sales", "Share"]);
+  });
+
+  test("computes per-group shares so each group sums to ~100", () => {
+    const t: Table = {
+      columns: ["Region", "Quarter", "Sales"],
+      rows: [
+        ["North", "Q1", 30],
+        ["North", "Q2", 10],
+        ["South", "Q1", 25],
+        ["South", "Q2", 75],
+      ],
+    };
+    const out = percentOfTotal(t, { column: "Sales", groupColumns: ["Region"] });
+    expect(out.rows.map((r) => r[3])).toEqual([75, 25, 25, 75]);
+  });
+
+  test("parses formatted numbers tolerantly", () => {
+    const t: Table = {
+      columns: ["V"],
+      rows: [["$1,000"], ["(500)"], ["500"]],
+    };
+    // 1000 + (-500) + 500 = 1000
+    const out = percentOfTotal(t, { column: "V" });
+    expect(out.rows.map((r) => r[1])).toEqual([100, -50, 50]);
+  });
+
+  test("non-numeric cells are excluded from the total and get null", () => {
+    const t: Table = {
+      columns: ["V"],
+      rows: [[25], ["n/a"], [75]],
+    };
+    const out = percentOfTotal(t, { column: "V" });
+    expect(out.rows[0][1]).toBe(25);
+    expect(out.rows[1][1]).toBeNull();
+    expect(out.rows[2][1]).toBe(75);
+  });
+
+  test("a zero total yields null rather than Infinity/NaN", () => {
+    const t: Table = { columns: ["V"], rows: [[0], [0]] };
+    const out = percentOfTotal(t, { column: "V" });
+    expect(out.rows.every((r) => r[1] === null)).toBe(true);
+  });
+
+  test("an empty column (no numeric values) yields all null", () => {
+    const t: Table = { columns: ["V"], rows: [["x"], ["y"]] };
+    const out = percentOfTotal(t, { column: "V" });
+    expect(out.rows.every((r) => r[1] === null)).toBe(true);
+  });
+
+  test("does not mutate the input table", () => {
+    const snapshot = structuredClone(base);
+    percentOfTotal(base, { column: "Sales" });
+    expect(base).toEqual(snapshot);
+  });
+
+  test("throws a friendly error for a missing value column", () => {
+    expect(() => percentOfTotal(base, { column: "Nope" })).toThrow(/not found/);
+  });
+
+  test("throws a friendly error for a missing group column", () => {
+    expect(() => percentOfTotal(base, { column: "Sales", groupColumns: ["Nope"] })).toThrow(
+      /not found/,
+    );
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = percentOfTotal(base, { column: "Sales", decimals: 1 });
+    const viaDispatch = applyTransform(base, {
+      op: "percentOfTotal",
+      params: { column: "Sales", decimals: 1 },
     });
     expect(viaDispatch).toEqual(direct);
   });

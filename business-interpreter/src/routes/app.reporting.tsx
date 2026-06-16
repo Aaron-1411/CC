@@ -30,6 +30,7 @@ import {
   Replace,
   CalendarDays,
   DecimalsArrowRight,
+  Percent,
   Plus,
   X,
 } from "lucide-react";
@@ -60,7 +61,8 @@ type Op =
   | "mergeColumns"
   | "replace"
   | "dateExtract"
-  | "round";
+  | "round"
+  | "percentOfTotal";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -178,6 +180,10 @@ function ReportingPage() {
   const [dateExtractKeepOriginal, setDateExtractKeepOriginal] = useState(true);
   const [roundColumns, setRoundColumns] = useState<string[]>([]);
   const [roundDecimals, setRoundDecimals] = useState("2");
+  const [percentOfTotalCol, setPercentOfTotalCol] = useState("");
+  const [percentOfTotalGroupCols, setPercentOfTotalGroupCols] = useState<string[]>([]);
+  const [percentOfTotalInto, setPercentOfTotalInto] = useState("");
+  const [percentOfTotalDecimals, setPercentOfTotalDecimals] = useState("2");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -334,6 +340,16 @@ function ReportingPage() {
           decimals: Number.parseInt(roundDecimals, 10) || 0,
         },
       } as const;
+    if (op === "percentOfTotal")
+      return {
+        op: "percentOfTotal",
+        params: {
+          column: percentOfTotalCol,
+          ...(percentOfTotalGroupCols.length ? { groupColumns: percentOfTotalGroupCols } : {}),
+          ...(percentOfTotalInto.trim() ? { into: percentOfTotalInto.trim() } : {}),
+          decimals: Number.parseInt(percentOfTotalDecimals, 10) || 0,
+        },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -426,6 +442,10 @@ function ReportingPage() {
     setDateExtractKeepOriginal(true);
     setRoundColumns([]);
     setRoundDecimals("2");
+    setPercentOfTotalCol("");
+    setPercentOfTotalGroupCols([]);
+    setPercentOfTotalInto("");
+    setPercentOfTotalDecimals("2");
   }
 
   async function addStep() {
@@ -541,6 +561,11 @@ function ReportingPage() {
           `Round to ${spec.params.decimals ?? 0} dp` +
           (spec.params.columns?.length ? ` in ${spec.params.columns.join(", ")}` : " (all columns)")
         );
+      case "percentOfTotal":
+        return (
+          `% of total of ${spec.params.column}` +
+          (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -617,10 +642,12 @@ function ReportingPage() {
         return !!dateExtractCol;
       case "round":
         return true;
+      case "percentOfTotal":
+        return !!percentOfTotalCol;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -628,7 +655,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -755,6 +782,7 @@ function ReportingPage() {
           <OpTab active={op === "replace"} onClick={() => setOp("replace")} icon={<Replace className="h-4 w-4" />} label="Find & replace" />
           <OpTab active={op === "dateExtract"} onClick={() => setOp("dateExtract")} icon={<CalendarDays className="h-4 w-4" />} label="Date parts" />
           <OpTab active={op === "round"} onClick={() => setOp("round")} icon={<DecimalsArrowRight className="h-4 w-4" />} label="Round" />
+          <OpTab active={op === "percentOfTotal"} onClick={() => setOp("percentOfTotal")} icon={<Percent className="h-4 w-4" />} label="% of total" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1735,6 +1763,78 @@ function ReportingPage() {
             ) : (
               <p className="text-xs text-muted-foreground">
                 Load a source first to limit rounding to specific columns.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "percentOfTotal" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Express a numeric column as a share of its total — the "% of total" staple of BI
+              reporting (Tableau's Percent of Total). Values are read tolerantly, so "$1,234",
+              "1,234" and 1234 all count; non-numeric cells contribute nothing and get a blank
+              percentage. A zero or empty total yields a blank rather than an error. Pick group-by
+              columns to compute the share within each group (so each group sums to ~100%);
+              otherwise it's the share of the grand total. The result is appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={percentOfTotalCol}
+                onChange={setPercentOfTotalCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <Field label="Decimal places">
+              <input
+                type="number"
+                value={percentOfTotalDecimals}
+                onChange={(e) => setPercentOfTotalDecimals(e.target.value)}
+                placeholder="2"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={percentOfTotalInto}
+                onChange={(e) => setPercentOfTotalInto(e.target.value)}
+                placeholder={percentOfTotalCol ? `${percentOfTotalCol} %` : "e.g. Share %"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Group by (optional — share within each group)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = percentOfTotalGroupCols.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setPercentOfTotalGroupCols((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose group-by columns.
               </p>
             )}
           </div>

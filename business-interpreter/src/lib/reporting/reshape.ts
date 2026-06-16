@@ -1160,6 +1160,74 @@ export function round(t: Table, params: RoundParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* percentOfTotal — express a numeric column as a share of its total   */
+/* ------------------------------------------------------------------ */
+
+export type PercentOfTotalParams = {
+  /** Numeric column to express as a percentage of its total. */
+  column: string;
+  /**
+   * Optional grouping columns. When given, each row's percentage is taken
+   * against the total *within its group* (e.g. each region's share of its own
+   * sub-total); omitted = share of the grand total across the whole column.
+   */
+  groupColumns?: string[];
+  /** Output column name. Default `${column} %`. */
+  into?: string;
+  /** Decimal places for the percentage. Default 2. */
+  decimals?: number;
+};
+
+/**
+ * Append a column expressing each row's value as a percentage of the column
+ * total — the "share of total" / "% of total" staple of BI reporting (Tableau's
+ * "Percent of Total" quick table calc). Values are read with the same tolerant
+ * parser used elsewhere, so "$1,234", "1,234" and 1234 all count; cells that
+ * aren't numeric contribute nothing to the total and get a null percentage.
+ * A zero (or empty) total yields null rather than Infinity/NaN. With
+ * `groupColumns`, totals are computed per group so each group's percentages sum
+ * to ~100. The new column is appended at the end of the table.
+ */
+export function percentOfTotal(t: Table, params: PercentOfTotalParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "percentOfTotal.column");
+  const groupIdx =
+    params.groupColumns && params.groupColumns.length
+      ? requireCols(t.columns, params.groupColumns, "percentOfTotal.groupColumns")
+      : [];
+  const decimals = params.decimals ?? 2;
+  const into = params.into && params.into.trim() !== "" ? params.into : `${params.column} %`;
+
+  const keyOf = (r: Cell[]): string =>
+    groupIdx.length ? groupIdx.map((i) => String(r[i] ?? "")).join(" ") : "";
+
+  // Parse each value once; null = not numeric (excluded from the totals).
+  const values: (number | null)[] = t.rows.map((r) => parseFormattedNumber(r[valueIdx]));
+
+  // First pass: sum per group key.
+  const totals = new Map<string, number>();
+  t.rows.forEach((r, ri) => {
+    const v = values[ri];
+    if (v !== null) {
+      const k = keyOf(r);
+      totals.set(k, (totals.get(k) ?? 0) + v);
+    }
+  });
+
+  // Second pass: value / total * 100, rounded.
+  const rows: Cell[][] = t.rows.map((r, ri) => {
+    const v = values[ri];
+    let pct: Cell = null;
+    if (v !== null) {
+      const total = totals.get(keyOf(r)) ?? 0;
+      if (total !== 0) pct = roundTo((v / total) * 100, decimals);
+    }
+    return [...r, pct];
+  });
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1183,7 +1251,8 @@ export type TransformSpec =
   | { op: "mergeColumns"; params: MergeColumnsParams }
   | { op: "replace"; params: ReplaceParams }
   | { op: "dateExtract"; params: DateExtractParams }
-  | { op: "round"; params: RoundParams };
+  | { op: "round"; params: RoundParams }
+  | { op: "percentOfTotal"; params: PercentOfTotalParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1227,6 +1296,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return dateExtract(t, spec.params);
     case "round":
       return round(t, spec.params);
+    case "percentOfTotal":
+      return percentOfTotal(t, spec.params);
     default:
       return t;
   }
