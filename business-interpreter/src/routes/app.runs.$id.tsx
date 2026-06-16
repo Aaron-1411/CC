@@ -11,6 +11,10 @@ import {
   type StepResult,
 } from "@/lib/processes.functions";
 import { CheckCircle2, XCircle, Clock, AlertCircle, Play, SkipForward, MessageSquarePlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/app/runs/$id")({
   component: RunPage,
@@ -34,7 +38,24 @@ function RunPage() {
   const [correctionNote, setCorrectionNote] = useState("");
   const [correctionFor, setCorrectionFor] = useState<number | null>(null);
 
-  if (isLoading || !data) return <div className="p-6 text-sm text-muted-foreground">Loading…</div>;
+  if (isLoading || !data) {
+    return (
+      <div className="mx-auto max-w-4xl space-y-6 p-6">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-32" />
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-md" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const run = data.run as any;
   const steps = (run.steps_snapshot as ProcessStep[]) ?? [];
@@ -99,7 +120,7 @@ function RunPage() {
     paused: "bg-amber-500/20 text-amber-500",
     awaiting_gate: "bg-amber-500/20 text-amber-500",
     completed: "bg-emerald-500/20 text-emerald-500",
-    failed: "bg-red-500/20 text-red-500",
+    failed: "bg-destructive/15 text-destructive",
   };
 
   return (
@@ -156,7 +177,7 @@ function RunPage() {
                     <div className="mt-1 rounded bg-muted/40 p-2 text-xs">{r.output}</div>
                   )}
                   {r?.issues && r.issues.length > 0 && (
-                    <ul className="mt-1 ml-3 list-disc text-xs text-red-500">
+                    <ul className="mt-1 ml-3 list-disc text-xs text-destructive">
                       {r.issues.map((iss, k) => (
                         <li key={k}>{iss}</li>
                       ))}
@@ -176,42 +197,39 @@ function RunPage() {
                   {isCurrent && (run.status === "awaiting_gate" || run.status === "paused") && (
                     <div className="mt-3 space-y-2 border-t border-border pt-3">
                       {s.kind === "input" && (
-                        <input
+                        <Input
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
                           placeholder={s.inputLabel ?? "Your input"}
-                          className="w-full rounded border border-border bg-background px-2 py-1.5 text-sm"
                         />
                       )}
-                      <textarea
+                      <Textarea
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         placeholder="Optional note for audit trail"
-                        className="w-full rounded border border-border bg-background px-2 py-1.5 text-xs"
                         rows={2}
                       />
                       <div className="flex flex-wrap gap-2">
-                        <button
-                          disabled={busy}
-                          onClick={() => onDecision("approve")}
-                          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
-                        >
+                        <Button size="sm" disabled={busy} onClick={() => onDecision("approve")}>
                           <CheckCircle2 className="h-3.5 w-3.5" /> Approve
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           disabled={busy}
                           onClick={() => onDecision("skip")}
-                          className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
                         >
                           <SkipForward className="h-3.5 w-3.5" /> Skip
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           disabled={busy}
                           onClick={() => onDecision("reject")}
-                          className="inline-flex items-center gap-1.5 rounded-md border border-red-500/40 px-3 py-1.5 text-sm text-red-500 hover:bg-red-500/10 disabled:opacity-50"
+                          className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         >
                           <XCircle className="h-3.5 w-3.5" /> Reject
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -219,36 +237,39 @@ function RunPage() {
                   {r && (
                     <div className="mt-2">
                       {correctionFor === i ? (
-                        <div className="space-y-1">
-                          <textarea
+                        <div className="space-y-1.5">
+                          <Textarea
                             value={correctionNote}
                             onChange={(e) => setCorrectionNote(e.target.value)}
                             placeholder="What was wrong / how should it be done?"
-                            className="w-full rounded border border-border bg-background px-2 py-1 text-xs"
                             rows={2}
                           />
                           <div className="flex gap-2">
-                            <button
+                            <Button
+                              size="sm"
+                              disabled={busy || !correctionNote.trim()}
                               onClick={() => saveCorrection(i)}
-                              className="rounded bg-primary px-2 py-1 text-xs text-primary-foreground"
                             >
                               Save correction
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => setCorrectionFor(null)}
-                              className="text-xs text-muted-foreground"
                             >
                               Cancel
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ) : (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setCorrectionFor(i)}
-                          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                          className="h-auto px-1 py-0.5 text-xs text-muted-foreground hover:text-foreground"
                         >
                           <MessageSquarePlus className="h-3 w-3" /> Record correction
-                        </button>
+                        </Button>
                       )}
                     </div>
                   )}
@@ -260,13 +281,9 @@ function RunPage() {
       </ol>
 
       {run.status === "running" && (
-        <button
-          onClick={runAdvance}
-          disabled={busy}
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-        >
+        <Button onClick={runAdvance} disabled={busy}>
           <Play className="h-4 w-4" /> {busy ? "Running…" : "Run next steps"}
-        </button>
+        </Button>
       )}
       {run.status === "completed" && (
         <div className="rounded-md border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm text-emerald-500">
@@ -274,7 +291,7 @@ function RunPage() {
         </div>
       )}
       {run.status === "failed" && (
-        <div className="rounded-md border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-500">
+        <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
           Failed: {run.error ?? "unknown"}
         </div>
       )}
@@ -284,7 +301,7 @@ function RunPage() {
 
 function StepIcon({ status, isCurrent }: { status?: string; isCurrent: boolean }) {
   if (status === "passed") return <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-500" />;
-  if (status === "failed") return <AlertCircle className="mt-0.5 h-4 w-4 text-red-500" />;
+  if (status === "failed") return <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />;
   if (status === "skipped") return <SkipForward className="mt-0.5 h-4 w-4 text-muted-foreground" />;
   if (status === "awaiting" || isCurrent) return <Clock className="mt-0.5 h-4 w-4 text-amber-500" />;
   return <Clock className="mt-0.5 h-4 w-4 text-muted-foreground/50" />;
