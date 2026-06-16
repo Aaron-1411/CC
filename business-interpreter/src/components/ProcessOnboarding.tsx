@@ -16,6 +16,7 @@ import {
   deleteDemonstration,
 } from "@/lib/demonstrations.functions";
 import { Send, Sparkles, Upload, Wand2, Trash2, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function ProcessOnboarding({
   processId,
@@ -100,7 +101,7 @@ export function ProcessOnboarding({
       await processDemo({ data: { id: r.id } });
     } catch (e) {
       console.error(e);
-      alert(e instanceof Error ? e.message : String(e));
+      toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(null);
       if (fileRef.current) fileRef.current.value = "";

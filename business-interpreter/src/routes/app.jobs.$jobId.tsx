@@ -12,6 +12,7 @@ import { ReviewPanel } from "@/components/ReviewPanel";
 import { PlanRunner } from "@/components/PlanRunner";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Download, FileSpreadsheet, Loader2, Send, Sparkles, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -77,11 +78,11 @@ function JobPage() {
       const file = files[0];
       if (!file) return;
       if (!/\.xlsx$/i.test(file.name)) {
-        alert("Please upload an .xlsx file.");
+        toast.error("Please upload an .xlsx file.");
         return;
       }
       if (file.size > 50 * 1024 * 1024) {
-        alert("File is over 50MB — v1 limit.");
+        toast.error("File is over 50MB — v1 limit.");
         return;
       }
       setUploading(true);
@@ -100,7 +101,7 @@ function JobPage() {
         setSnapshot(result.snapshot);
         qc.invalidateQueries({ queryKey: ["job", jobId] });
       } catch (e) {
-        alert(`Upload failed: ${(e as Error).message}`);
+        toast.error(`Upload failed: ${(e as Error).message}`);
       } finally {
         setUploading(false);
       }
@@ -130,7 +131,7 @@ function JobPage() {
       setSnapshot(res.snapshot);
       qc.invalidateQueries({ queryKey: ["job", jobId] });
     } catch (e) {
-      alert(`Run failed: ${(e as Error).message}`);
+      toast.error(`Run failed: ${(e as Error).message}`);
     } finally {
       setRunning(false);
     }
@@ -143,7 +144,7 @@ function JobPage() {
       await commentary({ data: { jobId, workbookId: activeWorkbookId } });
       qc.invalidateQueries({ queryKey: ["job", jobId] });
     } catch (e) {
-      alert((e as Error).message);
+      toast.error((e as Error).message);
     } finally {
       setRunning(false);
     }
