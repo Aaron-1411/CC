@@ -11,6 +11,9 @@ import {
   updateCommentary,
   getJobReview,
 } from "@/lib/review.functions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type Cell = { sheet: string; cell: string };
 type Reconciliation = {
@@ -134,29 +137,30 @@ export function ReviewPanel({ jobId }: { jobId: string }) {
 
       {status === "pending" || status === "changes_requested" ? (
         <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-          <button
+          <Button
+            size="sm"
             onClick={async () => {
               await approve({ data: { jobId, gate: "validation", targetId: latestVR.id, decision: "approve" } });
               await draft({ data: { jobId, workbookId: latestVR.workbook_id, validationReportId: latestVR.id } });
               qc.invalidateQueries({ queryKey: ["review", jobId] });
             }}
-            className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:bg-primary/90"
           >
             Approve & draft commentary
-          </button>
+          </Button>
           <ChangesButton onSubmit={async (note) => {
             await approve({ data: { jobId, gate: "validation", targetId: latestVR.id, decision: "changes", note } });
             qc.invalidateQueries({ queryKey: ["review", jobId] });
           }} />
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={async () => {
               await approve({ data: { jobId, gate: "validation", targetId: latestVR.id, decision: "reject" } });
               qc.invalidateQueries({ queryKey: ["review", jobId] });
             }}
-            className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent"
           >
             Reject
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="text-xs text-muted-foreground">Validation {status.replace("_", " ")}.</div>
@@ -188,7 +192,7 @@ export function ReviewPanel({ jobId }: { jobId: string }) {
 }
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: "ok" | "warn" | "fail" }) {
-  const cls = tone === "ok" ? "border-emerald-500/40 text-emerald-600 dark:text-emerald-400" : tone === "warn" ? "border-amber-500/40 text-amber-600 dark:text-amber-400" : "border-red-500/40 text-red-600 dark:text-red-400";
+  const cls = tone === "ok" ? "border-emerald-500/40 text-emerald-600 dark:text-emerald-400" : tone === "warn" ? "border-amber-500/40 text-amber-600 dark:text-amber-400" : "border-destructive/40 text-destructive";
   return (
     <div className={`rounded-md border bg-background p-2 ${cls}`}>
       <div className="text-lg font-semibold leading-none">{value}</div>
@@ -201,7 +205,7 @@ function StatusBadge({ status }: { status: "pass" | "warn" | "fail" }) {
   const map = {
     pass: { Icon: CheckCircle2, cls: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400", label: "Pass" },
     warn: { Icon: AlertTriangle, cls: "bg-amber-500/10 text-amber-600 dark:text-amber-400", label: "Review" },
-    fail: { Icon: XCircle, cls: "bg-red-500/10 text-red-600 dark:text-red-400", label: "Fail" },
+    fail: { Icon: XCircle, cls: "bg-destructive/10 text-destructive", label: "Fail" },
   } as const;
   const { Icon, cls, label } = map[status];
   return (
@@ -212,7 +216,7 @@ function StatusBadge({ status }: { status: "pass" | "warn" | "fail" }) {
 }
 
 function SeverityDot({ s }: { s: "info" | "warn" | "fail" }) {
-  const cls = s === "fail" ? "bg-red-500" : s === "warn" ? "bg-amber-500" : "bg-blue-500";
+  const cls = s === "fail" ? "bg-destructive" : s === "warn" ? "bg-amber-500" : "bg-blue-500";
   return <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${cls}`} />;
 }
 
@@ -241,15 +245,20 @@ function ReconciliationTable({
             const key = `${r.summary.sheet}!${r.summary.cell}`;
             const isOpen = open === key;
             const node = lineage.find((n) => n.ref.sheet === r.summary.sheet && n.ref.cell === r.summary.cell);
-            const cls = r.classification === "mismatch" ? "text-red-600 dark:text-red-400" : r.classification === "rounding" ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground";
+            const cls = r.classification === "mismatch" ? "text-destructive" : r.classification === "rounding" ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground";
             return (
               <>
                 <tr key={key} className="border-t border-border">
                   <td className="px-2 py-1 font-mono">
-                    <button onClick={() => setOpen(isOpen ? null : key)} className="inline-flex items-center gap-1 hover:underline">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setOpen(isOpen ? null : key)}
+                      className="h-auto gap-1 px-1 py-0.5 font-mono text-xs font-normal hover:underline"
+                    >
                       {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
                       {key}
-                    </button>
+                    </Button>
                   </td>
                   <td className="px-2 py-1 text-right">
                     <EditableValue
@@ -304,18 +313,23 @@ function EditableValue({
   const [busy, setBusy] = useState(false);
   if (!editing) {
     return (
-      <button onClick={() => { setDraft(value == null ? "" : String(value)); setEditing(true); }} className="rounded px-1 hover:bg-accent">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => { setDraft(value == null ? "" : String(value)); setEditing(true); }}
+        className="h-auto px-1 py-0.5 text-xs font-normal"
+      >
         {value ?? "—"}
-      </button>
+      </Button>
     );
   }
   return (
     <span className="inline-flex items-center gap-1">
-      <input
+      <Input
         autoFocus
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
-        className="w-24 rounded border border-input bg-background px-1 text-right"
+        className="h-7 w-24 px-1 text-right text-xs"
         onKeyDown={async (e) => {
           if (e.key === "Enter") {
             setBusy(true);
@@ -336,26 +350,26 @@ function ChangesButton({ onSubmit }: { onSubmit: (note: string) => Promise<void>
   const [note, setNote] = useState("");
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent">
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         Request changes
-      </button>
+      </Button>
     );
   }
   return (
     <div className="flex items-center gap-1">
-      <input
+      <Input
         autoFocus
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="What needs fixing?"
-        className="rounded-md border border-input bg-background px-2 py-1 text-xs"
+        className="h-8 w-48 text-xs"
       />
-      <button
+      <Button
+        size="sm"
         onClick={async () => { await onSubmit(note); setOpen(false); setNote(""); }}
-        className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground"
       >
         Send
-      </button>
+      </Button>
     </div>
   );
 }
@@ -380,11 +394,11 @@ function CommentaryReview({
         <span className="text-xs text-muted-foreground">{draft.status.replace("_", " ")}</span>
       </div>
       {editing ? (
-        <textarea
+        <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={10}
-          className="w-full rounded-md border border-input bg-background p-2 text-sm font-mono"
+          className="font-mono text-sm"
         />
       ) : (
         <div className="prose prose-sm max-w-none dark:prose-invert">
@@ -406,24 +420,21 @@ function CommentaryReview({
       {draft.status === "draft" || draft.status === "changes_requested" ? (
         <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
           {editing ? (
-            <button
-              onClick={async () => { await onSave(body); setEditing(false); }}
-              className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent"
-            >
+            <Button variant="outline" size="sm" onClick={async () => { await onSave(body); setEditing(false); }}>
               Save edits
-            </button>
+            </Button>
           ) : (
-            <button onClick={() => setEditing(true)} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent">
+            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               Edit
-            </button>
+            </Button>
           )}
-          <button onClick={onApprove} className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:bg-primary/90">
+          <Button size="sm" onClick={onApprove}>
             Approve & finalize
-          </button>
+          </Button>
           <ChangesButton onSubmit={onChanges} />
-          <button onClick={onReject} className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent">
+          <Button variant="outline" size="sm" onClick={onReject}>
             Reject
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="text-xs text-muted-foreground">Commentary {draft.status.replace("_", " ")}.</div>
