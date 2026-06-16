@@ -29,6 +29,7 @@ import {
   rank,
   difference,
   movingAverage,
+  bin,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -2288,6 +2289,118 @@ describe("movingAverage", () => {
     const viaDispatch = applyTransform(base, {
       op: "movingAverage",
       params: { column: "Sales", before: 1, after: 1, decimals: 1 },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("bin", () => {
+  const base: Table = {
+    columns: ["Name", "Age"],
+    rows: [
+      ["A", 7],
+      ["B", 23],
+      ["C", 30],
+      ["D", 41],
+      ["E", 0],
+    ],
+  };
+
+  test("buckets values to their lower edge by default", () => {
+    const out = bin(base, { column: "Age", size: 10 });
+    expect(out.columns).toEqual(["Name", "Age", "Age bin"]);
+    expect(out.rows.map((r) => r[2])).toEqual([0, 20, 30, 40, 0]);
+  });
+
+  test("a value on an edge falls in the bin where it is the lower edge", () => {
+    // 30 with size 10 -> [30, 40), not [20, 30)
+    const out = bin(base, { column: "Age", size: 10 });
+    expect(out.rows[2][2]).toBe(30);
+  });
+
+  test("label 'upper' returns the upper edge", () => {
+    const out = bin(base, { column: "Age", size: 10, label: "upper" });
+    expect(out.rows.map((r) => r[2])).toEqual([10, 30, 40, 50, 10]);
+  });
+
+  test("label 'range' returns the half-open interval as text", () => {
+    const out = bin(base, { column: "Age", size: 10, label: "range" });
+    expect(out.rows.map((r) => r[2])).toEqual([
+      "[0, 10)",
+      "[20, 30)",
+      "[30, 40)",
+      "[40, 50)",
+      "[0, 10)",
+    ]);
+  });
+
+  test("origin shifts where the edges align", () => {
+    // origin 5, size 10 -> edges ...-5, 5, 15, 25, 35... so 7->5, 23->15, 30->25, 41->35, 0->-5
+    const out = bin(base, { column: "Age", size: 10, origin: 5 });
+    expect(out.rows.map((r) => r[2])).toEqual([5, 15, 25, 35, -5]);
+  });
+
+  test("custom output column name via into", () => {
+    const out = bin(base, { column: "Age", size: 10, into: "Age band" });
+    expect(out.columns).toEqual(["Name", "Age", "Age band"]);
+  });
+
+  test("handles negative values cleanly (half-open, negative-safe)", () => {
+    const t: Table = { columns: ["V"], rows: [[-1], [-10], [-11], [-0.0001]] };
+    const out = bin(t, { column: "V", size: 10, label: "range" });
+    // -1 -> [-10, 0); -10 -> [-10, 0); -11 -> [-20, -10); -0.0001 -> [-10, 0)
+    expect(out.rows.map((r) => r[1])).toEqual([
+      "[-10, 0)",
+      "[-10, 0)",
+      "[-20, -10)",
+      "[-10, 0)",
+    ]);
+  });
+
+  test("reads formatted numbers tolerantly", () => {
+    const t: Table = { columns: ["V"], rows: [["$1,234"], ["1,234"], ["(5)"]] };
+    const out = bin(t, { column: "V", size: 1000 });
+    expect(out.rows.map((r) => r[1])).toEqual([1000, 1000, -1000]);
+  });
+
+  test("non-numeric and blank cells produce a blank bin", () => {
+    const t: Table = { columns: ["V"], rows: [["abc"], [""], [null], [12]] };
+    const out = bin(t, { column: "V", size: 10 });
+    expect(out.rows.map((r) => r[1])).toEqual([null, null, null, 10]);
+  });
+
+  test("suppresses IEEE-754 drift in the edges", () => {
+    const t: Table = { columns: ["V"], rows: [[0.3]] };
+    const out = bin(t, { column: "V", size: 0.1, label: "range" });
+    // 0.3 / 0.1 floor -> 3 -> lo 0.3, hi 0.4 without float noise like 0.30000000000000004
+    expect(out.rows[0][1]).toBe("[0.3, 0.4)");
+  });
+
+  test("supports a fractional bin size", () => {
+    const t: Table = { columns: ["V"], rows: [[0.05], [0.12], [0.27]] };
+    const out = bin(t, { column: "V", size: 0.1 });
+    expect(out.rows.map((r) => r[1])).toEqual([0, 0.1, 0.2]);
+  });
+
+  test("throws for a non-positive size", () => {
+    expect(() => bin(base, { column: "Age", size: 0 })).toThrow(/greater than 0/);
+    expect(() => bin(base, { column: "Age", size: -5 })).toThrow(/greater than 0/);
+  });
+
+  test("throws a friendly error for a missing column", () => {
+    expect(() => bin(base, { column: "Nope", size: 10 })).toThrow(/not found/);
+  });
+
+  test("preserves row order and existing columns", () => {
+    const out = bin(base, { column: "Age", size: 10 });
+    expect(out.rows.map((r) => [r[0], r[1]])).toEqual(base.rows);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = bin(base, { column: "Age", size: 10, label: "range" });
+    const viaDispatch = applyTransform(base, {
+      op: "bin",
+      params: { column: "Age", size: 10, label: "range" },
     });
     expect(viaDispatch).toEqual(direct);
   });

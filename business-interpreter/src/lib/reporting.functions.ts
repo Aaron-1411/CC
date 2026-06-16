@@ -248,6 +248,16 @@ const TransformSchema = z.discriminatedUnion("op", [
       decimals: z.number().int().min(0).max(15).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("bin"),
+    params: z.object({
+      column: z.string().min(1),
+      size: z.number().positive(),
+      origin: z.number().optional(),
+      into: z.string().max(200).optional(),
+      label: z.enum(["lower", "range", "upper"]).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

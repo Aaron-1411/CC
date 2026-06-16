@@ -1533,6 +1533,67 @@ export function movingAverage(t: Table, params: MovingAverageParams): Table {
   return { columns: [...t.columns, into], rows };
 }
 
+export type BinParams = {
+  /** Numeric column to bucket. */
+  column: string;
+  /** Bucket width. Must be greater than 0. */
+  size: number;
+  /**
+   * Value the bucket edges are aligned to (default 0). Bins are
+   * `..., [origin - size, origin), [origin, origin + size), ...`.
+   */
+  origin?: number;
+  /** Output column name. Default `${column} bin`. */
+  into?: string;
+  /**
+   * How to label each bin (default "lower"):
+   * - "lower" — the bucket's lower edge, e.g. `20` (numeric, good for re-sorting).
+   * - "upper" — the bucket's upper edge, e.g. `30`.
+   * - "range" — the half-open interval as text, e.g. `"[20, 30)"`.
+   */
+  label?: "lower" | "range" | "upper";
+};
+
+/**
+ * Append a column that discretizes a continuous numeric column into fixed-width
+ * buckets — Tableau's "Create Bins". Each value `v` lands in the half-open bin
+ * `[lo, hi)` where `lo = origin + floor((v - origin) / size) * size` and
+ * `hi = lo + size`, so a value sitting exactly on an edge falls in the bin where
+ * it is the lower edge (e.g. with size 10 and origin 0, `30` → `[30, 40)`, not
+ * `[20, 30)`). Edges are rounded to 10 decimals to suppress IEEE-754 drift (so
+ * `0.1 + 0.2` style noise never leaks into a label). Values are read with the
+ * same tolerant parser used elsewhere ("$1,234", "1,234" and 1234 all count);
+ * non-numeric or blank cells produce a blank bin. Row order and all existing
+ * columns are preserved; the new column is appended at the end.
+ */
+export function bin(t: Table, params: BinParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "bin.column");
+  const size = params.size;
+  if (!(size > 0)) {
+    throw new Error(`bin.size must be greater than 0 (got ${size}).`);
+  }
+  const origin = params.origin == null ? 0 : params.origin;
+  const into = params.into && params.into.trim() !== "" ? params.into : `${params.column} bin`;
+  const label = params.label ?? "lower";
+
+  const edge = (cell: Cell): Cell => {
+    const v = parseFormattedNumber(cell);
+    if (v === null) return null;
+    // Round the quotient before flooring so float noise (e.g. 0.3 / 0.1 ===
+    // 2.9999999999999996) doesn't push an exact-edge value into the bin below.
+    const k = Math.floor(roundTo((v - origin) / size, 9));
+    const lo = roundTo(origin + k * size, 10);
+    const hi = roundTo(lo + size, 10);
+    if (label === "range") return `[${lo}, ${hi})`;
+    if (label === "upper") return hi;
+    return lo;
+  };
+
+  const rows: Cell[][] = t.rows.map((r) => [...r, edge(r[valueIdx])]);
+
+  return { columns: [...t.columns, into], rows };
+}
+
 /* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
@@ -1562,7 +1623,8 @@ export type TransformSpec =
   | { op: "runningTotal"; params: RunningTotalParams }
   | { op: "rank"; params: RankParams }
   | { op: "difference"; params: DifferenceParams }
-  | { op: "movingAverage"; params: MovingAverageParams };
+  | { op: "movingAverage"; params: MovingAverageParams }
+  | { op: "bin"; params: BinParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1616,6 +1678,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return difference(t, spec.params);
     case "movingAverage":
       return movingAverage(t, spec.params);
+    case "bin":
+      return bin(t, spec.params);
     default:
       return t;
   }

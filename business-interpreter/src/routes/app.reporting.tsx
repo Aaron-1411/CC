@@ -35,6 +35,7 @@ import {
   ListOrdered,
   GitCompare,
   Spline,
+  BarChart3,
   Plus,
   X,
 } from "lucide-react";
@@ -70,7 +71,8 @@ type Op =
   | "runningTotal"
   | "rank"
   | "difference"
-  | "movingAverage";
+  | "movingAverage"
+  | "bin";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -213,6 +215,11 @@ function ReportingPage() {
   const [movingAverageBefore, setMovingAverageBefore] = useState("");
   const [movingAverageAfter, setMovingAverageAfter] = useState("");
   const [movingAverageDecimals, setMovingAverageDecimals] = useState("");
+  const [binCol, setBinCol] = useState("");
+  const [binSize, setBinSize] = useState("");
+  const [binOrigin, setBinOrigin] = useState("");
+  const [binInto, setBinInto] = useState("");
+  const [binLabel, setBinLabel] = useState<"lower" | "range" | "upper">("lower");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -434,6 +441,20 @@ function ReportingPage() {
         },
       } as const;
     }
+    if (op === "bin") {
+      const size = Number.parseFloat(binSize);
+      const origin = Number.parseFloat(binOrigin);
+      return {
+        op: "bin",
+        params: {
+          column: binCol,
+          size: Number.isFinite(size) ? size : 0,
+          ...(Number.isFinite(origin) ? { origin } : {}),
+          ...(binInto.trim() ? { into: binInto.trim() } : {}),
+          ...(binLabel !== "lower" ? { label: binLabel } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -551,6 +572,11 @@ function ReportingPage() {
     setMovingAverageBefore("");
     setMovingAverageAfter("");
     setMovingAverageDecimals("");
+    setBinCol("");
+    setBinSize("");
+    setBinOrigin("");
+    setBinInto("");
+    setBinLabel("lower");
   }
 
   async function addStep() {
@@ -695,6 +721,11 @@ function ReportingPage() {
           (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
         );
       }
+      case "bin":
+        return (
+          `Bin ${spec.params.column} into ${spec.params.size}-wide buckets` +
+          (spec.params.origin ? ` from ${spec.params.origin}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -781,10 +812,12 @@ function ReportingPage() {
         return !!differenceCol;
       case "movingAverage":
         return !!movingAverageCol;
+      case "bin":
+        return !!binCol && Number.parseFloat(binSize) > 0;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol, binCol, binSize]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -792,7 +825,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank, difference, moving average) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank, difference, moving average, bin) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -924,6 +957,7 @@ function ReportingPage() {
           <OpTab active={op === "rank"} onClick={() => setOp("rank")} icon={<ListOrdered className="h-4 w-4" />} label="Rank" />
           <OpTab active={op === "difference"} onClick={() => setOp("difference")} icon={<GitCompare className="h-4 w-4" />} label="Difference" />
           <OpTab active={op === "movingAverage"} onClick={() => setOp("movingAverage")} icon={<Spline className="h-4 w-4" />} label="Moving average" />
+          <OpTab active={op === "bin"} onClick={() => setOp("bin")} icon={<BarChart3 className="h-4 w-4" />} label="Bin" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -2332,6 +2366,62 @@ function ReportingPage() {
                 Load a source first to choose group-by columns.
               </p>
             )}
+          </div>
+        )}
+
+        {op === "bin" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Group a continuous numeric column into fixed-width buckets — Tableau's Create Bins.
+              Each value lands in the half-open interval [lower, lower + size), so with size 10 a value
+              of 30 falls in [30, 40). "Origin" shifts where the edges align (default 0). Values are
+              read tolerantly, so "$1,234", "1,234" and 1234 all bucket; non-numeric or blank cells get
+              a blank bin. Choose how to label each bucket — its lower edge (numeric, sorts cleanly),
+              its upper edge, or the full range as text. The result is appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={binCol}
+                onChange={setBinCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <Field label="Bin size">
+              <input
+                type="number"
+                value={binSize}
+                onChange={(e) => setBinSize(e.target.value)}
+                placeholder="e.g. 10"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="Origin (optional, default 0)">
+              <input
+                type="number"
+                value={binOrigin}
+                onChange={(e) => setBinOrigin(e.target.value)}
+                placeholder="0"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="Bucket label">
+              <Select
+                value={binLabel}
+                onChange={(v) => setBinLabel(v as "lower" | "range" | "upper")}
+                options={["lower", "range", "upper"]}
+                labels={{ lower: "Lower edge (e.g. 20)", range: "Range (e.g. [20, 30))", upper: "Upper edge (e.g. 30)" }}
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={binInto}
+                onChange={(e) => setBinInto(e.target.value)}
+                placeholder={binCol ? `${binCol} bin` : "e.g. Range"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
           </div>
         )}
 
