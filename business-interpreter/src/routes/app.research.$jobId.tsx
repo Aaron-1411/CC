@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getJob } from "@/lib/jobs.functions";
 import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Evidence = { value?: string | null; confidence?: "high" | "medium" | "low"; source_url?: string | null; evidence_quote?: string | null };
 type Plan = { name: string; monthly_price?: string | null; annual_price?: string | null; per_seat_or_usage?: string | null; included_quotas?: string | null; addon_costs?: string | null; target_user?: string | null; source_url?: string | null };
@@ -54,8 +55,24 @@ function ResearchView() {
 
   if (isLoading || !data) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <Skeleton className="mb-4 h-5 w-16" />
+        <Skeleton className="h-9 w-72" />
+        <div className="mt-8 space-y-8">
+          <div className="rounded-xl border border-border bg-card p-6">
+            <Skeleton className="h-4 w-24" />
+            <div className="mt-3 space-y-2">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-11/12" />
+              <Skeleton className="h-3 w-4/5" />
+            </div>
+          </div>
+          <Skeleton className="h-36 w-full rounded-xl" />
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-44 w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }
