@@ -12,6 +12,10 @@ import { ReviewPanel } from "@/components/ReviewPanel";
 import { PlanRunner } from "@/components/PlanRunner";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Download, FileSpreadsheet, Loader2, Send, Sparkles, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Snapshot = Awaited<ReturnType<typeof registerWorkbook>>["snapshot"];
 
@@ -155,8 +159,22 @@ function JobPage() {
 
   if (isLoading || !data) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex h-screen flex-col">
+        <header className="flex items-center gap-3 border-b border-border bg-card px-5 py-3">
+          <Skeleton className="h-6 w-6 rounded-md" />
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="ml-auto h-8 w-32" />
+        </header>
+        <div className="grid flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[1fr_1fr]">
+          <div className="flex flex-col gap-4 border-r border-border p-5">
+            <Skeleton className="h-64 w-full rounded-xl" />
+            <Skeleton className="h-20 w-full rounded-xl" />
+          </div>
+          <div className="p-5">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="mt-3 h-64 w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -171,7 +189,7 @@ function JobPage() {
           <ArrowLeft className="h-4 w-4" />
         </Link>
         {titleEdit ? (
-          <input
+          <Input
             autoFocus
             defaultValue={data.job.title}
             onBlur={async (e) => {
@@ -181,21 +199,22 @@ function JobPage() {
               setTitleEdit(false);
             }}
             onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-            className="rounded-md border border-input bg-background px-2 py-1 text-sm"
+            className="h-8 w-auto px-2 py-1 text-sm"
           />
         ) : (
-          <button onClick={() => setTitleEdit(true)} className="text-sm font-medium hover:underline">
+          <Button
+            variant="ghost"
+            onClick={() => setTitleEdit(true)}
+            className="h-auto px-1 py-0.5 text-sm font-medium hover:underline"
+          >
             {data.job.title}
-          </button>
+          </Button>
         )}
         <div className="ml-auto flex items-center gap-2">
           {latestOutput ? (
-            <button
-              onClick={() => doDownload(latestOutput.id)}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-accent"
-            >
+            <Button variant="outline" size="sm" onClick={() => doDownload(latestOutput.id)}>
               <Download className="h-3.5 w-3.5" /> Download latest
-            </button>
+            </Button>
           ) : null}
         </div>
       </header>
@@ -255,7 +274,7 @@ function JobPage() {
 
           <div className="border-t border-border bg-card p-3">
             <div className="flex gap-2">
-              <textarea
+              <Textarea
                 ref={composerRef}
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
@@ -269,24 +288,27 @@ function JobPage() {
                 }
                 disabled={!sourceWb || running}
                 rows={3}
-                className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50"
+                className="flex-1 text-sm"
               />
-              <button
+              <Button
+                size="icon"
                 onClick={send}
                 disabled={!sourceWb || running || !instruction.trim()}
-                className="rounded-md bg-primary px-3 text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                aria-label="Send instruction"
               >
                 <Send className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
             {latestOutput ? (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={writeCommentary}
                 disabled={running}
-                className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                className="mt-2 h-auto px-1 py-0.5 text-xs text-muted-foreground hover:text-foreground"
               >
                 <Sparkles className="h-3 w-3" /> Write commentary on latest output
-              </button>
+              </Button>
             ) : null}
           </div>
         </div>
@@ -317,12 +339,14 @@ function JobPage() {
                       <span className="mr-2 rounded bg-muted px-1.5 py-0.5 text-xs">{w.kind}</span>
                       {w.name}
                     </span>
-                    <button
+                    <Button
+                      variant="link"
+                      size="sm"
                       onClick={() => doDownload(w.id)}
-                      className="text-xs text-primary hover:underline"
+                      className="h-auto p-0 text-xs"
                     >
                       Download
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>
