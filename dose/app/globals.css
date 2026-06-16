@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-mint-light text-ink font-body antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Visible, on-brand keyboard focus for accessibility. */
+  :focus-visible {
+    outline: 3px solid theme("colors.raspberry");
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: theme("colors.raspberry");
+    color: white;
+  }
+}
+
+@layer components {
+  .dose-tagline {
+    @apply font-serif italic;
+  }
+
+  /* Soft repeating dot texture for candy-counter surfaces. */
+  .candy-dots {
+    background-image: radial-gradient(
+      currentColor 1.5px,
+      transparent 1.5px
+    );
+    background-size: 22px 22px;
+  }
+}
+
+/* Respect reduced-motion globally: kill animation + smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
