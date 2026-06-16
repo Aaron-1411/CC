@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { runReport, exportXlsx } from "@/lib/reporting.functions";
-import { toCsv, type Table, type TransformSpec } from "@/lib/reporting/reshape";
+import { toCsv, type Table, type TransformSpec, type DatePart } from "@/lib/reporting/reshape";
 import {
   Database,
   Link2,
@@ -28,6 +28,7 @@ import {
   TableColumnsSplit,
   TableCellsMerge,
   Replace,
+  CalendarDays,
   Plus,
   X,
 } from "lucide-react";
@@ -56,7 +57,8 @@ type Op =
   | "trim"
   | "splitColumn"
   | "mergeColumns"
-  | "replace";
+  | "replace"
+  | "dateExtract";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -168,6 +170,10 @@ function ReportingPage() {
   const [replaceWith, setReplaceWith] = useState("");
   const [replaceMatchCase, setReplaceMatchCase] = useState(false);
   const [replaceWholeCell, setReplaceWholeCell] = useState(false);
+  const [dateExtractCol, setDateExtractCol] = useState("");
+  const [dateExtractPart, setDateExtractPart] = useState<DatePart>("year");
+  const [dateExtractInto, setDateExtractInto] = useState("");
+  const [dateExtractKeepOriginal, setDateExtractKeepOriginal] = useState(true);
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -306,6 +312,16 @@ function ReportingPage() {
           ...(replaceWholeCell ? { wholeCell: true } : {}),
         },
       } as const;
+    if (op === "dateExtract")
+      return {
+        op: "dateExtract",
+        params: {
+          column: dateExtractCol,
+          part: dateExtractPart,
+          ...(dateExtractInto.trim() ? { into: dateExtractInto.trim() } : {}),
+          ...(dateExtractKeepOriginal ? {} : { keepOriginal: false }),
+        },
+      } as const;
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -392,6 +408,10 @@ function ReportingPage() {
     setReplaceWith("");
     setReplaceMatchCase(false);
     setReplaceWholeCell(false);
+    setDateExtractCol("");
+    setDateExtractPart("year");
+    setDateExtractInto("");
+    setDateExtractKeepOriginal(true);
   }
 
   async function addStep() {
@@ -497,6 +517,11 @@ function ReportingPage() {
           `Replace "${spec.params.find}" → "${spec.params.replace ?? ""}"` +
           (spec.params.columns?.length ? ` in ${spec.params.columns.join(", ")}` : " (all columns)")
         );
+      case "dateExtract":
+        return (
+          `Extract ${spec.params.part} from ${spec.params.column}` +
+          (spec.params.into ? ` → ${spec.params.into}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -569,10 +594,12 @@ function ReportingPage() {
         return mergeColumnsSel.length >= 2 && !!mergeInto.trim();
       case "replace":
         return replaceFind.length > 0;
+      case "dateExtract":
+        return !!dateExtractCol;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -580,7 +607,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -705,6 +732,7 @@ function ReportingPage() {
           <OpTab active={op === "splitColumn"} onClick={() => setOp("splitColumn")} icon={<TableColumnsSplit className="h-4 w-4" />} label="Split col" />
           <OpTab active={op === "mergeColumns"} onClick={() => setOp("mergeColumns")} icon={<TableCellsMerge className="h-4 w-4" />} label="Merge cols" />
           <OpTab active={op === "replace"} onClick={() => setOp("replace")} icon={<Replace className="h-4 w-4" />} label="Find & replace" />
+          <OpTab active={op === "dateExtract"} onClick={() => setOp("dateExtract")} icon={<CalendarDays className="h-4 w-4" />} label="Date parts" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1552,6 +1580,87 @@ function ReportingPage() {
                 Load a source first to limit the replace to specific columns.
               </p>
             )}
+          </div>
+        )}
+
+        {op === "dateExtract" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Pull a component out of an ISO date column (YYYY-MM-DD or YYYY/MM/DD, with an optional
+              time suffix). Year, month, day and quarter come back as numbers so they sort and
+              aggregate correctly; weekday, year-month and year-quarter come back as labels. Cells
+              that aren&apos;t valid dates become blank. Add several steps to get more than one part
+              side by side.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Date column">
+                <Select
+                  value={dateExtractCol}
+                  onChange={setDateExtractCol}
+                  options={sourceColumns}
+                  placeholder="Choose…"
+                />
+              </Field>
+              <Field label="Part to extract">
+                <Select
+                  value={dateExtractPart}
+                  onChange={(v) => setDateExtractPart(v as DatePart)}
+                  options={[
+                    "year",
+                    "month",
+                    "day",
+                    "quarter",
+                    "weekday",
+                    "yearMonth",
+                    "yearQuarter",
+                  ]}
+                  labels={{
+                    year: "Year",
+                    month: "Month (1–12)",
+                    day: "Day of month",
+                    quarter: "Quarter (1–4)",
+                    weekday: "Weekday name",
+                    yearMonth: "Year-Month (2024-03)",
+                    yearQuarter: "Year-Quarter (2024-Q1)",
+                  }}
+                />
+              </Field>
+            </div>
+            <Field label="New column name (optional)">
+              <input
+                value={dateExtractInto}
+                onChange={(e) => setDateExtractInto(e.target.value)}
+                placeholder={
+                  dateExtractCol ? `${dateExtractCol} ${dateExtractPart}` : "e.g. Order Year"
+                }
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Source column</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setDateExtractKeepOriginal(true)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    dateExtractKeepOriginal
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Keep original
+                </button>
+                <button
+                  onClick={() => setDateExtractKeepOriginal(false)}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    !dateExtractKeepOriginal
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:bg-accent"
+                  }`}
+                >
+                  Replace it
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

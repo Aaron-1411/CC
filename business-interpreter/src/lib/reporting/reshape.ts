@@ -1004,6 +1004,119 @@ export function replace(t: Table, params: ReplaceParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* dateExtract (pull year/month/quarter/… out of a date column)        */
+/* ------------------------------------------------------------------ */
+
+const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+export type DatePart =
+  | "year"
+  | "month"
+  | "day"
+  | "quarter"
+  | "weekday"
+  | "yearMonth"
+  | "yearQuarter";
+
+export type DateExtractParams = {
+  column: string; // the source date column to parse
+  part: DatePart; // which component to pull out
+  into?: string; // output column name; omitted = "${column} ${part}"
+  keepOriginal?: boolean; // keep the source date column too (default: true)
+};
+
+/**
+ * Parse a strict ISO-like date string into its y/mo/d parts, or null when the
+ * value isn't one. Deliberately conservative so the engine stays deterministic:
+ * only `YYYY-MM-DD` / `YYYY/MM/DD` (with an optional trailing time after `T` or a
+ * space) are accepted — no locale guessing, no `new Date(string)` ambiguity.
+ * Impossible calendar dates (2024-02-30, 2024-13-01) are rejected.
+ */
+function parseIsoDate(v: Cell): { y: number; mo: number; d: number } | null {
+  if (typeof v !== "string") return null;
+  const m = v.trim().match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[T ].*)?$/);
+  if (!m) return null;
+  const y = Number(m[1]);
+  const mo = Number(m[2]);
+  const d = Number(m[3]);
+  const dt = new Date(Date.UTC(y, mo - 1, d));
+  if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo - 1 || dt.getUTCDate() !== d) {
+    return null; // overflow date that JS rolled over (e.g. Feb 30 → Mar 1/2)
+  }
+  return { y, mo, d };
+}
+
+/**
+ * Extract one calendar component from a date column into a new column — the
+ * building block for time-series reporting (group sales by `year`, trend by
+ * `yearMonth`, compare `quarter` over `quarter`). Each step pulls a single part
+ * so they compose: add three dateExtract steps to get year + month + quarter
+ * side by side. Only strict ISO-like strings parse (see parseIsoDate); anything
+ * else — free-text, numbers, blanks, ambiguous `MM/DD/YYYY` — yields null rather
+ * than a wrong guess. Numeric parts (year/month/day/quarter) come back as numbers
+ * so they sort and aggregate correctly; weekday/yearMonth/yearQuarter are labels.
+ * The new column is spliced in right after the source column, which is preserved
+ * by default (set keepOriginal:false to replace it in place).
+ */
+export function dateExtract(t: Table, params: DateExtractParams): Table {
+  const [idx] = requireCols(t.columns, [params.column], "dateExtract.column");
+  const part = params.part;
+  const keep = params.keepOriginal ?? true;
+  const name =
+    params.into && params.into.trim() !== "" ? params.into : `${params.column} ${part}`;
+
+  const pick = (p: { y: number; mo: number; d: number }): Cell => {
+    const { y, mo, d } = p;
+    const quarter = Math.floor((mo - 1) / 3) + 1;
+    switch (part) {
+      case "year":
+        return y;
+      case "month":
+        return mo;
+      case "day":
+        return d;
+      case "quarter":
+        return quarter;
+      case "weekday":
+        return WEEKDAY_NAMES[new Date(Date.UTC(y, mo - 1, d)).getUTCDay()];
+      case "yearMonth":
+        return `${y}-${String(mo).padStart(2, "0")}`;
+      case "yearQuarter":
+        return `${y}-Q${quarter}`;
+      default:
+        return null;
+    }
+  };
+
+  const values: Cell[] = t.rows.map((r) => {
+    const parsed = parseIsoDate(r[idx]);
+    return parsed ? pick(parsed) : null;
+  });
+
+  const before = t.columns.slice(0, idx);
+  const after = t.columns.slice(idx + 1);
+  const columns = keep
+    ? [...before, t.columns[idx], name, ...after]
+    : [...before, name, ...after];
+
+  const rows: Cell[][] = t.rows.map((r, ri) => {
+    const head = r.slice(0, idx);
+    const tail = r.slice(idx + 1);
+    return keep ? [...head, r[idx], values[ri], ...tail] : [...head, values[ri], ...tail];
+  });
+
+  return { columns, rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1025,7 +1138,8 @@ export type TransformSpec =
   | { op: "trim"; params: TrimParams }
   | { op: "splitColumn"; params: SplitColumnParams }
   | { op: "mergeColumns"; params: MergeColumnsParams }
-  | { op: "replace"; params: ReplaceParams };
+  | { op: "replace"; params: ReplaceParams }
+  | { op: "dateExtract"; params: DateExtractParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1065,6 +1179,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return mergeColumns(t, spec.params);
     case "replace":
       return replace(t, spec.params);
+    case "dateExtract":
+      return dateExtract(t, spec.params);
     default:
       return t;
   }

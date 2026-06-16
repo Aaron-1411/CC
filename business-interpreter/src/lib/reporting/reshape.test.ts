@@ -22,6 +22,7 @@ import {
   splitColumn,
   mergeColumns,
   replace,
+  dateExtract,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1487,5 +1488,92 @@ describe("guards & preview", () => {
     expect(p.columns.length).toBe(50);
     expect(p.rows.length).toBe(100);
     expect(p.rows[0].length).toBe(50);
+  });
+});
+
+describe("dateExtract", () => {
+  const base: Table = {
+    columns: ["Order", "Date"],
+    rows: [
+      ["A", "2024-03-15"],
+      ["B", "2023-11-02"],
+      ["C", "2024-01-31"],
+    ],
+  };
+
+  test("year/month/day come back as numbers", () => {
+    const y = dateExtract(base, { column: "Date", part: "year" });
+    expect(y.columns).toEqual(["Order", "Date", "Date year"]);
+    expect(y.rows.map((r) => r[2])).toEqual([2024, 2023, 2024]);
+    for (const r of y.rows) expect(typeof r[2]).toBe("number");
+
+    const mo = dateExtract(base, { column: "Date", part: "month" });
+    expect(mo.rows.map((r) => r[2])).toEqual([3, 11, 1]);
+
+    const d = dateExtract(base, { column: "Date", part: "day" });
+    expect(d.rows.map((r) => r[2])).toEqual([15, 2, 31]);
+  });
+
+  test("quarter is a 1–4 number", () => {
+    const q = dateExtract(base, { column: "Date", part: "quarter" });
+    expect(q.rows.map((r) => r[2])).toEqual([1, 4, 1]);
+    for (const r of q.rows) expect(typeof r[2]).toBe("number");
+  });
+
+  test("weekday returns the day name", () => {
+    const w = dateExtract(base, { column: "Date", part: "weekday" });
+    // 2024-03-15 = Friday, 2023-11-02 = Thursday, 2024-01-31 = Wednesday
+    expect(w.rows.map((r) => r[2])).toEqual(["Friday", "Thursday", "Wednesday"]);
+  });
+
+  test("yearMonth / yearQuarter return zero-padded labels", () => {
+    const ym = dateExtract(base, { column: "Date", part: "yearMonth" });
+    expect(ym.rows.map((r) => r[2])).toEqual(["2024-03", "2023-11", "2024-01"]);
+    const yq = dateExtract(base, { column: "Date", part: "yearQuarter" });
+    expect(yq.rows.map((r) => r[2])).toEqual(["2024-Q1", "2023-Q4", "2024-Q1"]);
+  });
+
+  test("accepts slash delimiters and ISO time suffixes", () => {
+    const t: Table = {
+      columns: ["Date"],
+      rows: [["2024/06/09"], ["2024-06-09T13:45:00Z"], ["2024-06-09 08:00"]],
+    };
+    const out = dateExtract(t, { column: "Date", part: "yearMonth" });
+    expect(out.rows.map((r) => r[1])).toEqual(["2024-06", "2024-06", "2024-06"]);
+  });
+
+  test("unparseable, non-string, and impossible calendar dates become null", () => {
+    const t: Table = {
+      columns: ["Date"],
+      rows: [["not a date"], [""], [42], [null], [true], ["2024-02-30"], ["2023-13-01"]],
+    };
+    const out = dateExtract(t, { column: "Date", part: "month" });
+    expect(out.rows.map((r) => r[1])).toEqual([null, null, null, null, null, null, null]);
+  });
+
+  test("custom into name overrides the default", () => {
+    const out = dateExtract(base, { column: "Date", part: "year", into: "FY" });
+    expect(out.columns).toEqual(["Order", "Date", "FY"]);
+    expect(out.rows[0]).toEqual(["A", "2024-03-15", 2024]);
+  });
+
+  test("keepOriginal:false replaces the source column in place", () => {
+    const out = dateExtract(base, { column: "Date", part: "year", keepOriginal: false });
+    expect(out.columns).toEqual(["Order", "Date year"]);
+    expect(out.rows[0]).toEqual(["A", 2024]);
+    expect(out.rows[1]).toEqual(["B", 2023]);
+  });
+
+  test("throws a friendly error for a missing column", () => {
+    expect(() => dateExtract(base, { column: "Nope", part: "year" })).toThrow(/not found/);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = dateExtract(base, { column: "Date", part: "quarter" });
+    const viaDispatch = applyTransform(base, {
+      op: "dateExtract",
+      params: { column: "Date", part: "quarter" },
+    });
+    expect(viaDispatch).toEqual(direct);
   });
 });
