@@ -25,6 +25,7 @@ import {
   dateExtract,
   round,
   percentOfTotal,
+  runningTotal,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1786,6 +1787,122 @@ describe("percentOfTotal", () => {
     const viaDispatch = applyTransform(base, {
       op: "percentOfTotal",
       params: { column: "Sales", decimals: 1 },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("runningTotal", () => {
+  const base: Table = {
+    columns: ["Region", "Sales"],
+    rows: [
+      ["North", 25],
+      ["South", 25],
+      ["East", 50],
+    ],
+  };
+
+  test("computes a cumulative sum down the whole column", () => {
+    const out = runningTotal(base, { column: "Sales" });
+    expect(out.columns).toEqual(["Region", "Sales", "Sales running total"]);
+    expect(out.rows.map((r) => r[2])).toEqual([25, 50, 100]);
+  });
+
+  test("appends exactly one column and preserves originals", () => {
+    const out = runningTotal(base, { column: "Sales" });
+    expect(out.columns.length).toBe(base.columns.length + 1);
+    expect(out.rows[0].slice(0, 2)).toEqual(["North", 25]);
+  });
+
+  test("keeps integer sums exact when unrounded", () => {
+    const t: Table = { columns: ["V"], rows: [[1], [2], [3]] };
+    const out = runningTotal(t, { column: "V" });
+    expect(out.rows.map((r) => r[1])).toEqual([1, 3, 6]);
+  });
+
+  test("restarts the total for each group (partitioned)", () => {
+    const t: Table = {
+      columns: ["Region", "Sales"],
+      rows: [
+        ["North", 10],
+        ["South", 100],
+        ["North", 20],
+        ["South", 200],
+      ],
+    };
+    const out = runningTotal(t, { column: "Sales", groupColumns: ["Region"] });
+    // North: 10 → 30 ; South: 100 → 300 ; original row order preserved
+    expect(out.rows.map((r) => r[2])).toEqual([10, 100, 30, 300]);
+  });
+
+  test("supports multi-column group keys", () => {
+    const t: Table = {
+      columns: ["Region", "Quarter", "Sales"],
+      rows: [
+        ["North", "Q1", 5],
+        ["North", "Q1", 5],
+        ["North", "Q2", 7],
+      ],
+    };
+    const out = runningTotal(t, { column: "Sales", groupColumns: ["Region", "Quarter"] });
+    expect(out.rows.map((r) => r[3])).toEqual([5, 10, 7]);
+  });
+
+  test("parses formatted numbers tolerantly", () => {
+    const t: Table = {
+      columns: ["V"],
+      rows: [["$1,000"], ["(500)"], ["500"]],
+    };
+    // 1000 → 500 → 1000
+    const out = runningTotal(t, { column: "V" });
+    expect(out.rows.map((r) => r[1])).toEqual([1000, 500, 1000]);
+  });
+
+  test("non-numeric cells contribute zero and carry the prior total forward", () => {
+    const t: Table = { columns: ["V"], rows: [[25], ["n/a"], [75]] };
+    const out = runningTotal(t, { column: "V" });
+    expect(out.rows.map((r) => r[1])).toEqual([25, 25, 100]);
+  });
+
+  test("rounds the output when decimals is given (precision kept internally)", () => {
+    const t: Table = { columns: ["V"], rows: [[0.1], [0.2], [0.3]] };
+    const out = runningTotal(t, { column: "V", decimals: 1 });
+    expect(out.rows.map((r) => r[1])).toEqual([0.1, 0.3, 0.6]);
+  });
+
+  test("uses a custom output column name", () => {
+    const out = runningTotal(base, { column: "Sales", into: "Cumulative" });
+    expect(out.columns).toEqual(["Region", "Sales", "Cumulative"]);
+  });
+
+  test("appends the column even when there are no rows", () => {
+    const t: Table = { columns: ["V"], rows: [] };
+    const out = runningTotal(t, { column: "V" });
+    expect(out.columns).toEqual(["V", "V running total"]);
+    expect(out.rows).toEqual([]);
+  });
+
+  test("does not mutate the input table", () => {
+    const snapshot = structuredClone(base);
+    runningTotal(base, { column: "Sales" });
+    expect(base).toEqual(snapshot);
+  });
+
+  test("throws a friendly error for a missing value column", () => {
+    expect(() => runningTotal(base, { column: "Nope" })).toThrow(/not found/);
+  });
+
+  test("throws a friendly error for a missing group column", () => {
+    expect(() => runningTotal(base, { column: "Sales", groupColumns: ["Nope"] })).toThrow(
+      /not found/,
+    );
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = runningTotal(base, { column: "Sales", groupColumns: ["Region"] });
+    const viaDispatch = applyTransform(base, {
+      op: "runningTotal",
+      params: { column: "Sales", groupColumns: ["Region"] },
     });
     expect(viaDispatch).toEqual(direct);
   });

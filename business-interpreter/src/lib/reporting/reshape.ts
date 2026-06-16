@@ -1228,6 +1228,61 @@ export function percentOfTotal(t: Table, params: PercentOfTotalParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* runningTotal — cumulative running sum of a numeric column           */
+/* ------------------------------------------------------------------ */
+
+export type RunningTotalParams = {
+  /** Numeric column to accumulate. */
+  column: string;
+  /**
+   * Optional grouping columns. When given, the running total restarts for each
+   * distinct group (a partitioned running total — e.g. a cumulative sum that
+   * resets per region); omitted = one running total down the whole column.
+   */
+  groupColumns?: string[];
+  /** Output column name. Default `${column} running total`. */
+  into?: string;
+  /** Optional decimal places to round the running total to. Unrounded if omitted. */
+  decimals?: number;
+};
+
+/**
+ * Append a column holding the cumulative sum of a numeric column in row order —
+ * the "running total" staple of BI reporting (Tableau's "Running Total" quick
+ * table calc). Values are read with the same tolerant parser used elsewhere, so
+ * "$1,234", "1,234" and 1234 all add; cells that aren't numeric contribute zero
+ * and carry the prior total forward rather than blanking it. With `groupColumns`
+ * the total restarts for each distinct group, so each partition accumulates
+ * independently. Row order is preserved exactly (sort first if you need a
+ * particular order). The new column is appended at the end of the table.
+ */
+export function runningTotal(t: Table, params: RunningTotalParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "runningTotal.column");
+  const groupIdx =
+    params.groupColumns && params.groupColumns.length
+      ? requireCols(t.columns, params.groupColumns, "runningTotal.groupColumns")
+      : [];
+  const into =
+    params.into && params.into.trim() !== "" ? params.into : `${params.column} running total`;
+  const decimals = params.decimals;
+
+  const keyOf = (r: Cell[]): string =>
+    groupIdx.length ? groupIdx.map((i) => String(r[i] ?? "")).join(" ") : "";
+
+  const totals = new Map<string, number>();
+  const rows: Cell[][] = t.rows.map((r) => {
+    const k = keyOf(r);
+    const v = parseFormattedNumber(r[valueIdx]);
+    const next = (totals.get(k) ?? 0) + (v ?? 0);
+    totals.set(k, next);
+    const out: Cell = decimals != null ? roundTo(next, decimals) : next;
+    return [...r, out];
+  });
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1252,7 +1307,8 @@ export type TransformSpec =
   | { op: "replace"; params: ReplaceParams }
   | { op: "dateExtract"; params: DateExtractParams }
   | { op: "round"; params: RoundParams }
-  | { op: "percentOfTotal"; params: PercentOfTotalParams };
+  | { op: "percentOfTotal"; params: PercentOfTotalParams }
+  | { op: "runningTotal"; params: RunningTotalParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1298,6 +1354,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return round(t, spec.params);
     case "percentOfTotal":
       return percentOfTotal(t, spec.params);
+    case "runningTotal":
+      return runningTotal(t, spec.params);
     default:
       return t;
   }

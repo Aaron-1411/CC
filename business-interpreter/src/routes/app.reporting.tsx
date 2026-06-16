@@ -31,6 +31,7 @@ import {
   CalendarDays,
   DecimalsArrowRight,
   Percent,
+  TrendingUp,
   Plus,
   X,
 } from "lucide-react";
@@ -62,7 +63,8 @@ type Op =
   | "replace"
   | "dateExtract"
   | "round"
-  | "percentOfTotal";
+  | "percentOfTotal"
+  | "runningTotal";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -184,6 +186,10 @@ function ReportingPage() {
   const [percentOfTotalGroupCols, setPercentOfTotalGroupCols] = useState<string[]>([]);
   const [percentOfTotalInto, setPercentOfTotalInto] = useState("");
   const [percentOfTotalDecimals, setPercentOfTotalDecimals] = useState("2");
+  const [runningTotalCol, setRunningTotalCol] = useState("");
+  const [runningTotalGroupCols, setRunningTotalGroupCols] = useState<string[]>([]);
+  const [runningTotalInto, setRunningTotalInto] = useState("");
+  const [runningTotalDecimals, setRunningTotalDecimals] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -350,6 +356,18 @@ function ReportingPage() {
           decimals: Number.parseInt(percentOfTotalDecimals, 10) || 0,
         },
       } as const;
+    if (op === "runningTotal") {
+      const d = Number.parseInt(runningTotalDecimals, 10);
+      return {
+        op: "runningTotal",
+        params: {
+          column: runningTotalCol,
+          ...(runningTotalGroupCols.length ? { groupColumns: runningTotalGroupCols } : {}),
+          ...(runningTotalInto.trim() ? { into: runningTotalInto.trim() } : {}),
+          ...(Number.isFinite(d) && d >= 0 ? { decimals: d } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -446,6 +464,10 @@ function ReportingPage() {
     setPercentOfTotalGroupCols([]);
     setPercentOfTotalInto("");
     setPercentOfTotalDecimals("2");
+    setRunningTotalCol("");
+    setRunningTotalGroupCols([]);
+    setRunningTotalInto("");
+    setRunningTotalDecimals("");
   }
 
   async function addStep() {
@@ -566,6 +588,11 @@ function ReportingPage() {
           `% of total of ${spec.params.column}` +
           (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
         );
+      case "runningTotal":
+        return (
+          `Running total of ${spec.params.column}` +
+          (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -644,10 +671,12 @@ function ReportingPage() {
         return true;
       case "percentOfTotal":
         return !!percentOfTotalCol;
+      case "runningTotal":
+        return !!runningTotalCol;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -655,7 +684,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -783,6 +812,7 @@ function ReportingPage() {
           <OpTab active={op === "dateExtract"} onClick={() => setOp("dateExtract")} icon={<CalendarDays className="h-4 w-4" />} label="Date parts" />
           <OpTab active={op === "round"} onClick={() => setOp("round")} icon={<DecimalsArrowRight className="h-4 w-4" />} label="Round" />
           <OpTab active={op === "percentOfTotal"} onClick={() => setOp("percentOfTotal")} icon={<Percent className="h-4 w-4" />} label="% of total" />
+          <OpTab active={op === "runningTotal"} onClick={() => setOp("runningTotal")} icon={<TrendingUp className="h-4 w-4" />} label="Running total" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1817,6 +1847,78 @@ function ReportingPage() {
                         key={c}
                         onClick={() =>
                           setPercentOfTotalGroupCols((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose group-by columns.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "runningTotal" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Add a cumulative running sum of a numeric column in row order — the "running total"
+              staple of BI reporting (Tableau's Running Total). Values are read tolerantly, so
+              "$1,234", "1,234" and 1234 all add; non-numeric cells contribute nothing and carry the
+              prior total forward. Pick group-by columns to restart the total for each group (each
+              partition accumulates on its own); otherwise it runs down the whole column. Sort first
+              if you need a particular order. The result is appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={runningTotalCol}
+                onChange={setRunningTotalCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <Field label="Round to decimal places (optional)">
+              <input
+                type="number"
+                value={runningTotalDecimals}
+                onChange={(e) => setRunningTotalDecimals(e.target.value)}
+                placeholder="exact (no rounding)"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={runningTotalInto}
+                onChange={(e) => setRunningTotalInto(e.target.value)}
+                placeholder={runningTotalCol ? `${runningTotalCol} running total` : "e.g. Cumulative"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Group by (optional — restart the total for each group)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = runningTotalGroupCols.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setRunningTotalGroupCols((prev) =>
                             prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
                           )
                         }
