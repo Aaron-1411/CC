@@ -38,6 +38,7 @@ import {
   BarChart3,
   Plus,
   X,
+  Search,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/reporting")({
@@ -95,6 +96,65 @@ const DERIVE_OP_LABELS: Record<DeriveOperator, string> = {
   "*": "× multiply",
   "/": "÷ divide",
 };
+
+type OpItem = { op: Op; label: string; icon: React.ReactNode; keywords?: string };
+const OP_GROUPS: { name: string; ops: OpItem[] }[] = [
+  {
+    name: "Reshape",
+    ops: [
+      { op: "transpose", label: "Transpose", icon: <ArrowLeftRight className="h-4 w-4" />, keywords: "flip rotate swap" },
+      { op: "unpivot", label: "Unpivot", icon: <Rows3 className="h-4 w-4" />, keywords: "melt wide to long" },
+      { op: "pivot", label: "Pivot", icon: <Columns3 className="h-4 w-4" />, keywords: "crosstab spread long to wide" },
+      { op: "select", label: "Select cols", icon: <ListChecks className="h-4 w-4" />, keywords: "columns keep drop choose" },
+      { op: "rename", label: "Rename col", icon: <TextCursorInput className="h-4 w-4" />, keywords: "header label" },
+      { op: "splitColumn", label: "Split col", icon: <TableColumnsSplit className="h-4 w-4" />, keywords: "separate delimiter" },
+      { op: "mergeColumns", label: "Merge cols", icon: <TableCellsMerge className="h-4 w-4" />, keywords: "concat combine join" },
+    ],
+  },
+  {
+    name: "Summarize",
+    ops: [
+      { op: "groupBy", label: "Group by", icon: <Sigma className="h-4 w-4" />, keywords: "aggregate sum count average rollup" },
+      { op: "dedupe", label: "Dedupe", icon: <CopyMinus className="h-4 w-4" />, keywords: "distinct unique remove duplicates" },
+    ],
+  },
+  {
+    name: "Rows",
+    ops: [
+      { op: "filter", label: "Filter", icon: <Filter className="h-4 w-4" />, keywords: "where condition keep exclude" },
+      { op: "sort", label: "Sort", icon: <ArrowDownUp className="h-4 w-4" />, keywords: "order ascending descending" },
+      { op: "limit", label: "Limit rows", icon: <Scissors className="h-4 w-4" />, keywords: "head top sample truncate" },
+    ],
+  },
+  {
+    name: "Clean",
+    ops: [
+      { op: "fillDown", label: "Fill down", icon: <ArrowDownToLine className="h-4 w-4" />, keywords: "forward fill blanks gaps" },
+      { op: "castNumber", label: "To number", icon: <Hash className="h-4 w-4" />, keywords: "cast numeric parse convert" },
+      { op: "trim", label: "Trim", icon: <Eraser className="h-4 w-4" />, keywords: "whitespace strip spaces" },
+      { op: "replace", label: "Find & replace", icon: <Replace className="h-4 w-4" />, keywords: "substitute swap text" },
+      { op: "round", label: "Round", icon: <DecimalsArrowRight className="h-4 w-4" />, keywords: "decimals precision" },
+    ],
+  },
+  {
+    name: "Compute",
+    ops: [
+      { op: "derive", label: "Compute col", icon: <Calculator className="h-4 w-4" />, keywords: "formula calculated field math" },
+      { op: "dateExtract", label: "Date parts", icon: <CalendarDays className="h-4 w-4" />, keywords: "year month day quarter week" },
+      { op: "bin", label: "Bin", icon: <BarChart3 className="h-4 w-4" />, keywords: "bucket histogram range group" },
+    ],
+  },
+  {
+    name: "Table calcs",
+    ops: [
+      { op: "percentOfTotal", label: "% of total", icon: <Percent className="h-4 w-4" />, keywords: "percentage share proportion" },
+      { op: "runningTotal", label: "Running total", icon: <TrendingUp className="h-4 w-4" />, keywords: "cumulative accumulate" },
+      { op: "rank", label: "Rank", icon: <ListOrdered className="h-4 w-4" />, keywords: "position order dense" },
+      { op: "difference", label: "Difference", icon: <GitCompare className="h-4 w-4" />, keywords: "delta change previous" },
+      { op: "movingAverage", label: "Moving average", icon: <Spline className="h-4 w-4" />, keywords: "rolling smooth window trend" },
+    ],
+  },
+];
 type FilterOp =
   | "eq"
   | "ne"
@@ -141,6 +201,7 @@ function ReportingPage() {
   const [luid, setLuid] = useState("");
 
   const [op, setOp] = useState<Op>("none");
+  const [opQuery, setOpQuery] = useState("");
   const [idColumns, setIdColumns] = useState<string[]>([]);
   const [pivotColumn, setPivotColumn] = useState("");
   const [valueColumn, setValueColumn] = useState("");
@@ -931,34 +992,64 @@ function ReportingPage() {
             ? "Add another step to keep chaining, or run the report to apply the whole pipeline."
             : "Configure a transform, then add it as a pipeline step or run it directly."}
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <OpTab active={op === "none"} onClick={() => setOp("none")} icon={<Rows3 className="h-4 w-4" />} label="None" />
-          <OpTab active={op === "transpose"} onClick={() => setOp("transpose")} icon={<ArrowLeftRight className="h-4 w-4" />} label="Transpose" />
-          <OpTab active={op === "unpivot"} onClick={() => setOp("unpivot")} icon={<Rows3 className="h-4 w-4" />} label="Unpivot" />
-          <OpTab active={op === "pivot"} onClick={() => setOp("pivot")} icon={<Columns3 className="h-4 w-4" />} label="Pivot" />
-          <OpTab active={op === "groupBy"} onClick={() => setOp("groupBy")} icon={<Sigma className="h-4 w-4" />} label="Group by" />
-          <OpTab active={op === "filter"} onClick={() => setOp("filter")} icon={<Filter className="h-4 w-4" />} label="Filter" />
-          <OpTab active={op === "sort"} onClick={() => setOp("sort")} icon={<ArrowDownUp className="h-4 w-4" />} label="Sort" />
-          <OpTab active={op === "select"} onClick={() => setOp("select")} icon={<ListChecks className="h-4 w-4" />} label="Select cols" />
-          <OpTab active={op === "derive"} onClick={() => setOp("derive")} icon={<Calculator className="h-4 w-4" />} label="Compute col" />
-          <OpTab active={op === "limit"} onClick={() => setOp("limit")} icon={<Scissors className="h-4 w-4" />} label="Limit rows" />
-          <OpTab active={op === "rename"} onClick={() => setOp("rename")} icon={<TextCursorInput className="h-4 w-4" />} label="Rename col" />
-          <OpTab active={op === "dedupe"} onClick={() => setOp("dedupe")} icon={<CopyMinus className="h-4 w-4" />} label="Dedupe" />
-          <OpTab active={op === "fillDown"} onClick={() => setOp("fillDown")} icon={<ArrowDownToLine className="h-4 w-4" />} label="Fill down" />
-          <OpTab active={op === "castNumber"} onClick={() => setOp("castNumber")} icon={<Hash className="h-4 w-4" />} label="To number" />
-          <OpTab active={op === "trim"} onClick={() => setOp("trim")} icon={<Eraser className="h-4 w-4" />} label="Trim" />
-          <OpTab active={op === "splitColumn"} onClick={() => setOp("splitColumn")} icon={<TableColumnsSplit className="h-4 w-4" />} label="Split col" />
-          <OpTab active={op === "mergeColumns"} onClick={() => setOp("mergeColumns")} icon={<TableCellsMerge className="h-4 w-4" />} label="Merge cols" />
-          <OpTab active={op === "replace"} onClick={() => setOp("replace")} icon={<Replace className="h-4 w-4" />} label="Find & replace" />
-          <OpTab active={op === "dateExtract"} onClick={() => setOp("dateExtract")} icon={<CalendarDays className="h-4 w-4" />} label="Date parts" />
-          <OpTab active={op === "round"} onClick={() => setOp("round")} icon={<DecimalsArrowRight className="h-4 w-4" />} label="Round" />
-          <OpTab active={op === "percentOfTotal"} onClick={() => setOp("percentOfTotal")} icon={<Percent className="h-4 w-4" />} label="% of total" />
-          <OpTab active={op === "runningTotal"} onClick={() => setOp("runningTotal")} icon={<TrendingUp className="h-4 w-4" />} label="Running total" />
-          <OpTab active={op === "rank"} onClick={() => setOp("rank")} icon={<ListOrdered className="h-4 w-4" />} label="Rank" />
-          <OpTab active={op === "difference"} onClick={() => setOp("difference")} icon={<GitCompare className="h-4 w-4" />} label="Difference" />
-          <OpTab active={op === "movingAverage"} onClick={() => setOp("movingAverage")} icon={<Spline className="h-4 w-4" />} label="Moving average" />
-          <OpTab active={op === "bin"} onClick={() => setOp("bin")} icon={<BarChart3 className="h-4 w-4" />} label="Bin" />
-        </div>
+        {(() => {
+          const q = opQuery.trim().toLowerCase();
+          const groups = OP_GROUPS.map((g) => ({
+            name: g.name,
+            ops: g.ops.filter(
+              (o) =>
+                !q ||
+                o.label.toLowerCase().includes(q) ||
+                o.op.toLowerCase().includes(q) ||
+                (o.keywords ?? "").includes(q),
+            ),
+          })).filter((g) => g.ops.length > 0);
+          return (
+            <div className="mt-3 space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    value={opQuery}
+                    onChange={(e) => setOpQuery(e.target.value)}
+                    placeholder="Search 25 transforms…"
+                    className="w-full rounded-md border border-border bg-background py-2 pl-8 pr-3 text-sm"
+                  />
+                </div>
+                <OpTab
+                  active={op === "none"}
+                  onClick={() => setOp("none")}
+                  icon={<Rows3 className="h-4 w-4" />}
+                  label="None"
+                />
+              </div>
+              {groups.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No transforms match “{opQuery}”.
+                </p>
+              ) : (
+                groups.map((g) => (
+                  <div key={g.name}>
+                    <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {g.name}
+                    </div>
+                    <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {g.ops.map((o) => (
+                        <OpTab
+                          key={o.op}
+                          active={op === o.op}
+                          onClick={() => setOp(o.op)}
+                          icon={o.icon}
+                          label={o.label}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          );
+        })()}
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
           <p className="mt-4 text-sm text-muted-foreground">
