@@ -2542,11 +2542,18 @@ function ReportingPage() {
       )}
 
       {/* Result */}
-      {result && (
+      {result ? (
         <section className="mt-6 rounded-xl border border-border bg-card p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold">3. Result</h2>
+              <h2 className="flex items-center gap-2 text-sm font-semibold">
+                3. Result
+                {loading && (
+                  <span className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" /> Updating…
+                  </span>
+                )}
+              </h2>
               <p className="mt-1 text-xs text-muted-foreground">
                 {result.rowCount.toLocaleString()} rows × {result.colCount.toLocaleString()} cols
                 {result.truncated && " · table truncated for download"}
@@ -2600,6 +2607,30 @@ function ReportingPage() {
               Showing first {result.preview.rows.length} rows — download for the full set.
             </p>
           )}
+        </section>
+      ) : loading ? (
+        <section className="mt-6 rounded-xl border border-border bg-card p-5">
+          <h2 className="flex items-center gap-2 text-sm font-semibold">
+            3. Result
+            <span className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" /> Running…
+            </span>
+          </h2>
+          <div className="mt-4 space-y-2">
+            <div className="h-9 w-full animate-pulse rounded bg-muted" />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-7 w-full animate-pulse rounded bg-muted/50" />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section className="mt-6 rounded-xl border border-dashed border-border bg-card p-10 text-center">
+          <FileSpreadsheet className="mx-auto h-8 w-8 text-muted-foreground/50" />
+          <h2 className="mt-3 text-sm font-semibold">No report yet</h2>
+          <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
+            Pick a source above and load your columns, then add transform steps to
+            reshape the data. Run the report to preview it here and export to CSV or XLSX.
+          </p>
         </section>
       )}
     </div>
