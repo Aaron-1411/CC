@@ -32,6 +32,7 @@ import {
   DecimalsArrowRight,
   Percent,
   TrendingUp,
+  ListOrdered,
   Plus,
   X,
 } from "lucide-react";
@@ -64,7 +65,8 @@ type Op =
   | "dateExtract"
   | "round"
   | "percentOfTotal"
-  | "runningTotal";
+  | "runningTotal"
+  | "rank";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -190,6 +192,11 @@ function ReportingPage() {
   const [runningTotalGroupCols, setRunningTotalGroupCols] = useState<string[]>([]);
   const [runningTotalInto, setRunningTotalInto] = useState("");
   const [runningTotalDecimals, setRunningTotalDecimals] = useState("");
+  const [rankCol, setRankCol] = useState("");
+  const [rankGroupCols, setRankGroupCols] = useState<string[]>([]);
+  const [rankInto, setRankInto] = useState("");
+  const [rankDescending, setRankDescending] = useState(true);
+  const [rankMethod, setRankMethod] = useState<"competition" | "dense" | "ordinal">("competition");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -368,6 +375,18 @@ function ReportingPage() {
         },
       } as const;
     }
+    if (op === "rank") {
+      return {
+        op: "rank",
+        params: {
+          column: rankCol,
+          ...(rankGroupCols.length ? { groupColumns: rankGroupCols } : {}),
+          ...(rankInto.trim() ? { into: rankInto.trim() } : {}),
+          ...(rankDescending ? {} : { descending: false }),
+          ...(rankMethod !== "competition" ? { method: rankMethod } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -468,6 +487,11 @@ function ReportingPage() {
     setRunningTotalGroupCols([]);
     setRunningTotalInto("");
     setRunningTotalDecimals("");
+    setRankCol("");
+    setRankGroupCols([]);
+    setRankInto("");
+    setRankDescending(true);
+    setRankMethod("competition");
   }
 
   async function addStep() {
@@ -593,6 +617,11 @@ function ReportingPage() {
           `Running total of ${spec.params.column}` +
           (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
         );
+      case "rank":
+        return (
+          `Rank by ${spec.params.column} (${spec.params.descending === false ? "ascending" : "descending"})` +
+          (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -673,10 +702,12 @@ function ReportingPage() {
         return !!percentOfTotalCol;
       case "runningTotal":
         return !!runningTotalCol;
+      case "rank":
+        return !!rankCol;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -684,7 +715,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -813,6 +844,7 @@ function ReportingPage() {
           <OpTab active={op === "round"} onClick={() => setOp("round")} icon={<DecimalsArrowRight className="h-4 w-4" />} label="Round" />
           <OpTab active={op === "percentOfTotal"} onClick={() => setOp("percentOfTotal")} icon={<Percent className="h-4 w-4" />} label="% of total" />
           <OpTab active={op === "runningTotal"} onClick={() => setOp("runningTotal")} icon={<TrendingUp className="h-4 w-4" />} label="Running total" />
+          <OpTab active={op === "rank"} onClick={() => setOp("rank")} icon={<ListOrdered className="h-4 w-4" />} label="Rank" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -1919,6 +1951,92 @@ function ReportingPage() {
                         key={c}
                         onClick={() =>
                           setRunningTotalGroupCols((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose group-by columns.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "rank" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Rank rows by a numeric column — Tableau's Rank quick table calc. By default the largest
+              value is rank 1 (switch to ascending to make the smallest value 1). Values are read
+              tolerantly, so "$1,234", "1,234" and 1234 all rank; rows whose value isn't numeric get a
+              blank rank and sit out of the ranking. Pick group-by columns to rank within each group
+              (each partition restarts at 1); otherwise it ranks across the whole column. The result is
+              appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={rankCol}
+                onChange={setRankCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <Field label="Direction">
+              <Select
+                value={rankDescending ? "desc" : "asc"}
+                onChange={(v) => setRankDescending(v === "desc")}
+                options={["desc", "asc"]}
+                labels={{
+                  desc: "Descending — largest value is rank 1",
+                  asc: "Ascending — smallest value is rank 1",
+                }}
+              />
+            </Field>
+            <Field label="Tie handling">
+              <Select
+                value={rankMethod}
+                onChange={(v) => setRankMethod(v as "competition" | "dense" | "ordinal")}
+                options={["competition", "dense", "ordinal"]}
+                labels={{
+                  competition: "Competition — ties share rank, next rank skips (1, 2, 2, 4)",
+                  dense: "Dense — ties share rank, no gap (1, 2, 2, 3)",
+                  ordinal: "Ordinal — every row distinct, ties by order (1, 2, 3, 4)",
+                }}
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={rankInto}
+                onChange={(e) => setRankInto(e.target.value)}
+                placeholder={rankCol ? `${rankCol} rank` : "e.g. Rank"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Group by (optional — rank within each group)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = rankGroupCols.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setRankGroupCols((prev) =>
                             prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
                           )
                         }

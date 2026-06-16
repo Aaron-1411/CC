@@ -216,6 +216,16 @@ const TransformSchema = z.discriminatedUnion("op", [
       decimals: z.number().int().min(0).max(15).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("rank"),
+    params: z.object({
+      column: z.string().min(1),
+      groupColumns: z.array(z.string()).max(200).optional(),
+      into: z.string().max(200).optional(),
+      descending: z.boolean().optional(),
+      method: z.enum(["competition", "dense", "ordinal"]).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({

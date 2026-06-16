@@ -26,6 +26,7 @@ import {
   round,
   percentOfTotal,
   runningTotal,
+  rank,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -1903,6 +1904,123 @@ describe("runningTotal", () => {
     const viaDispatch = applyTransform(base, {
       op: "runningTotal",
       params: { column: "Sales", groupColumns: ["Region"] },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* rank                                                                */
+/* ------------------------------------------------------------------ */
+
+describe("rank", () => {
+  const base: Table = {
+    columns: ["Region", "Sales"],
+    rows: [
+      ["North", 100],
+      ["South", 90],
+      ["East", 90],
+      ["West", 80],
+    ],
+  };
+
+  test("ranks descending with competition ties by default", () => {
+    const out = rank(base, { column: "Sales" });
+    expect(out.columns).toEqual(["Region", "Sales", "Sales rank"]);
+    expect(out.rows.map((r) => r[2])).toEqual([1, 2, 2, 4]);
+  });
+
+  test("appends exactly one column and preserves originals", () => {
+    const out = rank(base, { column: "Sales" });
+    expect(out.columns.length).toBe(base.columns.length + 1);
+    expect(out.rows[0].slice(0, 2)).toEqual(["North", 100]);
+  });
+
+  test("ranks ascending when descending is false", () => {
+    const out = rank(base, { column: "Sales", descending: false });
+    expect(out.rows.map((r) => r[2])).toEqual([4, 2, 2, 1]);
+  });
+
+  test("dense ties share a rank with no gap", () => {
+    const out = rank(base, { column: "Sales", method: "dense" });
+    expect(out.rows.map((r) => r[2])).toEqual([1, 2, 2, 3]);
+  });
+
+  test("ordinal gives every row a distinct rank, ties broken by original order", () => {
+    const out = rank(base, { column: "Sales", method: "ordinal" });
+    expect(out.rows.map((r) => r[2])).toEqual([1, 2, 3, 4]);
+  });
+
+  test("restarts ranking within each group (partitioned)", () => {
+    const t: Table = {
+      columns: ["Team", "Score"],
+      rows: [
+        ["A", 10],
+        ["B", 5],
+        ["A", 30],
+        ["B", 50],
+      ],
+    };
+    const out = rank(t, { column: "Score", groupColumns: ["Team"] });
+    expect(out.rows.map((r) => r[2])).toEqual([2, 2, 1, 1]);
+  });
+
+  test("supports multi-column group keys", () => {
+    const t: Table = {
+      columns: ["Region", "Year", "Sales"],
+      rows: [
+        ["N", "2024", 10],
+        ["N", "2024", 20],
+        ["N", "2025", 5],
+      ],
+    };
+    const out = rank(t, { column: "Sales", groupColumns: ["Region", "Year"] });
+    expect(out.rows.map((r) => r[3])).toEqual([2, 1, 1]);
+  });
+
+  test("reads formatted numbers tolerantly", () => {
+    const t: Table = { columns: ["V"], rows: [["$1,000"], ["(500)"], ["750"]] };
+    const out = rank(t, { column: "V" });
+    expect(out.rows.map((r) => r[1])).toEqual([1, 3, 2]);
+  });
+
+  test("gives non-numeric values a blank rank and excludes them from ranking", () => {
+    const t: Table = { columns: ["V"], rows: [[100], ["n/a"], [50]] };
+    const out = rank(t, { column: "V" });
+    expect(out.rows.map((r) => r[1])).toEqual([1, null, 2]);
+  });
+
+  test("uses a custom into name", () => {
+    const out = rank(base, { column: "Sales", into: "Position" });
+    expect(out.columns[out.columns.length - 1]).toBe("Position");
+  });
+
+  test("appends the column even when there are no rows", () => {
+    const t: Table = { columns: ["V"], rows: [] };
+    const out = rank(t, { column: "V" });
+    expect(out.columns).toEqual(["V", "V rank"]);
+    expect(out.rows).toEqual([]);
+  });
+
+  test("does not mutate the input table", () => {
+    const snapshot = structuredClone(base);
+    rank(base, { column: "Sales" });
+    expect(base).toEqual(snapshot);
+  });
+
+  test("throws a friendly error for a missing value column", () => {
+    expect(() => rank(base, { column: "Nope" })).toThrow(/not found/);
+  });
+
+  test("throws a friendly error for a missing group column", () => {
+    expect(() => rank(base, { column: "Sales", groupColumns: ["Nope"] })).toThrow(/not found/);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = rank(base, { column: "Sales", groupColumns: ["Region"], method: "dense" });
+    const viaDispatch = applyTransform(base, {
+      op: "rank",
+      params: { column: "Sales", groupColumns: ["Region"], method: "dense" },
     });
     expect(viaDispatch).toEqual(direct);
   });

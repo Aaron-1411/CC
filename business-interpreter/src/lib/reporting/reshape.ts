@@ -1283,6 +1283,84 @@ export function runningTotal(t: Table, params: RunningTotalParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* rank — assign a rank to rows by a numeric column                    */
+/* ------------------------------------------------------------------ */
+
+export type RankParams = {
+  /** Numeric column to rank by. */
+  column: string;
+  /** Optional grouping columns. Ranking restarts (partitions) for each distinct group. */
+  groupColumns?: string[];
+  /** Output column name. Default `${column} rank`. */
+  into?: string;
+  /** Rank the largest value as 1 when true (default). When false, the smallest value is 1. */
+  descending?: boolean;
+  /**
+   * Tie handling:
+   * - "competition" (default): ties share the lowest rank, the next rank skips (1, 2, 2, 4).
+   * - "dense": ties share the rank with no gap (1, 2, 2, 3).
+   * - "ordinal": every row gets a distinct rank, ties broken by original order (1, 2, 3, 4).
+   * Rows whose value is not numeric receive a blank rank and are excluded from ranking.
+   */
+  method?: "competition" | "dense" | "ordinal";
+};
+
+export function rank(t: Table, params: RankParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "rank.column");
+  const groupIdx =
+    params.groupColumns && params.groupColumns.length
+      ? requireCols(t.columns, params.groupColumns, "rank.groupColumns")
+      : [];
+  const into = params.into && params.into.trim() !== "" ? params.into : `${params.column} rank`;
+  const descending = params.descending !== false; // default true
+  const method = params.method ?? "competition";
+
+  const keyOf = (r: Cell[]): string =>
+    groupIdx.length ? groupIdx.map((i) => String(r[i] ?? "")).join(" ") : "";
+
+  // Bucket original row positions by group, preserving first-seen order.
+  const groups = new Map<string, number[]>();
+  t.rows.forEach((r, i) => {
+    const k = keyOf(r);
+    const arr = groups.get(k);
+    if (arr) arr.push(i);
+    else groups.set(k, [i]);
+  });
+
+  const ranks = new Map<number, number>(); // rowIndex -> rank
+  for (const positions of groups.values()) {
+    // Only rows with numeric values participate; ties broken by original order.
+    const numeric = positions
+      .map((i) => ({ i, v: parseFormattedNumber(t.rows[i][valueIdx]) }))
+      .filter((e): e is { i: number; v: number } => e.v != null)
+      .sort((a, b) => (descending ? b.v - a.v : a.v - b.v) || a.i - b.i);
+
+    let prevValue: number | null = null;
+    let denseRank = 0;
+    numeric.forEach((e, pos) => {
+      let rk: number;
+      if (method === "ordinal") {
+        rk = pos + 1;
+      } else if (method === "dense") {
+        if (prevValue === null || e.v !== prevValue) denseRank += 1;
+        rk = denseRank;
+      } else {
+        rk = prevValue !== null && e.v === prevValue ? ranks.get(numeric[pos - 1].i)! : pos + 1;
+      }
+      prevValue = e.v;
+      ranks.set(e.i, rk);
+    });
+  }
+
+  const rows: Cell[][] = t.rows.map((r, i) => {
+    const rk = ranks.get(i);
+    return [...r, rk != null ? rk : null];
+  });
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1308,7 +1386,8 @@ export type TransformSpec =
   | { op: "dateExtract"; params: DateExtractParams }
   | { op: "round"; params: RoundParams }
   | { op: "percentOfTotal"; params: PercentOfTotalParams }
-  | { op: "runningTotal"; params: RunningTotalParams };
+  | { op: "runningTotal"; params: RunningTotalParams }
+  | { op: "rank"; params: RankParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1356,6 +1435,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return percentOfTotal(t, spec.params);
     case "runningTotal":
       return runningTotal(t, spec.params);
+    case "rank":
+      return rank(t, spec.params);
     default:
       return t;
   }
