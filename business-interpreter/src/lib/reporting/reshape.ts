@@ -1448,6 +1448,92 @@ export function difference(t: Table, params: DifferenceParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* movingAverage — trailing/centered moving average of a numeric column */
+/* ------------------------------------------------------------------ */
+
+export type MovingAverageParams = {
+  /** Numeric column to average. */
+  column: string;
+  /**
+   * Optional grouping columns. When given, the window restarts for each distinct
+   * group (a partitioned moving average — e.g. a 3-month average computed
+   * independently per region); omitted = one sequence down the column.
+   */
+  groupColumns?: string[];
+  /** Output column name. Default `${column} moving avg`. */
+  into?: string;
+  /** Rows before the current row to include in the window (default 2). Negative coerced to 0. */
+  before?: number;
+  /** Rows after the current row to include in the window (default 0). Negative coerced to 0. */
+  after?: number;
+  /** Optional decimal places to round the average to. Unrounded if omitted. */
+  decimals?: number;
+};
+
+/**
+ * Append a column holding a moving (rolling) average of a numeric column — the
+ * "Moving Average" quick table calc familiar from Tableau. The window for each
+ * row spans `before` rows back through `after` rows forward, always including the
+ * current row (default `before` 2, `after` 0 → a trailing 3-row average; set
+ * `before` 1, `after` 1 for a centered 3-row average). Values are read with the
+ * same tolerant parser used elsewhere, so "$1,234", "1,234" and 1234 all count;
+ * non-numeric cells inside the window are skipped, and the average reflects only
+ * the numeric cells present. Edge rows use a partial window (whatever rows are
+ * available within the group), so no leading/trailing blanks appear unless a row's
+ * entire window is non-numeric (then that row is blank). With `groupColumns` the
+ * window restarts for each distinct group, so it never spans a partition boundary.
+ * Row order is preserved exactly (sort first if you need a particular order). The
+ * new column is appended at the end of the table.
+ */
+export function movingAverage(t: Table, params: MovingAverageParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "movingAverage.column");
+  const groupIdx =
+    params.groupColumns && params.groupColumns.length
+      ? requireCols(t.columns, params.groupColumns, "movingAverage.groupColumns")
+      : [];
+  const before = params.before == null ? 2 : Math.max(0, Math.floor(params.before));
+  const after = params.after == null ? 0 : Math.max(0, Math.floor(params.after));
+  const into =
+    params.into && params.into.trim() !== "" ? params.into : `${params.column} moving avg`;
+  const decimals = params.decimals;
+
+  const keyOf = (r: Cell[]): string =>
+    groupIdx.length ? groupIdx.map((i) => String(r[i] ?? "")).join(" ") : "";
+
+  // Bucket original row positions by group, preserving first-seen order.
+  const groups = new Map<string, number[]>();
+  t.rows.forEach((r, i) => {
+    const k = keyOf(r);
+    const arr = groups.get(k);
+    if (arr) arr.push(i);
+    else groups.set(k, [i]);
+  });
+
+  const results = new Map<number, number>(); // rowIndex -> average (absent = blank)
+  for (const positions of groups.values()) {
+    positions.forEach((rowIdx, p) => {
+      const start = Math.max(0, p - before);
+      const end = Math.min(positions.length - 1, p + after);
+      let sum = 0;
+      let count = 0;
+      for (let q = start; q <= end; q++) {
+        const v = parseFormattedNumber(t.rows[positions[q]][valueIdx]);
+        if (v === null) continue; // skip non-numeric cells in the window
+        sum += v;
+        count++;
+      }
+      if (count === 0) return; // entire window non-numeric -> blank
+      const avg = sum / count;
+      results.set(rowIdx, decimals != null ? roundTo(avg, decimals) : avg);
+    });
+  }
+
+  const rows: Cell[][] = t.rows.map((r, i) => [...r, results.get(i) ?? null]);
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1475,7 +1561,8 @@ export type TransformSpec =
   | { op: "percentOfTotal"; params: PercentOfTotalParams }
   | { op: "runningTotal"; params: RunningTotalParams }
   | { op: "rank"; params: RankParams }
-  | { op: "difference"; params: DifferenceParams };
+  | { op: "difference"; params: DifferenceParams }
+  | { op: "movingAverage"; params: MovingAverageParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1527,6 +1614,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return rank(t, spec.params);
     case "difference":
       return difference(t, spec.params);
+    case "movingAverage":
+      return movingAverage(t, spec.params);
     default:
       return t;
   }

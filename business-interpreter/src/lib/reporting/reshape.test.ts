@@ -28,6 +28,7 @@ import {
   runningTotal,
   rank,
   difference,
+  movingAverage,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -2143,6 +2144,150 @@ describe("difference", () => {
     const viaDispatch = applyTransform(base, {
       op: "difference",
       params: { column: "Sales", asPercent: true, decimals: 1 },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("movingAverage", () => {
+  const base: Table = {
+    columns: ["Month", "Sales"],
+    rows: [
+      ["Jan", 100],
+      ["Feb", 200],
+      ["Mar", 300],
+      ["Apr", 400],
+    ],
+  };
+
+  test("computes a trailing 3-row mean by default (partial at the edges)", () => {
+    const out = movingAverage(base, { column: "Sales" });
+    expect(out.columns).toEqual(["Month", "Sales", "Sales moving avg"]);
+    expect(out.rows.map((r) => r[2])).toEqual([100, 150, 200, 300]);
+  });
+
+  test("appends exactly one column and preserves originals", () => {
+    const out = movingAverage(base, { column: "Sales" });
+    expect(out.columns.length).toBe(base.columns.length + 1);
+    expect(out.rows[2].slice(0, 2)).toEqual(["Mar", 300]);
+  });
+
+  test("supports a centered window with before and after", () => {
+    const out = movingAverage(base, { column: "Sales", before: 1, after: 1 });
+    expect(out.rows.map((r) => r[2])).toEqual([150, 200, 300, 350]);
+  });
+
+  test("supports a forward-only window", () => {
+    const out = movingAverage(base, { column: "Sales", before: 0, after: 1 });
+    expect(out.rows.map((r) => r[2])).toEqual([150, 250, 350, 400]);
+  });
+
+  test("with before 0 and after 0 the window is just the current row", () => {
+    const out = movingAverage(base, { column: "Sales", before: 0, after: 0 });
+    expect(out.rows.map((r) => r[2])).toEqual([100, 200, 300, 400]);
+  });
+
+  test("treats a negative window size as 0", () => {
+    const out = movingAverage(base, { column: "Sales", before: -3, after: 0 });
+    expect(out.rows.map((r) => r[2])).toEqual([100, 200, 300, 400]);
+  });
+
+  test("rounds to the requested number of decimals", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", 100], ["b", 200], ["c", 100]] };
+    const out = movingAverage(t, { column: "V", decimals: 2 });
+    expect(out.rows[2][2]).toBe(133.33);
+  });
+
+  test("leaves the mean unrounded when no decimals given", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", 100], ["b", 200], ["c", 100]] };
+    const out = movingAverage(t, { column: "V" });
+    expect(out.rows[2][2] as number).toBeCloseTo(133.3333, 3);
+  });
+
+  test("restarts the window within each group (partitioned)", () => {
+    const t: Table = {
+      columns: ["Region", "Month", "Sales"],
+      rows: [
+        ["N", "Jan", 100],
+        ["N", "Feb", 200],
+        ["N", "Mar", 300],
+        ["S", "Jan", 10],
+        ["S", "Feb", 20],
+        ["S", "Mar", 30],
+      ],
+    };
+    const out = movingAverage(t, { column: "Sales", groupColumns: ["Region"] });
+    expect(out.rows.map((r) => r[3])).toEqual([100, 150, 200, 10, 15, 20]);
+  });
+
+  test("supports multi-column group keys", () => {
+    const t: Table = {
+      columns: ["Region", "Year", "Sales"],
+      rows: [
+        ["N", "2024", 10],
+        ["N", "2024", 30],
+        ["N", "2025", 100],
+        ["N", "2025", 300],
+      ],
+    };
+    const out = movingAverage(t, { column: "Sales", groupColumns: ["Region", "Year"] });
+    expect(out.rows.map((r) => r[3])).toEqual([10, 20, 100, 200]);
+  });
+
+  test("reads formatted numbers tolerantly", () => {
+    const t: Table = {
+      columns: ["Label", "V"],
+      rows: [["a", "$1,000"], ["b", "(500)"], ["c", "1,000"]],
+    };
+    const out = movingAverage(t, { column: "V" });
+    expect(out.rows.map((r) => r[2])).toEqual([1000, 250, 500]);
+  });
+
+  test("skips non-numeric cells inside the window", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", 100], ["b", "n/a"], ["c", 200]] };
+    const out = movingAverage(t, { column: "V" });
+    expect(out.rows.map((r) => r[2])).toEqual([100, 100, 150]);
+  });
+
+  test("blanks a row whose entire window is non-numeric", () => {
+    const t: Table = { columns: ["Label", "V"], rows: [["a", "x"], ["b", "y"]] };
+    const out = movingAverage(t, { column: "V", before: 0, after: 0 });
+    expect(out.rows.map((r) => r[2])).toEqual([null, null]);
+  });
+
+  test("uses a custom into name", () => {
+    const out = movingAverage(base, { column: "Sales", into: "MA3" });
+    expect(out.columns[out.columns.length - 1]).toBe("MA3");
+  });
+
+  test("appends the column even when there are no rows", () => {
+    const t: Table = { columns: ["V"], rows: [] };
+    const out = movingAverage(t, { column: "V" });
+    expect(out.columns).toEqual(["V", "V moving avg"]);
+    expect(out.rows).toEqual([]);
+  });
+
+  test("does not mutate the input table", () => {
+    const snapshot = structuredClone(base);
+    movingAverage(base, { column: "Sales", before: 1, after: 1 });
+    expect(base).toEqual(snapshot);
+  });
+
+  test("throws a friendly error for a missing value column", () => {
+    expect(() => movingAverage(base, { column: "Nope" })).toThrow(/not found/);
+  });
+
+  test("throws a friendly error for a missing group column", () => {
+    expect(() => movingAverage(base, { column: "Sales", groupColumns: ["Nope"] })).toThrow(
+      /not found/,
+    );
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = movingAverage(base, { column: "Sales", before: 1, after: 1, decimals: 1 });
+    const viaDispatch = applyTransform(base, {
+      op: "movingAverage",
+      params: { column: "Sales", before: 1, after: 1, decimals: 1 },
     });
     expect(viaDispatch).toEqual(direct);
   });

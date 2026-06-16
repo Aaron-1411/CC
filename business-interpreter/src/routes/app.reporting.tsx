@@ -34,6 +34,7 @@ import {
   TrendingUp,
   ListOrdered,
   GitCompare,
+  Spline,
   Plus,
   X,
 } from "lucide-react";
@@ -68,7 +69,8 @@ type Op =
   | "percentOfTotal"
   | "runningTotal"
   | "rank"
-  | "difference";
+  | "difference"
+  | "movingAverage";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -205,6 +207,12 @@ function ReportingPage() {
   const [differenceOffset, setDifferenceOffset] = useState("");
   const [differenceAsPercent, setDifferenceAsPercent] = useState(false);
   const [differenceDecimals, setDifferenceDecimals] = useState("");
+  const [movingAverageCol, setMovingAverageCol] = useState("");
+  const [movingAverageGroupCols, setMovingAverageGroupCols] = useState<string[]>([]);
+  const [movingAverageInto, setMovingAverageInto] = useState("");
+  const [movingAverageBefore, setMovingAverageBefore] = useState("");
+  const [movingAverageAfter, setMovingAverageAfter] = useState("");
+  const [movingAverageDecimals, setMovingAverageDecimals] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -410,6 +418,22 @@ function ReportingPage() {
         },
       } as const;
     }
+    if (op === "movingAverage") {
+      const before = Number.parseInt(movingAverageBefore, 10);
+      const after = Number.parseInt(movingAverageAfter, 10);
+      const dec = Number.parseInt(movingAverageDecimals, 10);
+      return {
+        op: "movingAverage",
+        params: {
+          column: movingAverageCol,
+          ...(movingAverageGroupCols.length ? { groupColumns: movingAverageGroupCols } : {}),
+          ...(movingAverageInto.trim() ? { into: movingAverageInto.trim() } : {}),
+          ...(Number.isFinite(before) && before >= 0 ? { before } : {}),
+          ...(Number.isFinite(after) && after >= 0 ? { after } : {}),
+          ...(Number.isFinite(dec) && dec >= 0 ? { decimals: dec } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -521,6 +545,12 @@ function ReportingPage() {
     setDifferenceOffset("");
     setDifferenceAsPercent(false);
     setDifferenceDecimals("");
+    setMovingAverageCol("");
+    setMovingAverageGroupCols([]);
+    setMovingAverageInto("");
+    setMovingAverageBefore("");
+    setMovingAverageAfter("");
+    setMovingAverageDecimals("");
   }
 
   async function addStep() {
@@ -657,6 +687,14 @@ function ReportingPage() {
           (spec.params.offset && spec.params.offset > 1 ? ` from ${spec.params.offset} rows back` : "") +
           (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
         );
+      case "movingAverage": {
+        const before = spec.params.before ?? 2;
+        const after = spec.params.after ?? 0;
+        return (
+          `Moving average of ${spec.params.column} over ${before + 1 + after} rows` +
+          (spec.params.groupColumns?.length ? ` within ${spec.params.groupColumns.join(", ")}` : "")
+        );
+      }
       default:
         return "Pass-through";
     }
@@ -741,10 +779,12 @@ function ReportingPage() {
         return !!rankCol;
       case "difference":
         return !!differenceCol;
+      case "movingAverage":
+        return !!movingAverageCol;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -752,7 +792,7 @@ function ReportingPage() {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Data Reporting</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pull a dataset from a connector, reshape it (filter, sort, select, transpose, pivot,
-          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank, difference) with a deterministic engine — chain several
+          unpivot, group by, compute column, limit rows, rename column, dedupe, fill down, to number, trim, split column, merge columns, find &amp; replace, extract date parts, round numbers, percent of total, running total, rank, difference, moving average) with a deterministic engine — chain several
           steps into a pipeline that runs in order — then view it here and store it locally as CSV or
           XLSX.
         </p>
@@ -883,6 +923,7 @@ function ReportingPage() {
           <OpTab active={op === "runningTotal"} onClick={() => setOp("runningTotal")} icon={<TrendingUp className="h-4 w-4" />} label="Running total" />
           <OpTab active={op === "rank"} onClick={() => setOp("rank")} icon={<ListOrdered className="h-4 w-4" />} label="Rank" />
           <OpTab active={op === "difference"} onClick={() => setOp("difference")} icon={<GitCompare className="h-4 w-4" />} label="Difference" />
+          <OpTab active={op === "movingAverage"} onClick={() => setOp("movingAverage")} icon={<Spline className="h-4 w-4" />} label="Moving average" />
         </div>
 
         {(op === "unpivot" || op === "pivot") && sourceColumns.length === 0 && (
@@ -2176,6 +2217,101 @@ function ReportingPage() {
                         key={c}
                         onClick={() =>
                           setDifferenceGroupCols((prev) =>
+                            prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+                          )
+                        }
+                        className={`rounded-full border px-3 py-1 text-xs ${
+                          on
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border hover:bg-accent"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Load a source first to choose group-by columns.
+              </p>
+            )}
+          </div>
+        )}
+
+        {op === "movingAverage" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Smooth a numeric column with a rolling mean — Tableau's Moving Average quick table calc.
+              By default each row averages itself and the two rows above it (a trailing 3-row window);
+              raise "Rows before" / "Rows after" to widen or centre the window. Windows shrink at the
+              top and bottom edges rather than blanking out, so there are no leading gaps. Values are
+              read tolerantly, so "$1,234", "1,234" and 1234 all average; non-numeric cells are skipped
+              within the window (a row goes blank only when its whole window is non-numeric). Pick
+              group-by columns to average within each group (the window restarts per partition);
+              otherwise it slides down the whole column. The result is appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={movingAverageCol}
+                onChange={setMovingAverageCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <Field label="Rows before (default 2)">
+              <input
+                type="number"
+                min={0}
+                value={movingAverageBefore}
+                onChange={(e) => setMovingAverageBefore(e.target.value)}
+                placeholder="2"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="Rows after (default 0)">
+              <input
+                type="number"
+                min={0}
+                value={movingAverageAfter}
+                onChange={(e) => setMovingAverageAfter(e.target.value)}
+                placeholder="0"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="Decimals (optional)">
+              <input
+                type="number"
+                min={0}
+                value={movingAverageDecimals}
+                onChange={(e) => setMovingAverageDecimals(e.target.value)}
+                placeholder="unrounded"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={movingAverageInto}
+                onChange={(e) => setMovingAverageInto(e.target.value)}
+                placeholder={movingAverageCol ? `${movingAverageCol} moving avg` : "e.g. Moving avg"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            {sourceColumns.length > 0 ? (
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">
+                  Group by (optional — average within each group)
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {sourceColumns.map((c) => {
+                    const on = movingAverageGroupCols.includes(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() =>
+                          setMovingAverageGroupCols((prev) =>
                             prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
                           )
                         }

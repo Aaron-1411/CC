@@ -237,6 +237,17 @@ const TransformSchema = z.discriminatedUnion("op", [
       decimals: z.number().int().min(0).max(15).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("movingAverage"),
+    params: z.object({
+      column: z.string().min(1),
+      groupColumns: z.array(z.string()).max(200).optional(),
+      into: z.string().max(200).optional(),
+      before: z.number().int().min(0).max(100000).optional(),
+      after: z.number().int().min(0).max(100000).optional(),
+      decimals: z.number().int().min(0).max(15).optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
