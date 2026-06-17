@@ -193,6 +193,12 @@ function MethodologyPage() {
           ← About & corrections log
         </Link>
         <Link
+          to="/citations"
+          className="label-mono text-[10px] uppercase tracking-wider text-amber hover:underline"
+        >
+          Citations →
+        </Link>
+        <Link
           to="/parties"
           className="label-mono text-[10px] uppercase tracking-wider text-amber hover:underline"
         >

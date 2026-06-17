@@ -188,10 +188,10 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
       label: "the rate at which Black people are stopped and searched vs White people",
       sourceId: "homeoffice-stop-search",
       sourceUrl:
-        "https://www.ethnicity-facts-figures.service.gov.uk/crime-justice-and-the-law/policing/stop-and-search/latest/",
+        "https://www.gov.uk/government/statistics/stop-and-search-arrests-and-mental-health-detentions-march-2025/police-powers-and-procedures-stop-and-search-arrests-and-mental-health-detentions-england-and-wales-year-ending-31-march-2025",
       asOf: "2025-03-31",
       methodologyNote:
-        "Year ending March 2025. The disparity has fallen from higher levels (5.5× in 2020–21). Force-level data on the Policing page.",
+        "Year ending March 2025, by self-defined ethnicity. The disparity has fallen from 5.5× in the year ending March 2021. Force-level data on the Policing page.",
     },
     keyFactContext:
       "In the year ending March 2025, Black people were searched at 3.8 times the rate of White people in England and Wales — down from 5.5× four years earlier, but still a wide gap. Per-force breakdowns are on the Policing page.",

@@ -72,9 +72,9 @@ export const SOURCES = {
   },
   "homeoffice-stop-search": {
     id: "homeoffice-stop-search",
-    name: "Home Office / Ethnicity Facts & Figures — Stop & Search",
+    name: "Home Office — Police Powers and Procedures: Stop and Search",
     homepage:
-      "https://www.ethnicity-facts-figures.service.gov.uk/crime-justice-and-the-law/policing/stop-and-search/latest/",
+      "https://www.gov.uk/government/statistics/stop-and-search-arrests-and-mental-health-detentions-march-2025/police-powers-and-procedures-stop-and-search-arrests-and-mental-health-detentions-england-and-wales-year-ending-31-march-2025",
     termsUrl: LICENCE_URLS["OGL-3.0"],
     licence: "OGL-3.0",
     cadence: "annual",

@@ -34,6 +34,7 @@ import { Route as DonationsRouteImport } from './routes/donations'
 import { Route as CrossrefRouteImport } from './routes/crossref'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CommitteesRouteImport } from './routes/committees'
+import { Route as CitationsRouteImport } from './routes/citations'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -190,6 +191,11 @@ const ContractsRoute = ContractsRouteImport.update({
 const CommitteesRoute = CommitteesRouteImport.update({
   id: '/committees',
   path: '/committees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CitationsRoute = CitationsRouteImport.update({
+  id: '/citations',
+  path: '/citations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcobaRoute = AcobaRouteImport.update({
@@ -357,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
+  '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
   '/crossref': typeof CrossrefRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
+  '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
   '/crossref': typeof CrossrefRoute
@@ -476,6 +484,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
+  '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
   '/crossref': typeof CrossrefRoute
@@ -537,6 +546,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
+    | '/citations'
     | '/committees'
     | '/contracts'
     | '/crossref'
@@ -596,6 +606,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
+    | '/citations'
     | '/committees'
     | '/contracts'
     | '/crossref'
@@ -655,6 +666,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
+    | '/citations'
     | '/committees'
     | '/contracts'
     | '/crossref'
@@ -715,6 +727,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AcobaRoute: typeof AcobaRoute
+  CitationsRoute: typeof CitationsRoute
   CommitteesRoute: typeof CommitteesRoute
   ContractsRoute: typeof ContractsRoute
   CrossrefRoute: typeof CrossrefRoute
@@ -944,6 +957,13 @@ declare module '@tanstack/react-router' {
       path: '/committees'
       fullPath: '/committees'
       preLoaderRoute: typeof CommitteesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/citations': {
+      id: '/citations'
+      path: '/citations'
+      fullPath: '/citations'
+      preLoaderRoute: typeof CitationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acoba': {
@@ -1198,6 +1218,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AcobaRoute: AcobaRoute,
+  CitationsRoute: CitationsRoute,
   CommitteesRoute: CommitteesRoute,
   ContractsRoute: ContractsRoute,
   CrossrefRoute: CrossrefRoute,
