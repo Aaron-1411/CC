@@ -9,6 +9,8 @@ interface WheelProps {
   spinning: boolean;
   durationMs: number;
   onTransitionEnd: () => void;
+  onSpin?: () => void;
+  canSpin?: boolean;
 }
 
 const SIZE = 320;
@@ -31,8 +33,20 @@ function slicePath(index: number, count: number): string {
   return `M ${R} ${R} L ${sx} ${sy} A ${R} ${R} 0 ${largeArc} 1 ${ex} ${ey} Z`;
 }
 
-export function Wheel({ slices, rotation, spinning, durationMs, onTransitionEnd }: WheelProps) {
+export function Wheel({
+  slices,
+  rotation,
+  spinning,
+  durationMs,
+  onTransitionEnd,
+  onSpin,
+  canSpin = false,
+}: WheelProps) {
   const count = Math.max(slices.length, 1);
+  const tappable = Boolean(onSpin) && canSpin;
+  const handleTap = () => {
+    if (tappable) onSpin!();
+  };
   const geometry = useMemo(
     () =>
       slices.map((s, i) => {
@@ -46,7 +60,23 @@ export function Wheel({ slices, rotation, spinning, durationMs, onTransitionEnd 
   );
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[340px] select-none">
+    <div
+      className={`relative mx-auto aspect-square w-full max-w-[340px] select-none transition-transform ${
+        tappable ? "cursor-pointer active:scale-[0.98]" : ""
+      }`}
+      onClick={handleTap}
+      onKeyDown={(e) => {
+        if (!tappable) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleTap();
+        }
+      }}
+      role={onSpin ? "button" : undefined}
+      tabIndex={onSpin ? 0 : undefined}
+      aria-label={onSpin ? "Spin the wheel" : undefined}
+      aria-disabled={onSpin ? !canSpin : undefined}
+    >
       {/* pointer */}
       <div
         className="absolute left-1/2 top-[-6px] z-10 -translate-x-1/2"
@@ -60,7 +90,7 @@ export function Wheel({ slices, rotation, spinning, durationMs, onTransitionEnd 
         className="h-full w-full rounded-full shadow-2xl ring-4 ring-white/10"
         style={{
           transform: `rotate(${rotation}deg)`,
-          transition: spinning ? `transform ${durationMs}ms cubic-bezier(0.16, 1, 0.3, 1)` : "none",
+          transition: spinning ? `transform ${durationMs}ms cubic-bezier(0.33, 1, 0.68, 1)` : "none",
         }}
         onTransitionEnd={onTransitionEnd}
         role="img"

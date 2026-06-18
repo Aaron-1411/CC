@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { CuisineId, PlaceResult, UserState, VenueStats } from "@/contract/types";
 import {
@@ -116,6 +116,23 @@ export function DiscoverPage() {
 
   const wheel = useSpin(state.spin.selected, state.spin.recentResults, availability, onResult);
 
+  const resultRef = useRef<HTMLDivElement>(null);
+  // Bring the spin payoff into view once the wheel settles — otherwise the
+  // result card lands below the fold on mobile and feels like nothing happened.
+  useEffect(() => {
+    if (!wheel.result || wheel.spinning || !resultRef.current) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    resultRef.current.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  }, [wheel.result, wheel.spinning]);
+
+  const handleSpin = useCallback(() => {
+    wheel.reset();
+    wheel.spin();
+  }, [wheel]);
+
   const handleRespin = useCallback(() => {
     wheel.reset();
     wheel.spin();
@@ -191,14 +208,13 @@ export function DiscoverPage() {
             spinning={wheel.spinning}
             durationMs={wheel.durationMs}
             onTransitionEnd={wheel.onTransitionEnd}
+            onSpin={handleSpin}
+            canSpin={wheel.canSpin}
           />
 
           <button
             type="button"
-            onClick={() => {
-              wheel.reset();
-              wheel.spin();
-            }}
+            onClick={handleSpin}
             disabled={!wheel.canSpin}
             className="min-h-[52px] w-full rounded-2xl bg-amber-300 text-lg font-extrabold text-slate-900 shadow-lg shadow-amber-300/20 transition active:scale-[0.98] disabled:opacity-50"
           >
@@ -206,7 +222,7 @@ export function DiscoverPage() {
           </button>
 
           {wheel.result && !wheel.spinning && (
-            <>
+            <div ref={resultRef} className="flex flex-col gap-4 scroll-mt-4">
               <SpinResultCard
                 result={wheel.result}
                 location={state.lastLocation}
@@ -223,7 +239,7 @@ export function DiscoverPage() {
                 onToggleLike={handleToggleLike}
                 onVisit={handleVisit}
               />
-            </>
+            </div>
           )}
         </>
       ) : (

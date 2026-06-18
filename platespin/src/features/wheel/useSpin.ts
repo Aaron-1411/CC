@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import type { AvailabilityMap, CuisineId } from "@/contract/types";
 import { buildSlices, computeSpin, pickTargetIndex, type WheelSlice } from "@/features/wheel/spin";
 
-const SPIN_MS = 4200;
+const SPIN_MS = 2900;
 
 function prefersReducedMotion(): boolean {
   return (
