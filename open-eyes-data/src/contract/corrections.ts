@@ -151,4 +151,14 @@ export const CORRECTIONS: CorrectionEntry[] = [
     reason:
       "The old query filtered only on publish date and kept any record carrying an awards array, so tender/opportunity notices and awards dated as far back as 2021 leaked in, and tender framework ceilings inflated headline values into the billions. Rebuilt to filter server-side to award notices (stages=award), require an active award dated inside the 10-month window, use the award value only, dedupe by OCID, and add rate-limit backoff. The unverifiable “2,000+” completeness claim was dropped in favour of the true scanned count.",
   },
+  {
+    date: "2026-06-18",
+    page: "Contracts — major awards database (framework ceilings)",
+    wasWrong:
+      "Our earlier 2026-06-18 fix claimed it had stopped framework ceilings from “inflating headline values into the billions” — but the live list was still topped by a £1.42bn notice titled “Maintain Framework” covering 21 suppliers.",
+    nowSays:
+      "Framework and other aggregate notices — where the headline figure is a lifetime ceiling shared across many suppliers or lots rather than the price of a single contract — are now detected and set aside, and the number set aside is disclosed on the page. Genuine single-supplier call-offs from frameworks are kept, because those are real individual awards.",
+    reason:
+      "The earlier fix switched from the tender estimate to the award value, but for a framework agreement the award value is itself an aggregate ceiling, so billion-pound figures still leaked through as if they were single awards. A notice is now set aside when its award lists more than one supplier, or its title contains “framework” or “lots”. On a representative refresh this removed roughly 30 aggregate notices and brought the headline total down from about £5.6bn to about £3.0bn, while correctly keeping single-supplier call-offs.",
+  },
 ];

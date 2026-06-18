@@ -39,6 +39,7 @@ type ContractsResp = {
   windowStart: string;
   earliestAward?: string;
   latestAward?: string;
+  excludedFramework: number;
 };
 
 type SortKey = "value" | "date" | "department" | "supplier";
@@ -151,6 +152,8 @@ function ContractsPage() {
           {q.data.data.partial
             ? " This is the most recently published slice: Contracts Finder rate-limits deep scans, so not every award in the 10-month window will appear yet. Refreshes hourly."
             : " Drawn from the most recently published award notices on Contracts Finder."}
+          {q.data.data.excludedFramework > 0 &&
+            ` ${fmtNumber(q.data.data.excludedFramework)} framework or multi-supplier notice${q.data.data.excludedFramework === 1 ? " was" : "s were"} set aside — their headline values are lifetime ceilings shared across many suppliers or lots, not single contract awards.`}
         </p>
       )}
 

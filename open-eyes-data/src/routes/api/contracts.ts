@@ -8,6 +8,15 @@ const WINDOW_MONTHS = 10;
 const MAX_PAGES = 25; // 25 × 100 = up to 2,500 award notices scanned per (hourly-cached) refresh
 const PAGE_DELAY_MS = 120; // polite spacing between pages to avoid upstream 429s
 
+type OcdsAward = {
+  date?: string;
+  datePublished?: string;
+  status?: string;
+  value?: { amount?: number };
+  suppliers?: Array<{ name?: string }>;
+  documents?: Array<{ url?: string }>;
+};
+
 type OcdsRelease = {
   id?: string;
   ocid?: string;
@@ -22,14 +31,7 @@ type OcdsRelease = {
     procurementMethodDetails?: string;
   };
   buyer?: { name?: string };
-  awards?: Array<{
-    date?: string;
-    datePublished?: string;
-    status?: string;
-    value?: { amount?: number };
-    suppliers?: Array<{ name?: string }>;
-    documents?: Array<{ url?: string }>;
-  }>;
+  awards?: OcdsAward[];
 };
 
 type Notice = {
@@ -103,6 +105,33 @@ function normalise(r: OcdsRelease, windowStartMs: number): Notice | null {
 }
 
 /**
+ * Detect when an award's headline value is an AGGREGATE ceiling rather than the
+ * price of a single contract. These are real notices, but their "value" is the
+ * lifetime spend shared across many suppliers or lots — publishing it as one
+ * "contract award" inflates the headline into the hundreds of millions or
+ * billions (e.g. a £1.4bn maintenance framework split across 21 suppliers). We
+ * set these aside and COUNT them, rather than silently dropping them, so the
+ * page can say honestly how many were excluded and why.
+ *
+ * Signals (validated against live Contracts Finder data):
+ *  - more than one supplier on the award → framework/DPS split across suppliers
+ *  - "framework" in the title            → framework-agreement ceiling
+ *  - "lots" in the title                 → multi-lot aggregate
+ *
+ * NOT a signal: procurementMethodDetails === "Call-off from a framework
+ * agreement". A call-off is a GENUINE single award (real money, one supplier)
+ * drawn down from a framework — exactly the kind of major contract we want to
+ * show — so it is deliberately kept.
+ */
+function aggregateReason(r: OcdsRelease, award: OcdsAward): string | null {
+  if ((award.suppliers?.length ?? 0) > 1) return "multi-supplier";
+  const title = r.tender?.title ?? "";
+  if (/\bframework\b/i.test(title)) return "framework-agreement";
+  if (/\blots\b/i.test(title)) return "multi-lot";
+  return null;
+}
+
+/**
  * Fetch with exponential backoff on HTTP 429. The Contracts Finder OCDS API
  * throttles rapid pagination; rather than throwing (and losing the whole
  * dataset) we retry a few times, then return null so the caller can stop and
@@ -132,6 +161,7 @@ type ContractsPayload = {
   windowStart: string;
   earliestAward?: string;
   latestAward?: string;
+  excludedFramework: number;
 };
 
 async function fetchAllMajorContracts(): Promise<ContractsPayload> {
@@ -139,6 +169,9 @@ async function fetchAllMajorContracts(): Promise<ContractsPayload> {
   // Dedupe by ocid (one contracting process). Award + awardUpdate notices share
   // an ocid; keep whichever release was published most recently.
   const byOcid = new Map<string, { notice: Notice; publishedMs: number }>();
+  // Distinct ocids set aside as aggregate ceilings (frameworks / multi-supplier
+  // / multi-lot). Counted, not silently dropped, so the page can disclose them.
+  const excludedOcids = new Set<string>();
 
   // stages=award filters server-side to award/awardUpdate notices — the single
   // biggest correctness win, since it removes every tender and opportunity notice.
@@ -166,6 +199,16 @@ async function fetchAllMajorContracts(): Promise<ContractsPayload> {
       const n = normalise(release, windowStartMs);
       if (!n) continue;
       const key = release.ocid ?? n.id;
+
+      // Aggregate ceilings (frameworks, multi-supplier / multi-lot notices) are
+      // real awards but their value is shared spend, not a single contract —
+      // set them aside and count them rather than inflating the headline.
+      const award = release.awards?.[0];
+      if (award && aggregateReason(release, award)) {
+        excludedOcids.add(key);
+        continue;
+      }
+
       const publishedMs = new Date(release.date ?? 0).getTime();
       const existing = byOcid.get(key);
       if (!existing || publishedMs >= existing.publishedMs) {
@@ -180,8 +223,9 @@ async function fetchAllMajorContracts(): Promise<ContractsPayload> {
   // is necessarily a partial (most-recently-published) slice — say so honestly.
   if (nextUrl) partial = true;
 
-  const results = Array.from(byOcid.values())
-    .map((v) => v.notice)
+  const results = Array.from(byOcid.entries())
+    .filter(([key]) => !excludedOcids.has(key))
+    .map(([, v]) => v.notice)
     .sort((a, b) => b.awardedValue - a.awardedValue);
 
   const awardDates = results
@@ -199,6 +243,7 @@ async function fetchAllMajorContracts(): Promise<ContractsPayload> {
     windowStart: windowStartISO(),
     earliestAward: awardDates[0],
     latestAward: awardDates[awardDates.length - 1],
+    excludedFramework: excludedOcids.size,
   };
 }
 
@@ -261,6 +306,9 @@ export const Route = createFileRoute("/api/contracts")({
                 procedureType: r.tender?.procurementMethodDetails ?? r.tender?.procurementMethod,
                 noticeType: tag ? tag.charAt(0).toUpperCase() + tag.slice(1) : undefined,
                 link: award?.documents?.[0]?.url,
+                // Flag aggregate ceilings (frameworks / multi-supplier) without
+                // dropping them — search is exploratory, the GET feed is curated.
+                isFramework: award ? aggregateReason(r, award) !== null : false,
               };
             })
             .slice(0, 50);
