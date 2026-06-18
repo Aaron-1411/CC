@@ -141,4 +141,14 @@ export const CORRECTIONS: CorrectionEntry[] = [
     reason:
       "The original statement was simply false. The Environment Agency has prosecuted water and sewerage companies many times; Southern Water alone was fined £90m in 2021. Corrected against Environment Agency enforcement records.",
   },
+  {
+    date: "2026-06-18",
+    page: "Contracts — major awards database",
+    wasWrong:
+      "“Every government contract award over £1,000,000 from the last 10 months” — with a fixed “2,000+ scanned records” badge.",
+    nowSays:
+      "Government contract awards over £1,000,000 with an award date in the last 10 months, drawn from the most recently published Contracts Finder notices — labelled as the most-recent slice (not an exhaustive list), showing the real number of notices scanned and the actual award-date span covered.",
+    reason:
+      "The old query filtered only on publish date and kept any record carrying an awards array, so tender/opportunity notices and awards dated as far back as 2021 leaked in, and tender framework ceilings inflated headline values into the billions. Rebuilt to filter server-side to award notices (stages=award), require an active award dated inside the 10-month window, use the award value only, dedupe by OCID, and add rate-limit backoff. The unverifiable “2,000+” completeness claim was dropped in favour of the true scanned count.",
+  },
 ];

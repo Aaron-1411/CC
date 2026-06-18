@@ -8,7 +8,7 @@ export const Route = createFileRoute("/contracts")({
   head: () => ({
     meta: [
       { title: "Government Contracts — transparenC" },
-      { name: "description", content: "All UK government contracts over £1m awarded in the last 10 months." },
+      { name: "description", content: "UK government contract awards over £1m made in the last 10 months, from Contracts Finder." },
       { property: "og:title", content: "UK Major Government Contracts — transparenC" },
     ],
   }),
@@ -29,7 +29,17 @@ type Notice = {
   link?: string;
 };
 
-type ContractsResp = { results: Notice[]; totalResults: number; totalValue: number };
+type ContractsResp = {
+  results: Notice[];
+  totalResults: number;
+  totalValue: number;
+  recordsScanned: number;
+  pagesScanned: number;
+  partial: boolean;
+  windowStart: string;
+  earliestAward?: string;
+  latestAward?: string;
+};
 
 type SortKey = "value" | "date" | "department" | "supplier";
 
@@ -40,6 +50,13 @@ function flagFor(proc?: string): { variant: "direct" | "no-tender" | "restricted
   if (p.includes("restricted")) return { variant: "restricted", label: "Restricted" };
   if (p.includes("open")) return { variant: "open", label: "Open tender" };
   return { variant: "neutral", label: proc ?? "—" };
+}
+
+function fmtDay(iso?: string): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function ContractsPage() {
@@ -98,9 +115,10 @@ function ContractsPage() {
           right={<LiveBadge timestamp={q.data?.meta.fetchedAt} />}
         />
         <p className="text-muted-foreground max-w-2xl">
-          Every government contract award over <span className="text-amber font-mono">£1,000,000</span> from
-          the last 10 months via Contracts Finder. Direct awards and restricted procedures flagged in red —
-          they are legal but bypass open competition.
+          Government contract awards over <span className="text-amber font-mono">£1,000,000</span> with an
+          award date in the last 10 months, drawn from the most recently published notices on Contracts
+          Finder. Direct awards and restricted procedures flagged in red — they are legal but bypass open
+          competition.
         </p>
       </div>
 
@@ -120,10 +138,20 @@ function ContractsPage() {
             <div className="font-display text-3xl font-bold text-flag mt-1">{directCount.toLocaleString()}</div>
           </div>
           <div className="bg-surface border border-border rounded-lg p-4">
-            <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Scanned records</div>
-            <div className="font-display text-3xl font-bold mt-1">{(q.data.data.results.length > 0 ? "2,000+" : "—")}</div>
+            <div className="label-mono text-[10px] uppercase tracking-wider text-muted-foreground">Notices scanned</div>
+            <div className="font-display text-3xl font-bold mt-1">{q.data.data.recordsScanned > 0 ? fmtNumber(q.data.data.recordsScanned) : "—"}</div>
           </div>
         </div>
+      )}
+
+      {/* Honest coverage note — we do not claim to list every award in the window */}
+      {q.data && q.data.data.results.length > 0 && (
+        <p className="label-mono text-[11px] text-muted-foreground -mt-3">
+          Award dates here span {fmtDay(q.data.data.earliestAward)} – {fmtDay(q.data.data.latestAward)}.
+          {q.data.data.partial
+            ? " This is the most recently published slice: Contracts Finder rate-limits deep scans, so not every award in the 10-month window will appear yet. Refreshes hourly."
+            : " Drawn from the most recently published award notices on Contracts Finder."}
+        </p>
       )}
 
       {/* Aggregation: top recipients + direct award breakdown */}
@@ -256,7 +284,7 @@ function ContractsPage() {
       {q.isLoading && (
         <div className="space-y-2">
           <div className="label-mono text-xs text-muted-foreground text-center py-4">
-            Scanning 2,000 contract records from Contracts Finder — this takes a few seconds…
+            Scanning the latest award notices from Contracts Finder — this takes a few seconds…
           </div>
           {Array.from({ length: 8 }).map((_, i) => (
             <Card key={i}>
