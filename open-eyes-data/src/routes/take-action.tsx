@@ -143,7 +143,7 @@ const AGE_BANDS = [
     bgColor: "bg-amber/5",
     headline: "You have the vote. Use it — and go further",
     intro:
-      "Turnout among 18–24s was 52% at the 2024 election — lower than any other age group. Yet young people are most affected by housing costs, climate policy, student debt and job markets. Your vote matters more than you think.",
+      "Turnout among 18–24s was around 37% at the 2024 election, down from 47% in 2019 — the lowest of any age group (Ipsos). Yet young people are most affected by housing costs, climate policy, student debt and job markets. Your vote matters more than you think.",
     actions: [
       {
         icon: "🗳️",

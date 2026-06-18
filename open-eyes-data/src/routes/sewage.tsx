@@ -105,11 +105,14 @@ function SewagePage() {
             across England — roughly one every 9 minutes, around the clock.
           </p>
           <p>
-            In the same year, water companies paid out over{" "}
-            <strong className="text-foreground">£1.4 billion in dividends</strong>{" "}
-            to shareholders while missing Environment Agency improvement targets. The average household
-            water bill rose above £500/year. Only one company has faced criminal prosecution for
-            unpermitted discharges.
+            The dividends keep flowing. Since privatisation in 1989, England's water companies have
+            paid out{" "}
+            <strong className="text-foreground">tens of billions of pounds to shareholders</strong>{" "}
+            — estimates range from around £66bn to £85bn depending on methodology — while missing
+            Environment Agency improvement targets. From April 2025 the average household water bill
+            rose by about 26% to roughly £600 a year (Water UK). And it is not true that only one
+            company has been prosecuted: the Environment Agency has brought dozens of prosecutions
+            against water companies, including a record £90 million fine for Southern Water in 2021.
           </p>
         </ContextBlock>
       )}
@@ -128,7 +131,7 @@ function SewagePage() {
           accent="flag"
           loading={q.isLoading}
           shareable
-          shareText={`UK water companies dumped sewage for ${fmtNumber(totalHours)} hours in 2024 — while paying out £1.4bn in dividends`}
+          shareText={`UK water companies dumped sewage for ${fmtNumber(totalHours)} hours in 2024 — while paying out billions to shareholders`}
         />
         <Stat
           label="Total spill events"
@@ -205,7 +208,7 @@ I am writing as a constituent who is deeply concerned about sewage pollution in 
 
 Environment Agency data shows that in 2024, water companies across England discharged untreated or partially-treated sewage for over 3.6 million hours. This equates to roughly one spill event every 9 minutes, around the clock, for the entire year.
 
-During the same period, water companies paid out over £1.4 billion in dividends to shareholders — while failing to meet their own improvement targets set by the Environment Agency.
+Over the years since privatisation, water companies have paid out tens of billions of pounds in dividends to shareholders — while repeatedly failing to meet improvement targets set by the Environment Agency.
 
 I would like to know:
 1. Which water company serves our constituency, and how many hours did they spill sewage in 2024?

@@ -31,15 +31,15 @@ async function fetchOnsSeries(dataset: string, series: string): Promise<OnsDataP
 const STATIC_KPIS: Kpi[] = [
   {
     label: "NHS Elective Waiting List",
-    value: "7.58m",
-    period: "Sep 2024",
+    value: "7.2m",
+    period: "Feb 2026",
     source: "NHS England · RTT Statistics",
     live: false,
   },
   {
-    label: "Asylum Case Backlog",
-    value: "113,000",
-    period: "Q1 2025",
+    label: "Asylum Cases Awaiting Initial Decision",
+    value: "35,700",
+    period: "Mar 2026",
     source: "Home Office · Asylum Statistics",
     live: false,
   },

@@ -87,4 +87,58 @@ export const CORRECTIONS: CorrectionEntry[] = [
     reason:
       "Rounded “around 32” to the precise figure for accuracy. Derived from the Environment Agency 2024 storm-overflow EDM dataset (450,398 spills across 14,162 monitored overflows).",
   },
+  {
+    date: "2026-06-18",
+    page: "Homepage / KPIs — NHS waiting list",
+    wasWrong: "“7.58m” elective waiting list, dated “Sep 2024”.",
+    nowSays: "7.2m on the elective (RTT) waiting list, dated February 2026.",
+    reason:
+      "The headline figure was over a year out of date. Updated to the latest NHS England Referral to Treatment (RTT) statistics.",
+  },
+  {
+    date: "2026-06-18",
+    page: "Homepage / KPIs — Asylum backlog",
+    wasWrong: "“Asylum Case Backlog — 113,000”, dated “Q1 2025”.",
+    nowSays: "“Asylum Cases Awaiting Initial Decision — 35,700”, dated March 2026.",
+    reason:
+      "The figure was stale and the label was ambiguous. The initial-decision backlog has fallen sharply from its June 2023 peak of roughly 134,000; relabelled to make clear it counts cases awaiting an initial decision, not appeals. Sourced to Home Office asylum statistics.",
+  },
+  {
+    date: "2026-06-18",
+    page: "Take Action — 18–25 turnout",
+    wasWrong: "“Turnout among 18–24s was 52% at the 2024 election.”",
+    nowSays:
+      "Turnout among 18–24s was around 37% at the 2024 election, down from 47% in 2019 — the lowest of any age group (Ipsos).",
+    reason:
+      "The 52% was a misattribution: 52.8% was the overall voting-age turnout at the 2024 election, not the 18–24 figure. Corrected to the Ipsos “How Britain Voted 2024” individual-level estimate. The claim that under-25s had the lowest turnout of any age group remains correct.",
+  },
+  {
+    date: "2026-06-18",
+    page: "Sewage — dividends",
+    wasWrong:
+      "“In the same year [2024], water companies paid out over £1.4 billion in dividends.”",
+    nowSays:
+      "Since privatisation in 1989, England's water companies have paid out tens of billions of pounds in dividends to shareholders (estimates range from around £66bn to £85bn depending on methodology).",
+    reason:
+      "The single-year 2024 figure of £1.4bn could not be cleanly sourced. Replaced with the well-evidenced cumulative range, with the methodology dependence stated openly rather than asserting one contested total.",
+  },
+  {
+    date: "2026-06-18",
+    page: "Sewage — water bills",
+    wasWrong: "“The average household water bill rose above £500/year.”",
+    nowSays:
+      "From April 2025 the average household water bill rose by about 26% to roughly £600 a year (Water UK).",
+    reason:
+      "The “above £500” figure was undated and understated the position. The 2025–26 national average is about £603, a rise of roughly £123 (~26%) on the previous year. Sourced to Water UK.",
+  },
+  {
+    date: "2026-06-18",
+    page: "Sewage — prosecutions",
+    wasWrong:
+      "“Only one company has faced criminal prosecution for unpermitted discharges.”",
+    nowSays:
+      "The Environment Agency has brought dozens of prosecutions against water companies, including a record £90 million fine for Southern Water in 2021.",
+    reason:
+      "The original statement was simply false. The Environment Agency has prosecuted water and sewerage companies many times; Southern Water alone was fined £90m in 2021. Corrected against Environment Agency enforcement records.",
+  },
 ];
