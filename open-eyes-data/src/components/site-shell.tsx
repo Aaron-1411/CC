@@ -46,6 +46,7 @@ const MORE_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     items: [
       { to: "/nhs", label: "NHS" },
       { to: "/sewage", label: "Sewage" },
+      { to: "/bathing-water", label: "Bathing water" },
       { to: "/stop-search", label: "Policing" },
       { to: "/sanctions", label: "Sanctions" },
       { to: "/foi", label: "FOI" },

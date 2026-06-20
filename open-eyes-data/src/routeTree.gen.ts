@@ -35,6 +35,7 @@ import { Route as CrossrefRouteImport } from './routes/crossref'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CommitteesRouteImport } from './routes/committees'
 import { Route as CitationsRouteImport } from './routes/citations'
+import { Route as BathingWaterRouteImport } from './routes/bathing-water'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -65,6 +66,7 @@ import { Route as ApiContractsRouteImport } from './routes/api/contracts'
 import { Route as ApiConstituencyMpRouteImport } from './routes/api/constituency-mp'
 import { Route as ApiCommitteesRouteImport } from './routes/api/committees'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
+import { Route as ApiBathingWaterRouteImport } from './routes/api/bathing-water'
 import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
 import { Route as PartiesPledgeIdRouteImport } from './routes/parties.pledge.$id'
 
@@ -196,6 +198,11 @@ const CommitteesRoute = CommitteesRouteImport.update({
 const CitationsRoute = CitationsRouteImport.update({
   id: '/citations',
   path: '/citations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BathingWaterRoute = BathingWaterRouteImport.update({
+  id: '/bathing-water',
+  path: '/bathing-water',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcobaRoute = AcobaRouteImport.update({
@@ -348,6 +355,11 @@ const ApiBillsRoute = ApiBillsRouteImport.update({
   path: '/api/bills',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBathingWaterRoute = ApiBathingWaterRouteImport.update({
+  id: '/api/bathing-water',
+  path: '/api/bathing-water',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAcobaRoute = ApiAcobaRouteImport.update({
   id: '/api/acoba',
   path: '/api/acoba',
@@ -363,6 +375,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
+  '/bathing-water': typeof BathingWaterRoute
   '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
@@ -390,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
+  '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
@@ -423,6 +437,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
+  '/bathing-water': typeof BathingWaterRoute
   '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
@@ -450,6 +465,7 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
+  '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
@@ -484,6 +500,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
+  '/bathing-water': typeof BathingWaterRoute
   '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
@@ -511,6 +528,7 @@ export interface FileRoutesById {
   '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
   '/api/acoba': typeof ApiAcobaRoute
+  '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
@@ -546,6 +564,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
+    | '/bathing-water'
     | '/citations'
     | '/committees'
     | '/contracts'
@@ -573,6 +592,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/votes'
     | '/api/acoba'
+    | '/api/bathing-water'
     | '/api/bills'
     | '/api/committees'
     | '/api/constituency-mp'
@@ -606,6 +626,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
+    | '/bathing-water'
     | '/citations'
     | '/committees'
     | '/contracts'
@@ -633,6 +654,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/votes'
     | '/api/acoba'
+    | '/api/bathing-water'
     | '/api/bills'
     | '/api/committees'
     | '/api/constituency-mp'
@@ -666,6 +688,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/acoba'
+    | '/bathing-water'
     | '/citations'
     | '/committees'
     | '/contracts'
@@ -693,6 +716,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/votes'
     | '/api/acoba'
+    | '/api/bathing-water'
     | '/api/bills'
     | '/api/committees'
     | '/api/constituency-mp'
@@ -727,6 +751,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AcobaRoute: typeof AcobaRoute
+  BathingWaterRoute: typeof BathingWaterRoute
   CitationsRoute: typeof CitationsRoute
   CommitteesRoute: typeof CommitteesRoute
   ContractsRoute: typeof ContractsRoute
@@ -754,6 +779,7 @@ export interface RootRouteChildren {
   ToolsRoute: typeof ToolsRoute
   VotesRoute: typeof VotesRoute
   ApiAcobaRoute: typeof ApiAcobaRoute
+  ApiBathingWaterRoute: typeof ApiBathingWaterRoute
   ApiBillsRoute: typeof ApiBillsRoute
   ApiCommitteesRoute: typeof ApiCommitteesRoute
   ApiConstituencyMpRoute: typeof ApiConstituencyMpRoute
@@ -966,6 +992,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CitationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bathing-water': {
+      id: '/bathing-water'
+      path: '/bathing-water'
+      fullPath: '/bathing-water'
+      preLoaderRoute: typeof BathingWaterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/acoba': {
       id: '/acoba'
       path: '/acoba'
@@ -1176,6 +1209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiBillsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/bathing-water': {
+      id: '/api/bathing-water'
+      path: '/api/bathing-water'
+      fullPath: '/api/bathing-water'
+      preLoaderRoute: typeof ApiBathingWaterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/acoba': {
       id: '/api/acoba'
       path: '/api/acoba'
@@ -1218,6 +1258,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AcobaRoute: AcobaRoute,
+  BathingWaterRoute: BathingWaterRoute,
   CitationsRoute: CitationsRoute,
   CommitteesRoute: CommitteesRoute,
   ContractsRoute: ContractsRoute,
@@ -1245,6 +1286,7 @@ const rootRouteChildren: RootRouteChildren = {
   ToolsRoute: ToolsRoute,
   VotesRoute: VotesRoute,
   ApiAcobaRoute: ApiAcobaRoute,
+  ApiBathingWaterRoute: ApiBathingWaterRoute,
   ApiBillsRoute: ApiBillsRoute,
   ApiCommitteesRoute: ApiCommitteesRoute,
   ApiConstituencyMpRoute: ApiConstituencyMpRoute,
