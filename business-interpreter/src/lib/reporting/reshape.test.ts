@@ -30,6 +30,7 @@ import {
   difference,
   movingAverage,
   bin,
+  fxNormalize,
   applyTransform,
   applyPipeline,
   previewTable,
@@ -2401,6 +2402,99 @@ describe("bin", () => {
     const viaDispatch = applyTransform(base, {
       op: "bin",
       params: { column: "Age", size: 10, label: "range" },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("fxNormalize", () => {
+  const base: Table = {
+    columns: ["Item", "Price"],
+    rows: [
+      ["Widget", 10],
+      ["Gadget", 25],
+      ["Gizmo", 4.5],
+    ],
+  };
+
+  test("converts a money column by the baked rate and appends a column", () => {
+    const out = fxNormalize(base, { column: "Price", from: "USD", to: "GBP", rate: 0.8 });
+    expect(out.columns).toEqual(["Item", "Price", "Price (GBP)"]);
+    expect(out.rows.map((r) => r[2])).toEqual([8, 20, 3.6]);
+  });
+
+  test("same-currency conversion passes through at rate 1 without a rate", () => {
+    const out = fxNormalize(base, { column: "Price", from: "GBP", to: "GBP" });
+    expect(out.rows.map((r) => r[2])).toEqual([10, 25, 4.5]);
+  });
+
+  test("uppercases and trims the currency codes for labelling", () => {
+    const out = fxNormalize(base, { column: "Price", from: " usd ", to: " eur ", rate: 0.9 });
+    expect(out.columns[2]).toBe("Price (EUR)");
+  });
+
+  test("rounds to the requested decimals", () => {
+    const out = fxNormalize(base, {
+      column: "Price",
+      from: "USD",
+      to: "GBP",
+      rate: 0.8123,
+      decimals: 2,
+    });
+    expect(out.rows.map((r) => r[2])).toEqual([8.12, 20.31, 3.66]);
+  });
+
+  test("custom output column name via into", () => {
+    const out = fxNormalize(base, {
+      column: "Price",
+      from: "USD",
+      to: "GBP",
+      rate: 0.8,
+      into: "Price GBP",
+    });
+    expect(out.columns).toEqual(["Item", "Price", "Price GBP"]);
+  });
+
+  test("reads formatted numbers tolerantly", () => {
+    const t: Table = { columns: ["V"], rows: [["$1,234"], ["1,234"], ["(5)"]] };
+    const out = fxNormalize(t, { column: "V", from: "USD", to: "GBP", rate: 0.5 });
+    expect(out.rows.map((r) => r[1])).toEqual([617, 617, -2.5]);
+  });
+
+  test("non-numeric and blank cells produce a blank result", () => {
+    const t: Table = { columns: ["V"], rows: [["abc"], [""], [null], [12]] };
+    const out = fxNormalize(t, { column: "V", from: "USD", to: "GBP", rate: 2 });
+    expect(out.rows.map((r) => r[1])).toEqual([null, null, null, 24]);
+  });
+
+  test("throws a friendly error when no rate was resolved", () => {
+    expect(() => fxNormalize(base, { column: "Price", from: "USD", to: "GBP" })).toThrow(
+      /No exchange rate was resolved/,
+    );
+  });
+
+  test("throws when a currency code is missing", () => {
+    expect(() => fxNormalize(base, { column: "Price", from: "USD", to: "", rate: 1 })).toThrow(
+      /'from' and a 'to'/,
+    );
+  });
+
+  test("throws a friendly error for a missing column", () => {
+    expect(() => fxNormalize(base, { column: "Nope", from: "USD", to: "GBP", rate: 1 })).toThrow(
+      /not found/,
+    );
+  });
+
+  test("preserves row order and existing columns", () => {
+    const out = fxNormalize(base, { column: "Price", from: "USD", to: "GBP", rate: 0.8 });
+    expect(out.rows.map((r) => [r[0], r[1]])).toEqual(base.rows);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = fxNormalize(base, { column: "Price", from: "USD", to: "GBP", rate: 0.8 });
+    const viaDispatch = applyTransform(base, {
+      op: "fxNormalize",
+      params: { column: "Price", from: "USD", to: "GBP", rate: 0.8 },
     });
     expect(viaDispatch).toEqual(direct);
   });

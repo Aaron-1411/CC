@@ -1595,6 +1595,70 @@ export function bin(t: Table, params: BinParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* fxNormalize — convert a money column between currencies at a rate    */
+/* ------------------------------------------------------------------ */
+
+export type FxNormalizeParams = {
+  /** Numeric (money) column to convert. */
+  column: string;
+  /** Source currency code, e.g. "USD". Used for labelling and rate resolution. */
+  from: string;
+  /** Target currency code, e.g. "GBP". Used for labelling and rate resolution. */
+  to: string;
+  /** Output column name. Default `${column} (${to})`. */
+  into?: string;
+  /** Optional decimal places to round the converted value to. Unrounded if omitted. */
+  decimals?: number;
+  /**
+   * Units of `to` per 1 unit of `from`. Resolved server-side from the live
+   * (keyless, read-only) ECB feed and baked into the spec before execution, so
+   * the conversion is deterministic and auditable — the number comes from this
+   * code multiplying by a recorded rate, never from a model.
+   */
+  rate?: number;
+  /** ISO date the `rate` was published (ECB reference date). Informational. */
+  asOf?: string;
+};
+
+/**
+ * Append a column holding a money column converted from one currency to another
+ * by multiplying each value by a fixed `rate` (units of `to` per 1 `from`). The
+ * rate is resolved once, server-side, from the keyless read-only Frankfurter/ECB
+ * feed and recorded on the spec before this pure function runs, so the output is
+ * deterministic and reproducible from the spec alone — the number comes from
+ * this code multiplying by a recorded rate, never from a model. Values are read
+ * with the same tolerant parser used elsewhere ("$1,234", "1,234" and 1234 all
+ * convert); non-numeric or blank cells produce a blank result. Row order and all
+ * existing columns are preserved; the new column is appended at the end. A
+ * same-currency conversion (`from === to`) passes through at rate 1.
+ */
+export function fxNormalize(t: Table, params: FxNormalizeParams): Table {
+  const [valueIdx] = requireCols(t.columns, [params.column], "fxNormalize.column");
+  const from = (params.from ?? "").trim().toUpperCase();
+  const to = (params.to ?? "").trim().toUpperCase();
+  if (!from || !to) {
+    throw new Error("fxNormalize needs both a 'from' and a 'to' currency code.");
+  }
+  const rate = from === to ? 1 : params.rate;
+  if (rate == null || !Number.isFinite(rate)) {
+    throw new Error(
+      `No exchange rate was resolved for ${from} → ${to}. The currency feed may be unavailable — try again shortly.`,
+    );
+  }
+  const into = params.into && params.into.trim() !== "" ? params.into : `${params.column} (${to})`;
+  const decimals = params.decimals;
+
+  const rows: Cell[][] = t.rows.map((r) => {
+    const v = parseFormattedNumber(r[valueIdx]);
+    if (v === null) return [...r, null];
+    const out = v * rate;
+    return [...r, decimals != null ? roundTo(out, decimals) : out];
+  });
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1624,7 +1688,8 @@ export type TransformSpec =
   | { op: "rank"; params: RankParams }
   | { op: "difference"; params: DifferenceParams }
   | { op: "movingAverage"; params: MovingAverageParams }
-  | { op: "bin"; params: BinParams };
+  | { op: "bin"; params: BinParams }
+  | { op: "fxNormalize"; params: FxNormalizeParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1680,6 +1745,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return movingAverage(t, spec.params);
     case "bin":
       return bin(t, spec.params);
+    case "fxNormalize":
+      return fxNormalize(t, spec.params);
     default:
       return t;
   }

@@ -9,6 +9,7 @@ import {
   type TransformSpec,
   type Cell,
 } from "./reporting/reshape";
+import { resolveFxRates, fxKey, type FxPair } from "./reporting/fx";
 
 /* ------------------------------------------------------------------ */
 /* Input schema                                                        */
@@ -258,6 +259,20 @@ const TransformSchema = z.discriminatedUnion("op", [
       label: z.enum(["lower", "range", "upper"]).optional(),
     }),
   }),
+  z.object({
+    op: z.literal("fxNormalize"),
+    params: z.object({
+      column: z.string().min(1),
+      from: z.string().min(2).max(8),
+      to: z.string().min(2).max(8),
+      into: z.string().max(200).optional(),
+      decimals: z.number().int().min(0).max(15).optional(),
+      // rate/asOf are resolved server-side before execution; accepted but ignored
+      // from the client so a caller can't bake in a fabricated rate.
+      rate: z.number().optional(),
+      asOf: z.string().optional(),
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
@@ -375,6 +390,45 @@ async function loadSource(source: z.infer<typeof SourceSchema>): Promise<Table> 
   }
 }
 
+/**
+ * Resolve every currency pair referenced by an `fxNormalize` step to a live ECB
+ * reference rate (via Frankfurter, server-side) and bake the resolved `rate` +
+ * `asOf` date onto each spec before the pure engine runs.
+ *
+ * This is the seam that keeps the reshape engine deterministic and auditable: the
+ * client never supplies the rate, so we always overwrite whatever was on the spec
+ * with the value we just fetched. The engine then multiplies by a recorded number
+ * — the output is reproducible from the spec alone, and the figure comes from code
+ * rather than a model. Specs with no `fxNormalize` step are returned untouched
+ * (and no network call is made).
+ */
+async function injectFxRates(specs: TransformSpec[]): Promise<TransformSpec[]> {
+  const pairs: FxPair[] = [];
+  for (const spec of specs) {
+    if (spec.op === "fxNormalize") {
+      pairs.push({ from: spec.params.from, to: spec.params.to });
+    }
+  }
+  if (pairs.length === 0) return specs;
+
+  const rates = await resolveFxRates(pairs);
+
+  return specs.map((spec) => {
+    if (spec.op !== "fxNormalize") return spec;
+    const from = (spec.params.from ?? "").trim().toUpperCase();
+    const to = (spec.params.to ?? "").trim().toUpperCase();
+    const resolved = rates.get(fxKey(from, to));
+    return {
+      ...spec,
+      params: {
+        ...spec.params,
+        rate: resolved?.rate,
+        asOf: resolved?.date,
+      },
+    };
+  });
+}
+
 /* ------------------------------------------------------------------ */
 /* Server functions                                                    */
 /* ------------------------------------------------------------------ */
@@ -388,7 +442,13 @@ export const runReport = createServerFn({ method: "POST" })
       data.transforms && data.transforms.length
         ? (data.transforms as TransformSpec[])
         : [(data.transform ?? { op: "none" }) as TransformSpec];
-    const result = applyPipeline(input, specs);
+
+    // Resolve live FX rates server-side and bake them onto each fxNormalize spec
+    // before the (pure, network-free) engine runs. The client never supplies the
+    // rate — we always overwrite it with the value we just fetched, so the output
+    // is reproducible from the spec and the number comes from code, not a model.
+    const resolvedSpecs = await injectFxRates(specs);
+    const result = applyPipeline(input, resolvedSpecs);
 
     const truncated = result.rows.length > MAX_RETURN_ROWS;
     const table: Table = truncated

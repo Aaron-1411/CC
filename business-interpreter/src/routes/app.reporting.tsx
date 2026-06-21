@@ -36,6 +36,7 @@ import {
   GitCompare,
   Spline,
   BarChart3,
+  Coins,
   Plus,
   X,
   Search,
@@ -73,7 +74,8 @@ type Op =
   | "rank"
   | "difference"
   | "movingAverage"
-  | "bin";
+  | "bin"
+  | "fxNormalize";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -152,6 +154,12 @@ const OP_GROUPS: { name: string; ops: OpItem[] }[] = [
       { op: "rank", label: "Rank", icon: <ListOrdered className="h-4 w-4" />, keywords: "position order dense" },
       { op: "difference", label: "Difference", icon: <GitCompare className="h-4 w-4" />, keywords: "delta change previous" },
       { op: "movingAverage", label: "Moving average", icon: <Spline className="h-4 w-4" />, keywords: "rolling smooth window trend" },
+    ],
+  },
+  {
+    name: "Convert",
+    ops: [
+      { op: "fxNormalize", label: "Currency convert", icon: <Coins className="h-4 w-4" />, keywords: "fx exchange rate currency forex usd gbp eur normalize" },
     ],
   },
 ];
@@ -281,6 +289,11 @@ function ReportingPage() {
   const [binOrigin, setBinOrigin] = useState("");
   const [binInto, setBinInto] = useState("");
   const [binLabel, setBinLabel] = useState<"lower" | "range" | "upper">("lower");
+  const [fxCol, setFxCol] = useState("");
+  const [fxFrom, setFxFrom] = useState("");
+  const [fxTo, setFxTo] = useState("");
+  const [fxInto, setFxInto] = useState("");
+  const [fxDecimals, setFxDecimals] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -516,6 +529,19 @@ function ReportingPage() {
         },
       } as const;
     }
+    if (op === "fxNormalize") {
+      const dec = Number.parseInt(fxDecimals, 10);
+      return {
+        op: "fxNormalize",
+        params: {
+          column: fxCol,
+          from: fxFrom.trim().toUpperCase(),
+          to: fxTo.trim().toUpperCase(),
+          ...(fxInto.trim() ? { into: fxInto.trim() } : {}),
+          ...(Number.isFinite(dec) && dec >= 0 ? { decimals: dec } : {}),
+        },
+      } as const;
+    }
     return { op: "select", params: { columns: selectColumns } } as const;
   }
 
@@ -638,6 +664,11 @@ function ReportingPage() {
     setBinOrigin("");
     setBinInto("");
     setBinLabel("lower");
+    setFxCol("");
+    setFxFrom("");
+    setFxTo("");
+    setFxInto("");
+    setFxDecimals("");
   }
 
   async function addStep() {
@@ -787,6 +818,11 @@ function ReportingPage() {
           `Bin ${spec.params.column} into ${spec.params.size}-wide buckets` +
           (spec.params.origin ? ` from ${spec.params.origin}` : "")
         );
+      case "fxNormalize":
+        return (
+          `Convert ${spec.params.column} from ${spec.params.from} to ${spec.params.to}` +
+          (spec.params.asOf ? ` (ECB rate ${spec.params.asOf})` : "")
+        );
       default:
         return "Pass-through";
     }
@@ -875,10 +911,12 @@ function ReportingPage() {
         return !!movingAverageCol;
       case "bin":
         return !!binCol && Number.parseFloat(binSize) > 0;
+      case "fxNormalize":
+        return !!fxCol && !!fxFrom.trim() && !!fxTo.trim();
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol, binCol, binSize]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol, binCol, binSize, fxCol, fxFrom, fxTo]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -2510,6 +2548,67 @@ function ReportingPage() {
                 value={binInto}
                 onChange={(e) => setBinInto(e.target.value)}
                 placeholder={binCol ? `${binCol} bin` : "e.g. Range"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+          </div>
+        )}
+
+        {op === "fxNormalize" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Convert a numeric money column from one currency to another using the live ECB daily
+              reference rate (via Frankfurter — keyless, read-only). The rate is fetched once on the
+              server when the report runs, then recorded onto the step, so the converted figure is
+              reproducible and comes from arithmetic, not a model. Use ISO codes like USD, GBP, EUR.
+              Values are read tolerantly ("$1,234", "1,234", 1234 all convert); non-numeric or blank
+              cells stay blank. The result is appended as a new column.
+            </p>
+            <Field label="Value column">
+              <Select
+                value={fxCol}
+                onChange={setFxCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="From currency">
+                <input
+                  type="text"
+                  value={fxFrom}
+                  onChange={(e) => setFxFrom(e.target.value.toUpperCase())}
+                  placeholder="e.g. USD"
+                  maxLength={8}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base uppercase"
+                />
+              </Field>
+              <Field label="To currency">
+                <input
+                  type="text"
+                  value={fxTo}
+                  onChange={(e) => setFxTo(e.target.value.toUpperCase())}
+                  placeholder="e.g. GBP"
+                  maxLength={8}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-base uppercase"
+                />
+              </Field>
+            </div>
+            <Field label="Round to decimals (optional)">
+              <input
+                type="number"
+                value={fxDecimals}
+                onChange={(e) => setFxDecimals(e.target.value)}
+                placeholder="e.g. 2"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={fxInto}
+                onChange={(e) => setFxInto(e.target.value)}
+                placeholder={fxCol && fxTo.trim() ? `${fxCol} (${fxTo.trim().toUpperCase()})` : "e.g. Amount (GBP)"}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
               />
             </Field>
