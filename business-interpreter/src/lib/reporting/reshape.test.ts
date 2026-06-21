@@ -31,12 +31,14 @@ import {
   movingAverage,
   bin,
   fxNormalize,
+  enrichCountry,
   applyTransform,
   applyPipeline,
   previewTable,
   isAgg,
   isFilterOp,
   type Table,
+  type CountryInfo,
 } from "./reshape";
 
 /* ------------------------------------------------------------------ */
@@ -2495,6 +2497,126 @@ describe("fxNormalize", () => {
     const viaDispatch = applyTransform(base, {
       op: "fxNormalize",
       params: { column: "Price", from: "USD", to: "GBP", rate: 0.8 },
+    });
+    expect(viaDispatch).toEqual(direct);
+  });
+});
+
+describe("enrichCountry", () => {
+  const uk: CountryInfo = {
+    name: "United Kingdom",
+    official: "United Kingdom of Great Britain and Northern Ireland",
+    cca2: "GB",
+    cca3: "GBR",
+    region: "Europe",
+    subregion: "Northern Europe",
+    capital: "London",
+    population: 67215293,
+    currencyCode: "GBP",
+    currencyName: "British pound",
+  };
+  const fr: CountryInfo = {
+    name: "France",
+    official: "French Republic",
+    cca2: "FR",
+    cca3: "FRA",
+    region: "Europe",
+    subregion: "Western Europe",
+    capital: "Paris",
+    population: 67391582,
+    currencyCode: "EUR",
+    currencyName: "Euro",
+  };
+  // Flat lookup keyed by lower-cased name, official name and ISO codes — mirrors
+  // what resolveCountryIndex bakes onto the spec server-side.
+  const lookup: Record<string, CountryInfo> = {
+    "united kingdom": uk,
+    "united kingdom of great britain and northern ireland": uk,
+    gb: uk,
+    gbr: uk,
+    france: fr,
+    "french republic": fr,
+    fr: fr,
+    fra: fr,
+  };
+
+  const base: Table = {
+    columns: ["Country", "Sales"],
+    rows: [
+      ["United Kingdom", 100],
+      ["France", 80],
+    ],
+  };
+
+  test("looks up a field by country name and appends a column", () => {
+    const out = enrichCountry(base, { column: "Country", field: "region", lookup });
+    expect(out.columns).toEqual(["Country", "Sales", "Region"]);
+    expect(out.rows.map((r) => r[2])).toEqual(["Europe", "Europe"]);
+  });
+
+  test("looks up by ISO code, case-insensitively", () => {
+    const t: Table = { columns: ["Code"], rows: [["gb"], ["FRA"], ["Fr"]] };
+    const out = enrichCountry(t, { column: "Code", field: "capital", lookup });
+    expect(out.rows.map((r) => r[1])).toEqual(["London", "Paris", "Paris"]);
+  });
+
+  test("resolves each field type", () => {
+    const fields: Array<[Parameters<typeof enrichCountry>[1]["field"], unknown]> = [
+      ["region", "Europe"],
+      ["subregion", "Northern Europe"],
+      ["capital", "London"],
+      ["population", 67215293],
+      ["currencyCode", "GBP"],
+      ["currencyName", "British pound"],
+      ["iso2", "GB"],
+      ["iso3", "GBR"],
+      ["official", "United Kingdom of Great Britain and Northern Ireland"],
+    ];
+    const t: Table = { columns: ["Country"], rows: [["United Kingdom"]] };
+    for (const [field, expected] of fields) {
+      const out = enrichCountry(t, { column: "Country", field, lookup });
+      expect(out.rows[0][1]).toEqual(expected);
+    }
+  });
+
+  test("unmatched or blank cells produce a blank result", () => {
+    const t: Table = { columns: ["Country"], rows: [["Atlantis"], [""], [null], ["France"]] };
+    const out = enrichCountry(t, { column: "Country", field: "region", lookup });
+    expect(out.rows.map((r) => r[1])).toEqual([null, null, null, "Europe"]);
+  });
+
+  test("custom output column name via into", () => {
+    const out = enrichCountry(base, {
+      column: "Country",
+      field: "region",
+      into: "Continent",
+      lookup,
+    });
+    expect(out.columns).toEqual(["Country", "Sales", "Continent"]);
+  });
+
+  test("throws a friendly error when no lookup was resolved", () => {
+    expect(() => enrichCountry(base, { column: "Country", field: "region" })).toThrow(
+      /country directory wasn't resolved/,
+    );
+  });
+
+  test("throws a friendly error for a missing column", () => {
+    expect(() => enrichCountry(base, { column: "Nope", field: "region", lookup })).toThrow(
+      /not found/,
+    );
+  });
+
+  test("preserves row order and existing columns", () => {
+    const out = enrichCountry(base, { column: "Country", field: "region", lookup });
+    expect(out.rows.map((r) => [r[0], r[1]])).toEqual(base.rows);
+  });
+
+  test("runs through applyTransform with the same result", () => {
+    const direct = enrichCountry(base, { column: "Country", field: "region", lookup });
+    const viaDispatch = applyTransform(base, {
+      op: "enrichCountry",
+      params: { column: "Country", field: "region", lookup },
     });
     expect(viaDispatch).toEqual(direct);
   });

@@ -1659,6 +1659,129 @@ export function fxNormalize(t: Table, params: FxNormalizeParams): Table {
 }
 
 /* ------------------------------------------------------------------ */
+/* enrichCountry — append a reference attribute for a country column     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One country's reference attributes, as resolved from the keyless read-only REST
+ * Countries directory. Defined here (not imported) so the reshape engine stays
+ * self-contained: the resolver in countries.ts builds these, but the pure engine
+ * only ever reads a recorded dictionary, never a model or a live fetch.
+ */
+export type CountryInfo = {
+  name: string;
+  official?: string;
+  cca2?: string;
+  cca3?: string;
+  region?: string;
+  subregion?: string;
+  capital?: string;
+  population?: number;
+  currencyCode?: string;
+  currencyName?: string;
+};
+
+/** The reference attribute a single enrichCountry step appends. */
+export type CountryField =
+  | "region"
+  | "subregion"
+  | "capital"
+  | "population"
+  | "currencyCode"
+  | "currencyName"
+  | "iso2"
+  | "iso3"
+  | "official";
+
+/** Human-readable default column name for each field. */
+const FIELD_LABEL: Record<CountryField, string> = {
+  region: "Region",
+  subregion: "Subregion",
+  capital: "Capital",
+  population: "Population",
+  currencyCode: "Currency code",
+  currencyName: "Currency",
+  iso2: "ISO alpha-2",
+  iso3: "ISO alpha-3",
+  official: "Official name",
+};
+
+export type EnrichCountryParams = {
+  /** Column holding country names or ISO alpha-2/alpha-3 codes to look up. */
+  column: string;
+  /** Which reference attribute to append. */
+  field: CountryField;
+  /** Output column name. Default is the field's human label. */
+  into?: string;
+  /**
+   * Flat lookup index keyed by lower-cased common name, official name and ISO
+   * alpha-2/alpha-3 codes. Resolved once, server-side, from the keyless read-only
+   * REST Countries directory and baked onto the spec before this pure function
+   * runs, so the enriched column is deterministic and reproducible from the spec
+   * alone — the value comes from this code reading a recorded dictionary, never
+   * from a model.
+   */
+  lookup?: Record<string, CountryInfo>;
+};
+
+/** Pull a single field out of a resolved CountryInfo as a Cell (null if absent). */
+function countryFieldValue(info: CountryInfo, field: CountryField): Cell {
+  switch (field) {
+    case "region":
+      return info.region ?? null;
+    case "subregion":
+      return info.subregion ?? null;
+    case "capital":
+      return info.capital ?? null;
+    case "population":
+      return info.population ?? null;
+    case "currencyCode":
+      return info.currencyCode ?? null;
+    case "currencyName":
+      return info.currencyName ?? null;
+    case "iso2":
+      return info.cca2 ?? null;
+    case "iso3":
+      return info.cca3 ?? null;
+    case "official":
+      return info.official ?? null;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Append a column holding a reference attribute (region, capital, population,
+ * currency, ISO code, …) for a column of country names or ISO codes. The lookup
+ * index is resolved once, server-side, from the keyless read-only REST Countries
+ * directory and recorded on the spec before this pure function runs, so the
+ * output is deterministic and reproducible from the spec alone — the value comes
+ * from this code reading a recorded dictionary, never from a model. Keys are
+ * matched case-insensitively (common name, official name, or ISO alpha-2/alpha-3);
+ * an unrecognised or blank cell yields a blank result. Row order and all existing
+ * columns are preserved; the new column is appended at the end.
+ */
+export function enrichCountry(t: Table, params: EnrichCountryParams): Table {
+  const [keyIdx] = requireCols(t.columns, [params.column], "enrichCountry.column");
+  const field = params.field;
+  if (!params.lookup) {
+    throw new Error(
+      "The country directory wasn't resolved for this report. It may be unavailable — try again shortly.",
+    );
+  }
+  const lookup = params.lookup;
+  const into = params.into && params.into.trim() !== "" ? params.into : FIELD_LABEL[field];
+
+  const rows: Cell[][] = t.rows.map((r) => {
+    const key = String(r[keyIdx] ?? "").trim().toLowerCase();
+    const info = key ? lookup[key] : undefined;
+    return [...r, info ? countryFieldValue(info, field) : null];
+  });
+
+  return { columns: [...t.columns, into], rows };
+}
+
+/* ------------------------------------------------------------------ */
 /* Dispatcher                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -1689,7 +1812,8 @@ export type TransformSpec =
   | { op: "difference"; params: DifferenceParams }
   | { op: "movingAverage"; params: MovingAverageParams }
   | { op: "bin"; params: BinParams }
-  | { op: "fxNormalize"; params: FxNormalizeParams };
+  | { op: "fxNormalize"; params: FxNormalizeParams }
+  | { op: "enrichCountry"; params: EnrichCountryParams };
 
 export function applyTransform(t: Table, spec: TransformSpec): Table {
   switch (spec.op) {
@@ -1747,6 +1871,8 @@ export function applyTransform(t: Table, spec: TransformSpec): Table {
       return bin(t, spec.params);
     case "fxNormalize":
       return fxNormalize(t, spec.params);
+    case "enrichCountry":
+      return enrichCountry(t, spec.params);
     default:
       return t;
   }

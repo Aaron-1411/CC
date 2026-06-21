@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { runReport, exportXlsx } from "@/lib/reporting.functions";
-import { toCsv, type Table, type TransformSpec, type DatePart } from "@/lib/reporting/reshape";
+import { toCsv, type Table, type TransformSpec, type DatePart, type CountryField } from "@/lib/reporting/reshape";
 import {
   Database,
   Link2,
@@ -37,6 +37,7 @@ import {
   Spline,
   BarChart3,
   Coins,
+  Globe,
   Plus,
   X,
   Search,
@@ -75,7 +76,8 @@ type Op =
   | "difference"
   | "movingAverage"
   | "bin"
-  | "fxNormalize";
+  | "fxNormalize"
+  | "enrichCountry";
 type Agg = "sum" | "count" | "mean" | "min" | "max" | "first" | "last" | "median" | "countDistinct";
 
 const AGG_OPTIONS: Agg[] = [
@@ -160,6 +162,7 @@ const OP_GROUPS: { name: string; ops: OpItem[] }[] = [
     name: "Convert",
     ops: [
       { op: "fxNormalize", label: "Currency convert", icon: <Coins className="h-4 w-4" />, keywords: "fx exchange rate currency forex usd gbp eur normalize" },
+      { op: "enrichCountry", label: "Enrich country", icon: <Globe className="h-4 w-4" />, keywords: "country region subregion capital population currency iso code lookup geography continent" },
     ],
   },
 ];
@@ -294,6 +297,9 @@ function ReportingPage() {
   const [fxTo, setFxTo] = useState("");
   const [fxInto, setFxInto] = useState("");
   const [fxDecimals, setFxDecimals] = useState("");
+  const [countryCol, setCountryCol] = useState("");
+  const [countryField, setCountryField] = useState<CountryField>("region");
+  const [countryInto, setCountryInto] = useState("");
 
   const [result, setResult] = useState<RunResult | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
@@ -539,6 +545,16 @@ function ReportingPage() {
           to: fxTo.trim().toUpperCase(),
           ...(fxInto.trim() ? { into: fxInto.trim() } : {}),
           ...(Number.isFinite(dec) && dec >= 0 ? { decimals: dec } : {}),
+        },
+      } as const;
+    }
+    if (op === "enrichCountry") {
+      return {
+        op: "enrichCountry",
+        params: {
+          column: countryCol,
+          field: countryField,
+          ...(countryInto.trim() ? { into: countryInto.trim() } : {}),
         },
       } as const;
     }
@@ -823,6 +839,8 @@ function ReportingPage() {
           `Convert ${spec.params.column} from ${spec.params.from} to ${spec.params.to}` +
           (spec.params.asOf ? ` (ECB rate ${spec.params.asOf})` : "")
         );
+      case "enrichCountry":
+        return `Add ${spec.params.field} for ${spec.params.column}`;
       default:
         return "Pass-through";
     }
@@ -913,10 +931,12 @@ function ReportingPage() {
         return !!binCol && Number.parseFloat(binSize) > 0;
       case "fxNormalize":
         return !!fxCol && !!fxFrom.trim() && !!fxTo.trim();
+      case "enrichCountry":
+        return !!countryCol && !!countryField;
       default:
         return true;
     }
-  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol, binCol, binSize, fxCol, fxFrom, fxTo]);
+  }, [op, idColumns, groupColumns, aggRows, pivotColumn, valueColumn, filterColumn, valuelessFilter, filterValue, sortColumn, selectColumns, deriveAs, deriveLeft, deriveRight, limitCount, renameFrom, renameTo, castColumns, splitCol, splitDelimiter, mergeColumnsSel, mergeInto, replaceFind, dateExtractCol, percentOfTotalCol, runningTotalCol, rankCol, differenceCol, movingAverageCol, binCol, binSize, fxCol, fxFrom, fxTo, countryCol, countryField]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -2609,6 +2629,54 @@ function ReportingPage() {
                 value={fxInto}
                 onChange={(e) => setFxInto(e.target.value)}
                 placeholder={fxCol && fxTo.trim() ? `${fxCol} (${fxTo.trim().toUpperCase()})` : "e.g. Amount (GBP)"}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
+              />
+            </Field>
+          </div>
+        )}
+
+        {op === "enrichCountry" && (
+          <div className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Add a reference attribute for each country using the keyless, read-only REST Countries
+              directory. The full directory is fetched once on the server when the report runs, then
+              recorded onto the step, so the added column is reproducible and comes from a lookup, not
+              a model. The source column can hold country names ("United Kingdom"), official names, or
+              ISO codes (GB / GBR) — matching is case-insensitive. Unmatched or blank cells stay
+              blank. The result is appended as a new column.
+            </p>
+            <Field label="Country column">
+              <Select
+                value={countryCol}
+                onChange={setCountryCol}
+                options={sourceColumns}
+                placeholder="Choose…"
+              />
+            </Field>
+            <Field label="Field to add">
+              <Select
+                value={countryField}
+                onChange={(v) => setCountryField(v as CountryField)}
+                options={["region", "subregion", "capital", "population", "currencyCode", "currencyName", "iso2", "iso3", "official"]}
+                labels={{
+                  region: "Region",
+                  subregion: "Subregion",
+                  capital: "Capital",
+                  population: "Population",
+                  currencyCode: "Currency code",
+                  currencyName: "Currency",
+                  iso2: "ISO alpha-2",
+                  iso3: "ISO alpha-3",
+                  official: "Official name",
+                }}
+              />
+            </Field>
+            <Field label="New column name (optional)">
+              <input
+                type="text"
+                value={countryInto}
+                onChange={(e) => setCountryInto(e.target.value)}
+                placeholder="e.g. Region"
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-base"
               />
             </Field>

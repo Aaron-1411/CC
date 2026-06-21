@@ -10,6 +10,7 @@ import {
   type Cell,
 } from "./reporting/reshape";
 import { resolveFxRates, fxKey, type FxPair } from "./reporting/fx";
+import { resolveCountryIndex } from "./reporting/countries";
 
 /* ------------------------------------------------------------------ */
 /* Input schema                                                        */
@@ -273,6 +274,26 @@ const TransformSchema = z.discriminatedUnion("op", [
       asOf: z.string().optional(),
     }),
   }),
+  z.object({
+    op: z.literal("enrichCountry"),
+    params: z.object({
+      column: z.string().min(1),
+      field: z.enum([
+        "region",
+        "subregion",
+        "capital",
+        "population",
+        "currencyCode",
+        "currencyName",
+        "iso2",
+        "iso3",
+        "official",
+      ]),
+      into: z.string().max(200).optional(),
+      // `lookup` is intentionally absent: zod strips unknown keys, so a client
+      // can't bake in a fabricated directory — only the server resolves it.
+    }),
+  }),
 ]);
 
 const RunReportInput = z.object({
@@ -429,6 +450,26 @@ async function injectFxRates(specs: TransformSpec[]): Promise<TransformSpec[]> {
   });
 }
 
+/**
+ * Resolve the keyless read-only REST Countries directory once (server-side) and
+ * bake the resulting lookup index onto every `enrichCountry` step before the pure
+ * engine runs. Same auditability seam as injectFxRates: the client never supplies
+ * the directory (zod strips it), so we always set `lookup` to the index we just
+ * resolved — the enriched column is reproducible from the spec and the value comes
+ * from code reading a recorded dictionary, never a model. Specs with no
+ * `enrichCountry` step are returned untouched (no network call is made).
+ */
+async function injectCountryData(specs: TransformSpec[]): Promise<TransformSpec[]> {
+  if (!specs.some((s) => s.op === "enrichCountry")) return specs;
+
+  const index = await resolveCountryIndex();
+
+  return specs.map((spec) => {
+    if (spec.op !== "enrichCountry") return spec;
+    return { ...spec, params: { ...spec.params, lookup: index } };
+  });
+}
+
 /* ------------------------------------------------------------------ */
 /* Server functions                                                    */
 /* ------------------------------------------------------------------ */
@@ -447,7 +488,11 @@ export const runReport = createServerFn({ method: "POST" })
     // before the (pure, network-free) engine runs. The client never supplies the
     // rate — we always overwrite it with the value we just fetched, so the output
     // is reproducible from the spec and the number comes from code, not a model.
-    const resolvedSpecs = await injectFxRates(specs);
+    const fxResolved = await injectFxRates(specs);
+    // Then bake the keyless REST Countries directory onto each enrichCountry spec
+    // (same deterministic seam: server resolves it, client can't, output stays
+    // reproducible from the spec and the value comes from code, not a model).
+    const resolvedSpecs = await injectCountryData(fxResolved);
     const result = applyPipeline(input, resolvedSpecs);
 
     const truncated = result.rows.length > MAX_RETURN_ROWS;
