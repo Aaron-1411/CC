@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WrittenQuestionsRouteImport } from './routes/written-questions'
 import { Route as VotesRouteImport } from './routes/votes'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TakeActionRouteImport } from './routes/take-action'
@@ -44,6 +45,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as IssuesIndexRouteImport } from './routes/issues/index'
 import { Route as LearnSlugRouteImport } from './routes/learn.$slug'
 import { Route as IssuesIssueRouteImport } from './routes/issues/$issue'
+import { Route as ApiWrittenQuestionsRouteImport } from './routes/api/written-questions'
 import { Route as ApiVotesRouteImport } from './routes/api/votes'
 import { Route as ApiStopSearchRouteImport } from './routes/api/stop-search'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
@@ -74,6 +76,11 @@ import { Route as ApiBathingWaterRouteImport } from './routes/api/bathing-water'
 import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
 import { Route as PartiesPledgeIdRouteImport } from './routes/parties.pledge.$id'
 
+const WrittenQuestionsRoute = WrittenQuestionsRouteImport.update({
+  id: '/written-questions',
+  path: '/written-questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VotesRoute = VotesRouteImport.update({
   id: '/votes',
   path: '/votes',
@@ -247,6 +254,11 @@ const LearnSlugRoute = LearnSlugRouteImport.update({
 const IssuesIssueRoute = IssuesIssueRouteImport.update({
   id: '/issues/$issue',
   path: '/issues/$issue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWrittenQuestionsRoute = ApiWrittenQuestionsRouteImport.update({
+  id: '/api/written-questions',
+  path: '/api/written-questions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiVotesRoute = ApiVotesRouteImport.update({
@@ -428,6 +440,7 @@ export interface FileRoutesByFullPath {
   '/take-action': typeof TakeActionRoute
   '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
+  '/written-questions': typeof WrittenQuestionsRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
@@ -456,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/api/status': typeof ApiStatusRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
+  '/api/written-questions': typeof ApiWrittenQuestionsRoute
   '/issues/$issue': typeof IssuesIssueRoute
   '/learn/$slug': typeof LearnSlugRoute
   '/issues/': typeof IssuesIndexRoute
@@ -494,6 +508,7 @@ export interface FileRoutesByTo {
   '/take-action': typeof TakeActionRoute
   '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
+  '/written-questions': typeof WrittenQuestionsRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
@@ -522,6 +537,7 @@ export interface FileRoutesByTo {
   '/api/status': typeof ApiStatusRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
+  '/api/written-questions': typeof ApiWrittenQuestionsRoute
   '/issues/$issue': typeof IssuesIssueRoute
   '/learn/$slug': typeof LearnSlugRoute
   '/issues': typeof IssuesIndexRoute
@@ -561,6 +577,7 @@ export interface FileRoutesById {
   '/take-action': typeof TakeActionRoute
   '/tools': typeof ToolsRoute
   '/votes': typeof VotesRoute
+  '/written-questions': typeof WrittenQuestionsRoute
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
@@ -589,6 +606,7 @@ export interface FileRoutesById {
   '/api/status': typeof ApiStatusRoute
   '/api/stop-search': typeof ApiStopSearchRoute
   '/api/votes': typeof ApiVotesRoute
+  '/api/written-questions': typeof ApiWrittenQuestionsRoute
   '/issues/$issue': typeof IssuesIssueRoute
   '/learn/$slug': typeof LearnSlugRoute
   '/issues/': typeof IssuesIndexRoute
@@ -629,6 +647,7 @@ export interface FileRouteTypes {
     | '/take-action'
     | '/tools'
     | '/votes'
+    | '/written-questions'
     | '/api/acoba'
     | '/api/bathing-water'
     | '/api/bills'
@@ -657,6 +676,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/stop-search'
     | '/api/votes'
+    | '/api/written-questions'
     | '/issues/$issue'
     | '/learn/$slug'
     | '/issues/'
@@ -695,6 +715,7 @@ export interface FileRouteTypes {
     | '/take-action'
     | '/tools'
     | '/votes'
+    | '/written-questions'
     | '/api/acoba'
     | '/api/bathing-water'
     | '/api/bills'
@@ -723,6 +744,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/stop-search'
     | '/api/votes'
+    | '/api/written-questions'
     | '/issues/$issue'
     | '/learn/$slug'
     | '/issues'
@@ -761,6 +783,7 @@ export interface FileRouteTypes {
     | '/take-action'
     | '/tools'
     | '/votes'
+    | '/written-questions'
     | '/api/acoba'
     | '/api/bathing-water'
     | '/api/bills'
@@ -789,6 +812,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/stop-search'
     | '/api/votes'
+    | '/api/written-questions'
     | '/issues/$issue'
     | '/learn/$slug'
     | '/issues/'
@@ -828,6 +852,7 @@ export interface RootRouteChildren {
   TakeActionRoute: typeof TakeActionRoute
   ToolsRoute: typeof ToolsRoute
   VotesRoute: typeof VotesRoute
+  WrittenQuestionsRoute: typeof WrittenQuestionsRoute
   ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBathingWaterRoute: typeof ApiBathingWaterRoute
   ApiBillsRoute: typeof ApiBillsRoute
@@ -856,12 +881,20 @@ export interface RootRouteChildren {
   ApiStatusRoute: typeof ApiStatusRoute
   ApiStopSearchRoute: typeof ApiStopSearchRoute
   ApiVotesRoute: typeof ApiVotesRoute
+  ApiWrittenQuestionsRoute: typeof ApiWrittenQuestionsRoute
   IssuesIssueRoute: typeof IssuesIssueRoute
   IssuesIndexRoute: typeof IssuesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/written-questions': {
+      id: '/written-questions'
+      path: '/written-questions'
+      fullPath: '/written-questions'
+      preLoaderRoute: typeof WrittenQuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/votes': {
       id: '/votes'
       path: '/votes'
@@ -1105,6 +1138,13 @@ declare module '@tanstack/react-router' {
       path: '/issues/$issue'
       fullPath: '/issues/$issue'
       preLoaderRoute: typeof IssuesIssueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/written-questions': {
+      id: '/api/written-questions'
+      path: '/api/written-questions'
+      fullPath: '/api/written-questions'
+      preLoaderRoute: typeof ApiWrittenQuestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/votes': {
@@ -1367,6 +1407,7 @@ const rootRouteChildren: RootRouteChildren = {
   TakeActionRoute: TakeActionRoute,
   ToolsRoute: ToolsRoute,
   VotesRoute: VotesRoute,
+  WrittenQuestionsRoute: WrittenQuestionsRoute,
   ApiAcobaRoute: ApiAcobaRoute,
   ApiBathingWaterRoute: ApiBathingWaterRoute,
   ApiBillsRoute: ApiBillsRoute,
@@ -1395,6 +1436,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStatusRoute: ApiStatusRoute,
   ApiStopSearchRoute: ApiStopSearchRoute,
   ApiVotesRoute: ApiVotesRoute,
+  ApiWrittenQuestionsRoute: ApiWrittenQuestionsRoute,
   IssuesIssueRoute: IssuesIssueRoute,
   IssuesIndexRoute: IssuesIndexRoute,
 }

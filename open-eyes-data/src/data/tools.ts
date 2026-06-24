@@ -23,6 +23,7 @@ export const TOOL_SECTIONS: ToolSection[] = [
     tools: [
       { to: "/parliament", label: "Bills", copy: "Legislation in Parliament" },
       { to: "/votes", label: "Votes", copy: "How MPs actually vote" },
+      { to: "/written-questions", label: "Written questions", copy: "Do ministers answer on time?" },
       { to: "/petitions", label: "Petitions", copy: "Most-signed open petitions" },
       { to: "/committees", label: "Committees", copy: "Select committee reports" },
       { to: "/news", label: "Coverage", copy: "What outlets are amplifying" },

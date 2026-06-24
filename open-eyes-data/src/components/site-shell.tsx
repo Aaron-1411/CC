@@ -24,6 +24,7 @@ const MORE_GROUPS: Array<{ label: string; items: NavItem[] }> = [
       { to: "/parliament", label: "Parliament" },
       { to: "/petitions", label: "Petitions" },
       { to: "/votes", label: "Votes" },
+      { to: "/written-questions", label: "Written questions" },
       { to: "/committees", label: "Committees" },
       { to: "/news", label: "Coverage" },
     ],
