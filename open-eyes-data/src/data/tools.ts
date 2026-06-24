@@ -53,6 +53,7 @@ export const TOOL_SECTIONS: ToolSection[] = [
       { to: "/sewage", label: "Sewage", copy: "Water company discharge hours" },
       { to: "/bathing-water", label: "Bathing water", copy: "Beach water quality ratings" },
       { to: "/flood-warnings", label: "Flood warnings", copy: "Live EA flood alerts & warnings" },
+      { to: "/carbon-intensity", label: "Carbon intensity", copy: "How clean the grid is right now" },
       { to: "/stop-search", label: "Policing", copy: "Stop & search disparity data" },
       { to: "/sanctions", label: "Sanctions", copy: "Benefits conditionality data" },
       { to: "/foi", label: "FOI", copy: "Who withholds the most info" },

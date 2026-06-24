@@ -36,6 +36,7 @@ import { Route as CrossrefRouteImport } from './routes/crossref'
 import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CommitteesRouteImport } from './routes/committees'
 import { Route as CitationsRouteImport } from './routes/citations'
+import { Route as CarbonIntensityRouteImport } from './routes/carbon-intensity'
 import { Route as BathingWaterRouteImport } from './routes/bathing-water'
 import { Route as AcobaRouteImport } from './routes/acoba'
 import { Route as AboutRouteImport } from './routes/about'
@@ -67,6 +68,7 @@ import { Route as ApiDonationsRouteImport } from './routes/api/donations'
 import { Route as ApiContractsRouteImport } from './routes/api/contracts'
 import { Route as ApiConstituencyMpRouteImport } from './routes/api/constituency-mp'
 import { Route as ApiCommitteesRouteImport } from './routes/api/committees'
+import { Route as ApiCarbonIntensityRouteImport } from './routes/api/carbon-intensity'
 import { Route as ApiBillsRouteImport } from './routes/api/bills'
 import { Route as ApiBathingWaterRouteImport } from './routes/api/bathing-water'
 import { Route as ApiAcobaRouteImport } from './routes/api/acoba'
@@ -205,6 +207,11 @@ const CommitteesRoute = CommitteesRouteImport.update({
 const CitationsRoute = CitationsRouteImport.update({
   id: '/citations',
   path: '/citations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarbonIntensityRoute = CarbonIntensityRouteImport.update({
+  id: '/carbon-intensity',
+  path: '/carbon-intensity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BathingWaterRoute = BathingWaterRouteImport.update({
@@ -362,6 +369,11 @@ const ApiCommitteesRoute = ApiCommitteesRouteImport.update({
   path: '/api/committees',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCarbonIntensityRoute = ApiCarbonIntensityRouteImport.update({
+  id: '/api/carbon-intensity',
+  path: '/api/carbon-intensity',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBillsRoute = ApiBillsRouteImport.update({
   id: '/api/bills',
   path: '/api/bills',
@@ -388,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
   '/bathing-water': typeof BathingWaterRoute
+  '/carbon-intensity': typeof CarbonIntensityRoute
   '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
@@ -418,6 +431,7 @@ export interface FileRoutesByFullPath {
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
+  '/api/carbon-intensity': typeof ApiCarbonIntensityRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
@@ -452,6 +466,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
   '/bathing-water': typeof BathingWaterRoute
+  '/carbon-intensity': typeof CarbonIntensityRoute
   '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
@@ -482,6 +497,7 @@ export interface FileRoutesByTo {
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
+  '/api/carbon-intensity': typeof ApiCarbonIntensityRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
@@ -517,6 +533,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/acoba': typeof AcobaRoute
   '/bathing-water': typeof BathingWaterRoute
+  '/carbon-intensity': typeof CarbonIntensityRoute
   '/citations': typeof CitationsRoute
   '/committees': typeof CommitteesRoute
   '/contracts': typeof ContractsRoute
@@ -547,6 +564,7 @@ export interface FileRoutesById {
   '/api/acoba': typeof ApiAcobaRoute
   '/api/bathing-water': typeof ApiBathingWaterRoute
   '/api/bills': typeof ApiBillsRoute
+  '/api/carbon-intensity': typeof ApiCarbonIntensityRoute
   '/api/committees': typeof ApiCommitteesRoute
   '/api/constituency-mp': typeof ApiConstituencyMpRoute
   '/api/contracts': typeof ApiContractsRoute
@@ -583,6 +601,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/acoba'
     | '/bathing-water'
+    | '/carbon-intensity'
     | '/citations'
     | '/committees'
     | '/contracts'
@@ -613,6 +632,7 @@ export interface FileRouteTypes {
     | '/api/acoba'
     | '/api/bathing-water'
     | '/api/bills'
+    | '/api/carbon-intensity'
     | '/api/committees'
     | '/api/constituency-mp'
     | '/api/contracts'
@@ -647,6 +667,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/acoba'
     | '/bathing-water'
+    | '/carbon-intensity'
     | '/citations'
     | '/committees'
     | '/contracts'
@@ -677,6 +698,7 @@ export interface FileRouteTypes {
     | '/api/acoba'
     | '/api/bathing-water'
     | '/api/bills'
+    | '/api/carbon-intensity'
     | '/api/committees'
     | '/api/constituency-mp'
     | '/api/contracts'
@@ -711,6 +733,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/acoba'
     | '/bathing-water'
+    | '/carbon-intensity'
     | '/citations'
     | '/committees'
     | '/contracts'
@@ -741,6 +764,7 @@ export interface FileRouteTypes {
     | '/api/acoba'
     | '/api/bathing-water'
     | '/api/bills'
+    | '/api/carbon-intensity'
     | '/api/committees'
     | '/api/constituency-mp'
     | '/api/contracts'
@@ -776,6 +800,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AcobaRoute: typeof AcobaRoute
   BathingWaterRoute: typeof BathingWaterRoute
+  CarbonIntensityRoute: typeof CarbonIntensityRoute
   CitationsRoute: typeof CitationsRoute
   CommitteesRoute: typeof CommitteesRoute
   ContractsRoute: typeof ContractsRoute
@@ -806,6 +831,7 @@ export interface RootRouteChildren {
   ApiAcobaRoute: typeof ApiAcobaRoute
   ApiBathingWaterRoute: typeof ApiBathingWaterRoute
   ApiBillsRoute: typeof ApiBillsRoute
+  ApiCarbonIntensityRoute: typeof ApiCarbonIntensityRoute
   ApiCommitteesRoute: typeof ApiCommitteesRoute
   ApiConstituencyMpRoute: typeof ApiConstituencyMpRoute
   ApiContractsRoute: typeof ApiContractsRoute
@@ -1025,6 +1051,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CitationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carbon-intensity': {
+      id: '/carbon-intensity'
+      path: '/carbon-intensity'
+      fullPath: '/carbon-intensity'
+      preLoaderRoute: typeof CarbonIntensityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bathing-water': {
       id: '/bathing-water'
       path: '/bathing-water'
@@ -1242,6 +1275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCommitteesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/carbon-intensity': {
+      id: '/api/carbon-intensity'
+      path: '/api/carbon-intensity'
+      fullPath: '/api/carbon-intensity'
+      preLoaderRoute: typeof ApiCarbonIntensityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/bills': {
       id: '/api/bills'
       path: '/api/bills'
@@ -1299,6 +1339,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AcobaRoute: AcobaRoute,
   BathingWaterRoute: BathingWaterRoute,
+  CarbonIntensityRoute: CarbonIntensityRoute,
   CitationsRoute: CitationsRoute,
   CommitteesRoute: CommitteesRoute,
   ContractsRoute: ContractsRoute,
@@ -1329,6 +1370,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAcobaRoute: ApiAcobaRoute,
   ApiBathingWaterRoute: ApiBathingWaterRoute,
   ApiBillsRoute: ApiBillsRoute,
+  ApiCarbonIntensityRoute: ApiCarbonIntensityRoute,
   ApiCommitteesRoute: ApiCommitteesRoute,
   ApiConstituencyMpRoute: ApiConstituencyMpRoute,
   ApiContractsRoute: ApiContractsRoute,

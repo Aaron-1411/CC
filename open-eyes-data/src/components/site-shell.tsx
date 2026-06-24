@@ -48,6 +48,7 @@ const MORE_GROUPS: Array<{ label: string; items: NavItem[] }> = [
       { to: "/sewage", label: "Sewage" },
       { to: "/bathing-water", label: "Bathing water" },
       { to: "/flood-warnings", label: "Flood warnings" },
+      { to: "/carbon-intensity", label: "Carbon intensity" },
       { to: "/stop-search", label: "Policing" },
       { to: "/sanctions", label: "Sanctions" },
       { to: "/foi", label: "FOI" },
