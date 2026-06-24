@@ -28,6 +28,7 @@ import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as LobbyingRouteImport } from './routes/lobbying'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as FoiRouteImport } from './routes/foi'
+import { Route as FloodWarningsRouteImport } from './routes/flood-warnings'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as EconomyRouteImport } from './routes/economy'
 import { Route as DonationsRouteImport } from './routes/donations'
@@ -59,6 +60,7 @@ import { Route as ApiMeetingsRouteImport } from './routes/api/meetings'
 import { Route as ApiLobbyingRouteImport } from './routes/api/lobbying'
 import { Route as ApiKpisRouteImport } from './routes/api/kpis'
 import { Route as ApiFoiRouteImport } from './routes/api/foi'
+import { Route as ApiFloodWarningsRouteImport } from './routes/api/flood-warnings'
 import { Route as ApiExpensesRouteImport } from './routes/api/expenses'
 import { Route as ApiEconomyRouteImport } from './routes/api/economy'
 import { Route as ApiDonationsRouteImport } from './routes/api/donations'
@@ -163,6 +165,11 @@ const LearnRoute = LearnRouteImport.update({
 const FoiRoute = FoiRouteImport.update({
   id: '/foi',
   path: '/foi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FloodWarningsRoute = FloodWarningsRouteImport.update({
+  id: '/flood-warnings',
+  path: '/flood-warnings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpensesRoute = ExpensesRouteImport.update({
@@ -320,6 +327,11 @@ const ApiFoiRoute = ApiFoiRouteImport.update({
   path: '/api/foi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFloodWarningsRoute = ApiFloodWarningsRouteImport.update({
+  id: '/api/flood-warnings',
+  path: '/api/flood-warnings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiExpensesRoute = ApiExpensesRouteImport.update({
   id: '/api/expenses',
   path: '/api/expenses',
@@ -383,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/donations': typeof DonationsRoute
   '/economy': typeof EconomyRoute
   '/expenses': typeof ExpensesRoute
+  '/flood-warnings': typeof FloodWarningsRoute
   '/foi': typeof FoiRoute
   '/learn': typeof LearnRouteWithChildren
   '/lobbying': typeof LobbyingRoute
@@ -411,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/api/donations': typeof ApiDonationsRoute
   '/api/economy': typeof ApiEconomyRoute
   '/api/expenses': typeof ApiExpensesRoute
+  '/api/flood-warnings': typeof ApiFloodWarningsRoute
   '/api/foi': typeof ApiFoiRoute
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
@@ -445,6 +459,7 @@ export interface FileRoutesByTo {
   '/donations': typeof DonationsRoute
   '/economy': typeof EconomyRoute
   '/expenses': typeof ExpensesRoute
+  '/flood-warnings': typeof FloodWarningsRoute
   '/foi': typeof FoiRoute
   '/learn': typeof LearnRouteWithChildren
   '/lobbying': typeof LobbyingRoute
@@ -473,6 +488,7 @@ export interface FileRoutesByTo {
   '/api/donations': typeof ApiDonationsRoute
   '/api/economy': typeof ApiEconomyRoute
   '/api/expenses': typeof ApiExpensesRoute
+  '/api/flood-warnings': typeof ApiFloodWarningsRoute
   '/api/foi': typeof ApiFoiRoute
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
@@ -508,6 +524,7 @@ export interface FileRoutesById {
   '/donations': typeof DonationsRoute
   '/economy': typeof EconomyRoute
   '/expenses': typeof ExpensesRoute
+  '/flood-warnings': typeof FloodWarningsRoute
   '/foi': typeof FoiRoute
   '/learn': typeof LearnRouteWithChildren
   '/lobbying': typeof LobbyingRoute
@@ -536,6 +553,7 @@ export interface FileRoutesById {
   '/api/donations': typeof ApiDonationsRoute
   '/api/economy': typeof ApiEconomyRoute
   '/api/expenses': typeof ApiExpensesRoute
+  '/api/flood-warnings': typeof ApiFloodWarningsRoute
   '/api/foi': typeof ApiFoiRoute
   '/api/kpis': typeof ApiKpisRoute
   '/api/lobbying': typeof ApiLobbyingRoute
@@ -572,6 +590,7 @@ export interface FileRouteTypes {
     | '/donations'
     | '/economy'
     | '/expenses'
+    | '/flood-warnings'
     | '/foi'
     | '/learn'
     | '/lobbying'
@@ -600,6 +619,7 @@ export interface FileRouteTypes {
     | '/api/donations'
     | '/api/economy'
     | '/api/expenses'
+    | '/api/flood-warnings'
     | '/api/foi'
     | '/api/kpis'
     | '/api/lobbying'
@@ -634,6 +654,7 @@ export interface FileRouteTypes {
     | '/donations'
     | '/economy'
     | '/expenses'
+    | '/flood-warnings'
     | '/foi'
     | '/learn'
     | '/lobbying'
@@ -662,6 +683,7 @@ export interface FileRouteTypes {
     | '/api/donations'
     | '/api/economy'
     | '/api/expenses'
+    | '/api/flood-warnings'
     | '/api/foi'
     | '/api/kpis'
     | '/api/lobbying'
@@ -696,6 +718,7 @@ export interface FileRouteTypes {
     | '/donations'
     | '/economy'
     | '/expenses'
+    | '/flood-warnings'
     | '/foi'
     | '/learn'
     | '/lobbying'
@@ -724,6 +747,7 @@ export interface FileRouteTypes {
     | '/api/donations'
     | '/api/economy'
     | '/api/expenses'
+    | '/api/flood-warnings'
     | '/api/foi'
     | '/api/kpis'
     | '/api/lobbying'
@@ -759,6 +783,7 @@ export interface RootRouteChildren {
   DonationsRoute: typeof DonationsRoute
   EconomyRoute: typeof EconomyRoute
   ExpensesRoute: typeof ExpensesRoute
+  FloodWarningsRoute: typeof FloodWarningsRoute
   FoiRoute: typeof FoiRoute
   LearnRoute: typeof LearnRouteWithChildren
   LobbyingRoute: typeof LobbyingRoute
@@ -787,6 +812,7 @@ export interface RootRouteChildren {
   ApiDonationsRoute: typeof ApiDonationsRoute
   ApiEconomyRoute: typeof ApiEconomyRoute
   ApiExpensesRoute: typeof ApiExpensesRoute
+  ApiFloodWarningsRoute: typeof ApiFloodWarningsRoute
   ApiFoiRoute: typeof ApiFoiRoute
   ApiKpisRoute: typeof ApiKpisRoute
   ApiLobbyingRoute: typeof ApiLobbyingRoute
@@ -941,6 +967,13 @@ declare module '@tanstack/react-router' {
       path: '/foi'
       fullPath: '/foi'
       preLoaderRoute: typeof FoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flood-warnings': {
+      id: '/flood-warnings'
+      path: '/flood-warnings'
+      fullPath: '/flood-warnings'
+      preLoaderRoute: typeof FloodWarningsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expenses': {
@@ -1160,6 +1193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFoiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/flood-warnings': {
+      id: '/api/flood-warnings'
+      path: '/api/flood-warnings'
+      fullPath: '/api/flood-warnings'
+      preLoaderRoute: typeof ApiFloodWarningsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/expenses': {
       id: '/api/expenses'
       path: '/api/expenses'
@@ -1266,6 +1306,7 @@ const rootRouteChildren: RootRouteChildren = {
   DonationsRoute: DonationsRoute,
   EconomyRoute: EconomyRoute,
   ExpensesRoute: ExpensesRoute,
+  FloodWarningsRoute: FloodWarningsRoute,
   FoiRoute: FoiRoute,
   LearnRoute: LearnRouteWithChildren,
   LobbyingRoute: LobbyingRoute,
@@ -1294,6 +1335,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDonationsRoute: ApiDonationsRoute,
   ApiEconomyRoute: ApiEconomyRoute,
   ApiExpensesRoute: ApiExpensesRoute,
+  ApiFloodWarningsRoute: ApiFloodWarningsRoute,
   ApiFoiRoute: ApiFoiRoute,
   ApiKpisRoute: ApiKpisRoute,
   ApiLobbyingRoute: ApiLobbyingRoute,
