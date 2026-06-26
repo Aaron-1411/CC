@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hargreaves &amp; Sons Builders | Builders / construction in Leeds</title>
+<meta name="description" content="Hargreaves &amp; Sons Builders - Quality building work across Leeds, from extensions and loft conversions to full renovations. Serving Leeds and the surrounding area." />
+<style>
+  /* Self-contained mock-up. No external fonts, scripts or images so it opens anywhere offline.
+     Mobile-first, then enhanced at 720px. Brand colour is a single custom property to retint fast. */
+  :root {
+    --brand: #16507a;
+    --brand-dark: #0f3a59;
+    --ink: #1c2733;
+    --muted: #5a6b7b;
+    --line: #e3e9ef;
+    --bg: #ffffff;
+    --bg-soft: #f5f8fb;
+    --accent: #f0a202;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(16, 42, 67, 0.10);
+    --max: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+  /* Honesty ribbon: every mock-up says what it is up front. */
+  .ribbon {
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    text-align: center;
+    padding: 8px 16px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Header */
+  header.site {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: saturate(160%) blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo {
+    width: 42px; height: 42px; flex: 0 0 42px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    color: #fff; font-weight: 700; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    letter-spacing: 0.5px;
+  }
+  .brand .name { font-weight: 700; font-size: 17px; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brand .place { font-size: 12px; color: var(--muted); }
+  .callbtn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--brand); color: #fff; text-decoration: none;
+    font-weight: 600; font-size: 15px;
+    padding: 10px 16px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .callbtn:hover { background: var(--brand-dark); }
+  .callbtn .ph { display: none; }
+
+  /* Hero */
+  .hero { background: linear-gradient(180deg, var(--bg-soft), #fff); border-bottom: 1px solid var(--line); }
+  .hero .wrap { padding-top: 48px; padding-bottom: 48px; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+    color: var(--brand);
+    background: #e7f0f7;
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .hero h1 { font-size: 32px; line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.4px; }
+  .hero p.lead { font-size: 18px; color: var(--muted); margin: 0 0 26px; max-width: 38ch; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--brand); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 16px;
+    padding: 14px 24px; border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .btn-primary:hover { background: var(--brand-dark); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--brand); text-decoration: none; font-weight: 600; font-size: 16px;
+    padding: 14px 18px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #fff; border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 14px; font-size: 14px; font-weight: 600; color: var(--ink);
+    box-shadow: 0 1px 0 rgba(16,42,67,0.03);
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+  /* Sections */
+  section { padding: 54px 0; }
+  section.alt { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sec-head { max-width: 56ch; margin-bottom: 32px; }
+  .sec-head h2 { font-size: 26px; margin: 0 0 10px; letter-spacing: -0.3px; }
+  .sec-head p { color: var(--muted); margin: 0; font-size: 17px; }
+
+  /* Services */
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .card {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; box-shadow: 0 1px 0 rgba(16,42,67,0.03);
+  }
+  .card .tick {
+    width: 38px; height: 38px; border-radius: 10px; margin-bottom: 14px;
+    background: #e7f0f7; color: var(--brand);
+    display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* Testimonials */
+  .quotes { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .quote {
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow);
+  }
+  .stars { color: var(--accent); font-size: 17px; letter-spacing: 2px; margin-bottom: 10px; }
+  .quote blockquote { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
+  .quote .who { font-size: 14px; color: var(--muted); font-weight: 600; }
+
+  /* Contact */
+  .contact-card {
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    color: #fff; border-radius: 20px; padding: 40px 28px; text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .contact-card h2 { font-size: 26px; margin: 0 0 10px; }
+  .contact-card p { margin: 0 auto 24px; max-width: 46ch; opacity: 0.92; font-size: 17px; }
+  .contact-card .btn-primary { background: #fff; color: var(--brand); }
+  .contact-card .btn-primary:hover { background: #f0f4f8; }
+
+  /* Footer */
+  footer.site { padding: 30px 0 50px; color: var(--muted); font-size: 14px; }
+  footer.site .row { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
+  footer.site .note { font-size: 12px; opacity: 0.8; margin-top: 10px; }
+
+  @media (min-width: 720px) {
+    .callbtn .ph { display: inline; }
+    .hero h1 { font-size: 46px; }
+    .hero p.lead { font-size: 20px; }
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .quotes { grid-template-columns: repeat(2, 1fr); }
+    section { padding: 70px 0; }
+    .contact-card { padding: 56px 40px; }
+  }
+</style>
+</head>
+<body>
+  <div class="ribbon">Free concept by Fulcrum for Hargreaves &amp; Sons Builders. Your real details, dropped into a modern layout. Some copy is a drafted suggestion to confirm.</div>
+
+  <header class="site">
+    <div class="wrap bar">
+      <div class="brand">
+        <div class="logo">HS</div>
+        <div>
+          <div class="name">Hargreaves &amp; Sons Builders</div>
+          <div class="place">Builders / construction | Leeds</div>
+        </div>
+      </div>
+      <a class="callbtn" href="tel:01135550303"><span class="ph">Call</span> 0113 555 0303</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Trusted local builders</span>
+      <h1>Extensions, conversions and renovations done right across Leeds</h1>
+      <p class="lead">Quality building work across Leeds, from extensions and loft conversions to full renovations.</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="tel:01135550303">Call for a free quote</a>
+        <a class="btn-ghost" href="#services">See what we do</a>
+      </div>
+      <div class="chips">
+        <span class="chip"><span class="dot"></span>22 years in business</span>
+        <span class="chip"><span class="dot"></span>4.6 stars from 38 Google reviews</span>
+        <span class="chip"><span class="dot"></span>Serving Leeds and nearby</span>
+        <span class="chip"><span class="dot"></span>Free, no-obligation quotes</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>What we do</h2>
+        <p>What Hargreaves &amp; Sons Builders does for customers across Leeds. Tell us about your project and we will give you a straight, no-obligation quote.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="tick">&#10003;</div>
+          <h3>Home extensions</h3>
+          <p>Done properly, on time and left clean and tidy.</p>
+        </div>
+        <div class="card">
+          <div class="tick">&#10003;</div>
+          <h3>Loft conversions</h3>
+          <p>A clear, written quote up front, with no surprises later.</p>
+        </div>
+        <div class="card">
+          <div class="tick">&#10003;</div>
+          <h3>Brickwork and pointing</h3>
+          <p>Experienced, fully insured and local to Leeds.</p>
+        </div>
+        <div class="card">
+          <div class="tick">&#10003;</div>
+          <h3>Kitchen and bathroom fitting</h3>
+          <p>Quality workmanship you can see, backed by our reputation.</p>
+        </div>
+        <div class="card">
+          <div class="tick">&#10003;</div>
+          <h3>Garage conversions</h3>
+          <p>Friendly advice and a job done right the first time.</p>
+        </div>
+        <div class="card">
+          <div class="tick">&#10003;</div>
+          <h3>General building and renovation</h3>
+          <p>From first call to final tidy-up, handled by us start to finish.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt" id="reviews">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>What our customers say</h2>
+        <p>Pulled from Hargreaves &amp; Sons Builders&#39;s real Google reviews: a 4.6-star rating across 38 of them. These are your customers&#39; own words.</p>
+      </div>
+      <div class="quotes">
+        <div class="quote">
+          <div class="stars">★★★★☆</div>
+          <blockquote>Did our loft conversion.</blockquote>
+          <div class="who">Verified Google review</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-card">
+        <h2>Ready to talk about your project?</h2>
+        <p>Give Hargreaves &amp; Sons Builders a call on 0113 555 0303 for a free, no-obligation quote. We cover Leeds and the surrounding area.</p>
+        <a class="btn-primary" href="tel:01135550303">Call for a free quote</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap">
+      <div class="row">
+        <div><strong>Hargreaves &amp; Sons Builders</strong> | Builders / construction serving Leeds</div>
+        <div>0113 555 0303</div>
+      </div>
+      <div class="note">Concept mock-up prepared by Aaron at Fulcrum, built from offline sample data for this demo. This is not a live website. The service list and headline copy are drafted suggestions to confirm, and the hero is a placeholder gradient rather than a photo you may not own. We would swap in your own project photos and confirmed wording before anything goes live.</div>
+    </div>
+  </footer>
+</body>
+</html>

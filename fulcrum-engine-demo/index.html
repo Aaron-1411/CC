@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<title>Fulcrum Prospecting Engine - Visual demo</title>
+<meta name="description" content="Static visual demo of the Fulcrum Prospecting Engine: a UK B2B prospecting and outreach tool that finds digitally weak but established businesses, scores them, and drafts a personalised pitch package. Drafts only, never auto-sends. The figures below are synthetic fixtures." />
+<style>
+  :root {
+    --brand: #16507a;
+    --brand-dark: #0f3a59;
+    --ink: #14202b;
+    --muted: #5a6b7b;
+    --line: #e3e9ef;
+    --bg: #ffffff;
+    --bg-soft: #f5f8fb;
+    --accent: #f0a202;
+    --good: #1f8a4c;
+    --warn: #b9770a;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(16, 42, 67, 0.10);
+    --max: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg-soft);
+    line-height: 1.55;
+  }
+  a { color: var(--brand); }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+  header.hero {
+    background: linear-gradient(160deg, var(--brand-dark), var(--brand));
+    color: #fff;
+    padding: 56px 0 48px;
+  }
+  .hero h1 { margin: 0 0 6px; font-size: clamp(28px, 5vw, 44px); letter-spacing: -0.5px; }
+  .hero .tag { font-size: 18px; color: #cfe2f2; max-width: 640px; }
+  .pill {
+    display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.6px;
+    text-transform: uppercase; background: rgba(255,255,255,0.16); color: #eaf4fc;
+    padding: 5px 11px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .notice {
+    background: #fff8e8; border: 1px solid #f3dca0; border-left: 5px solid var(--accent);
+    border-radius: 10px; padding: 14px 16px; margin: 26px 0; font-size: 15px; color: #5e4a16;
+  }
+  .notice strong { color: #4a3a10; }
+  section { padding: 40px 0; }
+  section h2 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.3px; }
+  section .lead { color: var(--muted); margin: 0 0 22px; max-width: 720px; }
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card {
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow);
+  }
+  .card h3 { margin: 0 0 4px; font-size: 18px; }
+  .card .meta { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .card .why { font-size: 14px; color: var(--ink); background: var(--bg-soft); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
+  .score { display: inline-flex; align-items: baseline; gap: 4px; font-weight: 800; color: var(--brand); }
+  .score b { font-size: 26px; }
+  .score span { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .btn {
+    display: inline-block; background: var(--brand); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 14px; padding: 10px 16px; border-radius: 9px;
+  }
+  .btn:hover { background: var(--brand-dark); }
+  .steps { counter-reset: step; display: grid; gap: 14px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    flex: 0 0 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff;
+    font-weight: 800; display: grid; place-items: center;
+  }
+  .step h4 { margin: 0 0 3px; font-size: 16px; }
+  .step p { margin: 0; color: var(--muted); font-size: 14px; }
+  table.shortlist { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--bg); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  table.shortlist th, table.shortlist td { text-align: left; padding: 11px 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.shortlist th { background: var(--brand-dark); color: #fff; font-weight: 600; white-space: nowrap; }
+  table.shortlist tr:last-child td { border-bottom: none; }
+  table.shortlist .num { font-weight: 800; color: var(--brand); }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .email {
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .email .head { background: var(--bg-soft); border-bottom: 1px solid var(--line); padding: 14px 18px; font-size: 13.5px; color: var(--muted); }
+  .email .head b { color: var(--ink); }
+  .email .body { padding: 18px 20px; font-size: 15px; white-space: pre-wrap; }
+  .email .body .quote { background: #fff8e8; border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 6px; display: block; margin: 4px 0; }
+  ul.wins { margin: 6px 0 0; padding-left: 18px; }
+  ul.wins li { margin-bottom: 4px; }
+  footer { background: var(--brand-dark); color: #cfe2f2; padding: 34px 0; font-size: 14px; }
+  footer a { color: #fff; }
+  .two { display: grid; gap: 24px; grid-template-columns: 1fr; }
+  @media (min-width: 860px) { .two { grid-template-columns: 1.1fr 0.9fr; } }
+  .muted-note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="pill">Fulcrum · UK web &amp; digital consultancy</span>
+    <h1>Prospecting Engine</h1>
+    <p class="tag">Finds established UK businesses that are busy and clearly trying to grow, but held back by a weak digital presence. Scores them, you approve, then it builds a personalised pitch package. It drafts only. It never sends.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="notice">
+    <strong>This is a static visual demo.</strong> The engine itself is a local command-line tool that calls paid and keyed APIs (Google Places, Companies House) and writes a private ledger, so it is not hosted live. Everything below is built from <strong>synthetic fixtures</strong>: the companies, reviews, scores and contacts are invented for the demo. No real prospect data is shown. The three mock-ups are exactly what the tool generates for an approved lead.
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="lead">A two-stage gate keeps the list small and hot. The operator narrows at the gate; the build only happens for approved leads.</p>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h4>Discover &amp; score</h4>
+          <p>Sweep an area and sector for businesses, screen for a dated site plus signs they are still trying, mine reviews for intent, confirm tenure and the named director at Companies House, and rank on a composite score. Only reliably detectable signals feed the maths; everything uncertain becomes a flag, never a silent number.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Approve at the gate</h4>
+          <p>The engine stops and produces a ranked shortlist with the reason each lead scored hot. A smaller, hotter list beats a big weak one. Nothing is built or contacted until the operator approves.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Build the pitch</h4>
+          <p>For approved leads only: extract their real content, run a plain-English audit, render a recognisable mock-up of their own site, write a two-tier proposal, and draft an email that opens with the score reason. The operator reads, edits and sends every email themselves.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Sample shortlist</h2>
+    <p class="lead">Stage 1 output. The "why it's hot" column is the product: a review quote or a competitor fact the operator can lead with. Figures below are synthetic.</p>
+    <div class="scroll">
+      <table class="shortlist">
+        <thead>
+          <tr>
+            <th>Company</th><th>Area</th><th>Score</th><th>Why it's hot</th><th>Years</th><th>Rating</th><th>Weakness</th><th>Director</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pennine Brothers Building Ltd</td><td>Leeds</td><td class="num">94.4</td>
+            <td>Review hint: "took us ages to find them, no website really, found them through a friend". 2 of 4 nearby rivals have strong sites. 14 yrs trading.</td>
+            <td>14</td><td>4.7 / 86</td><td>no HTTPS, not mobile, table layout</td><td>James Holroyd</td>
+          </tr>
+          <tr>
+            <td>Hargreaves &amp; Sons Builders</td><td>Leeds</td><td class="num">91.8</td>
+            <td>Review hint: "Wish they had a website, had to call to find out prices". 2 of 4 nearby rivals have strong sites. 22 yrs trading.</td>
+            <td>22</td><td>4.6 / 38</td><td>No website</td><td>Peter Hargreaves</td>
+          </tr>
+          <tr>
+            <td>Yorkshire Heating Solutions Ltd</td><td>Leeds</td><td class="num">81.4</td>
+            <td>Review hint: "No online booking which is a pain, had to call". 1 of 2 nearby rivals have strong sites. 11 yrs trading.</td>
+            <td>11</td><td>4.5 / 47</td><td>not mobile, table layout, weak CTA</td><td>Mark Sutcliffe</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted-note">Cheap and fast, biased wide. The operator reviews this list and approves the leads worth building before any mock-up or email is produced.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Sample mock-ups</h2>
+    <p class="lead">Stage 2 output for the approved leads above. Built from each business's own reviews and details, so it is recognisably them and not a stock demo. An evolution of their site, not a teardown.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Pennine Brothers Building Ltd</h3>
+        <div class="meta">Builders · Leeds · 14 yrs · 4.7 / 86</div>
+        <div class="why">Currently: no HTTPS, no mobile viewport, table-based layout. The work is rated; the site is the bit customers push past.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="score"><b>94.4</b><span>score</span></span>
+          <a class="btn" href="samples/pennine-brothers-building-ltd/index.html">View mock-up</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Hargreaves &amp; Sons Builders</h3>
+        <div class="meta">Builders · Leeds · 22 yrs · 4.6 / 38</div>
+        <div class="why">Currently: no website at all on the Google listing. Customers ring to find out prices.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="score"><b>91.8</b><span>score</span></span>
+          <a class="btn" href="samples/hargreaves-sons-builders/index.html">View mock-up</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Yorkshire Heating Solutions Ltd</h3>
+        <div class="meta">Heating · Leeds · 11 yrs · 4.5 / 47</div>
+        <div class="why">Currently: not mobile, table-based layout, weak call to action. No online booking.</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="score"><b>81.4</b><span>score</span></span>
+          <a class="btn" href="samples/yorkshire-heating-solutions-ltd/index.html">View mock-up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Sample email draft</h2>
+    <p class="lead">The opener is the score reason: a real review quote plus a concrete gap. Short, human, signed by the operator, and only ever a draft. The tool never sends.</p>
+    <div class="email">
+      <div class="head">
+        <div><b>To:</b> James Holroyd · 0113 555 0101</div>
+        <div><b>Subject:</b> James, a quick thought on Pennine Brothers Building Ltd's website</div>
+      </div>
+      <div class="body">Hi James,
+
+I was reading through Pennine Brothers Building Ltd's Google reviews and one line stuck with me: <span class="quote">"Brilliant work on our extension. Honestly took us ages to find them, no website really, found them through a friend in the end."</span>People clearly rate the work. What I noticed is the bit they had to push past to get it, and that is exactly the part I think I can fix.
+
+To be specific: your site is served over plain http, not https, and it is not built to fit a phone screen. Small things on the surface, but they are the difference between someone who has already found you calling, or tapping the next firm instead.
+
+Rather than just tell you, I built a quick mock-up of how it could look, using your own reviews and details so it is recognisably you and not a stock demo.
+
+A few quick wins I would start with:
+<ul class="wins">
+<li>Make it secure (https) so browsers stop flagging it as 'Not secure'</li>
+<li>Make it work properly on a phone, where most people find you</li>
+<li>Get you looking sharper than the nearby firms, not a step behind them</li>
+</ul>
+If it is worth a closer look, just reply and we will grab ten minutes. No pitch and no obligation.
+
+Best,
+Aaron
+Fulcrum</div>
+    </div>
+    <p class="muted-note">Plain and link-light for deliverability. The operator finds the best contact route, makes the opener sound like them, and sends it from their own address.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0 0 6px;"><strong style="color:#fff;">Fulcrum Prospecting Engine</strong> · static visual demo</p>
+    <p style="margin:0;">The live engine runs as a local command-line tool with its own keys and a private ledger. It drafts only and never auto-sends. All data shown here is synthetic.</p>
+  </div>
+</footer>
+
+</body>
+</html>

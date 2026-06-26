@@ -224,6 +224,30 @@ jobs:
           accountId: a1a1276a1a278339d95c187e0bf6de47
           command: pages deploy quant-desk-demo --project-name=quant-desk-demo --branch=main
 
+  deploy-fulcrum-engine-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Fulcrum Prospecting Engine is a secret-bearing CLI tool (Google Places +
+      # Companies House keys, a local ledger, paid API calls) — it can't run on CF
+      # Pages. CF hosts a self-contained static "Visual demo" (fulcrum-engine-demo/)
+      # of the pipeline output: a sample shortlist, three personalised mock-ups and
+      # a draft email. ALL data is synthetic dry-run fixtures (no real prospects).
+      # The full engine lives in its own private repo Aaron-1411/fulcrum-engine and
+      # runs locally. The tool DRAFTS only and never sends.
+      - name: Ensure CF Pages project exists
+        run: |
+          curl -s -o /dev/null \
+            -X POST "https://api.cloudflare.com/client/v4/accounts/a1a1276a1a278339d95c187e0bf6de47/pages/projects" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"fulcrum-engine-demo","production_branch":"main"}' || true
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: a1a1276a1a278339d95c187e0bf6de47
+          command: pages deploy fulcrum-engine-demo --project-name=fulcrum-engine-demo --branch=main
+
   deploy-moneymind-uk:
     runs-on: ubuntu-latest
     steps:
