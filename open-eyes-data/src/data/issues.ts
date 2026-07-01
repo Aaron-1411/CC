@@ -222,18 +222,18 @@ export const ISSUES: Record<IssueKey, IssueDef> = {
     mpTopic: "sewage discharges, water companies and net zero",
     briefingTopic: "UK sewage pollution, water company accountability and net zero policy 2025",
     headlineStat: {
-      value: 3_614_427,
-      unit: "hours",
-      label: "untreated sewage discharged through storm overflows in England in 2024",
+      value: 291_492,
+      unit: "spills",
+      label: "of untreated sewage from storm overflows in England in 2025",
       sourceId: "ea-edm",
       sourceUrl:
-        "https://www.gov.uk/government/news/environment-agency-storm-overflow-spill-data-for-2024",
-      asOf: "2024-12-31",
+        "https://www.gov.uk/government/news/fewer-and-shorter-storm-overflow-spills-in-2025-new-monitoring-data-shows",
+      asOf: "2025-12-31",
       methodologyNote:
-        "A record total, 0.2% above 2023. Per-company, per-site hours on the Sewage page.",
+        "35% fewer than 2024's record; total monitored spill duration fell 48%. Per-company, per-site data on the Sewage page.",
     },
     keyFactContext:
-      "The Environment Agency's Event Duration Monitoring shows 2024 was a record for spill duration. Each overflow operated on average 31.8 times; the Government's target is fewer than 10. Site-level data is on the Sewage page.",
+      "The Environment Agency's Event Duration Monitoring recorded 291,492 storm-overflow spills in 2025 — 35% fewer than 2024's record, with total monitored spill duration down 48%. Even so, each overflow operated on average 20.5 times (down from 31.8); the Government's target is fewer than 10. Site-level data is on the Sewage page.",
     relatedTools: [
       {
         to: "/sewage",

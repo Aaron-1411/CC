@@ -5,6 +5,9 @@ import { withSnapshot } from "@/lib/snapshot";
 
 // 2024 EDM dataset — org ID Bb8lfThdhugyc4G3 (correct EA ArcGIS org)
 // Previous URL used JJzESW51TqeY9uat which was decommissioned
+// Scope: England only (where=country='England'). The EA regulates England;
+// Welsh sites (Natural Resources Wales) and null-country rows are excluded so
+// the totals match the official EA headline (~450,478 spills / 3.61m hours).
 const ARCGIS_BASE =
   "https://services3.arcgis.com/Bb8lfThdhugyc4G3/arcgis/rest/services/Storm_Overflow_EDM_Annual_Returns_2024/FeatureServer/0/query";
 const ARCGIS_FIELDS =
@@ -41,7 +44,7 @@ type ArcGISResponse = {
 };
 
 async function fetchSpillPage(offset: number): Promise<ArcGISFeature[]> {
-  const url = `${ARCGIS_BASE}?where=1%3D1&outFields=${ARCGIS_FIELDS}&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}`;
+  const url = `${ARCGIS_BASE}?where=country%3D%27England%27&outFields=${ARCGIS_FIELDS}&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}`;
   const r = await fetch(url, { headers: { accept: "application/json" } });
   if (!r.ok) throw new Error(`ArcGIS returned ${r.status}`);
   const j = (await r.json()) as ArcGISResponse;
@@ -86,7 +89,7 @@ export const Route = createFileRoute("/api/sewage")({
         try {
           // Annual EDM data — snapshot preferred (built daily by GitHub Actions), 24h in-memory fallback
           const data = await withSnapshot("sewage_edm_2024", () =>
-            cached("sewage:edm:2024:v1", 24 * 60 * 60_000, fetchSpills),
+            cached("sewage:edm:2024:v2", 24 * 60 * 60_000, fetchSpills),
           );
           return jsonResponse(
             envelope(

@@ -29,7 +29,9 @@ const ARCGIS_FIELDS =
 const PAGE_SIZE = 1000;
 
 async function fetchSpillPage(offset: number) {
-  const url = `${ARCGIS_BASE}?where=1%3D1&outFields=${ARCGIS_FIELDS}&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}`;
+  // England only — the EA regulates England; Welsh (NRW) and null-country rows
+  // are excluded so totals match the official EA headline (~450,478 spills).
+  const url = `${ARCGIS_BASE}?where=country%3D%27England%27&outFields=${ARCGIS_FIELDS}&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}`;
   const r = await fetch(url, { headers: { accept: "application/json" } });
   if (!r.ok) throw new Error(`ArcGIS ${r.status}`);
   const j = await r.json() as { features?: Array<{ attributes: Record<string, unknown> }> };

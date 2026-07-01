@@ -185,11 +185,11 @@ function StopSearchPage() {
       </div>
 
       {/* What this means */}
-      <ContextBlock heading="Black people are stopped at 7× the rate of white people — and most searches find nothing" variant="warn">
+      <ContextBlock heading="Black people are stopped at 3.8× the rate of white people — and most searches find nothing" variant="warn">
         <p>
-          Home Office data consistently shows that Black people are stopped and searched at roughly{" "}
-          <strong className="text-foreground">7 times the rate of white people</strong> in England and Wales.
-          Asian people are stopped at around 3× the rate. These disparities persist even after
+          In the year ending March 2025, Home Office data shows Black people were stopped and searched at{" "}
+          <strong className="text-foreground">3.8 times the rate of white people</strong> in England and Wales.
+          Asian people were stopped at around 1.4× the rate. These disparities persist even after
           controlling for local population demographics.
         </p>
         <p>
@@ -401,12 +401,12 @@ function StopSearchPage() {
       <ActionBar
         mpTopic="stop and search racial disparity and police accountability"
         briefingTopic="UK stop and search racial disparity, Home Office data and police accountability"
-        shareText="Black people are 7× more likely to be stopped and searched in England and Wales"
+        shareText="Black people are 3.8× more likely to be stopped and searched in England and Wales (year ending March 2025)"
         letterTemplate={`Dear [MP Name],
 
 I am writing as a constituent about racial disparity in stop and search policing.
 
-Home Office data consistently shows that Black people are stopped and searched at roughly 7 times the rate of white people in England and Wales. Asian people are stopped at approximately 3 times the rate. These disparities persist even after controlling for local population demographics.
+In the year ending March 2025, Home Office data shows that Black people were stopped and searched at 3.8 times the rate of white people in England and Wales. Asian people were stopped at approximately 1.4 times the rate. These disparities persist even after controlling for local population demographics.
 
 Only around 17% of all stop and searches result in any outcome — an arrest, summons, caution or penalty notice. That means 8 in 10 people searched have done nothing wrong.
 

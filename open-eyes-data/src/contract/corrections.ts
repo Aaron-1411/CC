@@ -171,4 +171,43 @@ export const CORRECTIONS: CorrectionEntry[] = [
     reason:
       "Wrong-endpoint bug. The Parliament Members `Search?constituency=` endpoint silently ignores its constituency filter and returns the first of all 650 members, so everyone saw the alphabetically-first MP. Rebuilt to resolve MPs via the `Location/Constituency/Search?searchText=` endpoint, which matches by constituency name and carries that constituency's current representation. Verified live against the Parliament Members API for multiple constituencies.",
   },
+  {
+    date: "2026-07-02",
+    page: "Stop & Search — disparity ratios",
+    wasWrong:
+      "The stop-and-search detail page stated Black people were “7× more likely” and Asian people “3 times” more likely to be stopped and searched than White people.",
+    nowSays:
+      "Black people were stopped and searched at 3.8 times the rate of White people, and Asian people at around 1.4 times the rate, for the year ending March 2025 — both sourced and dated.",
+    reason:
+      "Both ratios were several years out of date and overstated the current disparity. Our 2026-06-12 fix corrected the 7× figure on the homepage headline; this extends the same correction to the detail page and to the Asian ratio it had left unchanged. Corrected against gov.uk Ethnicity facts & figures (stop and search).",
+  },
+  {
+    date: "2026-07-02",
+    page: "Issues — Environment (headline figure)",
+    wasWrong:
+      "The environment headline was “3,614,427 hours” of untreated sewage discharged through storm overflows in England in 2024.",
+    nowSays:
+      "291,492 storm-overflow spills of untreated sewage in England in 2025 — 35% fewer than 2024's record, with total monitored spill duration down 48%.",
+    reason:
+      "The Environment Agency has since published 2025 monitoring data, superseding the 2024 figure. We switched the headline to the newer published spill count rather than a computed 2025 hours figure, keeping to our rule of never presenting a derived number as if it were official. Sourced to the EA release “Fewer and shorter storm overflow spills in 2025, new monitoring data shows”.",
+  },
+  {
+    date: "2026-07-02",
+    page: "Sewage Discharges — England scope",
+    wasWrong:
+      "The sewage totals summed England, Wales and unlabelled sites together — about 563,730 spills and 4.55 million hours across 16,626 sites — while the page described them as England.",
+    nowSays:
+      "England-only totals: 450,478 spills and 3.61 million hours across 14,286 monitored overflows, matching the official Environment Agency headline for 2024.",
+    reason:
+      "The data query returned every country in the dataset (England, plus Welsh sites regulated by Natural Resources Wales, plus null-country rows), inflating the totals above the England figure the page claimed to show. The query now filters server-side to country = 'England'. Corrected against the Environment Agency 2024 storm-overflow EDM dataset.",
+  },
+  {
+    date: "2026-07-02",
+    page: "Sewage Discharges — spill frequency",
+    wasWrong: "“Roughly one spill event every 9 minutes” across England.",
+    nowSays:
+      "Roughly one spill event every 70 seconds, computed live from the actual spill count for the year.",
+    reason:
+      "The “9 minutes” claim was wrong by roughly an order of magnitude. The cadence is now derived directly from the current spill total (seconds in a 365-day year ÷ counted spills) so it stays correct if the underlying data changes.",
+  },
 ];

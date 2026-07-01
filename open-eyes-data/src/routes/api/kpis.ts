@@ -32,7 +32,7 @@ const STATIC_KPIS: Kpi[] = [
   {
     label: "NHS Elective Waiting List",
     value: "7.2m",
-    period: "Feb 2026",
+    period: "Apr 2026",
     source: "NHS England · RTT Statistics",
     live: false,
   },

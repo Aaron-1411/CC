@@ -79,6 +79,9 @@ function SewagePage() {
 
   const totalHours = q.data?.data.totalHours ?? 0;
   const totalCount = q.data?.data.totalCount ?? 0;
+  // Live-derived cadence: seconds between spill events across the whole year.
+  const spillIntervalSec =
+    totalCount > 0 ? Math.round((365 * 24 * 3600) / totalCount) : 0;
 
   return (
     <div className="space-y-6">
@@ -102,7 +105,7 @@ function SewagePage() {
             backing up into homes. But regulators and campaigners say these permits are exploited as a
             routine disposal method. In 2024 there were{" "}
             <strong className="text-foreground">{fmtNumber(totalCount)} separate spill events</strong>{" "}
-            across England — roughly one every 9 minutes, around the clock.
+            across England — roughly one every {spillIntervalSec} seconds, around the clock.
           </p>
           <p>
             The dividends keep flowing. Since privatisation in 1989, England's water companies have
@@ -139,7 +142,7 @@ function SewagePage() {
           accent="flag"
           loading={q.isLoading}
           shareable
-          shareText={`${fmtNumber(totalCount)} sewage spill events in England in 2024 — roughly one every 9 minutes, around the clock`}
+          shareText={`${fmtNumber(totalCount)} sewage spill events in England in 2024 — roughly one every ${spillIntervalSec} seconds, around the clock`}
         />
       </div>
 
@@ -206,7 +209,7 @@ function SewagePage() {
 
 I am writing as a constituent who is deeply concerned about sewage pollution in our waterways.
 
-Environment Agency data shows that in 2024, water companies across England discharged untreated or partially-treated sewage for over 3.6 million hours. This equates to roughly one spill event every 9 minutes, around the clock, for the entire year.
+Environment Agency data shows that in 2024, water companies across England discharged untreated or partially-treated sewage for over ${(totalHours / 1e6).toFixed(1)} million hours. This equates to roughly one spill event every ${spillIntervalSec} seconds, around the clock, for the entire year.
 
 Over the years since privatisation, water companies have paid out tens of billions of pounds in dividends to shareholders — while repeatedly failing to meet improvement targets set by the Environment Agency.
 
