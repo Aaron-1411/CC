@@ -12,26 +12,40 @@ import type { MPData } from "@/routes/api/postcode";
  * postcodes.io, so the user's postcode never reaches our servers.
  */
 
-type ParliamentMember = {
+type ConstituencyMember = {
+  id: number;
+  nameDisplayAs: string;
+  latestParty: { name: string } | null;
+  latestHouseMembership: { membershipFrom: string; membershipFromId: number } | null;
+  thumbnailUrl: string;
+};
+
+type ConstituencyItem = {
   value: {
-    id: number;
-    nameDisplayAs: string;
-    latestParty: { name: string };
-    latestHouseMembership: { membershipFrom: string; membershipFromId: number };
-    thumbnailUrl: string;
+    name: string;
+    currentRepresentation: { member: { value: ConstituencyMember } | null } | null;
   };
 };
 
 async function lookupMp(constituency: string): Promise<MPData | null> {
-  const mpRes = await fetch(
-    `https://members-api.parliament.uk/api/Members/Search?constituency=${encodeURIComponent(
+  // Resolve the sitting MP via the CONSTITUENCY endpoint. The Members `Search`
+  // endpoint ignores its `constituency` param (it returns all 650 members), so
+  // it must not be used here — Location/Constituency/Search matches by name and
+  // carries the constituency's current representation.
+  const searchRes = await fetch(
+    `https://members-api.parliament.uk/api/Location/Constituency/Search?searchText=${encodeURIComponent(
       constituency,
-    )}&House=Commons&IsCurrentMember=true&skip=0&take=1`,
+    )}&skip=0&take=10`,
     { headers: { accept: "application/json" }, signal: AbortSignal.timeout(8_000) },
   );
-  if (!mpRes.ok) throw new Error(`members-api: HTTP ${mpRes.status}`);
-  const mpData = (await mpRes.json()) as { items: ParliamentMember[] };
-  const member = mpData.items[0]?.value;
+  if (!searchRes.ok) throw new Error(`members-api: HTTP ${searchRes.status}`);
+  const searchData = (await searchRes.json()) as { items: ConstituencyItem[] };
+  const items = searchData.items ?? [];
+  // Prefer an exact (case-insensitive) name match; fall back to the top result.
+  const want = constituency.trim().toLowerCase();
+  const chosen =
+    items.find((it) => (it.value?.name ?? "").trim().toLowerCase() === want) ?? items[0];
+  const member = chosen?.value?.currentRepresentation?.member?.value;
   if (!member) return null;
 
   let email = "";
@@ -59,7 +73,7 @@ async function lookupMp(constituency: string): Promise<MPData | null> {
     party: partyName,
     partyColour: partyColour(partyName),
     thumbnailUrl: member.thumbnailUrl ?? "",
-    constituency,
+    constituency: chosen.value?.name ?? constituency,
     email,
     membershipFrom: member.latestHouseMembership?.membershipFrom ?? "",
   };

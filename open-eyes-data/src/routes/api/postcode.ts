@@ -117,21 +117,26 @@ type PostcodesIOResult = {
   };
 };
 
-type ParliamentMember = {
+type ConstituencyMember = {
+  id: number;
+  nameDisplayAs: string;
+  latestParty: { name: string } | null;
+  latestHouseMembership: {
+    membershipFrom: string;
+    membershipFromId: number;
+  } | null;
+  thumbnailUrl: string;
+};
+
+type ConstituencyItem = {
   value: {
-    id: number;
-    nameDisplayAs: string;
-    latestParty: { name: string };
-    latestHouseMembership: {
-      membershipFrom: string;
-      membershipFromId: number;
-    };
-    thumbnailUrl: string;
+    name: string;
+    currentRepresentation: { member: { value: ConstituencyMember } | null } | null;
   };
 };
 
-type ParliamentSearchResult = {
-  items: ParliamentMember[];
+type ConstituencySearchResult = {
+  items: ConstituencyItem[];
 };
 
 async function lookupPostcode(postcode: string): Promise<PostcodeResult> {
@@ -151,19 +156,25 @@ async function lookupPostcode(postcode: string): Promise<PostcodeResult> {
   const constituency = r.parliamentary_constituency_2024 ?? "";
   const policeForceId = pfaToForceId(r.pfa ?? "");
 
-  // 2. Parliament Members API — find MP for this constituency
+  // 2. Parliament Constituency API — find the sitting MP for this constituency.
+  // NB: the Members `Search?constituency=` endpoint ignores that param (returns
+  // all 650 members); Location/Constituency/Search matches by name.
   let mp: MPData | null = null;
   try {
     const mpRes = await fetch(
-      `https://members-api.parliament.uk/api/Members/Search?constituency=${encodeURIComponent(constituency)}&House=Commons&IsCurrentMember=true&skip=0&take=1`,
+      `https://members-api.parliament.uk/api/Location/Constituency/Search?searchText=${encodeURIComponent(constituency)}&skip=0&take=10`,
       {
         headers: { accept: "application/json" },
         signal: AbortSignal.timeout(8_000),
       },
     );
     if (mpRes.ok) {
-      const mpData = (await mpRes.json()) as ParliamentSearchResult;
-      const member = mpData.items[0]?.value;
+      const mpData = (await mpRes.json()) as ConstituencySearchResult;
+      const want = constituency.trim().toLowerCase();
+      const chosen =
+        mpData.items?.find((it) => (it.value?.name ?? "").trim().toLowerCase() === want) ??
+        mpData.items?.[0];
+      const member = chosen?.value?.currentRepresentation?.member?.value;
       if (member) {
         // 3. Get contact email
         let email = "";

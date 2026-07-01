@@ -161,4 +161,14 @@ export const CORRECTIONS: CorrectionEntry[] = [
     reason:
       "The earlier fix switched from the tender estimate to the award value, but for a framework agreement the award value is itself an aggregate ceiling, so billion-pound figures still leaked through as if they were single awards. A notice is now set aside when its award lists more than one supplier, or its title contains “framework” or “lots”. On a representative refresh this removed roughly 30 aggregate notices and brought the headline total down from about £5.6bn to about £3.0bn, while correctly keeping single-supplier call-offs.",
   },
+  {
+    date: "2026-07-02",
+    page: "My area — Find your MP",
+    wasWrong:
+      "Every postcode resolved to the same MP (Diane Abbott, Hackney North & Stoke Newington), regardless of where the user actually lived.",
+    nowSays:
+      "The correct sitting MP for the user's constituency is returned — e.g. SW1A 1AA now resolves to Rachel Blake (Cities of London and Westminster), not Diane Abbott.",
+    reason:
+      "Wrong-endpoint bug. The Parliament Members `Search?constituency=` endpoint silently ignores its constituency filter and returns the first of all 650 members, so everyone saw the alphabetically-first MP. Rebuilt to resolve MPs via the `Location/Constituency/Search?searchText=` endpoint, which matches by constituency name and carries that constituency's current representation. Verified live against the Parliament Members API for multiple constituencies.",
+  },
 ];
