@@ -79,7 +79,7 @@ function CoinCounter({ accentText }: { accentText: string }) {
         </div>
         <button
           onClick={() => setPence(0)}
-          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-navy-500 hover:bg-navy-100"
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-navy-500 transition-[background-color,transform] duration-150 ease-out hover:bg-navy-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-1"
         >
           <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Reset
         </button>
@@ -135,13 +135,13 @@ function WantsNeeds() {
             <span className="px-1">{item.label}</span>
             <button
               onClick={() => place(item.label, item.need, "need")}
-              className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700 hover:bg-emerald-200"
+              className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700 transition-[background-color,transform] duration-150 ease-out hover:bg-emerald-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1"
             >
               Need
             </button>
             <button
               onClick={() => place(item.label, item.need, "want")}
-              className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700 hover:bg-sky-200"
+              className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-sky-700 transition-[background-color,transform] duration-150 ease-out hover:bg-sky-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1"
             >
               Want
             </button>
@@ -219,14 +219,14 @@ function SavingsJar({ accentText }: { accentText: string }) {
                 key={n}
                 onClick={() => setSaved((s) => Math.min(goal, s + n))}
                 disabled={reached}
-                className="rounded-xl bg-emerald-500 px-3 py-2 text-sm font-bold text-white shadow-sm transition-transform hover:bg-emerald-600 active:scale-95 disabled:opacity-40"
+                className="rounded-xl bg-emerald-500 px-3 py-2 text-sm font-bold text-white shadow-sm transition-[background-color,transform] duration-150 ease-out hover:bg-emerald-600 active:scale-95 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 +£{n}
               </button>
             ))}
             <button
               onClick={() => setSaved(0)}
-              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-navy-500 hover:bg-navy-100"
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-navy-500 transition-[background-color,transform] duration-150 ease-out hover:bg-navy-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-1"
             >
               <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Reset
             </button>
@@ -274,7 +274,7 @@ function PriceCompare() {
       {!revealed ? (
         <button
           onClick={() => setRevealed(true)}
-          className="mt-3 w-full rounded-xl bg-navy-900 py-2.5 text-sm font-bold text-white hover:bg-navy-800"
+          className="mt-3 w-full rounded-xl bg-navy-900 py-2.5 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-navy-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
         >
           Work out the price per gram
         </button>
@@ -454,7 +454,7 @@ function ScamSpotter() {
           <p className="mt-1 text-sm text-navy-500">scams spotted. The trick is always: pressure, secrecy, or asking for details.</p>
           <button
             onClick={() => { setI(0); setAnswered(null); setScore(0); }}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-navy-500 hover:bg-navy-100"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-navy-500 transition-[background-color,transform] duration-150 ease-out hover:bg-navy-100 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-1"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Play again
           </button>
@@ -478,13 +478,13 @@ function ScamSpotter() {
         <div className="mt-3 grid grid-cols-2 gap-3">
           <button
             onClick={() => answer(false)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2.5 text-sm font-bold text-white hover:bg-emerald-600"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2.5 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-emerald-600 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           >
             <ShieldCheck className="h-4 w-4" aria-hidden /> Safe
           </button>
           <button
             onClick={() => answer(true)}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-red-500 py-2.5 text-sm font-bold text-white hover:bg-red-600"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-red-500 py-2.5 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-red-600 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
           >
             <ShieldAlert className="h-4 w-4" aria-hidden /> Scam
           </button>
@@ -498,7 +498,7 @@ function ScamSpotter() {
           <p className="mt-1 text-sm text-navy-600">{m.why}</p>
           <button
             onClick={() => { setI((n) => n + 1); setAnswered(null); }}
-            className="mt-3 w-full rounded-xl bg-navy-900 py-2 text-sm font-bold text-white hover:bg-navy-800"
+            className="mt-3 w-full rounded-xl bg-navy-900 py-2 text-sm font-bold text-white transition-[background-color,transform] duration-150 ease-out hover:bg-navy-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           >
             Next message
           </button>

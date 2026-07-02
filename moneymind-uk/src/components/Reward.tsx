@@ -99,6 +99,16 @@ function RewardLayer({
 }) {
   const reduce = useReducedMotion();
 
+  // Escape dismisses the badge modal — a standard, expected escape route.
+  useEffect(() => {
+    if (!badge) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onDismiss();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [badge, onDismiss]);
+
   return (
     <>
       {/* Earn toasts — bottom centre, stacked */}
@@ -164,7 +174,8 @@ function RewardLayer({
               {badge.description && <p className="mt-1 text-sm text-navy-500">{badge.description}</p>}
               <button
                 onClick={onDismiss}
-                className="mt-5 rounded-xl bg-navy-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy-800"
+                autoFocus
+                className="mt-5 rounded-xl bg-navy-900 px-5 py-2 text-sm font-semibold text-white transition-[background-color,transform] duration-200 ease-out hover:bg-navy-800 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 Nice!
               </button>

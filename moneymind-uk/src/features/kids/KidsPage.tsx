@@ -84,7 +84,7 @@ function BandCard({ band, active, onClick }: { band: KidBand; active: boolean; o
       onClick={onClick}
       aria-pressed={active}
       className={clsx(
-        "group flex h-full w-full flex-col items-start gap-2 rounded-2xl border-2 bg-white p-4 text-left shadow-card transition-all duration-150 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+        "group flex h-full w-full flex-col items-start gap-2 rounded-2xl border-2 bg-white p-4 text-left shadow-card transition-[box-shadow,border-color,transform] duration-150 ease-out hover:shadow-card-hover active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
         active ? clsx("ring-2", band.theme.ring, "border-transparent") : "border-transparent hover:border-navy-100",
       )}
     >
@@ -144,7 +144,7 @@ function WhyReveal({ title, body }: { title: string; body: string }) {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left text-sm font-semibold text-navy-700 hover:bg-navy-50"
+        className="flex w-full items-center justify-between gap-2 rounded-xl px-4 py-2.5 text-left text-sm font-semibold text-navy-700 transition-colors duration-150 ease-out hover:bg-navy-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
       >
         {title}
         <ChevronDown className={clsx("h-4 w-4 shrink-0 text-navy-400 transition-transform duration-200", open && "rotate-180")} aria-hidden />
