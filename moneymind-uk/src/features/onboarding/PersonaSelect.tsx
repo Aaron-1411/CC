@@ -75,7 +75,7 @@ export function PersonaSelect({ updaters }: PersonaSelectProps) {
       </motion.div>
 
       <div className="mt-8 text-center">
-        <button onClick={skip} className="text-sm font-medium text-navy-500 hover:text-navy-800 hover:underline">
+        <button onClick={skip} className="rounded-lg px-2 py-1 text-sm font-medium text-navy-500 transition-colors duration-150 ease-out hover:text-navy-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2">
           Skip for now — show me everything
         </button>
       </div>

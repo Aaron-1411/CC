@@ -78,7 +78,7 @@ export function TutorPanel({ open, onClose, moduleId, moduleTitle, suggestedQues
                     key={q}
                     type="button"
                     onClick={() => send(q)}
-                    className="rounded-xl border border-navy-200 bg-white px-3.5 py-2.5 text-left text-sm text-navy-700 transition-colors hover:border-emerald-400 hover:bg-emerald-50"
+                    className="rounded-xl border border-navy-200 bg-white px-3.5 py-2.5 text-left text-sm text-navy-700 transition-colors duration-150 ease-out hover:border-emerald-400 hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                   >
                     {q}
                   </button>
@@ -125,7 +125,7 @@ export function TutorPanel({ open, onClose, moduleId, moduleTitle, suggestedQues
             type="submit"
             disabled={!input.trim() || loading}
             aria-label="Send"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white transition-colors hover:bg-emerald-600 disabled:opacity-40"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white transition-[background-color,transform] duration-150 ease-out hover:bg-emerald-600 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:opacity-40 disabled:active:scale-100"
           >
             <Send className="h-4 w-4" aria-hidden />
           </button>

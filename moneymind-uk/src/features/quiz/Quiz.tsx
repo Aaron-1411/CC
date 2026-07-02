@@ -182,7 +182,7 @@ function AnswerButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${cls}`}
+      className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${cls}`}
     >
       {label}
     </button>

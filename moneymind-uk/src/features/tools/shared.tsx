@@ -158,7 +158,7 @@ export function ToggleRow({
         aria-label={label}
         onClick={() => onChange(!checked)}
         className={clsx(
-          "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+          "relative h-6 w-11 shrink-0 rounded-full transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
           checked ? "bg-emerald-500" : "bg-navy-200",
         )}
       >

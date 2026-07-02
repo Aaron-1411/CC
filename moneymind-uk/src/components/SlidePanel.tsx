@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 
 interface SlidePanelProps {
@@ -10,6 +10,8 @@ interface SlidePanelProps {
 }
 
 export function SlidePanel({ open, onClose, title, children }: SlidePanelProps) {
+  const reduceMotion = useReducedMotion();
+
   // Trap focus / close on Escape
   useEffect(() => {
     if (!open) return;
@@ -36,10 +38,10 @@ export function SlidePanel({ open, onClose, title, children }: SlidePanelProps) 
           {/* Panel */}
           <motion.aside
             className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 320, damping: 34 }}
+            initial={reduceMotion ? { opacity: 0 } : { x: "100%" }}
+            animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { x: "100%" }}
+            transition={reduceMotion ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 34 }}
             role="dialog"
             aria-modal
             aria-label={title}
@@ -48,7 +50,7 @@ export function SlidePanel({ open, onClose, title, children }: SlidePanelProps) 
               <h2 className="font-semibold text-navy-900">{title}</h2>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-navy-500 hover:bg-navy-100"
+                className="p-1.5 rounded-lg text-navy-500 hover:bg-navy-100 transition-colors duration-150 ease-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 aria-label="Close panel"
               >
                 <X className="h-5 w-5" aria-hidden />

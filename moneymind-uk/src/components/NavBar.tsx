@@ -47,7 +47,7 @@ export function NavBar({ progress }: NavBarProps) {
                 end={to === "/"}
                 className={({ isActive }) =>
                   clsx(
-                    "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
+                    "px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
                     isActive ? "bg-navy-900 text-white" : "text-navy-600 hover:bg-navy-100",
                   )
                 }
@@ -80,7 +80,7 @@ export function NavBar({ progress }: NavBarProps) {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-xl text-navy-600 hover:bg-navy-100"
+            className="md:hidden p-2 rounded-xl text-navy-600 hover:bg-navy-100 transition-colors duration-150 ease-out active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
@@ -103,7 +103,7 @@ export function NavBar({ progress }: NavBarProps) {
                   onClick={() => setOpen(false)}
                   className={({ isActive }) =>
                     clsx(
-                      "px-4 py-2.5 rounded-xl text-sm font-medium transition-colors",
+                      "px-4 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
                       isActive ? "bg-navy-900 text-white" : "text-navy-700 hover:bg-navy-100",
                     )
                   }

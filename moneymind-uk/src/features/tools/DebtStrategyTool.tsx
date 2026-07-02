@@ -118,7 +118,7 @@ export function DebtStrategyTool({ onUse }: { onUse: () => void }) {
                 type="button"
                 onClick={() => remove(d.id)}
                 aria-label={`Remove ${d.name}`}
-                className="rounded-lg p-1.5 text-navy-400 hover:bg-navy-50 hover:text-navy-700"
+                className="rounded-lg p-1.5 text-navy-400 transition-colors duration-150 ease-out hover:bg-navy-50 hover:text-navy-700 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -133,7 +133,7 @@ export function DebtStrategyTool({ onUse }: { onUse: () => void }) {
         <button
           type="button"
           onClick={add}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-navy-200 py-2.5 text-sm font-medium text-navy-600 hover:border-emerald-400 hover:text-emerald-700"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-navy-200 py-2.5 text-sm font-medium text-navy-600 transition-[color,border-color,transform] duration-150 ease-out hover:border-emerald-400 hover:text-emerald-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
         >
           <Plus className="h-4 w-4" /> Add a debt
         </button>

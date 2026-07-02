@@ -17,7 +17,7 @@ export function ProgressBar({ value, label, size = "md", color = "emerald", clas
     <div className={clsx("w-full", className)} role="progressbar" aria-valuenow={clamped} aria-valuemin={0} aria-valuemax={100} aria-label={label}>
       <div className={clsx("w-full bg-navy-100 rounded-full overflow-hidden", h)}>
         <div
-          className={clsx("h-full rounded-full transition-all duration-500", fill)}
+          className={clsx("h-full rounded-full transition-[width] duration-500 ease-out", fill)}
           style={{ width: `${clamped}%` }}
         />
       </div>

@@ -46,7 +46,7 @@ export function RightsPage() {
             key={c}
             onClick={() => setCat(c)}
             className={clsx(
-              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
               cat === c ? "bg-navy-900 text-white" : "bg-white text-navy-600 hover:bg-navy-100",
             )}
           >
