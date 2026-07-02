@@ -71,6 +71,8 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
     ...(mod.tool ? [{ key: "tool" as const, label: "Tool", icon: Wrench, done: toolDone }] : []),
     { key: "quest", label: "Apply", icon: Target, done: questDone },
   ];
+  const currentIndex = Math.max(0, steps.findIndex((s) => s.key === step));
+  const doneCount = steps.filter((s) => s.done).length;
 
   function completeQuest() {
     if (!mod || questDone) return;
@@ -110,7 +112,7 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
       <div className="mt-4">
         <button
           onClick={() => setShowTldr((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-navy-50 px-3 py-2 text-sm font-semibold text-navy-700 hover:bg-navy-100"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-navy-50 px-3 py-2 text-sm font-semibold text-navy-700 transition-[background-color,transform] duration-200 ease-out hover:bg-navy-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           aria-expanded={showTldr}
         >
           <Sparkles className="h-4 w-4 text-emerald-500" aria-hidden />
@@ -144,6 +146,14 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
 
       {/* Step tabs */}
       <div className="sticky top-16 z-30 -mx-4 mt-6 bg-background/95 px-4 py-3 backdrop-blur sm:mx-0 sm:px-0">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-xs font-semibold uppercase tracking-wide text-navy-400">
+            Step {currentIndex + 1} of {steps.length}
+          </span>
+          <span className="text-xs font-medium tabular-nums text-navy-400">
+            {doneCount}/{steps.length} done
+          </span>
+        </div>
         <div className="flex gap-2">
           {steps.map((s) => {
             const StepIcon = s.icon;
@@ -153,7 +163,7 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
                 key={s.key}
                 onClick={() => setStep(s.key)}
                 className={clsx(
-                  "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-[background-color,transform] duration-200 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
                   active ? "bg-navy-900 text-white" : "bg-white text-navy-600 hover:bg-navy-100",
                 )}
                 aria-current={active ? "step" : undefined}
@@ -170,17 +180,17 @@ export function ModulePage({ progress, updaters }: ModulePageProps) {
         </div>
       </div>
 
-      {/* Tutor button */}
+      {/* Tutor button — deliberately quiet so it stays subordinate to each step's primary action */}
       <button
         onClick={() => setTutorOpen(true)}
-        className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-left transition-colors hover:bg-emerald-100"
+        className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-navy-100 bg-white px-4 py-3 text-left shadow-card transition-[background-color,transform] duration-200 ease-out hover:bg-navy-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
       >
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-500 text-white">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-50 text-emerald-600">
           <Sparkles className="h-4 w-4" aria-hidden />
         </span>
         <span className="text-sm">
-          <span className="block font-semibold text-emerald-900">Stuck? Ask the AI tutor</span>
-          <span className="text-emerald-700">Plain-English answers about {mod.title.toLowerCase()}.</span>
+          <span className="block font-semibold text-navy-800">Stuck? Ask the AI tutor</span>
+          <span className="text-navy-500">Plain-English answers about {mod.title.toLowerCase()}.</span>
         </span>
       </button>
 
